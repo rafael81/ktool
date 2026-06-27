@@ -92,11 +92,11 @@ Completed:
 1. Add `/tools/` and category pages.
 2. Strengthen `src/data/tools.ts` as the tool contract.
 3. Add SEO/privacy/mobile smoke tests.
-4. Add one adjacent business-document tool: `영수증 자동작성`.
+4. Add adjacent business-document tools: `영수증 자동작성`, `청구서 자동작성`.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/tools/receipt-generator/`.
-2. Compare starts and print events across 거래명세서, 견적서, 영수증.
-3. If 영수증 gets impressions but weak starts, split `청구서 자동작성` into a separate tool.
+1. Request indexing/collection for `/tools/receipt-generator/` and `/tools/invoice-generator/`.
+2. Compare starts and print events across 거래명세서, 견적서, 청구서, 영수증.
+3. If 청구서 or 영수증 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
 4. If business-document pages are indexed cleanly, reconsider the first workflow-specific PDF tool.

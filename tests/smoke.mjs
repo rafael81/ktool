@@ -14,6 +14,7 @@ const routes = [
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true },
+  { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true },
   { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true }
 ];
 

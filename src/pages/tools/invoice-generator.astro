@@ -1,0 +1,243 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("invoice");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-document-tool
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+    data-document-title="청구서"
+    data-receiver-label="고객명"
+    data-extra-date-label="입금기한"
+    data-extra-meta-label="결제 안내"
+    data-extra-meta-value="계좌번호는 비고 확인"
+    data-default-valid-days="7"
+    data-sample-supplier="샘플디자인"
+    data-sample-supplier-meta="123-45-67890 · 서울시 마포구"
+    data-sample-receiver="고객사"
+    data-sample-note="입금 계좌: 국민 000000-00-000000&#10;입금자명은 고객사명으로 부탁드립니다."
+    data-sample-item-name="프로젝트 잔금"
+    data-sample-item-desc="최종 시안 전달 후 잔금 청구"
+    data-sample-item-qty="1"
+    data-sample-item-price="800000"
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 입금기한과 결제 안내를 함께 정리해 고객에게 바로 전달할 수 있습니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="panel" aria-label="청구서 입력">
+        <div class="panel-title">
+          <h2>청구 정보</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>공급자</span>
+            <input data-supplier value="샘플디자인" />
+          </label>
+          <label class="field">
+            <span>사업자번호 / 주소</span>
+            <input data-supplier-meta value="123-45-67890 · 서울시 마포구" />
+          </label>
+          <label class="field">
+            <span>고객명</span>
+            <input data-receiver value="고객사" required />
+          </label>
+          <label class="field">
+            <span>청구일</span>
+            <input data-date type="date" />
+          </label>
+          <label class="field">
+            <span>입금기한</span>
+            <input data-valid-until type="date" />
+          </label>
+          <label class="field">
+            <span>부가세</span>
+            <select data-vat-mode>
+              <option value="separate">별도</option>
+              <option value="included">포함</option>
+              <option value="none">없음</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>비고 / 결제 안내</span>
+            <textarea data-note>입금 계좌: 국민 000000-00-000000
+입금자명은 고객사명으로 부탁드립니다.</textarea>
+          </label>
+        </div>
+
+        <div class="items-editor">
+          <div class="panel-title">
+            <h3>품목</h3>
+            <button class="btn" type="button" data-add-row>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              추가
+            </button>
+          </div>
+          <div data-rows>
+            <div class="item-row" data-row>
+              <label class="field">
+                <span>품목</span>
+                <input data-item-name value="프로젝트 잔금" />
+              </label>
+              <label class="field">
+                <span>설명</span>
+                <input data-item-desc value="최종 시안 전달 후 잔금 청구" />
+              </label>
+              <label class="field compact">
+                <span>수량</span>
+                <input data-item-qty inputmode="decimal" value="1" />
+              </label>
+              <label class="field compact">
+                <span>단가</span>
+                <input data-item-price inputmode="numeric" value="800000" />
+              </label>
+              <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-print>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>
+            인쇄/PDF
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel" aria-label="청구서 미리보기">
+        <div class="doc-page" data-document-preview></div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>확인 사항</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>세금계산서나 전자세금계산서 발행을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>입금기한, 계좌번호, 결제 조건을 비고에 명확히 적어두세요.</span></li>
+          <li><span class="status-dot"></span><span>입력한 고객 정보는 서버로 보내지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>공급자와 고객 정보를 입력합니다.</li>
+        <li>청구 품목, 수량, 단가, 입금기한, 결제 안내를 입력합니다.</li>
+        <li>미리보기를 확인한 뒤 인쇄하거나 PDF로 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+  <script is:inline src="/scripts/document-tool.js"></script>
+</BaseLayout>
+
+<style>
+  .items-editor {
+    margin-top: 18px;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 8px;
+  }
+
+  .row-remove {
+    width: 42px;
+    grid-column: 2;
+    justify-self: end;
+    padding-inline: 0;
+  }
+
+  .line-table {
+    margin-top: 22px;
+  }
+
+  .document-note {
+    border-top: 1px solid #cad6df;
+    color: #344457;
+    margin-top: 24px;
+    padding-top: 14px;
+    white-space: pre-wrap;
+  }
+</style>

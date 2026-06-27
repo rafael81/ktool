@@ -1,4 +1,9 @@
-export type ToolId = "business-nameplate" | "transaction-statement" | "estimate" | "receipt";
+export type ToolId =
+  | "business-nameplate"
+  | "transaction-statement"
+  | "estimate"
+  | "receipt"
+  | "invoice";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -36,7 +41,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "업무 문서",
     path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 영수증, 사업자 명판처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 청구서, 영수증, 사업자 명판처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
@@ -124,7 +129,7 @@ export const tools: ToolInfo[] = [
       ["모바일에서도 작성할 수 있나요?", "모바일 입력과 미리보기를 지원하되, 최종 인쇄는 데스크톱 브라우저가 더 안정적입니다."]
     ],
     trustNote: "일반 거래 내역 정리용 양식입니다. 세금계산서나 전자세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["estimate", "receipt"]
+    relatedToolIds: ["estimate", "invoice"]
   },
   {
     id: "estimate",
@@ -161,7 +166,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "견적 전달용 문서 생성 도구입니다. 계약 체결이나 세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["transaction-statement", "receipt"]
+    relatedToolIds: ["invoice", "transaction-statement"]
   },
   {
     id: "receipt",
@@ -198,7 +203,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "일반 거래 내역 확인용 양식입니다. 세금계산서, 현금영수증, 카드 매출전표를 대신하지 않습니다.",
-    relatedToolIds: ["transaction-statement", "estimate"]
+    relatedToolIds: ["invoice", "transaction-statement"]
+  },
+  {
+    id: "invoice",
+    title: "청구서 자동작성",
+    shortTitle: "청구서",
+    path: "/tools/invoice-generator/",
+    category: "business",
+    description:
+      "공급자, 고객, 청구 품목, 입금기한, 금액을 입력해 청구서를 무료로 작성하고 인쇄합니다.",
+    pageTitle: "청구서 자동작성 - 무료 청구서 양식",
+    metaDescription:
+      "공급자, 고객, 청구 품목, 입금기한, 금액을 입력해 청구서를 무료로 작성하세요. 브라우저에서 바로 미리보기와 인쇄를 할 수 있습니다.",
+    primaryQuery: "청구서 자동작성",
+    secondaryQueries: ["청구서 양식 무료", "무료 청구서 양식", "청구서 PDF", "입금 요청서 양식"],
+    userMoment: "작업 완료 후 고객에게 청구 금액과 입금기한을 전달해야 하는 순간",
+    featureList: [
+      "청구서 품목 행 추가",
+      "입금기한 표시",
+      "부가세 포함/별도/없음 계산",
+      "인쇄 및 PDF 저장",
+      "브라우저 안에서 문서 작성"
+    ],
+    faqs: [
+      [
+        "청구서와 세금계산서는 다른가요?",
+        "네. 청구서는 대금 지급을 요청하는 일반 문서이고, 세금계산서나 전자세금계산서 발행을 대신하지 않습니다."
+      ],
+      ["입금기한을 넣을 수 있나요?", "입금기한 필드를 입력하면 미리보기 상단에 함께 표시됩니다."],
+      ["계좌번호나 결제 조건을 넣을 수 있나요?", "비고에 계좌번호, 결제 조건, 담당자 연락처 같은 안내를 적을 수 있습니다."],
+      ["부가세 포함 청구도 만들 수 있나요?", "부가세 별도, 포함, 없음 중에서 선택할 수 있습니다."],
+      ["PDF로 저장할 수 있나요?", "브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
+      [
+        "입력한 고객 정보가 서버에 저장되나요?",
+        "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 문서 정보는 서버로 보내지 않습니다."
+      ]
+    ],
+    trustNote: "입금 요청용 일반 문서입니다. 세금계산서, 전자세금계산서, 계약 체결을 대신하지 않습니다.",
+    relatedToolIds: ["receipt", "estimate"]
   }
 ];
 

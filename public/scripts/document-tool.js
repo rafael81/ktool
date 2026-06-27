@@ -15,6 +15,14 @@ function todayLocal() {
   return localDate.toISOString().slice(0, 10);
 }
 
+function daysFromToday(days) {
+  const offset = Number.isFinite(days) ? days : 0;
+  const now = new Date();
+  now.setDate(now.getDate() + offset);
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
+
 function escapeText(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -106,6 +114,12 @@ function renderDocument(root) {
   const note = root.querySelector("[data-note]")?.value.trim() || "";
   const vatMode = root.querySelector("[data-vat-mode]")?.value || "separate";
   const rows = collectRows(root);
+  const metaLabel = root.dataset.metaLabel || (title === "견적서" ? "유효기간" : "사업자 정보");
+  const metaValueSource = root.dataset.metaValueSource || (title === "견적서" ? "valid-until" : "supplier-meta");
+  const metaValue = metaValueSource === "valid-until" ? validUntil || "-" : supplierMeta || "-";
+  const extraDateLabel = root.dataset.extraDateLabel || "";
+  const extraMetaLabel = root.dataset.extraMetaLabel || "";
+  const extraMetaValue = root.dataset.extraMetaValue || "";
 
   let supplyTotal = 0;
   let vatTotal = 0;
@@ -144,9 +158,19 @@ function renderDocument(root) {
           <tr>
             <th>공급자</th>
             <td>${escapeText(supplier)}</td>
-            <th>${title === "견적서" ? "유효기간" : "사업자 정보"}</th>
-            <td>${escapeText(title === "견적서" ? validUntil || "-" : supplierMeta || "-")}</td>
+            <th>${escapeText(metaLabel)}</th>
+            <td>${escapeText(metaValue)}</td>
           </tr>
+          ${
+            extraDateLabel
+              ? `<tr>
+                  <th>${escapeText(extraDateLabel)}</th>
+                  <td>${escapeText(validUntil || "-")}</td>
+                  <th>${escapeText(extraMetaLabel || "안내")}</th>
+                  <td>${escapeText(extraMetaValue || "-")}</td>
+                </tr>`
+              : ""
+          }
         </tbody>
       </table>
       <table class="doc-table line-table">
@@ -185,9 +209,13 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
   const reset = root.querySelector("[data-reset]");
   const print = root.querySelector("[data-print]");
   const dateInput = root.querySelector("[data-date]");
+  const validUntilInput = root.querySelector("[data-valid-until]");
 
   if (dateInput && !dateInput.value) {
     dateInput.value = todayLocal();
+  }
+  if (validUntilInput && !validUntilInput.value && root.dataset.defaultValidDays) {
+    validUntilInput.value = daysFromToday(Number(root.dataset.defaultValidDays));
   }
 
   function bind() {
@@ -228,6 +256,9 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
     root.querySelector("[data-supplier-meta]").value = root.dataset.sampleSupplierMeta || "123-45-67890";
     root.querySelector("[data-receiver]").value = root.dataset.sampleReceiver || "거래처";
     root.querySelector("[data-note]").value = root.dataset.sampleNote || "";
+    if (validUntilInput && root.dataset.defaultValidDays) {
+      validUntilInput.value = daysFromToday(Number(root.dataset.defaultValidDays));
+    }
     rows.innerHTML = rowTemplate(root, 0);
     bind();
     update();
