@@ -82,6 +82,16 @@ const structuredData = [
           최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 선택 후 목록에서 이미지를 끌거나 버튼으로 순서를 조정할 수 있습니다.
         </p>
 
+        <div class="compressed-intake-card" data-compressed-intake>
+          <strong>압축 이미지로 PDF 만들기</strong>
+          <p>사진 용량 줄이기에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.</p>
+          <ol>
+            <li>압축 도구에서 저장한 이미지를 모두 선택합니다.</li>
+            <li>목록 순서가 PDF 페이지 순서입니다.</li>
+            <li>PDF 만들기 후 제출 전 마지막 확인에서 저장 준비 상태를 봅니다.</li>
+          </ol>
+        </div>
+
         <div class="preflight-card" data-preflight aria-live="polite">
           <strong>제출 전 마지막 확인</strong>
           <ul>
@@ -224,6 +234,7 @@ const structuredData = [
       const outputStatus = root.querySelector("[data-output-status]");
       const outputMeta = root.querySelector("[data-output-meta]");
       const fileList = root.querySelector("[data-file-list]");
+      const compressedIntake = root.querySelector("[data-compressed-intake]");
       const preflightItems = {
         files: root.querySelector('[data-preflight-item="files"]'),
         order: root.querySelector('[data-preflight-item="order"]'),
@@ -243,6 +254,12 @@ const structuredData = [
           tool_title: "JPG PDF 변환",
           ...params
         });
+      }
+
+      const arrivalSource = new URLSearchParams(window.location.search).get("from");
+      if (arrivalSource === "compressed-images") {
+        compressedIntake.dataset.state = "highlight";
+        track("jpg_pdf_compressed_arrival", { source: arrivalSource });
       }
 
       function formatBytes(bytes) {
@@ -805,6 +822,44 @@ const structuredData = [
     content: "✓";
     border-color: var(--accent);
     background: var(--accent);
+  }
+
+  .compressed-intake-card {
+    display: grid;
+    gap: 9px;
+    border: 1px solid #c8dedc;
+    border-radius: 8px;
+    background: #f3faf9;
+    color: var(--ink);
+    margin-top: 12px;
+    padding: 14px;
+  }
+
+  .compressed-intake-card[data-state="highlight"] {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.13);
+  }
+
+  .compressed-intake-card strong {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .compressed-intake-card p {
+    color: #344457;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .compressed-intake-card ol {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    padding-left: 18px;
   }
 
   .btn.disabled,

@@ -159,6 +159,12 @@ async function run() {
       }
 
       if (route.pdfImageTool) {
+        const compressedIntakeText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          compressedIntakeText?.includes("압축 이미지로 PDF 만들기") &&
+            compressedIntakeText.includes("사진 용량 줄이기"),
+          `${route.path} should explain the compressed-image-to-PDF arrival flow`
+        );
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".file-row").length === 2);
         const preflightAfterSample = await page.locator("[data-preflight]").textContent();
@@ -201,6 +207,13 @@ async function run() {
         const reducedFileCount = await page.locator(".file-row").count();
         const reducedStatus = await page.locator("[data-output-status]").textContent();
         assert(reducedFileCount === 1 && reducedStatus.includes("1장"), `${route.path} should remove one selected image`);
+
+        await page.goto(`${baseUrl}${route.path}?from=compressed-images`, { waitUntil: "networkidle" });
+        const compressedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        assert(
+          compressedIntakeState === "highlight",
+          `${route.path} should highlight the compressed-image arrival cue when opened from the compressor`
+        );
       }
 
       if (route.imageCompressor) {
@@ -232,7 +245,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("압축 이미지를 저장") &&
-            nextPdfHref === "/tools/jpg-to-pdf-converter/",
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=compressed-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after compression`
         );
       }
