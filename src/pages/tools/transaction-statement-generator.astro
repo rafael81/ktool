@@ -1,0 +1,219 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getTool, tools } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, type FaqEntry } from "@/data/seo";
+
+const tool = getTool("transaction-statement");
+const faqs: FaqEntry[] = [
+  ["거래명세서와 세금계산서는 다른가요?", "네. 거래명세서는 거래 내역을 정리해 전달하는 문서이고, 세금계산서나 전자세금계산서 발행을 대신하지 않습니다."],
+  ["부가세 포함 금액도 계산할 수 있나요?", "부가세 별도, 포함, 없음 중에서 선택할 수 있습니다."],
+  ["PDF로 저장할 수 있나요?", "브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
+  ["입력한 거래처 정보가 저장되나요?", "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 문서 정보는 서버로 보내지 않습니다."],
+  ["모바일에서도 작성할 수 있나요?", "모바일 입력과 미리보기를 지원하되, 최종 인쇄는 데스크톱 브라우저가 더 안정적입니다."]
+];
+const structuredData = [
+  softwareApplicationSchema(tool, [
+    "거래명세서 품목 행 추가",
+    "부가세 포함/별도/없음 계산",
+    "인쇄 및 PDF 저장",
+    "브라우저 안에서 문서 작성"
+  ]),
+  faqPageSchema(faqs)
+];
+---
+
+<BaseLayout
+  title={`${tool.title} - 무료 거래명세서 양식`}
+  description={tool.description}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-document-tool
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+    data-document-title="거래명세서"
+    data-receiver-label="공급받는자"
+    data-sample-supplier="샘플상사"
+    data-sample-receiver="거래처"
+    data-sample-note="입금 계좌: 국민 000000-00-000000"
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 부가세 계산, 품목 추가, 인쇄용 미리보기를 한 화면에서 처리합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          tools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="panel" aria-label="거래명세서 입력">
+        <div class="panel-title">
+          <h2>문서 정보</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>공급자</span>
+            <input data-supplier value="샘플상사" />
+          </label>
+          <label class="field">
+            <span>공급자 사업자번호</span>
+            <input data-supplier-meta value="123-45-67890" />
+          </label>
+          <label class="field">
+            <span>공급받는자</span>
+            <input data-receiver value="거래처" required />
+          </label>
+          <label class="field">
+            <span>거래일</span>
+            <input data-date type="date" />
+          </label>
+          <label class="field">
+            <span>부가세</span>
+            <select data-vat-mode>
+              <option value="separate">별도</option>
+              <option value="included">포함</option>
+              <option value="none">없음</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>비고</span>
+            <textarea data-note>입금 계좌: 국민 000000-00-000000</textarea>
+          </label>
+        </div>
+
+        <div class="items-editor">
+          <div class="panel-title">
+            <h3>품목</h3>
+            <button class="btn" type="button" data-add-row>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              추가
+            </button>
+          </div>
+          <div data-rows>
+            <div class="item-row" data-row>
+              <label class="field">
+                <span>품목</span>
+                <input data-item-name value="디자인 작업" />
+              </label>
+              <label class="field">
+                <span>설명</span>
+                <input data-item-desc value="문서 및 이미지 제작" />
+              </label>
+              <label class="field compact">
+                <span>수량</span>
+                <input data-item-qty inputmode="decimal" value="1" />
+              </label>
+              <label class="field compact">
+                <span>단가</span>
+                <input data-item-price inputmode="numeric" value="150000" />
+              </label>
+              <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-print>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>
+            인쇄/PDF
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel" aria-label="거래명세서 미리보기">
+        <div class="doc-page" data-document-preview></div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>확인 사항</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>세금계산서 발행을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>부가세 포함/별도 계산을 선택할 수 있습니다.</span></li>
+          <li><span class="status-dot"></span><span>입력한 문서 내용은 서버로 보내지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>공급자와 공급받는자 정보를 입력합니다.</li>
+        <li>품목, 수량, 단가를 입력하고 부가세 방식을 선택합니다.</li>
+        <li>미리보기를 확인한 뒤 인쇄하거나 PDF로 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+  </main>
+  <script is:inline src="/scripts/document-tool.js"></script>
+</BaseLayout>
+
+<style>
+  .items-editor {
+    margin-top: 18px;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) 74px 96px 42px;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 8px;
+  }
+
+  .row-remove {
+    width: 42px;
+    padding-inline: 0;
+  }
+
+  .line-table {
+    margin-top: 22px;
+  }
+
+  .document-note {
+    border-top: 1px solid #cad6df;
+    color: #344457;
+    margin-top: 24px;
+    padding-top: 14px;
+    white-space: pre-wrap;
+  }
+
+  @media (max-width: 760px) {
+    .item-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

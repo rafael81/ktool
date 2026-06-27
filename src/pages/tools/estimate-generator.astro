@@ -1,0 +1,224 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getTool, tools } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, type FaqEntry } from "@/data/seo";
+
+const tool = getTool("estimate");
+const faqs: FaqEntry[] = [
+  ["견적서와 거래명세서는 어떻게 다른가요?", "견적서는 거래 전에 예상 금액과 조건을 제안하는 문서이고, 거래명세서는 실제 거래 내역을 정리하는 문서입니다."],
+  ["부가세 포함 견적도 만들 수 있나요?", "부가세 별도, 포함, 없음 중에서 선택할 수 있습니다."],
+  ["견적 유효기간을 넣을 수 있나요?", "유효기간 필드를 입력하면 미리보기에 함께 표시됩니다."],
+  ["PDF로 저장할 수 있나요?", "브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
+  ["입력한 고객 정보가 서버에 저장되나요?", "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 문서 정보는 서버로 보내지 않습니다."]
+];
+const structuredData = [
+  softwareApplicationSchema(tool, [
+    "견적서 품목 행 추가",
+    "부가세 포함/별도/없음 계산",
+    "견적 유효기간 표시",
+    "인쇄 및 PDF 저장",
+    "브라우저 안에서 문서 작성"
+  ]),
+  faqPageSchema(faqs)
+];
+---
+
+<BaseLayout
+  title={`${tool.title} - 무료 견적서 양식`}
+  description={tool.description}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-document-tool
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+    data-document-title="견적서"
+    data-receiver-label="고객명"
+    data-sample-supplier="샘플디자인"
+    data-sample-receiver="고객사"
+    data-sample-note="본 견적의 유효기간은 발행일로부터 14일입니다."
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 거래명세서와 같은 계산 구조를 재사용해 빠르게 견적 문서를 만듭니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          tools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="workspace">
+      <form class="panel" aria-label="견적서 입력">
+        <div class="panel-title">
+          <h2>견적 정보</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>공급자</span>
+            <input data-supplier value="샘플디자인" />
+          </label>
+          <label class="field">
+            <span>담당자 / 연락처</span>
+            <input data-supplier-meta value="홍길동 · 02-1234-5678" />
+          </label>
+          <label class="field">
+            <span>고객명</span>
+            <input data-receiver value="고객사" required />
+          </label>
+          <label class="field">
+            <span>견적일</span>
+            <input data-date type="date" />
+          </label>
+          <label class="field">
+            <span>유효기간</span>
+            <input data-valid-until type="date" />
+          </label>
+          <label class="field">
+            <span>부가세</span>
+            <select data-vat-mode>
+              <option value="separate">별도</option>
+              <option value="included">포함</option>
+              <option value="none">없음</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>비고 / 조건</span>
+            <textarea data-note>본 견적의 유효기간은 발행일로부터 14일입니다.</textarea>
+          </label>
+        </div>
+
+        <div class="items-editor">
+          <div class="panel-title">
+            <h3>품목</h3>
+            <button class="btn" type="button" data-add-row>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              추가
+            </button>
+          </div>
+          <div data-rows>
+            <div class="item-row" data-row>
+              <label class="field">
+                <span>품목</span>
+                <input data-item-name value="디자인 작업" />
+              </label>
+              <label class="field">
+                <span>설명</span>
+                <input data-item-desc value="문서 및 이미지 제작" />
+              </label>
+              <label class="field compact">
+                <span>수량</span>
+                <input data-item-qty inputmode="decimal" value="1" />
+              </label>
+              <label class="field compact">
+                <span>단가</span>
+                <input data-item-price inputmode="numeric" value="150000" />
+              </label>
+              <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-print>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>
+            인쇄/PDF
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel" aria-label="견적서 미리보기">
+        <div class="doc-page" data-document-preview></div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>확인 사항</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>견적 전달용 문서이며 계약 체결을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>유효기간과 조건을 비고에 명확히 적어두세요.</span></li>
+          <li><span class="status-dot"></span><span>입력한 고객 정보는 서버로 보내지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>공급자와 고객명을 입력합니다.</li>
+        <li>품목, 수량, 단가, 유효기간, 조건을 입력합니다.</li>
+        <li>미리보기를 확인한 뒤 인쇄하거나 PDF로 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+  </main>
+  <script is:inline src="/scripts/document-tool.js"></script>
+</BaseLayout>
+
+<style>
+  .items-editor {
+    margin-top: 18px;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) 74px 96px 42px;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 8px;
+  }
+
+  .row-remove {
+    width: 42px;
+    padding-inline: 0;
+  }
+
+  .line-table {
+    margin-top: 22px;
+  }
+
+  .document-note {
+    border-top: 1px solid #cad6df;
+    color: #344457;
+    margin-top: 24px;
+    padding-top: 14px;
+    white-space: pre-wrap;
+  }
+
+  @media (max-width: 760px) {
+    .item-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

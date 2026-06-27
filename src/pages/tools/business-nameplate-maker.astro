@@ -1,0 +1,331 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getTool, tools } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, type FaqEntry } from "@/data/seo";
+
+const tool = getTool("business-nameplate");
+const faqs: FaqEntry[] = [
+  ["사업자 명판 이미지는 어디에 쓰나요?", "거래명세서, 견적서, 계약서, 안내문처럼 회사 정보를 반복해서 넣는 문서에 이미지로 삽입할 때 씁니다."],
+  ["법적 효력이 있나요?", "이 도구는 문서 삽입용 이미지를 만드는 용도입니다. 인감 증명이나 전자서명 인증을 대신하지 않습니다."],
+  ["입력한 정보가 서버에 저장되나요?", "v1 원칙은 브라우저 안에서 처리하는 것입니다. 입력값과 이미지 파일을 서버로 업로드하지 않습니다."],
+  ["배경을 투명하게 만들 수 있나요?", "네. 투명 배경 또는 흰색 배경을 선택할 수 있습니다."],
+  ["도장 이미지를 같이 넣을 수 있나요?", "PNG/JPG 도장 이미지를 선택하면 미리보기에 함께 배치할 수 있습니다."]
+];
+const structuredData = [
+  softwareApplicationSchema(tool, [
+    "사업자 정보 이미지 미리보기",
+    "도장 이미지 합성",
+    "투명 배경 PNG 저장",
+    "브라우저 안에서 파일 처리"
+  ]),
+  faqPageSchema(faqs)
+];
+---
+
+<BaseLayout
+  title={`${tool.title} - 회사 정보 이미지 생성`}
+  description={tool.description}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell">
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 로그인 없이 브라우저에서 미리보고 PNG로 내려받을 수 있습니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          tools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section
+      class="workspace"
+      data-nameplate-tool
+      data-tool-id={tool.id}
+      data-tool-title={tool.title}
+    >
+      <form class="panel" aria-label="사업자 명판 입력">
+        <div class="panel-title">
+          <h2>명판 정보</h2>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>상호</span>
+            <input data-field="company" value="샘플상사" required />
+          </label>
+          <label class="field">
+            <span>대표자</span>
+            <input data-field="owner" value="홍길동" />
+          </label>
+          <label class="field">
+            <span>사업자등록번호</span>
+            <input data-field="bizNo" value="123-45-67890" inputmode="numeric" />
+          </label>
+          <label class="field">
+            <span>주소</span>
+            <textarea data-field="address">서울특별시 중구 세종대로 110
+2층 201호</textarea>
+          </label>
+          <label class="field">
+            <span>업태 / 종목</span>
+            <input data-field="businessType" value="서비스업 / 디자인" />
+          </label>
+          <label class="field">
+            <span>연락처</span>
+            <input data-field="contact" value="02-1234-5678 · hello@example.com" />
+          </label>
+          <label class="field">
+            <span>도장 이미지</span>
+            <span class="file-control">
+              <input data-stamp type="file" accept="image/png,image/jpeg" />
+              <span data-file-label>도장 이미지 선택</span>
+            </span>
+          </label>
+          <label class="field">
+            <span>배경</span>
+            <select data-field="background">
+              <option value="transparent">투명</option>
+              <option value="white">흰색</option>
+            </select>
+          </label>
+        </div>
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="reset" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+            PNG 저장
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel" aria-label="사업자 명판 미리보기">
+        <div class="nameplate-canvas" data-preview></div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>입력값은 브라우저에서 미리보기로만 사용합니다.</span></li>
+          <li><span class="status-dot"></span><span>도장 이미지는 서버로 업로드하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>인감 증명이나 전자서명 인증을 대신하지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>상호, 대표자, 사업자등록번호, 주소를 입력합니다.</li>
+        <li>필요하면 도장 이미지를 선택하고 배경을 고릅니다.</li>
+        <li>미리보기를 확인한 뒤 PNG로 저장해 문서에 삽입합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  // @ts-nocheck
+  const root = document.querySelector("[data-nameplate-tool]");
+  const preview = root?.querySelector("[data-preview]");
+  let stampData = "";
+
+  function track(eventName, params = {}) {
+    window.kdocTrack?.(eventName, {
+      tool_id: root?.dataset.toolId || null,
+      tool_title: root?.dataset.toolTitle || null,
+      ...params
+    });
+  }
+
+  function value(name) {
+    return root?.querySelector(`[data-field="${name}"]`)?.value || "";
+  }
+
+  function lines(text) {
+    return String(text || "").split("\n").filter(Boolean);
+  }
+
+  function svgMarkup() {
+    const bg = value("background") === "white" ? "#ffffff" : "transparent";
+    const addressLines = lines(value("address"));
+    const stamp = stampData
+      ? `<image href="${stampData}" x="510" y="130" width="120" height="120" preserveAspectRatio="xMidYMid meet" opacity="0.88"/>`
+      : `<circle cx="570" cy="190" r="56" fill="none" stroke="#d73d32" stroke-width="6"/><text x="570" y="199" text-anchor="middle" font-size="22" font-weight="800" fill="#d73d32">직인</text>`;
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="680" height="320" viewBox="0 0 680 320">
+        <rect width="680" height="320" rx="12" fill="${bg}" stroke="#263644" stroke-width="3"/>
+        <rect x="24" y="24" width="632" height="272" rx="8" fill="${bg}" stroke="#b8c5cf"/>
+        <text x="52" y="76" font-size="34" font-weight="900" fill="#14212f">${escapeXml(value("company") || "상호")}</text>
+        <text x="54" y="116" font-size="18" font-weight="700" fill="#344457">대표자 ${escapeXml(value("owner") || "-")}</text>
+        <text x="54" y="150" font-size="18" fill="#344457">사업자등록번호 ${escapeXml(value("bizNo") || "-")}</text>
+        ${addressLines.map((line, index) => `<text x="54" y="${184 + index * 26}" font-size="17" fill="#344457">${escapeXml(line)}</text>`).join("")}
+        <text x="54" y="250" font-size="17" fill="#344457">${escapeXml(value("businessType") || "")}</text>
+        <text x="54" y="276" font-size="16" fill="#607080">${escapeXml(value("contact") || "")}</text>
+        ${stamp}
+      </svg>
+    `;
+  }
+
+  function escapeXml(text) {
+    return String(text)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  function update() {
+    if (preview) preview.innerHTML = svgMarkup();
+  }
+
+  root?.querySelectorAll("input, textarea, select").forEach((input) => {
+    input.addEventListener("input", update);
+    input.addEventListener("change", update);
+  });
+
+  root?.querySelector("[data-stamp]")?.addEventListener("change", (event) => {
+    const file = event.target.files?.[0];
+    const label = root?.querySelector("[data-file-label]");
+    if (!file) {
+      stampData = "";
+      if (label) label.textContent = "도장 이미지 선택";
+      update();
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      track("tool_validation_error", { reason: "stamp_file_too_large", file_size: file.size });
+      alert("도장 이미지는 4MB 이하만 사용할 수 있습니다.");
+      event.target.value = "";
+      if (label) label.textContent = "도장 이미지 선택";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      stampData = String(reader.result || "");
+      if (label) label.textContent = file.name;
+      track("tool_stamp_select", { file_type: file.type, file_size: file.size });
+      update();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  root?.querySelector("[data-sample]")?.addEventListener("click", () => {
+    root.querySelector('[data-field="company"]').value = "샘플상사";
+    root.querySelector('[data-field="owner"]').value = "홍길동";
+    root.querySelector('[data-field="bizNo"]').value = "123-45-67890";
+    root.querySelector('[data-field="address"]').value = "서울특별시 중구 세종대로 110\n2층 201호";
+    root.querySelector('[data-field="businessType"]').value = "서비스업 / 디자인";
+    root.querySelector('[data-field="contact"]').value = "02-1234-5678 · hello@example.com";
+    update();
+    track("tool_sample_apply");
+  });
+
+  root?.querySelector("[data-reset]")?.addEventListener("click", () => {
+    stampData = "";
+    setTimeout(() => {
+      update();
+      track("tool_reset");
+    }, 0);
+  });
+
+  root?.querySelector("[data-download]")?.addEventListener("click", () => {
+    const svg = svgMarkup();
+    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1360;
+      canvas.height = 640;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(2, 2);
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      const a = document.createElement("a");
+      a.download = "business-nameplate.png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      track("tool_download", {
+        file_format: "png",
+        background: value("background"),
+        has_stamp: Boolean(stampData)
+      });
+    };
+    img.src = url;
+  });
+
+  update();
+</script>
+
+<style>
+  .nameplate-canvas {
+    display: grid;
+    min-height: 560px;
+    place-items: center;
+    overflow: auto;
+    background:
+      linear-gradient(45deg, #eef3f6 25%, transparent 25%),
+      linear-gradient(-45deg, #eef3f6 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eef3f6 75%),
+      linear-gradient(-45deg, transparent 75%, #eef3f6 75%);
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-size: 20px 20px;
+    border-radius: 8px;
+    padding: 18px;
+  }
+
+  .nameplate-canvas svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+</style>
