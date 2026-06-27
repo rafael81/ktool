@@ -41,6 +41,7 @@ Tool pages also include:
 | `catalog_tool_click` | Tool catalog tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_workflow_quick_link_click` | Category page submission-prep quick-link click | `label`, `href` |
 | `category_workflow_click` | Category page workflow card click | `label`, `href` |
+| `category_prep_shortcut_click` | Category page problem-situation shortcut click | `label`, `href` |
 | `category_tool_quick_link_click` | Category page quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_tool_click` | Category page tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `related_tool_click` | Related tool card click | `tool_id`, `tool_title`, `label`, `href` |

@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getToolCategory, getToolsByCategory } from "@/data/tools";
 import { collectionPageSchema } from "@/data/seo";
+import { prepShortcuts } from "@/data/prepShortcuts";
 
 const category = getToolCategory("image");
 const imageTools = getToolsByCategory("image");
@@ -75,6 +76,31 @@ const structuredData = [
           <p>형식 오류, 방향 오류, 용량 초과, 픽셀 제한, 자르기 영역, PDF 제출 요구에 맞춰 이미지 도구를 순서대로 고릅니다.</p>
           <p class="trust-note">파일 도구는 브라우저 처리 원칙과 개인정보 최소 수집 기준을 유지합니다.</p>
         </a>
+      </div>
+    </section>
+
+    <section class="content-section" data-prep-shortcuts>
+      <div class="section-heading">
+        <h2>이미지 문제 바로가기</h2>
+        <p>업로드 오류 문구나 제출처 제한 조건에 맞는 이미지 도구 설정으로 바로 시작합니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          prepShortcuts.map((shortcut) => (
+            <a
+              class="tool-card"
+              href={shortcut.path}
+              data-analytics-event="category_prep_shortcut_click"
+              data-analytics-label={shortcut.label}
+            >
+              <span class="meta">
+                <span class="meta-tag">{shortcut.label}</span>
+              </span>
+              <strong>{shortcut.title}</strong>
+              <p>{shortcut.description}</p>
+            </a>
+          ))
+        }
       </div>
     </section>
 

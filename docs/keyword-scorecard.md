@@ -36,7 +36,7 @@ The fourth image wedge is HEIC JPG 변환 because iPhone HEIC compatibility is a
 The submission-prep hub is now added as a cross-tool workflow page because the image/PDF tool set is large enough to route users by upload error or submission condition instead of forcing them to pick a tool name first.
 The fifth image wedge is 이미지 자르기 because it completes the common submission-prep sequence after format, size, and compression: remove irrelevant margins or background before resizing or PDF bundling.
 The sixth image wedge is 이미지 회전 because sideways scan/photo orientation is a common low-friction blocker before crop, resize, and JPG PDF bundling.
-The current improvement loop connects 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, and HEIC JPG 변환 to JPG PDF 변환 more tightly, and now strengthens the homepage, tool catalog, and 제출용 파일 준비 hub for format-error, compression-limit, pixel-limit, crop-area, rotation-direction, and output-format routing because edited, compressed, resized, cropped, rotated, or compatibility-fixed image submissions need visible preset handoffs, not just generic related-tool links.
+The current improvement loop connects 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, and HEIC JPG 변환 to JPG PDF 변환 more tightly, and now strengthens the homepage, tool catalog, image/PDF category pages, and 제출용 파일 준비 hub for format-error, compression-limit, pixel-limit, crop-area, rotation-direction, and output-format routing because edited, compressed, resized, cropped, rotated, or compatibility-fixed image submissions need visible preset handoffs, not just generic related-tool links.
 
 ## Decision
 
