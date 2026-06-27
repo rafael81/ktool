@@ -36,7 +36,7 @@ The fourth image wedge is HEIC JPG 변환 because iPhone HEIC compatibility is a
 The submission-prep hub is now added as a cross-tool workflow page because the image/PDF tool set is large enough to route users by upload error or submission condition instead of forcing them to pick a tool name first.
 The fifth image wedge is 이미지 자르기 because it completes the common submission-prep sequence after format, size, and compression: remove irrelevant margins or background before resizing or PDF bundling.
 The sixth image wedge is 이미지 회전 because sideways scan/photo orientation is a common low-friction blocker before crop, resize, and JPG PDF bundling.
-The current improvement loop connects 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, and HEIC JPG 변환 to JPG PDF 변환 more tightly, and now strengthens the 제출용 파일 준비 hub for format-error, compression-limit, pixel-limit, and crop-area routing because edited, compressed, resized, cropped, or compatibility-fixed image submissions need a visible handoff, not just a generic related-tool link.
+The current improvement loop connects 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, and HEIC JPG 변환 to JPG PDF 변환 more tightly, and now strengthens the 제출용 파일 준비 hub for format-error, compression-limit, pixel-limit, crop-area, and rotation-direction routing because edited, compressed, resized, cropped, rotated, or compatibility-fixed image submissions need a visible handoff, not just a generic related-tool link.
 
 ## Decision
 
@@ -298,7 +298,7 @@ Acceptance gate:
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
 - 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped. 사진 용량 줄이기 now has 500KB/1MB/3MB submission presets and a post-compression JPG PDF next step because "용량 초과" users need an immediate target and a clear route to bundling multiple compressed images.
 - JPG PDF 변환: improved after the image-tool cluster with drag reorder, per-image removal, a preflight checklist, and source-aware image-tool arrival cues because page order, save-readiness, and post-edit handoff mistakes are direct submission-prep failure points.
-- 제출용 파일 준비: improved with a highlighted PDF submission path and error-message decision hints, because users with multiple images need a clearer route from cleanup tools to JPG PDF bundling.
+- 제출용 파일 준비: improved with a highlighted PDF submission path, error-message decision hints, and URL preset routing for compression limits, pixel limits, crop areas, and rotation direction, because users with multiple images need a clearer route from cleanup tools to JPG PDF bundling.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 

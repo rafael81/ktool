@@ -143,6 +143,8 @@ async function run() {
         assert(resizePresetRouteCount >= 3, `${route.path} should route image size limits to the 1200px resize preset`);
         const cropPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-cropper/?preset=document"]').count();
         assert(cropPresetRouteCount >= 3, `${route.path} should route margin/background issues to the document crop preset`);
+        const rotationPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-rotator/?preset=right"]').count();
+        assert(rotationPresetRouteCount >= 4, `${route.path} should route sideways images to the right-rotation preset`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
@@ -442,6 +444,16 @@ async function run() {
       }
 
       if (route.imageRotator) {
+        await page.goto(`${baseUrl}${route.path}?preset=left`, { waitUntil: "networkidle" });
+        const rotationPresetState = await page.evaluate(() => ({
+          angle: document.querySelector("[data-rotation-angle]")?.value,
+          note: document.querySelector("[data-rotation-preset-note]")?.textContent || ""
+        }));
+        assert(
+          rotationPresetState.angle === "-90" && rotationPresetState.note.includes("왼쪽"),
+          `${route.path} should accept a URL preset for left rotation`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".rotate-row").length === 2);
         await page.locator("[data-rotate]").click();

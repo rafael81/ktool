@@ -58,13 +58,14 @@ const structuredData = [
           </span>
         </label>
 
-        <label class="field">
+        <label class="field direction-field">
           <span>회전 방향</span>
           <select data-rotation-angle>
             <option value="90">오른쪽 90도</option>
             <option value="-90">왼쪽 90도</option>
             <option value="180">180도</option>
           </select>
+          <small data-rotation-preset-note>옆으로 누운 사진을 오른쪽으로 세웁니다.</small>
         </label>
 
         <div class="field-grid two-columns">
@@ -206,6 +207,7 @@ const structuredData = [
       const input = root.querySelector("[data-image-input]");
       const fileLabel = root.querySelector("[data-file-label]");
       const rotationAngle = root.querySelector("[data-rotation-angle]");
+      const rotationPresetNote = root.querySelector("[data-rotation-preset-note]");
       const outputFormat = root.querySelector("[data-output-format]");
       const qualityInput = root.querySelector("[data-quality]");
       const qualityLabel = root.querySelector("[data-quality-label]");
@@ -221,6 +223,25 @@ const structuredData = [
       const nextPdfMessage = root.querySelector("[data-next-pdf-message]");
       const nextPdfLink = root.querySelector("[data-next-pdf-link]");
       const formatter = new Intl.NumberFormat("ko-KR");
+      const rotationPresets = {
+        right: {
+          angle: "90",
+          note: "옆으로 누운 사진을 오른쪽으로 세웁니다."
+        },
+        left: {
+          angle: "-90",
+          note: "반대 방향으로 누운 사진을 왼쪽으로 세웁니다."
+        },
+        half: {
+          angle: "180",
+          note: "거꾸로 찍힌 스캔본이나 사진을 뒤집습니다."
+        }
+      };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(rotationPresets, requestedPreset)
+          ? requestedPreset
+          : null;
       let fileItems = [];
       let nextItemId = 1;
 
@@ -258,6 +279,19 @@ const structuredData = [
         rotateLabel.textContent = isBusy ? "처리 중" : "회전하기";
       }
 
+      function rotationPresetKey() {
+        if (rotationAngle.value === "-90") return "left";
+        if (rotationAngle.value === "180") return "half";
+        return "right";
+      }
+
+      function rotationPresetPayload() {
+        return {
+          preset: rotationPresetKey(),
+          rotation_angle: normalizedAngle()
+        };
+      }
+
       function rotationLabel() {
         if (rotationAngle.value === "-90") return "왼쪽 90도";
         if (rotationAngle.value === "180") return "180도";
@@ -290,6 +324,7 @@ const structuredData = [
       function updateControlState() {
         formatBadge.textContent = outputExtension().toUpperCase();
         qualityLabel.textContent = qualityInput.value;
+        rotationPresetNote.textContent = rotationPresets[rotationPresetKey()].note;
       }
 
       function renderFiles() {
@@ -408,7 +443,7 @@ const structuredData = [
             output_size: totalOutputSize(),
             output_format: outputFormat.value,
             quality: Number(qualityInput.value),
-            rotation_angle: normalizedAngle()
+            ...rotationPresetPayload()
           });
         } catch (error) {
           setMessage("이미지를 회전하지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
@@ -469,6 +504,10 @@ const structuredData = [
         });
       });
 
+      rotationAngle.addEventListener("change", () => {
+        track("image_rotate_preset_change", rotationPresetPayload());
+      });
+
       for (const control of [rotationAngle, outputFormat, qualityInput]) {
         control.addEventListener("input", () => {
           for (const item of fileItems) releaseResult(item);
@@ -511,7 +550,7 @@ const structuredData = [
           after_size: Number(link.dataset.afterSize || 0),
           output_width: Number(link.dataset.outputWidth || 0),
           output_height: Number(link.dataset.outputHeight || 0),
-          rotation_angle: normalizedAngle()
+          ...rotationPresetPayload()
         });
       });
 
@@ -520,7 +559,7 @@ const structuredData = [
           file_count: fileItems.filter((item) => item.result).length,
           output_size: totalOutputSize(),
           output_format: outputFormat.value,
-          rotation_angle: normalizedAngle(),
+          ...rotationPresetPayload(),
           target_tool_id: "jpg-to-pdf",
           href: "/tools/jpg-to-pdf-converter/?from=rotated-images"
         });
@@ -528,7 +567,14 @@ const structuredData = [
 
       window.addEventListener("pagehide", () => releaseItems());
 
+      if (initialPreset) rotationAngle.value = rotationPresets[initialPreset].angle;
       renderFiles();
+      if (initialPreset) {
+        track("image_rotate_preset_arrival", {
+          source: "submission-prep",
+          ...rotationPresetPayload()
+        });
+      }
     })();
   </script>
 </BaseLayout>
@@ -562,6 +608,12 @@ const structuredData = [
     font-size: 14px;
     font-weight: 800;
     padding: 11px 12px;
+  }
+
+  .direction-field small {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 
   .file-control input {

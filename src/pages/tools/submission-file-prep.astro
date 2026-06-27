@@ -48,7 +48,8 @@ const flowGroups = [
       {
         label: "누운 사진",
         detail: "스캔본이나 사진이 옆으로 누워 있으면 방향을 돌립니다.",
-        tool: getTool("image-rotator")
+        tool: getTool("image-rotator"),
+        href: `${getTool("image-rotator").path}?preset=right`
       },
       {
         label: "용량 초과",
@@ -126,7 +127,7 @@ const flowGroups = [
 const situations = [
   { label: "iPhone HEIC 사진이 안 열림", tool: getTool("heic-to-jpg") },
   { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter") },
-  { label: "사진 방향이 잘못됨", tool: getTool("image-rotator") },
+  { label: "사진 방향이 잘못됨", tool: getTool("image-rotator"), href: `${getTool("image-rotator").path}?preset=right` },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper"), href: `${getTool("image-cropper").path}?preset=document` },
   { label: "사진 크기 제한이 있음", tool: getTool("image-resizer"), href: `${getTool("image-resizer").path}?preset=long-1200` },
@@ -146,7 +147,8 @@ const pdfPathTools = [
     label: "2",
     title: "방향·여백",
     detail: "누운 사진은 돌리고, 주변 여백은 자릅니다.",
-    tool: getTool("image-rotator")
+    tool: getTool("image-rotator"),
+    href: `${getTool("image-rotator").path}?preset=right`
   },
   {
     label: "3",
@@ -186,7 +188,8 @@ const pdfDecisionHints = [
     signal: "사진이 옆으로 돌아감",
     recommendation: "회전 후 PDF",
     detail: "방향을 맞춘 뒤 PDF 페이지 순서를 확인합니다.",
-    tool: getTool("image-rotator")
+    tool: getTool("image-rotator"),
+    href: `${getTool("image-rotator").path}?preset=right`
   },
   {
     signal: "여백·배경이 많음",
