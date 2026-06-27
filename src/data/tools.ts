@@ -6,7 +6,8 @@ export type ToolId =
   | "invoice"
   | "vat-calculator"
   | "amount-korean"
-  | "withholding-tax";
+  | "withholding-tax"
+  | "stamp-background";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -44,7 +45,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "업무 문서",
     path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 한글 금액 변환, 3.3% 계산처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 한글 금액 변환, 3.3% 계산, 도장 배경 제거처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
@@ -96,7 +97,7 @@ export const tools: ToolInfo[] = [
       ["도장 이미지를 같이 넣을 수 있나요?", "PNG/JPG 도장 이미지를 선택하면 미리보기에 함께 배치할 수 있습니다."]
     ],
     trustNote: "문서 삽입용 이미지 생성 도구이며, 법적 효력이나 인감 증명을 대신하지 않습니다.",
-    relatedToolIds: ["transaction-statement", "estimate"]
+    relatedToolIds: ["stamp-background", "transaction-statement"]
   },
   {
     id: "transaction-statement",
@@ -367,6 +368,44 @@ export const tools: ToolInfo[] = [
     ],
     trustNote: "인적용역 사업소득 3.3% 기준의 간편 계산기입니다. 신고, 환급, 소득 구분 판단을 대신하지 않습니다.",
     relatedToolIds: ["invoice", "receipt"]
+  },
+  {
+    id: "stamp-background",
+    title: "도장 배경 제거",
+    shortTitle: "도장배경제거",
+    path: "/tools/stamp-background-remover/",
+    category: "business",
+    description:
+      "스캔하거나 촬영한 도장 이미지의 흰 배경을 제거해 문서에 넣기 좋은 투명 PNG로 저장합니다.",
+    pageTitle: "도장 배경 제거 - 스캔 도장 투명 PNG 만들기",
+    metaDescription:
+      "스캔하거나 촬영한 도장 이미지의 흰 배경을 브라우저에서 제거하고 투명 PNG로 저장하세요. 업로드한 이미지는 서버로 보내지 않습니다.",
+    primaryQuery: "도장 배경 제거",
+    secondaryQueries: ["도장 누끼 따기", "스캔 도장 투명하게", "도장 PNG 만들기", "도장 배경 투명"],
+    userMoment: "종이에 찍은 도장을 문서 명판, 견적서, 거래명세서에 투명 이미지로 넣어야 하는 순간",
+    featureList: [
+      "도장 이미지 흰 배경 제거",
+      "배경 제거 강도 조절",
+      "붉은 도장 선명화",
+      "투명 PNG 저장",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "어떤 이미지에 잘 맞나요?",
+        "흰 종이에 찍은 붉은 도장, 검은 서명, 스캔 도장처럼 배경이 밝고 도장 선이 뚜렷한 이미지에 잘 맞습니다."
+      ],
+      ["도장 이미지가 서버에 업로드되나요?", "아니요. 이미지는 브라우저 안의 캔버스에서 처리하고 서버로 보내지 않습니다."],
+      ["배경 제거 강도는 어떻게 조절하나요?", "배경 제거 강도를 높이면 더 많은 밝은 배경이 투명해지고, 낮추면 연한 도장 선을 더 보존합니다."],
+      ["결과 파일 형식은 무엇인가요?", "투명 배경을 지원하는 PNG 파일로 저장합니다."],
+      ["명판 만들기와 같이 쓸 수 있나요?", "네. 배경을 제거한 PNG를 사업자 명판 만들기의 도장 이미지로 선택하면 문서용 명판에 합성할 수 있습니다."],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 이미지 배경을 정리하는 보조 도구입니다. 인감 증명, 전자서명, 법적 인증을 대신하지 않습니다."
+      ]
+    ],
+    trustNote: "이미지 배경 정리 도구이며, 인감 증명이나 전자서명 인증을 대신하지 않습니다.",
+    relatedToolIds: ["business-nameplate", "invoice"]
   }
 ];
 

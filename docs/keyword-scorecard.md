@@ -128,8 +128,8 @@ Reference URLs checked:
 |---:|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---|---|
 | 1 | 사업자 명판 만들기 무료 | Business admin | invoice/contract에 넣을 사업자 정보 명판이 필요함 | 4 | iTool, Tistory guide, shopping/product pages, stamp vendors | 5 | 5 | 5 | 3 | 4 | 26 | **BUILD** | DataLab demand is moderate, but SERP weakness and Korean-specific workflow make it the strongest low-competition wedge. |
 | 2 | 명판 도장 합성 이미지 | Business admin | 사업자 명판과 직인을 한 이미지로 합성해야 함 | 3 | iTool, blogs, paid 제작 pages, stamp shops | 5 | 5 | 4 | 3 | 4 | 24 | MERGE | Fold into #1 as a secondary query and feature. |
-| 3 | 도장 누끼 따기 | Stamp/image | 종이에 찍은 도장을 투명 PNG로 만들고 싶음 | 3 | remove.bg, eformsign blog, YouTube/tutorial posts, iTool | 4 | 5 | 4 | 3 | 4 | 23 | SUPPORT | DataLab demand is lower than form generators; keep as supporting feature/follow-up, not standalone v1 page. |
-| 4 | 스캔 도장 투명하게 | Stamp/image | 스캔/촬영한 도장 배경을 제거해야 함 | 3 | tutorials, eformsign, remove.bg, generic image tools | 4 | 5 | 4 | 3 | 4 | 23 | SUPPORT | Same support tool as #3; useful for 명판/직인 workflow but not a top-3 page. |
+| 3 | 도장 누끼 따기 | Stamp/image | 종이에 찍은 도장을 투명 PNG로 만들고 싶음 | 3 | remove.bg, eformsign blog, YouTube/tutorial posts, iTool | 4 | 5 | 4 | 3 | 4 | 23 | **BUILD** | Built as a supporting browser-local stamp background remover connected to the nameplate workflow. |
+| 4 | 스캔 도장 투명하게 | Stamp/image | 스캔/촬영한 도장 배경을 제거해야 함 | 3 | tutorials, eformsign, remove.bg, generic image tools | 4 | 5 | 4 | 3 | 4 | 23 | MERGE | Merged into the stamp background remover page as a secondary query and use case. |
 | 5 | 거래명세서 자동작성 | Forms | 공급자/공급받는자/품목을 입력해 바로 출력해야 함 | 5 | Yesform, Adobe, blogs, tax office downloads, Canva | 3 | 5 | 5 | 4 | 3 | 25 | **BUILD** | High DataLab demand, clear Korean office workflow, and stronger product angle than static downloads. |
 | 6 | 거래명세서 양식 무료 | Forms | HWP/XLS/PDF 거래명세서 양식이 필요함 | 5 | Yesform, Adobe, Tistory, tax/accounting offices, Canva | 3 | 5 | 5 | 4 | 3 | 25 | MERGE | Use as SEO target and secondary query for #5. |
 | 7 | 견적서 자동작성 | Forms | 견적 내용을 입력해 PDF/출력물로 보내야 함 | 5 | Adobe, Canva, Bizforms, blogs, YouTube | 2 | 5 | 5 | 4 | 4 | 25 | **BUILD** | High DataLab demand and same generator architecture as 거래명세서, with manageable trust burden. |
@@ -258,7 +258,7 @@ Target query:
 Core behavior:
 
 - Input: JPG/PNG stamp photo.
-- Controls: threshold, crop, rotate, red-strength cleanup, preview on white/checker background.
+- Controls: background threshold, red-strength cleanup, red-focused mode, preview on white/checker background.
 - Output: transparent PNG.
 - Processing: browser-only; no network upload.
 
@@ -272,7 +272,7 @@ Acceptance gate:
 
 ## Deferred But Promising
 
-- 도장 누끼 따기: rising DataLab trend and strong workflow fit, but lower demand than 거래명세서/견적서. Build as support or follow-up.
+- 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
 - 사진 용량 줄이기 / 이미지 압축: broad demand, but only worth doing after the Korean business-doc wedge proves traffic.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.

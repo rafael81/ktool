@@ -18,7 +18,8 @@ const routes = [
   { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true, documentPreview: true },
   { path: "/tools/vat-calculator/", h1: "부가세 계산기", faq: true },
   { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true },
-  { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true }
+  { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true },
+  { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true }
 ];
 
 function assert(condition, message) {
@@ -93,6 +94,25 @@ async function run() {
       if (route.documentPreview) {
         const previewText = await page.locator("[data-document-preview]").textContent();
         assert(previewText?.includes("합계 한글"), `${route.path} should render Korean total amount in preview`);
+      }
+
+      if (route.stampTool) {
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          const button = document.querySelector("[data-download]");
+          return button && !button.disabled;
+        });
+        const hasTransparentPixels = await page.evaluate(() => {
+          const canvas = document.querySelector("[data-result-canvas]");
+          const ctx = canvas?.getContext("2d", { willReadFrequently: true });
+          if (!canvas || !ctx) return false;
+          const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+          for (let index = 3; index < data.length; index += 4) {
+            if (data[index] === 0) return true;
+          }
+          return false;
+        });
+        assert(hasTransparentPixels, `${route.path} should create transparent PNG pixels from the sample image`);
       }
 
       await page.close();

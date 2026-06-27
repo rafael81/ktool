@@ -61,6 +61,12 @@ Tool pages also include:
 | `withholding_calculator_reset` | 3.3% calculator is reset | `calculator_mode` |
 | `withholding_calculator_copy` | 3.3% calculator result is copied | `calculator_mode` |
 | `withholding_calculator_copy_error` | 3.3% calculator result copy fails | `calculator_mode` |
+| `stamp_background_file_select` | Stamp background remover image file is selected | `file_type`, `file_size` |
+| `stamp_background_sample_apply` | Stamp background remover sample image is applied | none |
+| `stamp_background_adjust` | Stamp background remover controls change | `control`, optional `enabled` |
+| `stamp_background_download` | Transparent stamp PNG is downloaded | `threshold`, `red_only` |
+| `stamp_background_reset` | Stamp background remover is reset | none |
+| `stamp_background_validation_error` | Stamp background remover blocks invalid input | `reason`, optional `file_size` |
 
 ## Provider hook example
 
