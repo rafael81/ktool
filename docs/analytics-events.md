@@ -80,8 +80,30 @@ Tool pages also include:
 | `image_compressor_download` | Photo size reducer download link is clicked | `output_format`, `before_size`, `after_size` |
 | `image_compressor_reset` | Photo size reducer is reset | none |
 | `image_compressor_validation_error` | Photo size reducer blocks invalid input or compression failure | `reason`, optional `file_count`, optional `total_size` |
+| `image_resize_file_select` | Image resizer images are selected | `file_count`, `total_size`, `file_types` |
+| `image_resize_sample_apply` | Image resizer sample images are applied | `file_count` |
+| `image_resize_resize` | Image resizer creates resized image blobs | `file_count`, `total_size`, `output_size`, `resize_mode`, `output_format`, `quality`, `keep_aspect`, `file_types` |
+| `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
+| `image_resize_reset` | Image resizer is reset | none |
+| `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
 
 Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
+
+## File tool funnel
+
+Browser-local file tools should follow this event shape:
+
+```text
+file_select or sample_apply
+  -> generate/compress/resize success
+  -> download
+
+validation_error
+  -> user corrects input
+  -> generate/compress/resize success
+```
+
+File tool payloads may include only aggregate file counts, total bytes, MIME buckets, output settings, and output sizes. They must not include filenames, image bytes, OCR text, document content, addresses, or business identifiers.
 
 ## Provider hook example
 

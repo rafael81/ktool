@@ -9,7 +9,8 @@ export type ToolId =
   | "withholding-tax"
   | "stamp-background"
   | "jpg-to-pdf"
-  | "image-compressor";
+  | "image-compressor"
+  | "image-resizer";
 
 export type ToolCategoryId = "business" | "pdf" | "image";
 
@@ -456,7 +457,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-compressor", "stamp-background"]
+    relatedToolIds: ["image-compressor", "image-resizer"]
   },
   {
     id: "image-compressor",
@@ -494,7 +495,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["jpg-to-pdf", "stamp-background"]
+    relatedToolIds: ["image-resizer", "jpg-to-pdf"]
+  },
+  {
+    id: "image-resizer",
+    title: "이미지 리사이즈",
+    shortTitle: "리사이즈",
+    path: "/tools/image-resizer/",
+    category: "image",
+    description:
+      "JPG, PNG, WebP 이미지를 브라우저에서 원하는 가로·세로 또는 긴 변 크기로 줄입니다.",
+    pageTitle: "이미지 리사이즈 - 사진 크기 줄이기 무료",
+    metaDescription:
+      "이미지 리사이즈를 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 긴 변 기준 또는 직접 크기로 줄여 저장합니다.",
+    primaryQuery: "이미지 리사이즈",
+    secondaryQueries: ["사진 크기 줄이기", "이미지 크기 줄이기", "JPG 사이즈 줄이기", "사진 해상도 줄이기"],
+    userMoment: "사진이 제출처의 픽셀 크기 제한보다 크거나 문서 삽입용 이미지 크기를 맞춰야 할 때",
+    featureList: [
+      "여러 이미지 일괄 리사이즈",
+      "긴 변 기준 크기 조절",
+      "가로·세로 직접 지정",
+      "JPG/PNG/WebP 출력 선택",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["긴 변 기준 리사이즈가 뭔가요?", "가로와 세로 중 더 긴 쪽을 지정한 픽셀에 맞추고 원본 비율을 유지하는 방식입니다."],
+      ["가로 세로를 직접 지정할 수 있나요?", "네. 직접 크기 모드에서 가로와 세로 픽셀을 입력하면 해당 크기로 저장합니다."],
+      ["여러 장을 한 번에 바꿀 수 있나요?", "네. 최대 20장, 총 50MB까지 선택해 한 번에 리사이즈할 수 있습니다."],
+      ["출력 형식은 무엇을 지원하나요?", "JPG, PNG, WebP로 저장할 수 있습니다. 제출 호환성이 중요하면 JPG를 추천합니다."],
+      [
+        "원본 파일이 바뀌나요?",
+        "아니요. 원본 파일은 그대로 두고 리사이즈된 새 이미지 파일을 저장합니다."
+      ]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-compressor", "jpg-to-pdf"]
   }
 ];
 

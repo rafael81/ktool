@@ -63,6 +63,8 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `jpg_pdf_download`
 - `image_compressor_compress`
 - `image_compressor_download`
+- `image_resize_resize`
+- `image_resize_download`
 
 Do not send raw document text, business numbers, filenames, addresses, customer names, or uploaded file data.
 
@@ -110,10 +112,12 @@ Completed:
 10. Add the first browser-local PDF tool: `JPG PDF 변환`.
 11. Add image order adjustment to `JPG PDF 변환`.
 12. Add the first browser-local image tool: `사진 용량 줄이기`.
+13. Extract shared browser-local file helper logic for image/PDF tools.
+14. Add the next image submission tool: `이미지 리사이즈`.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, and `/tools/photo-size-reducer/`, plus any previously unrequested business tool pages.
-2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF generate/download events, and image compressor compress/download events across the tool set.
-3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, or 사진 용량 줄이기 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
-4. If JPG PDF 변환 or 사진 용량 줄이기 gets generation/compression events but weak downloads, compare reorder usage, file list feedback, output status, and download affordance before adding more file tools.
+1. Request indexing/collection for `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, plus any previously unrequested business tool pages.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF generate/download events, image compressor compress/download events, and image resize/download events across the tool set.
+3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, or 이미지 리사이즈 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
+4. If JPG PDF 변환, 사진 용량 줄이기, or 이미지 리사이즈 gets generation/compression/resize events but weak downloads, compare file list feedback, output status, and download affordance before adding more file tools.

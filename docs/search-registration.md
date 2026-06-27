@@ -40,6 +40,7 @@ After verification:
    - `https://k-document-tool.pages.dev/tools/stamp-background-remover/`
    - `https://k-document-tool.pages.dev/tools/jpg-to-pdf-converter/`
    - `https://k-document-tool.pages.dev/tools/photo-size-reducer/`
+   - `https://k-document-tool.pages.dev/tools/image-resizer/`
 
 The PDF and image categories are now indexable because each has a live browser-local tool.
 
@@ -55,7 +56,7 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same sixteen indexable URLs listed above.
+2. Request collection for the same seventeen indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
 
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
