@@ -77,22 +77,26 @@ const submissionPrep = {
         <h2>흐름별 패키지</h2>
         <p>처음 온 사용자는 도구 이름보다 제출 상황을 먼저 고르는 편이 빠릅니다.</p>
       </div>
-      <div class="tool-grid">
+      <div class="workflow-list">
         {
           workflowPackages.map((workflowPackage) => (
             <a
-              class="tool-card"
+              class="workflow-row"
               href={workflowPackage.path}
               data-analytics-event="package_nav_click"
               data-analytics-package-id={workflowPackage.id}
               data-analytics-label={workflowPackage.title}
             >
-              <span class="meta">
-                <span class="meta-tag">{workflowPackage.eyebrow}</span>
+              <span class="workflow-row-kicker">{workflowPackage.eyebrow}</span>
+              <span class="workflow-row-copy">
+                <strong>{workflowPackage.title}</strong>
+                <span>{workflowPackage.description}</span>
               </span>
-              <strong>{workflowPackage.title}</strong>
-              <p>{workflowPackage.description}</p>
-              <p class="trust-note">{workflowPackage.trustNote}</p>
+              <span class="workflow-row-meta">
+                {workflowPackage.secondaryQueries.slice(0, 3).map((query) => (
+                  <span>{query}</span>
+                ))}
+              </span>
             </a>
           ))
         }

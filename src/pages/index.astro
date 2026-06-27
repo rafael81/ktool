@@ -64,22 +64,26 @@ const featuredTools = featuredToolIds
         <h2>제출 흐름 먼저 선택</h2>
         <p>도구 이름을 몰라도 지금 막힌 상황에 맞춰 순서와 바로가기를 제공합니다.</p>
       </div>
-      <div class="tool-grid">
+      <div class="workflow-list">
         {
           workflowPackages.map((workflowPackage) => (
             <a
-              class="tool-card"
+              class="workflow-row"
               href={workflowPackage.path}
               data-analytics-event="package_nav_click"
               data-analytics-package-id={workflowPackage.id}
               data-analytics-label={workflowPackage.title}
             >
-              <span class="meta">
-                <span class="meta-tag">{workflowPackage.eyebrow}</span>
+              <span class="workflow-row-kicker">{workflowPackage.eyebrow}</span>
+              <span class="workflow-row-copy">
+                <strong>{workflowPackage.title}</strong>
+                <span>{workflowPackage.description}</span>
               </span>
-              <strong>{workflowPackage.title}</strong>
-              <p>{workflowPackage.description}</p>
-              <p class="trust-note">{workflowPackage.trustNote}</p>
+              <span class="workflow-row-meta">
+                {workflowPackage.secondaryQueries.slice(0, 3).map((query) => (
+                  <span>{query}</span>
+                ))}
+              </span>
             </a>
           ))
         }
@@ -120,23 +124,22 @@ const featuredTools = featuredToolIds
         <h2>대표 도구</h2>
         <p>가장 자주 쓰는 문서 작성, 이미지 정리, PDF 변환 도구만 먼저 보여줍니다.</p>
       </div>
-      <div class="tool-grid">
+      <div class="featured-tool-list">
         {
           featuredTools.map((tool) => (
             <a
-              class="tool-card"
+              class="featured-tool-row"
               href={tool.path}
               data-analytics-event="home_tool_click"
               data-analytics-tool-id={tool.id}
               data-analytics-tool-title={tool.title}
               data-analytics-label={tool.title}
             >
-              <span class="meta">
-                <span class="meta-tag">{tool.primaryQuery}</span>
+              <span>
+                <strong>{tool.title}</strong>
+                <span>{tool.description}</span>
               </span>
-              <strong>{tool.title}</strong>
-              <p>{tool.description}</p>
-              <p class="trust-note">{tool.trustNote}</p>
+              <span class="featured-tool-query">{tool.primaryQuery}</span>
             </a>
           ))
         }
