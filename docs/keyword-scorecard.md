@@ -24,12 +24,14 @@ Implemented and deployed:
 - 이미지 리사이즈
 - WebP JPG 변환
 - HEIC JPG 변환
+- 제출용 파일 준비
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
 The second image wedge is 이미지 리사이즈 because it strengthens the same submission-prep path without requiring server upload or heavy dependencies.
 The third image wedge is WebP JPG 변환 because it reuses the same browser-local file path and solves a concrete format-compatibility problem before document upload.
 The fourth image wedge is HEIC JPG 변환 because iPhone HEIC compatibility is a concrete submission blocker and the decoder can be lazy-loaded only when users convert.
+The submission-prep hub is now added as a cross-tool workflow page because the image/PDF tool set is large enough to route users by upload error or submission condition instead of forcing them to pick a tool name first.
 
 ## Decision
 
@@ -185,6 +187,7 @@ Reference URLs checked:
 | 45 | 맞춤법 검사기 | Utility/text | 한국어 문서 맞춤법을 검사해야 함 | 5 | Naver/Pusan tools, job portals, AI tools | 1 | 4 | 2 | 4 | 4 | 20 | DEFER | Huge demand, but NLP quality burden and dominant incumbents make it a bad v1 target. |
 | 46 | 금액 한글 변환기 | Business utility | 계약서/청구서/견적서에 숫자 금액과 한글 금액을 함께 넣어야 함 | 3 | blogs, calculators, spreadsheet snippets | 4 | 5 | 5 | 2 | 4 | 23 | EXPLORE | Lower confidence than DataLab-backed form terms, but strong adjacency to document generators and low implementation risk. |
 | 47 | JPG PDF 변환 | PDF/image | 스캔 사진과 증빙 이미지를 한 PDF로 묶어 제출해야 함 | 4 | iLovePDF, Adobe, Smallpdf, PDF24, image converters | 2 | 4 | 4 | 4 | 5 | 23 | **BUILD** | Narrower than generic PDF tools, browser-local, and tied to Korean document submission workflows. |
+| 48 | 제출용 파일 준비 | Workflow hub | 제출처 오류 문구에 맞춰 사진, PDF, 문서 도구를 골라야 함 | 3 | blogs, generic PDF/image tool lists, competitor category pages | 4 | 5 | 5 | 3 | 5 | 25 | **BUILD** | Built as a cross-tool routing page after the image/PDF cluster reached enough breadth to support workflow-led discovery. |
 
 ## First Sprint Spec Seeds
 

@@ -9,6 +9,7 @@ const productionUrl = "https://k-document-tool.pages.dev";
 const routes = [
   { path: "/", h1: "K문서툴로 문서 제출 직전을 가볍게" },
   { path: "/tools/", h1: "전체 도구" },
+  { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/categories/image/", h1: "이미지 도구" },
@@ -92,9 +93,26 @@ async function run() {
 
       if (route.faq) {
         const jsonLdCount = await page.locator('script[type="application/ld+json"]').count();
-        assert(jsonLdCount >= 2, `${route.path} should include SoftwareApplication and FAQ JSON-LD`);
+        assert(jsonLdCount >= 2, `${route.path} should include page structured data and FAQ JSON-LD`);
         const detailsCount = await page.locator("details").count();
         assert(detailsCount >= 5, `${route.path} should render visible FAQ entries`);
+      }
+
+      if (route.submissionPrep) {
+        const situationCount = await page.locator(".situation-link").count();
+        assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
+        const expectedLinks = [
+          "/tools/heic-jpg-converter/",
+          "/tools/photo-size-reducer/",
+          "/tools/image-resizer/",
+          "/tools/jpg-to-pdf-converter/",
+          "/tools/transaction-statement-generator/",
+          "/tools/business-nameplate-maker/"
+        ];
+        for (const href of expectedLinks) {
+          const count = await page.locator(`[data-submission-prep] a[href="${href}"]`).count();
+          assert(count >= 1, `${route.path} should link to ${href}`);
+        }
       }
 
       if (route.documentPreview) {

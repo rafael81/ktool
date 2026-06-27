@@ -26,18 +26,29 @@ Tool pages also include:
 | `tool_start` | First input/change inside a tool | `tool_id`, `tool_title` |
 | `tool_nav_click` | Header tool nav click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_nav_click` | Header catalog link click | `label`, `href` |
+| `workflow_nav_click` | Header submission-prep workflow link click | `label`, `href` |
 | `category_nav_click` | Header category link click | `label`, `href` |
 | `catalog_quick_link_click` | Home catalog quick-link click | `label`, `href` |
+| `home_workflow_quick_link_click` | Home submission-prep quick-link click | `label`, `href` |
+| `home_workflow_click` | Home workflow card click | `label`, `href` |
 | `category_quick_link_click` | Home category quick-link click | `label`, `href` |
 | `home_category_click` | Home category card click | `label`, `href` |
+| `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
+| `catalog_workflow_click` | Tool catalog workflow card click | `label`, `href` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
 | `catalog_tool_click` | Tool catalog tool card click | `tool_id`, `tool_title`, `label`, `href` |
+| `category_workflow_quick_link_click` | Category page submission-prep quick-link click | `label`, `href` |
+| `category_workflow_click` | Category page workflow card click | `label`, `href` |
 | `category_tool_quick_link_click` | Category page quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_tool_click` | Category page tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `related_tool_click` | Related tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `planned_category_related_click` | Planned category related tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `tool_quick_link_click` | Tool quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `home_tool_click` | Home tool card click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_quick_tool_click` | Submission-prep page quick tool link click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_situation_click` | Submission-prep situation card click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_flow_tool_click` | Submission-prep flow step tool click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_tool_click` | Submission-prep tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `tool_sample_apply` | Sample data is applied | `tool_id`, `tool_title` |
 | `tool_reset` | Tool form is reset | `tool_id`, `tool_title` |
 | `tool_stamp_select` | Nameplate stamp image is selected | `file_type`, `file_size` |

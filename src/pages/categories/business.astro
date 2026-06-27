@@ -5,6 +5,7 @@ import { collectionPageSchema } from "@/data/seo";
 
 const category = getToolCategory("business");
 const businessTools = getToolsByCategory("business");
+const submissionPrepPath = "/tools/submission-file-prep/";
 const structuredData = [
   collectionPageSchema({
     name: category.title,
@@ -28,6 +29,13 @@ const structuredData = [
         <p>{category.description}</p>
       </div>
       <div class="quick-links" aria-label="업무 문서 도구 바로가기">
+        <a
+          href={submissionPrepPath}
+          data-analytics-event="category_workflow_quick_link_click"
+          data-analytics-label="제출용 파일 준비"
+        >
+          제출 준비
+        </a>
         {
           businessTools.map((tool) => (
             <a
@@ -41,6 +49,28 @@ const structuredData = [
             </a>
           ))
         }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>문서 제출 흐름</h2>
+        <p>작성한 문서에 도장·명판 이미지를 넣거나, 증빙 사진을 PDF로 묶어 함께 제출할 수 있습니다.</p>
+      </div>
+      <div class="tool-grid single-card-grid">
+        <a
+          class="tool-card"
+          href={submissionPrepPath}
+          data-analytics-event="category_workflow_click"
+          data-analytics-label="제출용 파일 준비"
+        >
+          <span class="meta">
+            <span class="meta-tag">제출용 파일 만들기</span>
+          </span>
+          <strong>제출용 파일 준비</strong>
+          <p>거래 문서, 도장·명판 이미지, 증빙 사진, PDF 묶기를 제출 전 흐름으로 정리합니다.</p>
+          <p class="trust-note">업무 문서와 파일 도구를 상황별로 연결하되 법적·세무 효력을 대신하지 않습니다.</p>
+        </a>
       </div>
     </section>
 

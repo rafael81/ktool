@@ -1,0 +1,470 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getTool } from "@/data/tools";
+import { collectionPageSchema, faqPageSchema } from "@/data/seo";
+
+const pagePath = "/tools/submission-file-prep/";
+const pageTitle = "제출용 파일 준비 - 사진 PDF 문서 제출 도구 모음";
+const pageDescription =
+  "사진 용량 줄이기, HEIC JPG 변환, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
+
+const primaryTools = [
+  getTool("heic-to-jpg"),
+  getTool("image-converter"),
+  getTool("image-resizer"),
+  getTool("image-compressor"),
+  getTool("jpg-to-pdf")
+];
+
+const documentTools = [
+  getTool("transaction-statement"),
+  getTool("estimate"),
+  getTool("invoice"),
+  getTool("receipt"),
+  getTool("vat-calculator"),
+  getTool("amount-korean"),
+  getTool("withholding-tax")
+];
+
+const stampTools = [getTool("stamp-background"), getTool("business-nameplate")];
+
+const flowGroups = [
+  {
+    title: "사진이나 스캔본을 제출할 때",
+    description: "iPhone 사진, 스캔 이미지, 증빙 사진을 업로드 가능한 형식과 용량으로 맞춥니다.",
+    steps: [
+      {
+        label: "HEIC 사진",
+        detail: "iPhone HEIC가 열리지 않으면 먼저 JPG로 바꿉니다.",
+        tool: getTool("heic-to-jpg")
+      },
+      {
+        label: "용량 초과",
+        detail: "업로드 제한보다 큰 사진은 용량을 줄입니다.",
+        tool: getTool("image-compressor")
+      },
+      {
+        label: "픽셀 제한",
+        detail: "가로·세로 또는 긴 변 기준이 있으면 크기를 맞춥니다.",
+        tool: getTool("image-resizer")
+      },
+      {
+        label: "PDF 한 개",
+        detail: "여러 장의 이미지가 필요하면 한 PDF로 묶습니다.",
+        tool: getTool("jpg-to-pdf")
+      }
+    ]
+  },
+  {
+    title: "거래 문서를 바로 만들어야 할 때",
+    description: "거래처에 보낼 기본 문서와 금액 계산을 브라우저에서 작성합니다.",
+    steps: [
+      {
+        label: "거래 내역",
+        detail: "품목과 단가를 넣어 거래명세서를 만듭니다.",
+        tool: getTool("transaction-statement")
+      },
+      {
+        label: "견적 전달",
+        detail: "거래 전 금액과 조건은 견적서로 정리합니다.",
+        tool: getTool("estimate")
+      },
+      {
+        label: "입금 요청",
+        detail: "완료된 작업의 청구 금액과 입금기한을 적습니다.",
+        tool: getTool("invoice")
+      },
+      {
+        label: "금액 확인",
+        detail: "부가세, 한글 금액, 3.3% 원천징수를 빠르게 맞춥니다.",
+        tool: getTool("vat-calculator")
+      }
+    ]
+  },
+  {
+    title: "문서에 회사 정보나 도장을 넣을 때",
+    description: "스캔 도장과 사업자 정보를 문서에 삽입하기 좋은 이미지로 정리합니다.",
+    steps: [
+      {
+        label: "도장 배경",
+        detail: "종이에 찍은 도장의 흰 배경을 투명하게 정리합니다.",
+        tool: getTool("stamp-background")
+      },
+      {
+        label: "사업자 명판",
+        detail: "상호, 대표자, 사업자등록번호, 주소를 이미지로 만듭니다.",
+        tool: getTool("business-nameplate")
+      },
+      {
+        label: "이미지 형식",
+        detail: "문서 편집기가 WebP를 받지 않으면 JPG나 PNG로 바꿉니다.",
+        tool: getTool("image-converter")
+      }
+    ]
+  }
+];
+
+const situations = [
+  { label: "파일 형식이 맞지 않음", tool: getTool("heic-to-jpg") },
+  { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
+  { label: "사진 크기 제한이 있음", tool: getTool("image-resizer") },
+  { label: "이미지 여러 장을 PDF로 제출", tool: getTool("jpg-to-pdf") },
+  { label: "거래처 문서가 필요함", tool: getTool("transaction-statement") },
+  { label: "도장·명판 이미지를 넣어야 함", tool: getTool("business-nameplate") }
+];
+
+const faqs = [
+  [
+    "제출용 파일은 어떤 순서로 준비하면 되나요?",
+    "제출처가 요구하는 파일 형식, 용량, 픽셀 크기, PDF 여부를 먼저 확인한 뒤 형식 변환, 리사이즈, 용량 줄이기, PDF 묶기 순서로 처리하면 재작업을 줄일 수 있습니다."
+  ],
+  [
+    "iPhone HEIC 사진은 바로 PDF로 묶어도 되나요?",
+    "제출 호환성을 우선하면 HEIC를 JPG로 먼저 바꾼 뒤 필요하면 용량이나 크기를 줄이고 JPG PDF 변환으로 묶는 편이 안정적입니다."
+  ],
+  [
+    "파일이 서버에 업로드되나요?",
+    "K문서툴의 이미지와 PDF 파일 도구는 브라우저 안에서 처리하는 원칙으로 만들었습니다. 원본 파일과 파일명은 분석 이벤트로 보내지 않습니다."
+  ],
+  [
+    "거래명세서나 청구서를 공식 세금 문서로 써도 되나요?",
+    "아니요. K문서툴의 업무 문서 도구는 일반 문서 작성 보조용입니다. 세금계산서, 현금영수증, 전자서명, 법적 인증을 대신하지 않습니다."
+  ],
+  [
+    "어떤 도구부터 써야 할지 모르겠어요.",
+    "업로드 오류 문구를 기준으로 고르면 쉽습니다. 형식 오류는 변환, 용량 오류는 사진 용량 줄이기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
+  ]
+] satisfies [string, string][];
+
+const structuredData = [
+  collectionPageSchema({
+    name: "제출용 파일 준비",
+    description: pageDescription,
+    path: pagePath,
+    tools: [...primaryTools, ...documentTools, ...stampTools]
+  }),
+  faqPageSchema(faqs)
+];
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath={pagePath}
+  structuredData={structuredData}
+>
+  <main class="page-shell" data-submission-prep>
+    <section class="tool-intro">
+      <div>
+        <h1>제출용 파일 준비</h1>
+        <p>
+          관공서, 학교, 회사, 거래처에 파일을 올리기 직전 필요한 형식 변환, 용량 줄이기,
+          이미지 크기 조정, PDF 묶기, 업무 문서 작성을 한 흐름으로 고릅니다.
+        </p>
+      </div>
+      <div class="quick-links" aria-label="제출용 파일 준비 바로가기">
+        {primaryTools.map((tool) => (
+          <a
+            href={tool.path}
+            data-analytics-event="prep_quick_tool_click"
+            data-analytics-tool-id={tool.id}
+            data-analytics-tool-title={tool.title}
+            data-analytics-label={tool.shortTitle}
+          >
+            {tool.shortTitle}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="prep-overview" aria-label="제출 상황별 바로가기">
+      {situations.map((item) => (
+        <a
+          class="situation-link"
+          href={item.tool.path}
+          data-analytics-event="prep_situation_click"
+          data-analytics-tool-id={item.tool.id}
+          data-analytics-tool-title={item.tool.title}
+          data-analytics-label={item.label}
+        >
+          <span>{item.label}</span>
+          <strong>{item.tool.shortTitle}</strong>
+        </a>
+      ))}
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>제출 흐름</h2>
+        <p>업로드 오류나 제출처 안내 문구에 맞춰 필요한 도구만 순서대로 사용합니다.</p>
+      </div>
+      <div class="flow-grid">
+        {flowGroups.map((group) => (
+          <section class="flow-panel">
+            <div class="flow-heading">
+              <h3>{group.title}</h3>
+              <p>{group.description}</p>
+            </div>
+            <ol class="flow-steps">
+              {group.steps.map((step) => (
+                <li>
+                  <div>
+                    <span>{step.label}</span>
+                    <p>{step.detail}</p>
+                  </div>
+                  <a
+                    href={step.tool.path}
+                    data-analytics-event="prep_flow_tool_click"
+                    data-analytics-tool-id={step.tool.id}
+                    data-analytics-tool-title={step.tool.title}
+                    data-analytics-label={`${group.title} - ${step.label}`}
+                  >
+                    {step.tool.shortTitle}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>파일 제출 도구</h2>
+        <p>사진, 스캔본, 증빙 이미지를 제출 가능한 형식과 크기로 맞춥니다.</p>
+      </div>
+      <div class="tool-grid">
+        {primaryTools.map((tool) => (
+          <a
+            class="tool-card"
+            href={tool.path}
+            data-analytics-event="prep_tool_click"
+            data-analytics-tool-id={tool.id}
+            data-analytics-tool-title={tool.title}
+            data-analytics-label={tool.title}
+          >
+            <span class="meta"><span class="meta-tag">{tool.primaryQuery}</span></span>
+            <strong>{tool.title}</strong>
+            <p>{tool.userMoment}</p>
+            <p class="trust-note">{tool.trustNote}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>업무 문서 도구</h2>
+        <p>거래처에 전달할 문서와 금액 표기를 작성합니다.</p>
+      </div>
+      <div class="compact-tool-grid">
+        {documentTools.map((tool) => (
+          <a
+            class="compact-tool"
+            href={tool.path}
+            data-analytics-event="prep_tool_click"
+            data-analytics-tool-id={tool.id}
+            data-analytics-tool-title={tool.title}
+            data-analytics-label={tool.title}
+          >
+            <strong>{tool.title}</strong>
+            <span>{tool.primaryQuery}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>FAQ</h2>
+        <p>제출 전 파일을 다룰 때 자주 막히는 부분입니다.</p>
+      </div>
+      <div class="faq-list">
+        {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .prep-overview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 24px;
+  }
+
+  .situation-link {
+    display: flex;
+    min-height: 82px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .situation-link span {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  .situation-link strong {
+    flex: 0 0 auto;
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    padding: 7px 9px;
+  }
+
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .flow-panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .flow-heading h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  .flow-heading p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .flow-steps {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: flow-step;
+  }
+
+  .flow-steps li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    counter-increment: flow-step;
+  }
+
+  .flow-steps li div {
+    min-width: 0;
+  }
+
+  .flow-steps span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .flow-steps span::before {
+    content: counter(flow-step);
+    display: inline-grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+  }
+
+  .flow-steps p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .flow-steps a {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 9px 10px;
+    white-space: nowrap;
+  }
+
+  .compact-tool-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .compact-tool {
+    display: grid;
+    min-height: 92px;
+    align-content: center;
+    gap: 7px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .compact-tool strong {
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .compact-tool span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1040px) {
+    .prep-overview,
+    .flow-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .compact-tool-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .situation-link,
+    .flow-steps li {
+      align-items: start;
+      grid-template-columns: 1fr;
+    }
+
+    .compact-tool-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

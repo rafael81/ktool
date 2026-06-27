@@ -4,11 +4,40 @@ import { toolCategories, tools } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
+const submissionPrep = {
+  title: "제출용 파일 준비",
+  path: "/tools/submission-file-prep/",
+  description:
+    "사진, 스캔본, 업무 문서를 제출처 조건에 맞게 형식 변환, 용량 줄이기, PDF 묶기 순서로 정리합니다."
+};
+const workflowCards = [
+  {
+    title: submissionPrep.title,
+    path: submissionPrep.path,
+    tag: "제출용 파일 만들기",
+    description: submissionPrep.description,
+    trustNote: "파일 도구는 브라우저 처리 원칙을 유지하고, 상황별로 필요한 도구만 연결합니다."
+  },
+  {
+    title: "이미지 제출 준비",
+    path: "/categories/image/",
+    tag: "사진 용량 줄이기",
+    description: "HEIC, WebP, JPG, PNG 사진을 제출 가능한 크기와 형식으로 정리합니다.",
+    trustNote: "이미지 파일과 파일명은 분석 이벤트로 보내지 않는 흐름을 우선합니다."
+  },
+  {
+    title: "스캔본 PDF 만들기",
+    path: "/tools/jpg-to-pdf-converter/",
+    tag: "JPG PDF 변환",
+    description: "여러 장의 증빙 사진이나 스캔 이미지를 한 개의 PDF로 묶습니다.",
+    trustNote: "이미지를 서버 업로드 없이 브라우저에서 PDF로 정리합니다."
+  }
+];
 ---
 
 <BaseLayout
   title="K문서툴 - 무료 업무 문서 도구"
-  description="사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환을 로그인 없이 브라우저에서 사용하는 한국형 무료 문서 도구입니다."
+  description="제출용 파일 준비, 사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, HEIC JPG 변환을 로그인 없이 사용하는 한국형 무료 문서 도구입니다."
   structuredData={structuredData}
 >
   <main class="page-shell" data-page-type="home">
@@ -16,7 +45,7 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
       <div>
         <h1>K문서툴로 문서 제출 직전을 가볍게</h1>
         <p>
-          사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환을 브라우저에서 바로 사용하세요. 한국 업무 문서에
+          제출용 파일 준비, 사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환을 브라우저에서 바로 사용하세요. 한국 업무 문서에
           필요한 작은 도구를 로그인 없이 빠르게 제공합니다.
         </p>
       </div>
@@ -28,6 +57,13 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
         >
           전체 도구
         </a>
+        <a
+          href={submissionPrep.path}
+          data-analytics-event="home_workflow_quick_link_click"
+          data-analytics-label={submissionPrep.title}
+        >
+          제출 준비
+        </a>
         {
           toolCategories.map((category) => (
             <a
@@ -36,6 +72,32 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
               data-analytics-label={category.shortTitle}
             >
               {category.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>추천 흐름</h2>
+        <p>업로드 오류와 제출처 조건에 맞춰 여러 도구를 한 번에 고를 수 있습니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          workflowCards.map((card) => (
+            <a
+              class="tool-card"
+              href={card.path}
+              data-analytics-event="home_workflow_click"
+              data-analytics-label={card.title}
+            >
+              <span class="meta">
+                <span class="meta-tag">{card.tag}</span>
+              </span>
+              <strong>{card.title}</strong>
+              <p>{card.description}</p>
+              <p class="trust-note">{card.trustNote}</p>
             </a>
           ))
         }

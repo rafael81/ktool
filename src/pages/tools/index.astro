@@ -13,11 +13,17 @@ const structuredData = [
     tools
   })
 ];
+const submissionPrep = {
+  title: "제출용 파일 준비",
+  path: "/tools/submission-file-prep/",
+  description:
+    "사진 형식, 용량, 크기, PDF 묶기, 업무 문서 작성까지 제출 직전 흐름으로 필요한 도구를 고릅니다."
+};
 ---
 
 <BaseLayout
   title="전체 도구 - K문서툴"
-  description="사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환 등 한국 업무 문서와 파일을 로그인 없이 브라우저에서 처리하는 무료 도구 목록입니다."
+  description="제출용 파일 준비, 사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, HEIC JPG 변환 등 한국 업무 문서와 파일을 로그인 없이 처리하는 무료 도구 목록입니다."
   canonicalPath="/tools/"
   structuredData={structuredData}
 >
@@ -31,6 +37,13 @@ const structuredData = [
         </p>
       </div>
       <div class="quick-links" aria-label="카테고리 바로가기">
+        <a
+          href={submissionPrep.path}
+          data-analytics-event="catalog_workflow_quick_link_click"
+          data-analytics-label={submissionPrep.title}
+        >
+          제출 준비
+        </a>
         {
           toolCategories.map((category) => (
             <a
@@ -42,6 +55,28 @@ const structuredData = [
             </a>
           ))
         }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>상황별 추천</h2>
+        <p>파일 제출 조건을 먼저 보고 필요한 도구를 고를 때 사용합니다.</p>
+      </div>
+      <div class="tool-grid single-card-grid">
+        <a
+          class="tool-card"
+          href={submissionPrep.path}
+          data-analytics-event="catalog_workflow_click"
+          data-analytics-label={submissionPrep.title}
+        >
+          <span class="meta">
+            <span class="meta-tag">제출용 파일 만들기</span>
+          </span>
+          <strong>{submissionPrep.title}</strong>
+          <p>{submissionPrep.description}</p>
+          <p class="trust-note">도구를 하나씩 찾기 전에 제출처 오류 문구에 맞는 순서를 먼저 확인합니다.</p>
+        </a>
       </div>
     </section>
 

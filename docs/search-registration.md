@@ -26,6 +26,7 @@ After verification:
 3. Inspect these URLs and request indexing:
    - `https://k-document-tool.pages.dev/`
    - `https://k-document-tool.pages.dev/tools/`
+   - `https://k-document-tool.pages.dev/tools/submission-file-prep/`
    - `https://k-document-tool.pages.dev/categories/business/`
    - `https://k-document-tool.pages.dev/categories/pdf/`
    - `https://k-document-tool.pages.dev/categories/image/`
@@ -58,7 +59,7 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same nineteen indexable URLs listed above.
+2. Request collection for the same twenty indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
 
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.

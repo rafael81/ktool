@@ -156,6 +156,13 @@ const analyticsPage = {
         >
           전체 도구
         </a>
+        <a
+          href="/tools/submission-file-prep/"
+          data-analytics-event="workflow_nav_click"
+          data-analytics-label="제출용 파일 준비"
+        >
+          제출 준비
+        </a>
         {
           toolCategories.map((category) => (
             <a
@@ -593,6 +600,10 @@ const analyticsPage = {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
+  }
+
+  .tool-grid.single-card-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .tool-card {

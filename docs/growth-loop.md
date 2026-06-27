@@ -69,6 +69,13 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `image_convert_download`
 - `heic_convert_convert`
 - `heic_convert_download`
+- `workflow_nav_click`
+- `home_workflow_click`
+- `catalog_workflow_click`
+- `category_workflow_click`
+- `prep_situation_click`
+- `prep_flow_tool_click`
+- `prep_tool_click`
 
 Do not send raw document text, business numbers, filenames, addresses, customer names, or uploaded file data.
 
@@ -120,10 +127,12 @@ Completed:
 14. Add the next image submission tool: `이미지 리사이즈`.
 15. Add the next image format utility: `WebP JPG 변환`.
 16. Add the iPhone photo compatibility utility: `HEIC JPG 변환`.
+17. Add the cross-tool workflow hub: `제출용 파일 준비`.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, `/tools/image-converter/`, `/tools/heic-jpg-converter/`, plus any previously unrequested business tool pages.
-2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF generate/download events, image compressor compress/download events, image resize/download events, image convert/download events, and HEIC convert/download events across the tool set.
-3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, or HEIC JPG 변환 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
-4. If JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, or HEIC JPG 변환 gets generation/compression/resize/convert events but weak downloads, compare file list feedback, output status, and download affordance before adding more file tools.
+1. Request indexing/collection for `/tools/submission-file-prep/`, `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, `/tools/image-converter/`, `/tools/heic-jpg-converter/`, plus any previously unrequested business tool pages.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF generate/download events, image compressor compress/download events, image resize/download events, image convert/download events, HEIC convert/download events, and submission-prep click-through events across the tool set.
+3. If `/tools/submission-file-prep/` gets page views but weak `prep_*` clicks, tighten the situation labels and first-screen tool routing before adding another tool.
+4. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, or HEIC JPG 변환 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
+5. If JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, WebP JPG 변환, or HEIC JPG 변환 gets generation/compression/resize/convert events but weak downloads, compare file list feedback, output status, and download affordance before adding more file tools.
