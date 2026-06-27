@@ -139,6 +139,43 @@ async function run() {
           assert(heroCount === 1, `${route.path} should render the document workbench hero`);
           const queueRowCount = await page.locator(".home-hero .queue-row").count();
           assert(queueRowCount === 3, `${route.path} should render three workflow rows in the hero workbench`);
+          const homeSearchRootCount = await page.locator("[data-home-tool-search]").count();
+          assert(homeSearchRootCount === 1, `${route.path} should render one homepage tool search`);
+          const defaultHomeSearchRows = await page
+            .locator("[data-home-search-item]:not([hidden])")
+            .count();
+          assert(defaultHomeSearchRows === 4, `${route.path} should show four default search shortcuts`);
+          await page.locator("[data-home-search-input]").fill("HEIC");
+          await page.waitForTimeout(450);
+          const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
+          const heicHomeText = await page.locator("[data-home-search-item]:not([hidden])").textContent();
+          assert(
+            heicHomeRows === 1 && heicHomeText?.includes("HEIC JPG 변환"),
+            `${route.path} should search tools directly from the homepage`
+          );
+          await page.locator("[data-home-search-input]").fill("없는도구");
+          await page.waitForTimeout(450);
+          const emptyHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
+          const homeEmptyHidden = await page.locator("[data-home-search-empty]").getAttribute("hidden");
+          assert(emptyHomeRows === 0 && homeEmptyHidden === null, `${route.path} should show an empty homepage search state`);
+          const homeEvents = [];
+          await page.exposeFunction("captureHomeSearchEvent", (payload) => {
+            homeEvents.push(payload);
+          });
+          await page.addInitScript(() => {
+            window.addEventListener("kdoc:analytics", (event) => {
+              window["captureHomeSearchEvent"]?.(event.detail);
+            });
+          });
+          await page.reload({ waitUntil: "networkidle" });
+          await page.locator("[data-home-search-input]").fill("SECRET-HOME-QUERY");
+          await page.waitForTimeout(450);
+          const homeEventText = JSON.stringify(homeEvents);
+          assert(!homeEventText.includes("SECRET-HOME-QUERY"), `${route.path} should not send raw homepage search text`);
+          assert(
+            homeEventText.includes("home_search_change") && homeEventText.includes("search_query_length"),
+            `${route.path} should track homepage search using only metadata`
+          );
         }
         const eventName = route.path === "/" ? "home_prep_shortcut_click" : "catalog_prep_shortcut_click";
         const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();

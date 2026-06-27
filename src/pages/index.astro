@@ -20,6 +20,14 @@ function isTool(tool: ToolInfo | undefined): tool is ToolInfo {
 const featuredTools = featuredToolIds
   .map((toolId) => tools.find((tool) => tool.id === toolId))
   .filter(isTool);
+const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
+const defaultSearchToolIds = new Set<ToolId>([
+  "transaction-statement",
+  "jpg-to-pdf",
+  "image-compressor",
+  "heic-to-jpg"
+]);
+const defaultSearchToolCount = defaultSearchToolIds.size;
 ---
 
 <BaseLayout
@@ -32,9 +40,67 @@ const featuredTools = featuredToolIds
       <div class="hero-copy">
         <h1>문서 제출 직전, 필요한 도구만 바로.</h1>
         <p>
-          사진·스캔, 사업자 서류, 프리랜서 정산처럼 실제 제출 업무에서 막히는 순간을 기준으로
-          도구를 정리했습니다. 입력값과 파일은 가능한 한 브라우저 안에서 처리합니다.
+          PDF, 이미지, 거래 문서 도구를 검색해서 바로 실행하세요. 파일은 가능한 한
+          브라우저 안에서 처리합니다.
         </p>
+        <form class="hero-search" data-home-tool-search role="search">
+          <label class="hero-search-field">
+            <span>도구 검색</span>
+            <input
+              type="search"
+              autocomplete="off"
+              inputmode="search"
+              placeholder="PDF, HEIC, 거래명세서, 사진 용량"
+              data-home-search-input
+            />
+          </label>
+          <div class="hero-search-meta">
+            <span data-home-search-count>인기 도구 {defaultSearchToolCount}개</span>
+            <a
+              href="/tools/"
+              data-analytics-event="home_search_all_tools_click"
+              data-analytics-label="전체 도구"
+            >
+              전체 {tools.length}개 보기
+            </a>
+          </div>
+          <div class="hero-search-results">
+            {
+              tools.map((tool) => (
+                <a
+                  class:list={{
+                    "hero-search-row": true,
+                    "is-default": defaultSearchToolIds.has(tool.id)
+                  }}
+                  href={tool.path}
+                  hidden={!defaultSearchToolIds.has(tool.id)}
+                  data-home-search-item
+                  data-default-visible={defaultSearchToolIds.has(tool.id) ? "true" : "false"}
+                  data-analytics-event="home_search_tool_click"
+                  data-analytics-tool-id={tool.id}
+                  data-analytics-tool-title={tool.title}
+                  data-analytics-label={tool.title}
+                  data-home-search-text={[
+                    tool.title,
+                    tool.shortTitle,
+                    tool.primaryQuery,
+                    ...tool.secondaryQueries,
+                    tool.description,
+                    tool.userMoment,
+                    categoryById.get(tool.category)?.title ?? ""
+                  ].join(" ")}
+                >
+                  <span>{categoryById.get(tool.category)?.shortTitle}</span>
+                  <strong>{tool.title}</strong>
+                  <em aria-hidden="true">열기</em>
+                </a>
+              ))
+            }
+          </div>
+          <p class="hero-search-empty" data-home-search-empty hidden>
+            조건에 맞는 도구가 없습니다. 검색어를 줄여보세요.
+          </p>
+        </form>
         <div class="hero-actions">
           <a
             href="/tools/submission-file-prep/"
@@ -51,11 +117,6 @@ const featuredTools = featuredToolIds
           >
             전체 도구 보기
           </a>
-        </div>
-        <div class="hero-evidence" aria-label="K문서툴 처리 원칙">
-          <span><strong>LOCAL</strong>파일은 브라우저 처리 우선</span>
-          <span><strong>16</strong>문서·PDF·이미지 도구</span>
-          <span><strong>3</strong>제출 흐름 패키지</span>
         </div>
       </div>
       <div class="workbench" aria-label="제출 업무 작업대 미리보기">
@@ -218,3 +279,69 @@ const featuredTools = featuredToolIds
     </section>
   </main>
 </BaseLayout>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector("[data-home-tool-search]");
+    if (!root) return;
+
+    const searchInput = root.querySelector("[data-home-search-input]");
+    const items = Array.from(root.querySelectorAll("[data-home-search-item]"));
+    const countNode = root.querySelector("[data-home-search-count]");
+    const emptyNode = root.querySelector("[data-home-search-empty]");
+    const defaultCount = items.filter((item) => item.dataset.defaultVisible === "true").length;
+    let searchTimer = 0;
+
+    function normalize(value) {
+      return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+    }
+
+    function visibleItems() {
+      return items.filter((item) => !item.hidden);
+    }
+
+    function track(visibleCount) {
+      window.kdocTrack?.("home_search_change", {
+        search_query_length: normalize(searchInput?.value).length,
+        visible_count: visibleCount
+      });
+    }
+
+    function applySearch({ shouldTrack } = {}) {
+      const query = normalize(searchInput?.value);
+      let visibleCount = 0;
+
+      items.forEach((item) => {
+        const visible = query
+          ? normalize(item.dataset.homeSearchText).includes(query)
+          : item.dataset.defaultVisible === "true";
+        item.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      if (countNode) {
+        countNode.textContent = query ? `${visibleCount}개 결과` : `인기 도구 ${defaultCount}개`;
+      }
+      if (emptyNode) emptyNode.hidden = visibleCount !== 0;
+      if (shouldTrack) track(visibleCount);
+    }
+
+    root.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const firstResult = visibleItems()[0];
+      if (firstResult instanceof HTMLAnchorElement) {
+        window.location.href = firstResult.href;
+      }
+    });
+
+    searchInput?.addEventListener("input", () => {
+      applySearch();
+      clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(() => {
+        applySearch({ shouldTrack: true });
+      }, 350);
+    });
+
+    applySearch();
+  })();
+</script>
