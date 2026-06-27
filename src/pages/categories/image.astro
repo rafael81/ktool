@@ -84,11 +84,11 @@ const structuredData = [
         <h2>이미지 문제 바로가기</h2>
         <p>업로드 오류 문구나 제출처 제한 조건에 맞는 이미지 도구 설정으로 바로 시작합니다.</p>
       </div>
-      <div class="tool-grid">
+      <div class="shortcut-list">
         {
           prepShortcuts.map((shortcut) => (
             <a
-              class="tool-card"
+              class="shortcut-row"
               href={shortcut.path}
               data-analytics-event="category_prep_shortcut_click"
               data-analytics-shortcut-id={shortcut.id}
@@ -97,11 +97,12 @@ const structuredData = [
               data-analytics-target-preset={shortcut.targetPreset}
               data-analytics-label={shortcut.label}
             >
-              <span class="meta">
-                <span class="meta-tag">{shortcut.label}</span>
+              <span class="shortcut-row-label">{shortcut.label}</span>
+              <span class="shortcut-row-copy">
+                <strong>{shortcut.title}</strong>
+                <span>{shortcut.description}</span>
               </span>
-              <strong>{shortcut.title}</strong>
-              <p>{shortcut.description}</p>
+              <span class="shortcut-row-tool">{shortcut.targetToolTitle}</span>
             </a>
           ))
         }

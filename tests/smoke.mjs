@@ -7,7 +7,7 @@ const baseUrl = `http://127.0.0.1:${port}`;
 const productionUrl = "https://k-document-tool.pages.dev";
 
 const routes = [
-  { path: "/", h1: "K문서툴로 문서 제출 직전을 가볍게" },
+  { path: "/", h1: "문서 제출 직전, 필요한 도구만 바로." },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   {
@@ -134,6 +134,12 @@ async function run() {
       if (route.path === "/" || route.path === "/tools/") {
         const packageLinkCount = await page.locator('a[data-analytics-event="package_nav_click"][data-analytics-package-id]').count();
         assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
+        if (route.path === "/") {
+          const heroCount = await page.locator(".home-hero .workbench").count();
+          assert(heroCount === 1, `${route.path} should render the document workbench hero`);
+          const queueRowCount = await page.locator(".home-hero .queue-row").count();
+          assert(queueRowCount === 3, `${route.path} should render three workflow rows in the hero workbench`);
+        }
         const eventName = route.path === "/" ? "home_prep_shortcut_click" : "catalog_prep_shortcut_click";
         const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
         assert(shortcutRootCount === 1, `${route.path} should render one prep shortcut section`);
