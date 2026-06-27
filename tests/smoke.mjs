@@ -204,6 +204,11 @@ async function run() {
       }
 
       if (route.imageCompressor) {
+        const compressionCheck = await page.locator("[data-compression-check]").textContent();
+        assert(
+          compressionCheck?.includes("1MB 이하") && compressionCheck.includes("JPG"),
+          `${route.path} should show the default submission compression target`
+        );
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".compress-row").length === 2);
         await page.locator("[data-compress]").click();
@@ -216,6 +221,12 @@ async function run() {
           return Number(link.dataset.afterSize || 0) < Number(link.dataset.beforeSize || 0);
         });
         assert(didReduce, `${route.path} should reduce the sample image size`);
+        const postCompressionCheck = await page.locator("[data-compression-check]").textContent();
+        const compressedRowsText = await page.locator("[data-compress-list]").textContent();
+        assert(
+          postCompressionCheck?.includes("모두 1MB 이하 통과") && compressedRowsText?.includes("기준 통과"),
+          `${route.path} should show submission target pass status after compression`
+        );
       }
 
       if (route.imageResizer) {

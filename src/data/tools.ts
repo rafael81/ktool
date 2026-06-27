@@ -483,6 +483,7 @@ export const tools: ToolInfo[] = [
     userMoment: "사진 파일이 이메일, 관공서, 학교, 회사 시스템 업로드 제한보다 클 때",
     featureList: [
       "여러 이미지 일괄 압축",
+      "제출 기준 프리셋",
       "JPG/WebP 출력 선택",
       "품질 조절",
       "최대 긴 변 크기 조절",
