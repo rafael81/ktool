@@ -118,6 +118,16 @@ async function run() {
 
       if (route.pdfImageTool) {
         await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".file-row").length === 2);
+        const sizesBefore = await page.locator(".file-row p").allTextContents();
+        await page.locator('[data-move-file="0"][data-direction="down"]').click();
+        const sizesAfter = await page.locator(".file-row p").allTextContents();
+        assert(
+          sizesBefore.length === 2 &&
+            sizesBefore[0] === sizesAfter[1] &&
+            sizesBefore[1] === sizesAfter[0],
+          `${route.path} should reorder selected images before PDF generation`
+        );
         await page.locator("[data-generate]").click();
         await page.waitForFunction(() => {
           const status = document.querySelector("[data-output-status]")?.textContent || "";

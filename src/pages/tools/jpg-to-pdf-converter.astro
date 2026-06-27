@@ -79,7 +79,7 @@ const structuredData = [
         </div>
 
         <p class="note-box">
-          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. PDF 생성은 브라우저 안에서만 실행됩니다.
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 선택 후 목록에서 이미지 순서를 조정할 수 있습니다.
         </p>
 
         <div class="button-row">
@@ -131,7 +131,7 @@ const structuredData = [
         </div>
         <ul class="status-list">
           <li><span class="status-dot"></span><span>원본 이미지와 파일명은 서버로 보내지 않습니다.</span></li>
-          <li><span class="status-dot"></span><span>이미지 순서대로 PDF 페이지를 만듭니다.</span></li>
+          <li><span class="status-dot"></span><span>목록에 보이는 순서대로 PDF 페이지를 만듭니다.</span></li>
           <li><span class="status-dot"></span><span>제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요.</span></li>
         </ul>
       </aside>
@@ -141,8 +141,8 @@ const structuredData = [
       <h2>사용 방법</h2>
       <ol>
         <li>PDF로 묶을 JPG, PNG, WebP 이미지를 선택합니다.</li>
-        <li>페이지 크기와 여백을 고릅니다.</li>
-        <li>PDF 만들기를 누른 뒤 준비된 PDF를 저장합니다.</li>
+        <li>필요하면 이미지 목록의 위/아래 버튼으로 페이지 순서를 맞춥니다.</li>
+        <li>페이지 크기와 여백을 고른 뒤 PDF를 저장합니다.</li>
       </ol>
     </section>
 
@@ -212,9 +212,10 @@ const structuredData = [
       const outputMeta = root.querySelector("[data-output-meta]");
       const fileList = root.querySelector("[data-file-list]");
       const formatter = new Intl.NumberFormat("ko-KR");
-      let files = [];
+      let fileItems = [];
       let pdfUrl = "";
       let outputBytes = 0;
+      let nextItemId = 1;
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -230,12 +231,23 @@ const structuredData = [
         return `${bytes}B`;
       }
 
-      function totalSize(nextFiles = files) {
+      function toFiles(items = fileItems) {
+        return items.map((item) => item.file);
+      }
+
+      function totalSize(nextFiles = toFiles()) {
         return nextFiles.reduce((sum, file) => sum + file.size, 0);
       }
 
-      function fileTypes(nextFiles = files) {
+      function fileTypes(nextFiles = toFiles()) {
         return [...new Set(nextFiles.map((file) => file.type || "unknown"))].join(",");
+      }
+
+      function fileTypeLabel(file) {
+        if (file.type === "image/jpeg") return "JPEG";
+        if (file.type === "image/png") return "PNG";
+        if (file.type === "image/webp") return "WEBP";
+        return "IMG";
       }
 
       function setMessage(status, meta = "") {
@@ -244,7 +256,7 @@ const structuredData = [
       }
 
       function setBusy(isBusy) {
-        generateButton.disabled = isBusy || files.length === 0;
+        generateButton.disabled = isBusy || fileItems.length === 0;
         generateLabel.textContent = isBusy ? "PDF 만드는 중" : "PDF 만들기";
       }
 
@@ -257,32 +269,70 @@ const structuredData = [
         downloadLink.setAttribute("aria-disabled", "true");
       }
 
+      function releaseItems(items = fileItems) {
+        for (const item of items) URL.revokeObjectURL(item.previewUrl);
+      }
+
+      function createFileItems(nextFiles) {
+        return nextFiles.map((file) => ({
+          id: nextItemId++,
+          file,
+          previewUrl: URL.createObjectURL(file)
+        }));
+      }
+
+      function setFileItems(nextFiles) {
+        releaseItems();
+        fileItems = createFileItems(nextFiles);
+        renderFiles();
+      }
+
       function renderFiles() {
-        generateButton.disabled = files.length === 0;
+        generateButton.disabled = fileItems.length === 0;
         clearPdfUrl();
-        if (files.length === 0) {
+        if (fileItems.length === 0) {
           fileLabel.textContent = "JPG/PNG/WebP 여러 장 선택";
           fileList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
           setMessage("이미지를 선택하면 PDF를 만들 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
           return;
         }
 
-        fileLabel.textContent = `${formatter.format(files.length)}장 선택`;
-        fileList.innerHTML = files
+        fileLabel.textContent = `${formatter.format(fileItems.length)}장 선택`;
+        fileList.innerHTML = fileItems
           .map(
-            (file, index) => `
-              <div class="file-row">
+            (item, index) => `
+              <div class="file-row" data-file-row>
+                <img src="${item.previewUrl}" alt="" loading="lazy" />
                 <span>${index + 1}</span>
-                <strong>${file.type.replace("image/", "").toUpperCase() || "IMG"}</strong>
-                <p>${formatBytes(file.size)}</p>
+                <strong>${fileTypeLabel(item.file)}</strong>
+                <p>${formatBytes(item.file.size)}</p>
+                <div class="file-actions">
+                  <button type="button" data-move-file="${index}" data-direction="up" aria-label="${index + 1}번째 이미지를 앞으로 이동" ${index === 0 ? "disabled" : ""}>↑</button>
+                  <button type="button" data-move-file="${index}" data-direction="down" aria-label="${index + 1}번째 이미지를 뒤로 이동" ${index === fileItems.length - 1 ? "disabled" : ""}>↓</button>
+                </div>
               </div>
             `
           )
           .join("");
         setMessage(
-          `${formatter.format(files.length)}장 선택됨`,
+          `${formatter.format(fileItems.length)}장 선택됨`,
           `총 ${formatBytes(totalSize())}, PDF 만들기를 누르면 변환합니다.`
         );
+      }
+
+      function moveFile(index, direction) {
+        const offset = direction === "up" ? -1 : 1;
+        const nextIndex = index + offset;
+        if (nextIndex < 0 || nextIndex >= fileItems.length) return;
+        const nextItems = [...fileItems];
+        [nextItems[index], nextItems[nextIndex]] = [nextItems[nextIndex], nextItems[index]];
+        fileItems = nextItems;
+        renderFiles();
+        track("jpg_pdf_reorder", {
+          from_position: index + 1,
+          to_position: nextIndex + 1,
+          file_count: fileItems.length
+        });
       }
 
       function validateFiles(nextFiles) {
@@ -370,6 +420,7 @@ const structuredData = [
       }
 
       async function generatePdf() {
+        const files = toFiles();
         const validation = validateFiles(files);
         if (!validation.ok) {
           const message = validationMessage(validation.reason);
@@ -463,9 +514,8 @@ const structuredData = [
         const validation = validateFiles(nextFiles);
         if (!validation.ok) {
           const message = validationMessage(validation.reason);
-          files = [];
+          setFileItems([]);
           input.value = "";
-          renderFiles();
           setMessage(message, "파일을 다시 선택해 주세요.");
           track("jpg_pdf_validation_error", {
             reason: validation.reason,
@@ -474,10 +524,9 @@ const structuredData = [
           });
           return;
         }
-        files = nextFiles;
-        renderFiles();
+        setFileItems(nextFiles);
         track("jpg_pdf_file_select", {
-          file_count: files.length,
+          file_count: fileItems.length,
           total_size: totalSize(),
           file_types: fileTypes()
         });
@@ -487,20 +536,24 @@ const structuredData = [
       marginSelect.addEventListener("change", () => clearPdfUrl());
 
       sampleButton.addEventListener("click", async () => {
-        files = [
+        setFileItems([
           await sampleFile("document-scan", "#117a7a", 1200, 1600),
           await sampleFile("receipt-photo", "#b54708", 1200, 900)
-        ];
+        ]);
         input.value = "";
-        renderFiles();
-        track("jpg_pdf_sample_apply", { file_count: files.length });
+        track("jpg_pdf_sample_apply", { file_count: fileItems.length });
       });
 
       resetButton.addEventListener("click", () => {
-        files = [];
+        setFileItems([]);
         input.value = "";
-        renderFiles();
         track("jpg_pdf_reset");
+      });
+
+      fileList.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-move-file]");
+        if (!button) return;
+        moveFile(Number(button.dataset.moveFile), button.dataset.direction);
       });
 
       generateButton.addEventListener("click", generatePdf);
@@ -511,11 +564,16 @@ const structuredData = [
           return;
         }
         track("jpg_pdf_download", {
-          file_count: files.length,
+          file_count: fileItems.length,
           output_size: outputBytes,
           page_size: pageSizeSelect.value,
           margin: marginSelect.value
         });
+      });
+
+      window.addEventListener("pagehide", () => {
+        releaseItems();
+        clearPdfUrl();
       });
 
       renderFiles();
@@ -632,13 +690,22 @@ const structuredData = [
 
   :global(.file-row) {
     display: grid;
-    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-columns: 48px 30px minmax(0, 1fr) auto auto;
     gap: 10px;
     align-items: center;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: #fff;
     padding: 12px;
+  }
+
+  :global(.file-row img) {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    object-fit: cover;
   }
 
   :global(.file-row span) {
@@ -657,6 +724,36 @@ const structuredData = [
     margin: 0;
     color: var(--muted);
     font-size: 14px;
+  }
+
+  :global(.file-actions) {
+    display: flex;
+    gap: 4px;
+  }
+
+  :global(.file-actions button) {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  :global(.file-actions button:disabled) {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+
+  :global(.file-actions button:not(:disabled):hover) {
+    border-color: var(--accent);
+    color: var(--accent-dark);
   }
 
   @media (max-width: 1100px) {
