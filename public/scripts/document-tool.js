@@ -51,24 +51,29 @@ function track(root, eventName, params = {}) {
   });
 }
 
-function rowTemplate(index) {
+function rowTemplate(root, index) {
+  const sampleName = root?.dataset.sampleItemName || "디자인 작업";
+  const sampleDesc = root?.dataset.sampleItemDesc || "문서 및 이미지 제작";
+  const sampleQty = root?.dataset.sampleItemQty || "1";
+  const samplePrice = root?.dataset.sampleItemPrice || "150000";
+
   return `
     <div class="item-row" data-row>
       <label class="field">
         <span>품목</span>
-        <input data-item-name value="${index === 0 ? "디자인 작업" : ""}" />
+        <input data-item-name value="${index === 0 ? escapeText(sampleName) : ""}" />
       </label>
       <label class="field">
         <span>설명</span>
-        <input data-item-desc value="${index === 0 ? "문서 및 이미지 제작" : ""}" />
+        <input data-item-desc value="${index === 0 ? escapeText(sampleDesc) : ""}" />
       </label>
       <label class="field compact">
         <span>수량</span>
-        <input data-item-qty inputmode="decimal" value="${index === 0 ? "1" : ""}" />
+        <input data-item-qty inputmode="decimal" value="${index === 0 ? escapeText(sampleQty) : ""}" />
       </label>
       <label class="field compact">
         <span>단가</span>
-        <input data-item-price inputmode="numeric" value="${index === 0 ? "150000" : ""}" />
+        <input data-item-price inputmode="numeric" value="${index === 0 ? escapeText(samplePrice) : ""}" />
       </label>
       <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -210,7 +215,7 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
   }
 
   add?.addEventListener("click", () => {
-    rows.insertAdjacentHTML("beforeend", rowTemplate(root.querySelectorAll("[data-row]").length));
+    rows.insertAdjacentHTML("beforeend", rowTemplate(root, root.querySelectorAll("[data-row]").length));
     bind();
     update();
     track(root, "tool_row_add", {
@@ -220,10 +225,10 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
 
   sample?.addEventListener("click", () => {
     root.querySelector("[data-supplier]").value = root.dataset.sampleSupplier || "샘플상사";
-    root.querySelector("[data-supplier-meta]").value = "123-45-67890";
+    root.querySelector("[data-supplier-meta]").value = root.dataset.sampleSupplierMeta || "123-45-67890";
     root.querySelector("[data-receiver]").value = root.dataset.sampleReceiver || "거래처";
     root.querySelector("[data-note]").value = root.dataset.sampleNote || "";
-    rows.innerHTML = rowTemplate(0);
+    rows.innerHTML = rowTemplate(root, 0);
     bind();
     update();
     track(root, "tool_sample_apply");
@@ -233,7 +238,7 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
     root.querySelectorAll("input, textarea").forEach((input) => {
       if (input.type !== "date") input.value = "";
     });
-    rows.innerHTML = rowTemplate(1);
+    rows.innerHTML = rowTemplate(root, 1);
     bind();
     update();
     track(root, "tool_reset");

@@ -1,4 +1,4 @@
-export type ToolId = "business-nameplate" | "transaction-statement" | "estimate";
+export type ToolId = "business-nameplate" | "transaction-statement" | "estimate" | "receipt";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -34,16 +34,16 @@ export const toolCategories: ToolCategory[] = [
     id: "business",
     title: "업무 문서 도구",
     shortTitle: "업무 문서",
-    path: "/categories/business",
+    path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 사업자 명판처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 영수증, 사업자 명판처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
     id: "pdf",
     title: "PDF 도구",
     shortTitle: "PDF",
-    path: "/categories/pdf",
+    path: "/categories/pdf/",
     description:
       "PDF 합치기, 나누기, 압축 같은 파일 도구를 한국 업무 문서 흐름에 맞춰 준비 중입니다.",
     status: "planned"
@@ -55,7 +55,7 @@ export const tools: ToolInfo[] = [
     id: "business-nameplate",
     title: "사업자 명판 만들기 무료",
     shortTitle: "명판",
-    path: "/tools/business-nameplate-maker",
+    path: "/tools/business-nameplate-maker/",
     category: "business",
     description:
       "상호, 대표자, 사업자등록번호, 주소를 입력해 문서에 넣을 수 있는 사업자 명판 이미지를 만듭니다.",
@@ -94,7 +94,7 @@ export const tools: ToolInfo[] = [
     id: "transaction-statement",
     title: "거래명세서 자동작성",
     shortTitle: "거래명세서",
-    path: "/tools/transaction-statement-generator",
+    path: "/tools/transaction-statement-generator/",
     category: "business",
     description:
       "공급자, 거래처, 품목, 수량, 단가를 입력해 거래명세서를 바로 작성하고 인쇄합니다.",
@@ -124,13 +124,13 @@ export const tools: ToolInfo[] = [
       ["모바일에서도 작성할 수 있나요?", "모바일 입력과 미리보기를 지원하되, 최종 인쇄는 데스크톱 브라우저가 더 안정적입니다."]
     ],
     trustNote: "일반 거래 내역 정리용 양식입니다. 세금계산서나 전자세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["estimate", "business-nameplate"]
+    relatedToolIds: ["estimate", "receipt"]
   },
   {
     id: "estimate",
     title: "견적서 자동작성",
     shortTitle: "견적서",
-    path: "/tools/estimate-generator",
+    path: "/tools/estimate-generator/",
     category: "business",
     description:
       "고객명, 품목, 수량, 단가를 입력해 견적서를 무료로 작성하고 인쇄합니다.",
@@ -161,7 +161,44 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "견적 전달용 문서 생성 도구입니다. 계약 체결이나 세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["transaction-statement", "business-nameplate"]
+    relatedToolIds: ["transaction-statement", "receipt"]
+  },
+  {
+    id: "receipt",
+    title: "영수증 자동작성",
+    shortTitle: "영수증",
+    path: "/tools/receipt-generator/",
+    category: "business",
+    description:
+      "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증을 무료로 작성하고 인쇄합니다.",
+    pageTitle: "영수증 자동작성 - 무료 영수증 양식",
+    metaDescription:
+      "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증을 무료로 작성하세요. 브라우저에서 바로 미리보기와 인쇄를 할 수 있습니다.",
+    primaryQuery: "영수증 자동작성",
+    secondaryQueries: ["영수증 양식 무료", "간이영수증 양식", "청구서 자동작성", "영수증 PDF"],
+    userMoment: "결제 내역을 고객에게 바로 전달하거나 내부 정산 자료로 남겨야 하는 순간",
+    featureList: [
+      "영수증 품목 행 추가",
+      "부가세 포함/별도/없음 계산",
+      "인쇄 및 PDF 저장",
+      "브라우저 안에서 문서 작성"
+    ],
+    faqs: [
+      [
+        "이 영수증은 세금계산서나 현금영수증을 대신하나요?",
+        "아니요. 이 도구는 거래 내역을 정리하는 일반 양식입니다. 세금계산서, 현금영수증, 카드 매출전표 발행을 대신하지 않습니다."
+      ],
+      ["간이영수증처럼 사용할 수 있나요?", "간단한 거래 내역 확인용 양식으로 작성할 수 있습니다. 법적·세무 증빙이 필요한 경우 공식 발행 수단을 확인하세요."],
+      ["청구서로도 쓸 수 있나요?", "품목과 금액을 정리하는 구조는 비슷하지만, 청구 조건이나 입금기한이 필요한 경우 비고에 명확히 적어두는 것이 좋습니다."],
+      ["부가세 포함 금액도 계산할 수 있나요?", "부가세 별도, 포함, 없음 중에서 선택할 수 있습니다."],
+      ["PDF로 저장할 수 있나요?", "브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
+      [
+        "입력한 구매자 정보가 서버에 저장되나요?",
+        "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 문서 정보는 서버로 보내지 않습니다."
+      ]
+    ],
+    trustNote: "일반 거래 내역 확인용 양식입니다. 세금계산서, 현금영수증, 카드 매출전표를 대신하지 않습니다.",
+    relatedToolIds: ["transaction-statement", "estimate"]
   }
 ];
 

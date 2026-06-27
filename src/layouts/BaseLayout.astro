@@ -10,7 +10,16 @@ type Props = {
 };
 
 const { title, description, canonicalPath = "/", robots, structuredData } = Astro.props;
-const canonical = new URL(canonicalPath, Astro.site ?? "https://k-document-tool.pages.dev").toString();
+function normalizePath(path: string) {
+  const withSlash = path.startsWith("/") ? path : `/${path}`;
+  return withSlash === "/" ? "/" : `${withSlash.replace(/\/+$/, "")}/`;
+}
+
+const normalizedCanonicalPath = normalizePath(canonicalPath);
+const canonical = new URL(
+  normalizedCanonicalPath,
+  Astro.site ?? "https://k-document-tool.pages.dev"
+).toString();
 const structuredDataItems = Array.isArray(structuredData)
   ? structuredData
   : structuredData
@@ -20,7 +29,7 @@ const jsonLdItems = structuredDataItems.map((item) =>
   JSON.stringify(item).replaceAll("<", "\\u003c")
 );
 const analyticsPage = {
-  path: canonicalPath,
+  path: normalizedCanonicalPath,
   title
 };
 ---
@@ -141,7 +150,7 @@ const analyticsPage = {
       </a>
       <nav class="top-nav" aria-label="주요 도구">
         <a
-          href="/tools"
+          href="/tools/"
           data-analytics-event="catalog_nav_click"
           data-analytics-label="전체 도구"
         >

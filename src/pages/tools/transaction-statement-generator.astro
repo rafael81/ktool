@@ -202,7 +202,7 @@ const structuredData = [
 
   .item-row {
     display: grid;
-    grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) 74px 96px 42px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     align-items: end;
     margin-bottom: 8px;
@@ -210,6 +210,8 @@ const structuredData = [
 
   .row-remove {
     width: 42px;
+    grid-column: 2;
+    justify-self: end;
     padding-inline: 0;
   }
 
@@ -223,11 +225,5 @@ const structuredData = [
     margin-top: 24px;
     padding-top: 14px;
     white-space: pre-wrap;
-  }
-
-  @media (max-width: 760px) {
-    .item-row {
-      grid-template-columns: 1fr 1fr;
-    }
   }
 </style>

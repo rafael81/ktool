@@ -1,6 +1,6 @@
 # K문서툴 Growth Loop
 
-Status: v0.1
+Status: v0.2
 Updated: 2026-06-27 KST
 
 ## Weekly Decision Loop
@@ -85,10 +85,18 @@ Do not send raw document text, business numbers, filenames, addresses, customer 
 - The implementation requires server upload of sensitive user files for v1.
 - The only reason is "competitors have it."
 
-## Next Recommended Loop
+## Current Loop
+
+Completed:
 
 1. Add `/tools/` and category pages.
 2. Strengthen `src/data/tools.ts` as the tool contract.
 3. Add SEO/privacy/mobile smoke tests.
-4. Add one adjacent business-document tool, preferably `영수증/청구서 자동작성`, after the platform pass.
-5. Deploy and check sitemap/indexing.
+4. Add one adjacent business-document tool: `영수증 자동작성`.
+
+Next after crawl data appears:
+
+1. Request indexing/collection for `/tools/receipt-generator/`.
+2. Compare starts and print events across 거래명세서, 견적서, 영수증.
+3. If 영수증 gets impressions but weak starts, split `청구서 자동작성` into a separate tool.
+4. If business-document pages are indexed cleanly, reconsider the first workflow-specific PDF tool.

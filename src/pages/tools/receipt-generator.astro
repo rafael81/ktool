@@ -3,7 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
-const tool = getTool("estimate");
+const tool = getTool("receipt");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
   softwareApplicationSchema(tool, tool.featureList),
@@ -22,16 +22,21 @@ const structuredData = [
     data-document-tool
     data-tool-id={tool.id}
     data-tool-title={tool.title}
-    data-document-title="견적서"
-    data-receiver-label="고객명"
-    data-sample-supplier="샘플디자인"
-    data-sample-receiver="고객사"
-    data-sample-note="본 견적의 유효기간은 발행일로부터 14일입니다."
+    data-document-title="영수증"
+    data-receiver-label="구매자"
+    data-sample-supplier="오늘문구점"
+    data-sample-supplier-meta="123-45-67890 · 서울시 중구"
+    data-sample-receiver="홍길동"
+    data-sample-note="결제수단: 계좌이체"
+    data-sample-item-name="사무용품"
+    data-sample-item-desc="A4 용지 및 필기구"
+    data-sample-item-qty="1"
+    data-sample-item-price="32000"
   >
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 거래명세서와 같은 계산 구조를 재사용해 빠르게 견적 문서를 만듭니다.</p>
+        <p>{tool.description} 간단한 정산, 구매 확인, 내부 지출 기록에 필요한 항목을 한 화면에서 정리합니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -51,42 +56,38 @@ const structuredData = [
     </section>
 
     <section class="workspace">
-      <form class="panel" aria-label="견적서 입력">
+      <form class="panel" aria-label="영수증 입력">
         <div class="panel-title">
-          <h2>견적 정보</h2>
+          <h2>영수증 정보</h2>
         </div>
         <div class="field-grid">
           <label class="field">
             <span>공급자</span>
-            <input data-supplier value="샘플디자인" />
+            <input data-supplier value="오늘문구점" />
           </label>
           <label class="field">
-            <span>담당자 / 연락처</span>
-            <input data-supplier-meta value="홍길동 · 02-1234-5678" />
+            <span>사업자번호 / 주소</span>
+            <input data-supplier-meta value="123-45-67890 · 서울시 중구" />
           </label>
           <label class="field">
-            <span>고객명</span>
-            <input data-receiver value="고객사" required />
+            <span>구매자</span>
+            <input data-receiver value="홍길동" required />
           </label>
           <label class="field">
-            <span>견적일</span>
+            <span>거래일</span>
             <input data-date type="date" />
-          </label>
-          <label class="field">
-            <span>유효기간</span>
-            <input data-valid-until type="date" />
           </label>
           <label class="field">
             <span>부가세</span>
             <select data-vat-mode>
-              <option value="separate">별도</option>
               <option value="included">포함</option>
+              <option value="separate">별도</option>
               <option value="none">없음</option>
             </select>
           </label>
           <label class="field">
-            <span>비고 / 조건</span>
-            <textarea data-note>본 견적의 유효기간은 발행일로부터 14일입니다.</textarea>
+            <span>비고</span>
+            <textarea data-note>결제수단: 계좌이체</textarea>
           </label>
         </div>
 
@@ -102,11 +103,11 @@ const structuredData = [
             <div class="item-row" data-row>
               <label class="field">
                 <span>품목</span>
-                <input data-item-name value="디자인 작업" />
+                <input data-item-name value="사무용품" />
               </label>
               <label class="field">
                 <span>설명</span>
-                <input data-item-desc value="문서 및 이미지 제작" />
+                <input data-item-desc value="A4 용지 및 필기구" />
               </label>
               <label class="field compact">
                 <span>수량</span>
@@ -114,7 +115,7 @@ const structuredData = [
               </label>
               <label class="field compact">
                 <span>단가</span>
-                <input data-item-price inputmode="numeric" value="150000" />
+                <input data-item-price inputmode="numeric" value="32000" />
               </label>
               <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -139,7 +140,7 @@ const structuredData = [
         </div>
       </form>
 
-      <section class="preview-panel" aria-label="견적서 미리보기">
+      <section class="preview-panel" aria-label="영수증 미리보기">
         <div class="doc-page" data-document-preview></div>
       </section>
 
@@ -148,9 +149,9 @@ const structuredData = [
           <h3>확인 사항</h3>
         </div>
         <ul class="status-list">
-          <li><span class="status-dot"></span><span>견적 전달용 문서이며 계약 체결을 대신하지 않습니다.</span></li>
-          <li><span class="status-dot"></span><span>유효기간과 조건을 비고에 명확히 적어두세요.</span></li>
-          <li><span class="status-dot"></span><span>입력한 고객 정보는 서버로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>세금계산서, 현금영수증, 카드 매출전표 발행을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>정산용 메모가 필요하면 비고에 결제수단과 입금일을 적어두세요.</span></li>
+          <li><span class="status-dot"></span><span>입력한 구매자 정보는 서버로 보내지 않습니다.</span></li>
         </ul>
       </aside>
     </section>
@@ -158,8 +159,8 @@ const structuredData = [
     <section class="content-section">
       <h2>사용 방법</h2>
       <ol>
-        <li>공급자와 고객명을 입력합니다.</li>
-        <li>품목, 수량, 단가, 유효기간, 조건을 입력합니다.</li>
+        <li>공급자와 구매자 정보를 입력합니다.</li>
+        <li>품목, 수량, 단가를 입력하고 부가세 방식을 선택합니다.</li>
         <li>미리보기를 확인한 뒤 인쇄하거나 PDF로 저장합니다.</li>
       </ol>
     </section>

@@ -6,7 +6,9 @@ const siteUrl = "https://k-document-tool.pages.dev";
 const brandName = "K문서툴";
 
 export function absoluteUrl(path: string): string {
-  return new URL(path, siteUrl).toString();
+  const withSlash = path.startsWith("/") ? path : `/${path}`;
+  const normalizedPath = withSlash === "/" ? "/" : `${withSlash.replace(/\/+$/, "")}/`;
+  return new URL(normalizedPath, siteUrl).toString();
 }
 
 export function softwareApplicationSchema(tool: ToolInfo, featureList: string[]) {

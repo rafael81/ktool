@@ -13,7 +13,8 @@ const routes = [
   { path: "/categories/pdf/", h1: "PDF 도구", robots: "noindex,follow" },
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true },
-  { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true }
+  { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true },
+  { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true }
 ];
 
 function assert(condition, message) {
@@ -66,10 +67,7 @@ async function run() {
       assert(description && description.length >= 40, `${route.path} is missing a useful meta description`);
 
       const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
-      assert(
-        canonical?.startsWith(productionUrl),
-        `${route.path} canonical should use production site, got "${canonical}"`
-      );
+      assert(canonical === `${productionUrl}${route.path}`, `${route.path} canonical got "${canonical}"`);
 
       if (route.robots) {
         const robots = await page.locator('meta[name="robots"]').getAttribute("content");
