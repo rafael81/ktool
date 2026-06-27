@@ -1,0 +1,89 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { toolCategories, tools } from "@/data/tools";
+import { collectionPageSchema, toolItemListSchema, websiteSchema } from "@/data/seo";
+
+const structuredData = [
+  websiteSchema(),
+  toolItemListSchema(tools),
+  collectionPageSchema({
+    name: "K문서툴 전체 도구",
+    description: "로그인 없이 브라우저에서 사용하는 한국형 무료 업무 문서 도구 목록입니다.",
+    path: "/tools",
+    tools
+  })
+];
+---
+
+<BaseLayout
+  title="전체 도구 - K문서툴"
+  description="사업자 명판, 거래명세서, 견적서 등 한국 업무 문서를 로그인 없이 브라우저에서 작성하는 무료 도구 목록입니다."
+  canonicalPath="/tools"
+  structuredData={structuredData}
+>
+  <main class="page-shell">
+    <section class="tool-intro">
+      <div>
+        <h1>전체 도구</h1>
+        <p>
+          K문서툴은 검색으로 들어온 사용자가 바로 문서를 완성할 수 있도록, 업무 문서부터
+          검증된 순서로 확장합니다.
+        </p>
+      </div>
+      <div class="quick-links" aria-label="카테고리 바로가기">
+        {
+          toolCategories.map((category) => (
+            <a
+              href={category.path}
+              data-analytics-event="catalog_category_click"
+              data-analytics-label={category.title}
+            >
+              {category.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>사용 가능한 도구</h2>
+        <p>입력한 문서 내용은 서버로 보내지 않는 브라우저 중심 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          tools.map((tool) => (
+            <a
+              class="tool-card"
+              href={tool.path}
+              data-analytics-event="catalog_tool_click"
+              data-analytics-tool-id={tool.id}
+              data-analytics-tool-title={tool.title}
+              data-analytics-label={tool.title}
+            >
+              <span class="meta">
+                <span class="meta-tag">{tool.primaryQuery}</span>
+              </span>
+              <strong>{tool.title}</strong>
+              <p>{tool.description}</p>
+              <p class="trust-note">{tool.trustNote}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>확장 원칙</h2>
+        <p>새 도구는 검색 수요, 경쟁 약점, 한국 업무 흐름 적합도, 구현 안전성을 함께 보고 추가합니다.</p>
+      </div>
+      <ol>
+        <li>먼저 검색 의도와 사용자 순간을 정합니다.</li>
+        <li>입력값과 파일은 가능한 한 브라우저에서만 처리합니다.</li>
+        <li>FAQ, 신뢰 문구, 관련 도구 링크, 구조화 데이터를 함께 넣습니다.</li>
+        <li>색인 상태와 사용 이벤트를 확인한 뒤 다음 도구를 고릅니다.</li>
+      </ol>
+    </section>
+  </main>
+</BaseLayout>

@@ -76,3 +76,25 @@ export function toolItemListSchema(tools: ToolInfo[]) {
     }))
   };
 }
+
+export function collectionPageSchema({
+  name,
+  description,
+  path,
+  tools
+}: {
+  name: string;
+  description: string;
+  path: string;
+  tools: ToolInfo[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "ko-KR",
+    mainEntity: toolItemListSchema(tools)
+  };
+}

@@ -1,14 +1,15 @@
 ---
-import { tools } from "@/data/tools";
+import { toolCategories, tools } from "@/data/tools";
 
 type Props = {
   title: string;
   description: string;
   canonicalPath?: string;
+  robots?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
 };
 
-const { title, description, canonicalPath = "/", structuredData } = Astro.props;
+const { title, description, canonicalPath = "/", robots, structuredData } = Astro.props;
 const canonical = new URL(canonicalPath, Astro.site ?? "https://k-document-tool.pages.dev").toString();
 const structuredDataItems = Array.isArray(structuredData)
   ? structuredData
@@ -31,6 +32,7 @@ const analyticsPage = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -138,6 +140,24 @@ const analyticsPage = {
         <span>문서툴</span>
       </a>
       <nav class="top-nav" aria-label="주요 도구">
+        <a
+          href="/tools"
+          data-analytics-event="catalog_nav_click"
+          data-analytics-label="전체 도구"
+        >
+          전체 도구
+        </a>
+        {
+          toolCategories.map((category) => (
+            <a
+              href={category.path}
+              data-analytics-event="category_nav_click"
+              data-analytics-label={category.shortTitle}
+            >
+              {category.shortTitle}
+            </a>
+          ))
+        }
         {
           tools.map((tool) => (
             <a
@@ -250,11 +270,13 @@ const analyticsPage = {
   }
 
   .top-nav a {
+    flex: 0 0 auto;
     border-radius: 8px;
     color: var(--muted);
     font-size: 14px;
     font-weight: 700;
     padding: 10px 12px;
+    white-space: nowrap;
   }
 
   .top-nav a:hover,
@@ -515,6 +537,85 @@ const analyticsPage = {
     line-height: 1.75;
   }
 
+  .section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .section-heading h2 {
+    margin: 0;
+  }
+
+  .section-heading p {
+    max-width: 640px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .tool-card {
+    display: grid;
+    min-height: 210px;
+    align-content: start;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .tool-card .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tool-card strong {
+    color: var(--ink);
+    font-size: 22px;
+    line-height: 1.25;
+  }
+
+  .tool-card p {
+    margin: 0;
+  }
+
+  .meta-tag {
+    width: max-content;
+    max-width: 100%;
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .meta-tag.muted {
+    background: var(--surface-muted);
+    color: var(--muted);
+  }
+
+  .trust-note {
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    padding-left: 12px;
+  }
+
   .faq-list {
     display: grid;
     gap: 10px;
@@ -602,6 +703,15 @@ const analyticsPage = {
 
     .quick-links {
       justify-content: flex-start;
+    }
+
+    .section-heading {
+      align-items: start;
+      flex-direction: column;
+    }
+
+    .tool-grid {
+      grid-template-columns: 1fr;
     }
 
     .workspace {

@@ -25,9 +25,13 @@ After verification:
 2. Submit `https://k-document-tool.pages.dev/sitemap-index.xml`.
 3. Inspect these URLs and request indexing:
    - `https://k-document-tool.pages.dev/`
+   - `https://k-document-tool.pages.dev/tools/`
+   - `https://k-document-tool.pages.dev/categories/business/`
    - `https://k-document-tool.pages.dev/tools/business-nameplate-maker/`
    - `https://k-document-tool.pages.dev/tools/transaction-statement-generator/`
    - `https://k-document-tool.pages.dev/tools/estimate-generator/`
+
+Do not request indexing for `https://k-document-tool.pages.dev/categories/pdf/` yet. It is a reserved category page with `noindex,follow` until the first PDF tool ships.
 
 If Google gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
 If Google gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`, rebuild, and redeploy.
@@ -41,8 +45,10 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same four URLs listed above.
+2. Request collection for the same six indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
+
+Skip `https://k-document-tool.pages.dev/categories/pdf/` until it has at least one live PDF tool.
 
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
 If Naver gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`, rebuild, and redeploy.

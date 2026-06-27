@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { tools } from "@/data/tools";
+import { getToolsByCategory, toolCategories, tools } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
+const businessTools = getToolsByCategory("business");
 ---
 
 <BaseLayout
@@ -21,16 +22,21 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
         </p>
       </div>
       <div class="quick-links" aria-label="도구 바로가기">
+        <a
+          href="/tools"
+          data-analytics-event="catalog_quick_link_click"
+          data-analytics-label="전체 도구"
+        >
+          전체 도구
+        </a>
         {
-          tools.map((tool) => (
+          toolCategories.map((category) => (
             <a
-              href={tool.path}
-              data-analytics-event="tool_quick_link_click"
-              data-analytics-tool-id={tool.id}
-              data-analytics-tool-title={tool.title}
-              data-analytics-label={tool.shortTitle}
+              href={category.path}
+              data-analytics-event="category_quick_link_click"
+              data-analytics-label={category.shortTitle}
             >
-              {tool.shortTitle}
+              {category.shortTitle}
             </a>
           ))
         }
@@ -38,21 +44,54 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
     </section>
 
     <section class="content-section">
-      <h2>첫 도구</h2>
-      <div class="home-tools">
+      <div class="section-heading">
+        <h2>업무 문서 도구</h2>
+        <p>검색으로 들어온 사용자가 바로 제출용 문서를 만들 수 있는 도구부터 확장합니다.</p>
+      </div>
+      <div class="tool-grid">
         {
-          tools.map((tool) => (
+          businessTools.map((tool) => (
             <a
-              class="home-tool"
+              class="tool-card"
               href={tool.path}
               data-analytics-event="home_tool_click"
               data-analytics-tool-id={tool.id}
               data-analytics-tool-title={tool.title}
               data-analytics-label={tool.title}
             >
-              <span>{tool.shortTitle}</span>
+              <span class="meta">
+                <span class="meta-tag">{tool.primaryQuery}</span>
+              </span>
               <strong>{tool.title}</strong>
               <p>{tool.description}</p>
+              <p class="trust-note">{tool.trustNote}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>카테고리</h2>
+        <p>업무 문서 도구를 먼저 강화하고, PDF 도구는 검색 데이터와 구현 안전성이 맞을 때 추가합니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          toolCategories.map((category) => (
+            <a
+              class="tool-card"
+              href={category.path}
+              data-analytics-event="home_category_click"
+              data-analytics-label={category.title}
+            >
+              <span class="meta">
+                <span class={`meta-tag${category.status === "planned" ? " muted" : ""}`}>
+                  {category.status === "active" ? "운영 중" : "준비 중"}
+                </span>
+              </span>
+              <strong>{category.title}</strong>
+              <p>{category.description}</p>
             </a>
           ))
         }
@@ -60,45 +99,3 @@ const structuredData = [websiteSchema(), toolItemListSchema(tools)];
     </section>
   </main>
 </BaseLayout>
-
-<style>
-  .home-tools {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .home-tool {
-    display: grid;
-    min-height: 190px;
-    align-content: start;
-    gap: 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: #fff;
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-
-  .home-tool span {
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 900;
-  }
-
-  .home-tool strong {
-    color: var(--ink);
-    font-size: 22px;
-    line-height: 1.25;
-  }
-
-  .home-tool p {
-    margin: 0;
-  }
-
-  @media (max-width: 800px) {
-    .home-tools {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

@@ -1,31 +1,19 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getTool, tools } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema, type FaqEntry } from "@/data/seo";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
 const tool = getTool("estimate");
-const faqs: FaqEntry[] = [
-  ["견적서와 거래명세서는 어떻게 다른가요?", "견적서는 거래 전에 예상 금액과 조건을 제안하는 문서이고, 거래명세서는 실제 거래 내역을 정리하는 문서입니다."],
-  ["부가세 포함 견적도 만들 수 있나요?", "부가세 별도, 포함, 없음 중에서 선택할 수 있습니다."],
-  ["견적 유효기간을 넣을 수 있나요?", "유효기간 필드를 입력하면 미리보기에 함께 표시됩니다."],
-  ["PDF로 저장할 수 있나요?", "브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
-  ["입력한 고객 정보가 서버에 저장되나요?", "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 문서 정보는 서버로 보내지 않습니다."]
-];
+const relatedTools = getRelatedTools(tool);
 const structuredData = [
-  softwareApplicationSchema(tool, [
-    "견적서 품목 행 추가",
-    "부가세 포함/별도/없음 계산",
-    "견적 유효기간 표시",
-    "인쇄 및 PDF 저장",
-    "브라우저 안에서 문서 작성"
-  ]),
-  faqPageSchema(faqs)
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
 ];
 ---
 
 <BaseLayout
-  title={`${tool.title} - 무료 견적서 양식`}
-  description={tool.description}
+  title={tool.pageTitle}
+  description={tool.metaDescription}
   canonicalPath={tool.path}
   structuredData={structuredData}
 >
@@ -47,7 +35,7 @@ const structuredData = [
       </div>
       <div class="quick-links">
         {
-          tools.map((item) => (
+          relatedTools.map((item) => (
             <a
               href={item.path}
               data-analytics-event="tool_quick_link_click"
@@ -179,7 +167,32 @@ const structuredData = [
     <section class="content-section">
       <h2>FAQ</h2>
       <div class="faq-list">
-        {faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
       </div>
     </section>
   </main>
