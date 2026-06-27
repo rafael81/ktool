@@ -6,7 +6,7 @@ import { collectionPageSchema, faqPageSchema } from "@/data/seo";
 const pagePath = "/tools/submission-file-prep/";
 const pageTitle = "제출용 파일 준비 - 사진 PDF 문서 제출 도구 모음";
 const pageDescription =
-  "사진 용량 줄이기, HEIC JPG 변환, 이미지 회전, 이미지 자르기, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
+  "사진 용량 줄이기, HEIC JPG 변환, WebP JPG 변환, 이미지 회전, 이미지 자르기, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
 
 const primaryTools = [
   getTool("heic-to-jpg"),
@@ -39,6 +39,11 @@ const flowGroups = [
         label: "HEIC 사진",
         detail: "iPhone HEIC가 열리지 않으면 먼저 JPG로 바꿉니다.",
         tool: getTool("heic-to-jpg")
+      },
+      {
+        label: "WebP 오류",
+        detail: "WebP나 PNG 형식을 JPG로 바꿔 제출 호환성을 맞춥니다.",
+        tool: getTool("image-converter")
       },
       {
         label: "누운 사진",
@@ -117,7 +122,8 @@ const flowGroups = [
 ];
 
 const situations = [
-  { label: "파일 형식이 맞지 않음", tool: getTool("heic-to-jpg") },
+  { label: "iPhone HEIC 사진이 안 열림", tool: getTool("heic-to-jpg") },
+  { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter") },
   { label: "사진 방향이 잘못됨", tool: getTool("image-rotator") },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper") },
@@ -130,8 +136,8 @@ const situations = [
 const pdfPathTools = [
   {
     label: "1",
-    title: "iPhone 사진",
-    detail: "HEIC면 JPG로 바꿉니다.",
+    title: "iPhone HEIC",
+    detail: "HEIC면 먼저 JPG로 바꿉니다.",
     tool: getTool("heic-to-jpg")
   },
   {
@@ -155,6 +161,12 @@ const pdfPathTools = [
 ];
 
 const pdfDecisionHints = [
+  {
+    signal: "파일 형식 오류",
+    recommendation: "변환 후 PDF",
+    detail: "HEIC는 HEIC JPG, WebP는 WebP JPG 변환 후 묶습니다.",
+    tool: getTool("image-converter")
+  },
   {
     signal: "용량 초과",
     recommendation: "사진압축 먼저",
@@ -181,6 +193,27 @@ const pdfDecisionHints = [
   }
 ];
 
+const formatPathTools = [
+  {
+    label: "1",
+    title: "iPhone HEIC",
+    detail: "HEIC/HEIF 사진이 열리지 않으면 JPG 또는 PNG로 저장합니다.",
+    tool: getTool("heic-to-jpg")
+  },
+  {
+    label: "2",
+    title: "WebP·PNG·JPG",
+    detail: "제출처가 받는 이미지 형식으로 다시 저장합니다.",
+    tool: getTool("image-converter")
+  },
+  {
+    label: "3",
+    title: "여러 장 제출",
+    detail: "변환한 이미지를 저장한 뒤 한 PDF로 묶습니다.",
+    tool: getTool("jpg-to-pdf")
+  }
+];
+
 const faqs = [
   [
     "제출용 파일은 어떤 순서로 준비하면 되나요?",
@@ -200,7 +233,7 @@ const faqs = [
   ],
   [
     "어떤 도구부터 써야 할지 모르겠어요.",
-    "업로드 오류 문구를 기준으로 고르면 쉽습니다. 형식 오류는 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
+    "업로드 오류 문구를 기준으로 고르면 쉽습니다. HEIC 오류는 HEIC JPG 변환, WebP나 이미지 형식 오류는 WebP JPG 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
   ]
 ] satisfies [string, string][];
 
@@ -296,6 +329,32 @@ const structuredData = [
       >
         JPG PDF 변환으로 바로가기
       </a>
+    </section>
+
+    <section class="format-path" data-format-path aria-label="파일 형식 오류 해결 경로">
+      <div class="format-path-copy">
+        <span>형식 오류가 뜰 때</span>
+        <h2>먼저 JPG로 맞추고, 여러 장이면 PDF로 묶기</h2>
+        <p>
+          HEIC, WebP처럼 제출처에서 열리지 않는 사진은 먼저 호환되는 이미지로 저장한 뒤
+          필요한 경우 JPG PDF 변환에서 한 파일로 묶습니다.
+        </p>
+      </div>
+      <div class="format-path-steps">
+        {formatPathTools.map((step) => (
+          <a
+            href={step.tool.path}
+            data-analytics-event="prep_format_path_click"
+            data-analytics-tool-id={step.tool.id}
+            data-analytics-tool-title={step.tool.title}
+            data-analytics-label={step.title}
+          >
+            <span>{step.label}</span>
+            <strong>{step.title}</strong>
+            <p>{step.detail}</p>
+          </a>
+        ))}
+      </div>
     </section>
 
     <section class="prep-overview" aria-label="제출 상황별 바로가기">
@@ -509,7 +568,7 @@ const structuredData = [
 
   .pdf-path-diagnostics > div {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 8px;
   }
 
@@ -554,6 +613,88 @@ const structuredData = [
     line-height: 1.35;
     padding: 12px 14px;
     text-align: center;
+  }
+
+  .format-path {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.6fr);
+    gap: 14px;
+    align-items: stretch;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #f2faf9;
+    box-shadow: var(--shadow);
+    margin: 0 0 18px;
+    padding: 18px;
+  }
+
+  .format-path-copy {
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .format-path-copy span {
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .format-path-copy h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .format-path-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .format-path-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .format-path-steps a {
+    display: grid;
+    align-content: start;
+    gap: 7px;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  .format-path-steps span {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--accent-dark);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .format-path-steps strong {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .format-path-steps p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
   }
 
   .prep-overview {
@@ -714,7 +855,8 @@ const structuredData = [
   }
 
   @media (max-width: 1040px) {
-    .pdf-path {
+    .pdf-path,
+    .format-path {
       grid-template-columns: 1fr;
     }
 
@@ -738,11 +880,13 @@ const structuredData = [
   }
 
   @media (max-width: 760px) {
-    .pdf-path {
+    .pdf-path,
+    .format-path {
       padding: 16px;
     }
 
-    .pdf-path-steps {
+    .pdf-path-steps,
+    .format-path-steps {
       grid-template-columns: 1fr;
     }
 

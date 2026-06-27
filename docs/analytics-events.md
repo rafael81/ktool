@@ -48,6 +48,7 @@ Tool pages also include:
 | `prep_quick_tool_click` | Submission-prep page quick tool link click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_path_click` | Submission-prep highlighted PDF workflow step or CTA click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_decision_click` | Submission-prep PDF workflow decision hint click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_format_path_click` | Submission-prep format-error workflow step click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_situation_click` | Submission-prep situation card click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_flow_tool_click` | Submission-prep flow step tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_tool_click` | Submission-prep tool card click | `tool_id`, `tool_title`, `label`, `href` |

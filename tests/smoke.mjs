@@ -110,16 +110,29 @@ async function run() {
         const pdfDecisionText = await page.locator("[data-pdf-decision]").textContent();
         assert(
           pdfDecisionText?.includes("용량 초과") &&
+            pdfDecisionText.includes("파일 형식 오류") &&
+            pdfDecisionText.includes("변환 후 PDF") &&
             pdfDecisionText.includes("사진압축 먼저") &&
             pdfDecisionText.includes("JPG PDF 변환"),
           `${route.path} should explain error-message-driven PDF prep decisions`
         );
         const pdfDecisionClickCount = await page.locator('[data-analytics-event="prep_pdf_decision_click"]').count();
-        assert(pdfDecisionClickCount >= 4, `${route.path} should track PDF decision hint clicks`);
+        assert(pdfDecisionClickCount >= 5, `${route.path} should track PDF decision hint clicks`);
+        const formatPathText = await page.locator("[data-format-path]").textContent();
+        assert(
+          formatPathText?.includes("형식 오류가 뜰 때") &&
+            formatPathText.includes("HEIC") &&
+            formatPathText.includes("WebP") &&
+            formatPathText.includes("PDF로 묶기"),
+          `${route.path} should highlight the format-error-to-PDF prep path`
+        );
+        const formatPathClickCount = await page.locator('[data-analytics-event="prep_format_path_click"]').count();
+        assert(formatPathClickCount === 3, `${route.path} should track the three format path steps`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
           "/tools/heic-jpg-converter/",
+          "/tools/image-converter/",
           "/tools/photo-size-reducer/",
           "/tools/image-rotator/",
           "/tools/image-cropper/",
