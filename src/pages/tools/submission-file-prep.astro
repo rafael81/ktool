@@ -127,6 +127,33 @@ const situations = [
   { label: "도장·명판 이미지를 넣어야 함", tool: getTool("business-nameplate") }
 ];
 
+const pdfPathTools = [
+  {
+    label: "1",
+    title: "iPhone 사진",
+    detail: "HEIC면 JPG로 바꿉니다.",
+    tool: getTool("heic-to-jpg")
+  },
+  {
+    label: "2",
+    title: "방향·여백",
+    detail: "누운 사진은 돌리고, 주변 여백은 자릅니다.",
+    tool: getTool("image-rotator")
+  },
+  {
+    label: "3",
+    title: "크기·용량",
+    detail: "업로드 제한에 맞춰 리사이즈하거나 압축합니다.",
+    tool: getTool("image-resizer")
+  },
+  {
+    label: "4",
+    title: "PDF 묶기",
+    detail: "마지막에 여러 장을 한 PDF로 저장합니다.",
+    tool: getTool("jpg-to-pdf")
+  }
+];
+
 const faqs = [
   [
     "제출용 파일은 어떤 순서로 준비하면 되나요?",
@@ -189,6 +216,41 @@ const structuredData = [
           </a>
         ))}
       </div>
+    </section>
+
+    <section class="pdf-path" data-pdf-path aria-label="사진 여러 장 PDF 제출 경로">
+      <div class="pdf-path-copy">
+        <span>가장 많이 쓰는 제출 흐름</span>
+        <h2>사진 여러 장을 PDF 한 개로 제출</h2>
+        <p>
+          이미지가 여러 장이면 먼저 방향, 여백, 크기, 용량을 맞춘 뒤 마지막에 JPG PDF 변환으로 묶는 순서가 재작업을 줄입니다.
+        </p>
+      </div>
+      <div class="pdf-path-steps">
+        {pdfPathTools.map((step) => (
+          <a
+            href={step.tool.path}
+            data-analytics-event="prep_pdf_path_click"
+            data-analytics-tool-id={step.tool.id}
+            data-analytics-tool-title={step.tool.title}
+            data-analytics-label={step.title}
+          >
+            <span>{step.label}</span>
+            <strong>{step.title}</strong>
+            <p>{step.detail}</p>
+          </a>
+        ))}
+      </div>
+      <a
+        class="pdf-path-cta"
+        href={getTool("jpg-to-pdf").path}
+        data-analytics-event="prep_pdf_path_click"
+        data-analytics-tool-id={getTool("jpg-to-pdf").id}
+        data-analytics-tool-title={getTool("jpg-to-pdf").title}
+        data-analytics-label="PDF 묶기 CTA"
+      >
+        JPG PDF 변환으로 바로가기
+      </a>
     </section>
 
     <section class="prep-overview" aria-label="제출 상황별 바로가기">
@@ -302,6 +364,102 @@ const structuredData = [
 </BaseLayout>
 
 <style>
+  .pdf-path {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.5fr) auto;
+    gap: 14px;
+    align-items: stretch;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    margin: 0 0 18px;
+    padding: 18px;
+  }
+
+  .pdf-path-copy {
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .pdf-path-copy span {
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .pdf-path-copy h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .pdf-path-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .pdf-path-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .pdf-path-steps a {
+    display: grid;
+    align-content: start;
+    gap: 7px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 12px;
+  }
+
+  .pdf-path-steps span {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .pdf-path-steps strong {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .pdf-path-steps p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .pdf-path-cta {
+    display: grid;
+    min-width: 172px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.35;
+    padding: 12px 14px;
+    text-align: center;
+  }
+
   .prep-overview {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -460,6 +618,15 @@ const structuredData = [
   }
 
   @media (max-width: 1040px) {
+    .pdf-path {
+      grid-template-columns: 1fr;
+    }
+
+    .pdf-path-cta {
+      min-height: 48px;
+      width: 100%;
+    }
+
     .prep-overview,
     .flow-grid {
       grid-template-columns: 1fr;
@@ -471,6 +638,14 @@ const structuredData = [
   }
 
   @media (max-width: 760px) {
+    .pdf-path {
+      padding: 16px;
+    }
+
+    .pdf-path-steps {
+      grid-template-columns: 1fr;
+    }
+
     .situation-link,
     .flow-steps li {
       align-items: start;

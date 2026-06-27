@@ -101,6 +101,12 @@ async function run() {
       }
 
       if (route.submissionPrep) {
+        const pdfPathStepCount = await page.locator("[data-pdf-path] a").count();
+        assert(pdfPathStepCount >= 5, `${route.path} should render the highlighted PDF submission path`);
+        const pdfPathCtaCount = await page
+          .locator('[data-pdf-path] a[href="/tools/jpg-to-pdf-converter/"][data-analytics-label="PDF 묶기 CTA"]')
+          .count();
+        assert(pdfPathCtaCount === 1, `${route.path} should include one highlighted JPG PDF CTA`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
