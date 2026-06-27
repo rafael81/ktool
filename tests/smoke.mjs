@@ -7,7 +7,7 @@ const baseUrl = `http://127.0.0.1:${port}`;
 const productionUrl = "https://k-document-tool.pages.dev";
 
 const routes = [
-  { path: "/", h1: "문서 제출 직전, 필요한 도구만 바로." },
+  { path: "/", h1: "도구 바로 쓰기" },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   {
@@ -132,15 +132,19 @@ async function run() {
       }
 
       if (route.path === "/" || route.path === "/tools/") {
-        const packageLinkCount = await page.locator('a[data-analytics-event="package_nav_click"][data-analytics-package-id]').count();
-        assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
+        if (route.path === "/tools/") {
+          const packageLinkCount = await page.locator('a[data-analytics-event="package_nav_click"][data-analytics-package-id]').count();
+          assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
+        }
         if (route.path === "/") {
-          const heroCount = await page.locator(".home-hero .workbench").count();
-          assert(heroCount === 1, `${route.path} should render the document workbench hero`);
-          const queueRowCount = await page.locator(".home-hero .queue-row").count();
-          assert(queueRowCount === 3, `${route.path} should render three workflow rows in the hero workbench`);
+          const workbenchCount = await page.locator(".home-hero .workbench").count();
+          assert(workbenchCount === 0, `${route.path} should not render the decorative workbench`);
           const homeSearchRootCount = await page.locator("[data-home-tool-search]").count();
           assert(homeSearchRootCount === 1, `${route.path} should render one homepage tool search`);
+          const allToolCount = await page.locator("[data-home-all-tool]").count();
+          assert(allToolCount === 16, `${route.path} should render all tools as direct links`);
+          const removedLongSections = await page.locator(".workflow-list, .featured-tool-row, .category-ledger").count();
+          assert(removedLongSections === 0, `${route.path} should not render long explanatory home sections`);
           const defaultHomeSearchRows = await page
             .locator("[data-home-search-item]:not([hidden])")
             .count();

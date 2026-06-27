@@ -1,25 +1,10 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { toolCategories, tools, type ToolId, type ToolInfo } from "@/data/tools";
+import { toolCategories, tools, type ToolId } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 import { prepShortcuts } from "@/data/prepShortcuts";
-import { workflowPackages } from "@/data/workflowPackages";
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
-const featuredToolIds: ToolId[] = [
-  "transaction-statement",
-  "estimate",
-  "invoice",
-  "jpg-to-pdf",
-  "image-compressor",
-  "heic-to-jpg"
-];
-function isTool(tool: ToolInfo | undefined): tool is ToolInfo {
-  return Boolean(tool);
-}
-const featuredTools = featuredToolIds
-  .map((toolId) => tools.find((tool) => tool.id === toolId))
-  .filter(isTool);
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
 const defaultSearchToolIds = new Set<ToolId>([
   "transaction-statement",
@@ -38,11 +23,7 @@ const defaultSearchToolCount = defaultSearchToolIds.size;
   <main class="page-shell" data-page-type="home">
     <section class="home-hero">
       <div class="hero-copy">
-        <h1>문서 제출 직전, 필요한 도구만 바로.</h1>
-        <p>
-          PDF, 이미지, 거래 문서 도구를 검색해서 바로 실행하세요. 파일은 가능한 한
-          브라우저 안에서 처리합니다.
-        </p>
+        <h1>도구 바로 쓰기</h1>
         <form class="hero-search" data-home-tool-search role="search">
           <label class="hero-search-field">
             <span>도구 검색</span>
@@ -98,96 +79,15 @@ const defaultSearchToolCount = defaultSearchToolIds.size;
             }
           </div>
           <p class="hero-search-empty" data-home-search-empty hidden>
-            조건에 맞는 도구가 없습니다. 검색어를 줄여보세요.
+            결과 없음
           </p>
         </form>
-        <div class="hero-actions">
-          <a
-            href="/tools/submission-file-prep/"
-            data-analytics-event="workflow_nav_click"
-            data-analytics-label="제출용 파일 준비"
-          >
-            제출 준비 시작
-          </a>
-          <a
-            class="secondary"
-            href="/tools/"
-            data-analytics-event="catalog_quick_link_click"
-            data-analytics-label="전체 도구"
-          >
-            전체 도구 보기
-          </a>
-        </div>
-      </div>
-      <div class="workbench" aria-label="제출 업무 작업대 미리보기">
-        <div class="queue-sheet">
-          <div class="queue-header">
-            <span>FLOW</span>
-            <span>TASK</span>
-            <span>STATUS</span>
-          </div>
-          {
-            workflowPackages.map((workflowPackage, index) => (
-              <a
-                class="queue-row"
-                href={workflowPackage.path}
-                data-analytics-event="package_nav_click"
-                data-analytics-package-id={workflowPackage.id}
-                data-analytics-label={workflowPackage.title}
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <span>
-                  <strong>{workflowPackage.title}</strong>
-                  <em>{workflowPackage.secondaryQueries.slice(0, 3).join(" / ")}</em>
-                </span>
-                <span>OPEN</span>
-              </a>
-            ))
-          }
-        </div>
-        <div class="desk-ruler" aria-hidden="true"></div>
-        <div class="paper-note" aria-hidden="true">
-          <strong>NO UPLOAD FIRST</strong>
-          <span>도구를 고르기 전에 제출 오류 문구부터 확인합니다.</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="content-section">
-      <div class="section-heading">
-        <h2>흐름별 패키지</h2>
-        <p>도구 이름을 몰라도 지금 막힌 상황에 맞춰 순서와 바로가기를 제공합니다.</p>
-      </div>
-      <div class="workflow-list">
-        {
-          workflowPackages.map((workflowPackage) => (
-            <a
-              class="workflow-row"
-              href={workflowPackage.path}
-              data-analytics-event="package_nav_click"
-              data-analytics-package-id={workflowPackage.id}
-              data-analytics-label={workflowPackage.title}
-            >
-              <span class="workflow-row-kicker">{workflowPackage.eyebrow}</span>
-              <span class="workflow-row-copy">
-                <strong>{workflowPackage.title}</strong>
-                <span>{workflowPackage.description}</span>
-              </span>
-              <span class="workflow-row-meta">
-                {workflowPackage.secondaryQueries.slice(0, 3).map((query) => (
-                  <span>{query}</span>
-                ))}
-              </span>
-            </a>
-          ))
-        }
       </div>
     </section>
 
     <section class="content-section" data-prep-shortcuts>
       <div class="section-heading">
-        <h2>문제상황 바로가기</h2>
-        <p>제출처 오류 문구가 보이면 도구 이름을 몰라도 해당 설정으로 바로 시작합니다.</p>
+        <h2>막히면 바로</h2>
       </div>
       <div class="shortcut-list">
         {
@@ -205,7 +105,6 @@ const defaultSearchToolCount = defaultSearchToolIds.size;
               <span class="shortcut-row-label">{shortcut.label}</span>
               <span class="shortcut-row-copy">
                 <strong>{shortcut.title}</strong>
-                <span>{shortcut.description}</span>
               </span>
               <span class="shortcut-row-tool">{shortcut.targetToolTitle}</span>
             </a>
@@ -216,63 +115,32 @@ const defaultSearchToolCount = defaultSearchToolIds.size;
 
     <section class="content-section">
       <div class="section-heading">
-        <h2>대표 도구</h2>
-        <p>가장 자주 쓰는 문서 작성, 이미지 정리, PDF 변환 도구만 먼저 보여줍니다.</p>
+        <h2>전체 도구</h2>
       </div>
-      <div class="featured-tool-list">
-        {
-          featuredTools.map((tool) => (
-            <a
-              class="featured-tool-row"
-              href={tool.path}
-              data-analytics-event="home_tool_click"
-              data-analytics-tool-id={tool.id}
-              data-analytics-tool-title={tool.title}
-              data-analytics-label={tool.title}
-            >
-              <span>
-                <strong>{tool.title}</strong>
-                <span>{tool.description}</span>
-              </span>
-              <span class="featured-tool-query">{tool.primaryQuery}</span>
-            </a>
-          ))
-        }
-      </div>
-      <p class="section-link">
-        <a
-          href="/tools/"
-          data-analytics-event="home_all_tools_click"
-          data-analytics-label="전체 도구 보기"
-        >
-          전체 도구 보기
-        </a>
-      </p>
-    </section>
-
-    <section class="content-section">
-      <div class="section-heading">
-        <h2>카테고리</h2>
-        <p>업무 문서 도구에서 시작해, 브라우저에서 안전하게 처리할 수 있는 PDF와 이미지 도구로 확장합니다.</p>
-      </div>
-      <div class="category-ledger">
+      <div class="home-tool-groups">
         {
           toolCategories.map((category) => (
-            <a
-              class="category-row"
-              href={category.path}
-              data-analytics-event="home_category_click"
-              data-analytics-label={category.title}
-            >
-              <span class="category-row-status">
-                {category.status === "active" ? "운영 중" : "준비 중"}
-              </span>
-              <span class="category-row-copy">
-                <strong>{category.title}</strong>
-                <span>{category.description}</span>
-              </span>
-              <span class="category-row-link">열기</span>
-            </a>
+            <section class="home-tool-group">
+              <h3>{category.shortTitle}</h3>
+              <div class="home-tool-chip-list">
+                {tools
+                  .filter((tool) => tool.category === category.id)
+                  .map((tool) => (
+                    <a
+                      class="home-tool-chip"
+                      href={tool.path}
+                      data-home-all-tool
+                      data-analytics-event="home_all_tool_click"
+                      data-analytics-tool-id={tool.id}
+                      data-analytics-tool-title={tool.title}
+                      data-analytics-label={tool.title}
+                    >
+                      <span>{tool.title}</span>
+                      <em aria-hidden="true">열기</em>
+                    </a>
+                  ))}
+              </div>
+            </section>
           ))
         }
       </div>
