@@ -85,16 +85,22 @@
     return { width, height };
   }
 
-  function drawImageOnWhiteCanvas(image, width, height) {
+  function drawImageOnCanvas(image, width, height, backgroundColor = "") {
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("canvas_context_unavailable");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
+    if (backgroundColor) {
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, width, height);
+    }
     ctx.drawImage(image, 0, 0, width, height);
     return canvas;
+  }
+
+  function drawImageOnWhiteCanvas(image, width, height) {
+    return drawImageOnCanvas(image, width, height, "#ffffff");
   }
 
   async function exportImageFile(file, options = {}) {
@@ -161,6 +167,7 @@
     imageFromFile,
     canvasToBlob,
     scaledImageDimensions,
+    drawImageOnCanvas,
     drawImageOnWhiteCanvas,
     exportImageFile,
     revokeResult,

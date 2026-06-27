@@ -22,10 +22,12 @@ Implemented and deployed:
 - JPG PDF 변환
 - 사진 용량 줄이기
 - 이미지 리사이즈
+- WebP JPG 변환
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
 The second image wedge is 이미지 리사이즈 because it strengthens the same submission-prep path without requiring server upload or heavy dependencies.
+The third image wedge is WebP JPG 변환 because it reuses the same browser-local file path and solves a concrete format-compatibility problem before document upload.
 
 ## Decision
 
@@ -166,7 +168,7 @@ Reference URLs checked:
 | 30 | HEIC JPG 변환 | Image | iPhone HEIC 사진을 JPG로 바꿔야 함 | 5 | iLoveIMG, Convertio, CleverPDF, PDF24, iMazing | 2 | 3 | 3 | 4 | 5 | 22 | EXPLORE | Useful, but browser HEIC support/dependency size must be checked. |
 | 31 | 이미지 Base64 변환 | Dev/image | 이미지를 Data URI/Base64로 바꿔야 함 | 1 | base64-image.de, ioDraw, Aspose, Vivoldi, YTool | 4 | 2 | 5 | 2 | 5 | 19 | DEFER | Easy but smaller developer intent and weaker monetization. |
 | 32 | 이미지 배경 제거 | Image | 사진 배경을 투명하게 지워야 함 | 5 | remove.bg, Adobe, Canva, AI background removers | 1 | 3 | 2 | 4 | 4 | 19 | DEFER | Demand is strong, but generic AI/background-removal incumbents are too strong; stamp-specific support is better. |
-| 33 | WebP JPG 변환 | Image | WebP 이미지를 JPG/PNG로 바꿔야 함 | 4 | Convertio-like tools, browser utilities, blogs | 3 | 3 | 4 | 3 | 5 | 22 | EXPLORE | Useful low-risk later utility. |
+| 33 | WebP JPG 변환 | Image | WebP 이미지를 JPG/PNG로 바꿔야 함 | 4 | Convertio-like tools, browser utilities, blogs | 3 | 3 | 4 | 3 | 5 | 22 | **BUILD** | Built as the third browser-local image utility, focused on format compatibility for upload and document-editing flows. |
 | 34 | 퇴직금 계산기 | Calculator | 예상 퇴직금을 계산해야 함 | 5 | MOEL, Saramin, NodongOK, Shiftee, FindSemusa | 1 | 5 | 3 | 4 | 1 | 19 | DEFER | Official/authority pages dominate; formula maintenance burden high. |
 | 35 | 실업급여 계산기 | Calculator | 퇴사 후 실업급여 예상액을 알고 싶음 | 5 | Employment Insurance, Saramin, NodongOK, Albamon, FindSemusa | 1 | 5 | 3 | 4 | 1 | 19 | DEFER | Official source and eligibility complexity make this poor v1. |
 | 36 | 주휴수당 계산기 | Calculator | 알바/파트타임 주휴수당을 계산해야 함 | 5 | Shiftee, Alba, NodongOK, Shopl, FindSemusa | 1 | 5 | 4 | 4 | 2 | 21 | DEFER | Demand high, but labor correctness and competitors are strong. |
@@ -282,10 +284,10 @@ Acceptance gate:
 ## Deferred But Promising
 
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
-- 사진 용량 줄이기 / 이미지 압축: built as the first image utility after the Korean business-doc and JPG PDF wedges shipped.
+- 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 
 ## Next Step
 
-Use crawl and analytics data to decide whether the next loop should improve `사진 용량 줄이기` or `이미지 리사이즈` conversion, add a submission-prep workflow hub, or return to a Korean business-document form.
+Use crawl and analytics data to decide whether the next loop should improve image-tool conversion, add a submission-prep workflow hub, explore `HEIC JPG 변환`, or return to a Korean business-document form.

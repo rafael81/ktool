@@ -10,7 +10,8 @@ export type ToolId =
   | "stamp-background"
   | "jpg-to-pdf"
   | "image-compressor"
-  | "image-resizer";
+  | "image-resizer"
+  | "image-converter";
 
 export type ToolCategoryId = "business" | "pdf" | "image";
 
@@ -66,7 +67,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "이미지",
     path: "/categories/image/",
     description:
-      "사진과 이미지 파일을 제출하기 좋은 크기와 용량으로 브라우저에서 줄입니다.",
+      "사진과 이미지 파일을 제출하기 좋은 크기, 용량, 형식으로 브라우저에서 정리합니다.",
     status: "active"
   }
 ];
@@ -495,7 +496,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-resizer", "jpg-to-pdf"]
+    relatedToolIds: ["image-resizer", "image-converter"]
   },
   {
     id: "image-resizer",
@@ -533,7 +534,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-compressor", "jpg-to-pdf"]
+    relatedToolIds: ["image-converter", "image-compressor"]
+  },
+  {
+    id: "image-converter",
+    title: "WebP JPG 변환",
+    shortTitle: "WebP 변환",
+    path: "/tools/image-converter/",
+    category: "image",
+    description:
+      "WebP, PNG, JPG 이미지를 브라우저에서 JPG, PNG, WebP 형식으로 바꿔 저장합니다.",
+    pageTitle: "WebP JPG 변환 - 이미지 형식 변환 무료",
+    metaDescription:
+      "WebP JPG 변환을 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 이미지를 업로드 없이 원하는 형식으로 바꿔 저장합니다.",
+    primaryQuery: "WebP JPG 변환",
+    secondaryQueries: ["JPG WebP 변환", "PNG JPG 변환", "이미지 형식 변환", "WebP PNG 변환"],
+    userMoment: "첨부 시스템이나 문서 편집기가 특정 이미지 형식만 받을 때",
+    featureList: [
+      "WebP, PNG, JPG 입력 지원",
+      "JPG/PNG/WebP 출력 선택",
+      "여러 이미지 일괄 변환",
+      "JPG/WebP 품질 조절",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["WebP를 JPG로 바꿀 수 있나요?", "네. WebP 이미지를 선택한 뒤 출력 형식을 JPG로 두고 변환하면 JPG 파일로 저장할 수 있습니다."],
+      ["PNG 투명 배경은 유지되나요?", "PNG 또는 WebP로 저장하면 투명 영역을 유지할 수 있습니다. JPG는 투명을 지원하지 않아 흰 배경으로 저장합니다."],
+      ["여러 장을 한 번에 바꿀 수 있나요?", "네. 최대 20장, 총 50MB까지 선택해 한 번에 변환할 수 있습니다."],
+      ["품질 값은 언제 적용되나요?", "JPG와 WebP 저장 때 적용됩니다. PNG는 브라우저 특성상 품질 슬라이더의 영향이 작거나 없을 수 있습니다."],
+      [
+        "원본 파일이 바뀌나요?",
+        "아니요. 원본 파일은 그대로 두고 변환된 새 이미지 파일을 저장합니다."
+      ]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-resizer", "image-compressor"]
   }
 ];
 

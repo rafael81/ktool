@@ -86,6 +86,12 @@ Tool pages also include:
 | `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
 | `image_resize_reset` | Image resizer is reset | none |
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
+| `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |
+| `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
+| `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
+| `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size` |
+| `image_convert_reset` | Image converter is reset | none |
+| `image_convert_validation_error` | Image converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 
 Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
 
@@ -95,12 +101,12 @@ Browser-local file tools should follow this event shape:
 
 ```text
 file_select or sample_apply
-  -> generate/compress/resize success
+  -> generate/compress/resize/convert success
   -> download
 
 validation_error
   -> user corrects input
-  -> generate/compress/resize success
+  -> generate/compress/resize/convert success
 ```
 
 File tool payloads may include only aggregate file counts, total bytes, MIME buckets, output settings, and output sizes. They must not include filenames, image bytes, OCR text, document content, addresses, or business identifiers.

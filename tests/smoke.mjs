@@ -23,7 +23,8 @@ const routes = [
   { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true },
   { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true },
   { path: "/tools/photo-size-reducer/", h1: "사진 용량 줄이기", faq: true, imageCompressor: true },
-  { path: "/tools/image-resizer/", h1: "이미지 리사이즈", faq: true, imageResizer: true }
+  { path: "/tools/image-resizer/", h1: "이미지 리사이즈", faq: true, imageResizer: true },
+  { path: "/tools/image-converter/", h1: "WebP JPG 변환", faq: true, imageConverter: true }
 ];
 
 function assert(condition, message) {
@@ -176,6 +177,34 @@ async function run() {
         );
       }
 
+      if (route.imageConverter) {
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".convert-row").length === 2);
+        await page.locator("[data-convert]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("변환 완료") && link?.href.startsWith("blob:");
+        });
+        const firstResult = await page.locator("[data-download-image]").first().evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            sourceType: link.dataset.sourceType,
+            outputFormat: link.dataset.outputFormat,
+            afterSize: Number(link.dataset.afterSize || 0),
+            magic: Array.from(bytes.slice(0, 3))
+          };
+        });
+        assert(
+          firstResult.sourceType === "image/webp" &&
+            firstResult.outputFormat === "image/jpeg" &&
+            firstResult.afterSize > 0 &&
+            firstResult.magic.join(",") === "255,216,255",
+          `${route.path} should convert the WebP sample to a JPG blob`
+        );
+      }
+
       await page.close();
     }
 
@@ -189,15 +218,17 @@ async function run() {
 
 async function assertFileAnalyticsPrivacy(browser) {
   const secret = "SECRET-FILENAME-777";
-  const events = [];
-  const leakedRequests = [];
-  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const fileToolPaths = ["/tools/image-resizer/", "/tools/image-converter/"];
   const onePixelPng = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
     "base64"
   );
 
-  try {
+  for (const toolPath of fileToolPaths) {
+    const events = [];
+    const leakedRequests = [];
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+
     await page.exposeFunction("captureFileEvent", (payload) => {
       events.push(payload);
     });
@@ -212,19 +243,24 @@ async function assertFileAnalyticsPrivacy(browser) {
       if (target.includes(secret)) leakedRequests.push(request.url());
     });
 
-    await page.goto(`${baseUrl}/tools/image-resizer/`, { waitUntil: "networkidle" });
-    await page.locator("[data-image-input]").setInputFiles({
-      name: `${secret}.png`,
-      mimeType: "image/png",
-      buffer: onePixelPng
-    });
-    await page.waitForFunction(() => document.querySelector("[data-file-label]")?.textContent?.includes("1장"));
+    try {
+      await page.goto(`${baseUrl}${toolPath}`, { waitUntil: "networkidle" });
+      await page.locator("[data-image-input]").setInputFiles({
+        name: `${secret}.png`,
+        mimeType: "image/png",
+        buffer: onePixelPng
+      });
+      await page.waitForFunction(() => document.querySelector("[data-file-label]")?.textContent?.includes("1장"));
 
-    const eventText = JSON.stringify(events);
-    assert(!eventText.includes(secret), "File analytics event payload leaked the uploaded filename");
-    assert(leakedRequests.length === 0, `Network request leaked uploaded filename: ${leakedRequests.join(", ")}`);
-  } finally {
-    await page.close();
+      const eventText = JSON.stringify(events);
+      assert(!eventText.includes(secret), `${toolPath} analytics event payload leaked the uploaded filename`);
+      assert(
+        leakedRequests.length === 0,
+        `${toolPath} network request leaked uploaded filename: ${leakedRequests.join(", ")}`
+      );
+    } finally {
+      await page.close();
+    }
   }
 }
 
