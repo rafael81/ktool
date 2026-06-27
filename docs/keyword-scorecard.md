@@ -2,7 +2,7 @@
 
 Generated: 2026-06-25 KST
 Project: K문서툴
-Status: v0.2, Naver DataLab demand added, ready for first-sprint spec
+Status: v0.3, Naver DataLab demand added, active improvement loop
 
 ## Implementation Update
 
@@ -20,8 +20,10 @@ Implemented and deployed:
 - 3.3% 계산기
 - 도장 배경 제거
 - JPG PDF 변환
+- 사진 용량 줄이기
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
+The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
 
 ## Decision
 
@@ -156,7 +158,7 @@ Reference URLs checked:
 | 24 | PDF 서명 | PDF | PDF에 서명/도장 이미지를 넣어야 함 | 2 | Adobe, Smallpdf, iLovePDF, e-sign platforms | 2 | 4 | 3 | 4 | 3 | 18 | EXPLORE | Could pair with stamp/nameplate later, not first. |
 | 25 | PDF 페이지 삭제 | PDF | PDF에서 특정 페이지를 삭제해야 함 | 4 | iLovePDF, Smallpdf, PDF24, AddPDF | 2 | 3 | 3 | 3 | 4 | 19 | DEFER | Useful but too commodity. |
 | 26 | PDF 회전 | PDF | 스캔 PDF 방향을 돌려야 함 | 3 | iLovePDF, Smallpdf, PDF24 | 2 | 2 | 4 | 3 | 5 | 19 | DEFER | Easy but low differentiation. |
-| 27 | 사진 용량 줄이기 | Image | 사진 파일을 업로드/제출 가능한 크기로 줄여야 함 | 5 | iLoveIMG, imgPresso, ResizePixel, Adobe Express, blogs | 2 | 3 | 4 | 4 | 5 | 23 | EXPLORE | Demand is strong, but broader image utility is less differentiated than Korean business-doc pages. |
+| 27 | 사진 용량 줄이기 | Image | 사진 파일을 업로드/제출 가능한 크기로 줄여야 함 | 5 | iLoveIMG, imgPresso, ResizePixel, Adobe Express, blogs | 2 | 3 | 4 | 4 | 5 | 23 | **BUILD** | Built as the first image category wedge after business/PDF pages, with browser-local compression and a document-submission angle. |
 | 28 | 이미지 압축 | Image | JPG/PNG/GIF 용량을 줄여야 함 | 5 | iLoveIMG, TinyPNG-like guides, imgPresso, ResizePixel | 2 | 3 | 4 | 4 | 5 | 23 | EXPLORE | Viable later with browser-local privacy angle. |
 | 29 | 이미지 리사이즈 | Image | 특정 가로/세로 크기로 줄여야 함 | 4 | Adobe Express, ResizePixel, Shrink.media, blogs | 2 | 3 | 5 | 4 | 5 | 23 | EXPLORE | Easy, but not Korean-specific enough for first 3. |
 | 30 | HEIC JPG 변환 | Image | iPhone HEIC 사진을 JPG로 바꿔야 함 | 5 | iLoveIMG, Convertio, CleverPDF, PDF24, iMazing | 2 | 3 | 3 | 4 | 5 | 22 | EXPLORE | Useful, but browser HEIC support/dependency size must be checked. |
@@ -278,10 +280,10 @@ Acceptance gate:
 ## Deferred But Promising
 
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
-- 사진 용량 줄이기 / 이미지 압축: broad demand, but only worth doing after the Korean business-doc wedge proves traffic.
+- 사진 용량 줄이기 / 이미지 압축: built as the first image utility after the Korean business-doc and JPG PDF wedges shipped.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 
 ## Next Step
 
-Create `docs/first-sprint-spec.md` from the 3 selected tools above before app scaffolding.
+Use crawl and analytics data to decide whether the next loop should improve `사진 용량 줄이기` conversion, add `이미지 리사이즈`, or return to a Korean business-document form.

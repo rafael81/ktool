@@ -28,6 +28,7 @@ After verification:
    - `https://k-document-tool.pages.dev/tools/`
    - `https://k-document-tool.pages.dev/categories/business/`
    - `https://k-document-tool.pages.dev/categories/pdf/`
+   - `https://k-document-tool.pages.dev/categories/image/`
    - `https://k-document-tool.pages.dev/tools/business-nameplate-maker/`
    - `https://k-document-tool.pages.dev/tools/transaction-statement-generator/`
    - `https://k-document-tool.pages.dev/tools/estimate-generator/`
@@ -38,8 +39,9 @@ After verification:
    - `https://k-document-tool.pages.dev/tools/freelance-withholding-calculator/`
    - `https://k-document-tool.pages.dev/tools/stamp-background-remover/`
    - `https://k-document-tool.pages.dev/tools/jpg-to-pdf-converter/`
+   - `https://k-document-tool.pages.dev/tools/photo-size-reducer/`
 
-The PDF category is now indexable because the first live PDF tool has shipped.
+The PDF and image categories are now indexable because each has a live browser-local tool.
 
 If Google gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
 If Google gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`, rebuild, and redeploy.
@@ -53,7 +55,7 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same fourteen indexable URLs listed above.
+2. Request collection for the same sixteen indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
 
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.

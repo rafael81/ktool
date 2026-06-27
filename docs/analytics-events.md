@@ -74,6 +74,12 @@ Tool pages also include:
 | `jpg_pdf_download` | JPG PDF converter download link is clicked | `file_count`, `output_size`, `page_size`, `margin` |
 | `jpg_pdf_reset` | JPG PDF converter is reset | none |
 | `jpg_pdf_validation_error` | JPG PDF converter blocks invalid input or generation failure | `reason`, optional `file_count`, optional `total_size` |
+| `image_compressor_file_select` | Photo size reducer images are selected | `file_count`, `total_size`, `file_types` |
+| `image_compressor_sample_apply` | Photo size reducer sample images are applied | `file_count` |
+| `image_compressor_compress` | Photo size reducer creates compressed image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `max_side`, `file_types` |
+| `image_compressor_download` | Photo size reducer download link is clicked | `output_format`, `before_size`, `after_size` |
+| `image_compressor_reset` | Photo size reducer is reset | none |
+| `image_compressor_validation_error` | Photo size reducer blocks invalid input or compression failure | `reason`, optional `file_count`, optional `total_size` |
 
 Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
 

@@ -1,0 +1,701 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("image-compressor");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 업로드 제한에 걸리는 사진을 제출 가능한 크기로 빠르게 정리합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="compress-workspace" data-image-compressor>
+      <form class="panel compress-panel" aria-label="사진 용량 줄이기 입력">
+        <div class="panel-title">
+          <h2>이미지 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>이미지 파일</span>
+          <span class="file-control">
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <span data-file-label>JPG/PNG/WebP 여러 장 선택</span>
+          </span>
+        </label>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>출력 형식</span>
+            <select data-output-format>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>최대 크기</span>
+            <select data-max-side>
+              <option value="1600">긴 변 1600px</option>
+              <option value="1200">긴 변 1200px</option>
+              <option value="2000">긴 변 2000px</option>
+              <option value="original">원본 크기 유지</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field range-field">
+          <span>품질 <strong data-quality-label>82</strong></span>
+          <input data-quality type="range" min="45" max="95" step="1" value="82" />
+        </label>
+
+        <p class="note-box">
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 원본 이미지는 바꾸지 않고 새 압축 파일을 만듭니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-compress disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16M7 4v6M17 4v6M6 17h12M9 14v6M15 14v6"/></svg>
+            <span data-compress-label>용량 줄이기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel compress-preview-panel" aria-label="이미지 압축 결과">
+        <div class="panel-title">
+          <h2>압축 결과</h2>
+          <span class="format-badge" data-format-badge>JPG</span>
+        </div>
+
+        <div class="compress-summary">
+          <span>상태</span>
+          <strong data-output-status>이미지를 선택하면 용량을 줄일 수 있습니다.</strong>
+          <p data-output-meta>압축된 파일은 아직 준비되지 않았습니다.</p>
+        </div>
+
+        <div class="compress-list" data-compress-list aria-live="polite">
+          <p class="empty-state">선택된 이미지가 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>이미지는 브라우저 캔버스에서만 처리합니다.</span></li>
+          <li><span class="status-dot"></span><span>파일명과 원본 이미지는 분석 이벤트로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>PNG 투명 배경은 흰 배경으로 합성될 수 있습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>용량을 줄일 JPG, PNG, WebP 이미지를 선택합니다.</li>
+        <li>출력 형식, 최대 크기, 품질을 조절합니다.</li>
+        <li>용량 줄이기를 누른 뒤 준비된 압축 이미지를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-image-compressor]");
+      if (!root) return;
+
+      const maxFiles = 20;
+      const maxFileSize = 12 * 1024 * 1024;
+      const maxTotalSize = 50 * 1024 * 1024;
+      const input = root.querySelector("[data-image-input]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const outputFormat = root.querySelector("[data-output-format]");
+      const maxSideSelect = root.querySelector("[data-max-side]");
+      const qualityInput = root.querySelector("[data-quality]");
+      const qualityLabel = root.querySelector("[data-quality-label]");
+      const formatBadge = root.querySelector("[data-format-badge]");
+      const compressButton = root.querySelector("[data-compress]");
+      const compressLabel = root.querySelector("[data-compress-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const compressList = root.querySelector("[data-compress-list]");
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let nextItemId = 1;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "image-compressor",
+          tool_title: "사진 용량 줄이기",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+        if (bytes >= 1024) return `${Math.round(bytes / 1024)}KB`;
+        return `${bytes}B`;
+      }
+
+      function toFiles(items = fileItems) {
+        return items.map((item) => item.file);
+      }
+
+      function totalSize(nextFiles = toFiles()) {
+        return nextFiles.reduce((sum, file) => sum + file.size, 0);
+      }
+
+      function totalOutputSize(items = fileItems) {
+        return items.reduce((sum, item) => sum + (item.result?.size || 0), 0);
+      }
+
+      function fileTypes(nextFiles = toFiles()) {
+        return [...new Set(nextFiles.map((file) => file.type || "unknown"))].join(",");
+      }
+
+      function outputExtension() {
+        return outputFormat.value === "image/webp" ? "webp" : "jpg";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setBusy(isBusy) {
+        compressButton.disabled = isBusy || fileItems.length === 0;
+        compressLabel.textContent = isBusy ? "압축 중" : "용량 줄이기";
+      }
+
+      function releaseResult(item) {
+        if (item.result?.url) URL.revokeObjectURL(item.result.url);
+        item.result = null;
+      }
+
+      function releaseItems(items = fileItems) {
+        for (const item of items) {
+          URL.revokeObjectURL(item.previewUrl);
+          releaseResult(item);
+        }
+      }
+
+      function createFileItems(nextFiles) {
+        return nextFiles.map((file) => ({
+          id: nextItemId++,
+          file,
+          previewUrl: URL.createObjectURL(file),
+          result: null
+        }));
+      }
+
+      function setFileItems(nextFiles) {
+        releaseItems();
+        fileItems = createFileItems(nextFiles);
+        renderFiles();
+      }
+
+      function renderFiles() {
+        compressButton.disabled = fileItems.length === 0;
+        formatBadge.textContent = outputFormat.value === "image/webp" ? "WebP" : "JPG";
+        qualityLabel.textContent = qualityInput.value;
+
+        if (fileItems.length === 0) {
+          fileLabel.textContent = "JPG/PNG/WebP 여러 장 선택";
+          compressList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
+          setMessage("이미지를 선택하면 용량을 줄일 수 있습니다.", "압축된 파일은 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        fileLabel.textContent = `${formatter.format(fileItems.length)}장 선택`;
+        compressList.innerHTML = fileItems
+          .map((item, index) => {
+            const result = item.result;
+            const saved = result ? Math.max(0, item.file.size - result.size) : 0;
+            const savedRate = result ? Math.round((saved / item.file.size) * 100) : 0;
+            return `
+              <div class="compress-row" data-compress-row>
+                <img src="${item.previewUrl}" alt="" loading="lazy" />
+                <div>
+                  <strong>${index + 1}번 이미지</strong>
+                  <p>${formatBytes(item.file.size)}${result ? ` → ${formatBytes(result.size)} (${savedRate}% 감소)` : " 선택됨"}</p>
+                </div>
+                ${
+                  result
+                    ? `<a class="btn primary" href="${result.url}" download="compressed-image-${index + 1}.${outputExtension()}" data-download-image data-before-size="${item.file.size}" data-after-size="${result.size}">저장</a>`
+                    : '<span class="pending-badge">대기</span>'
+                }
+              </div>
+            `;
+          })
+          .join("");
+
+        const readyCount = fileItems.filter((item) => item.result).length;
+        if (readyCount > 0) {
+          setMessage(
+            `압축 완료: ${formatter.format(readyCount)}장`,
+            `총 ${formatBytes(totalSize())} → ${formatBytes(totalOutputSize())}`
+          );
+        } else {
+          setMessage(
+            `${formatter.format(fileItems.length)}장 선택됨`,
+            `총 ${formatBytes(totalSize())}, 용량 줄이기를 누르면 압축합니다.`
+          );
+        }
+      }
+
+      function validateFiles(nextFiles) {
+        if (nextFiles.length === 0) return { ok: false, reason: "empty" };
+        if (nextFiles.length > maxFiles) return { ok: false, reason: "too_many_files" };
+        if (totalSize(nextFiles) > maxTotalSize) return { ok: false, reason: "total_size_too_large" };
+        for (const file of nextFiles) {
+          if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+            return { ok: false, reason: "unsupported_file_type" };
+          }
+          if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        }
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "이미지는 최대 20장까지 선택할 수 있습니다.";
+        if (reason === "total_size_too_large") return "전체 이미지 용량은 50MB 이하로 선택해 주세요.";
+        if (reason === "file_too_large") return "이미지 한 장은 12MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "JPG, PNG, WebP 이미지만 사용할 수 있습니다.";
+        return "용량을 줄일 이미지를 선택해 주세요.";
+      }
+
+      function imageFromFile(file) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(file);
+          const image = new Image();
+          image.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(image);
+          };
+          image.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("image_decode_failed"));
+          };
+          image.src = url;
+        });
+      }
+
+      function canvasToBlob(canvas, type, quality) {
+        return new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error("canvas_export_failed"));
+            },
+            type,
+            quality
+          );
+        });
+      }
+
+      async function compressItem(item) {
+        const image = await imageFromFile(item.file);
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+        if (!sourceWidth || !sourceHeight) throw new Error("image_decode_failed");
+
+        const maxSide = maxSideSelect.value === "original" ? Infinity : Number(maxSideSelect.value);
+        const scale = Math.min(1, maxSide / Math.max(sourceWidth, sourceHeight));
+        const width = Math.max(1, Math.round(sourceWidth * scale));
+        const height = Math.max(1, Math.round(sourceHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(image, 0, 0, width, height);
+        const blob = await canvasToBlob(canvas, outputFormat.value, Number(qualityInput.value) / 100);
+        releaseResult(item);
+        item.result = {
+          size: blob.size,
+          url: URL.createObjectURL(blob),
+          width,
+          height
+        };
+      }
+
+      async function compressImages() {
+        const validation = validateFiles(toFiles());
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "파일을 다시 선택한 뒤 시도해 주세요.");
+          track("image_compressor_validation_error", { reason: validation.reason });
+          return;
+        }
+
+        setBusy(true);
+        setMessage("이미지 압축 중", `${formatter.format(fileItems.length)}장 이미지를 정리하고 있습니다.`);
+        try {
+          for (const item of fileItems) {
+            await compressItem(item);
+          }
+          renderFiles();
+          track("image_compressor_compress", {
+            file_count: fileItems.length,
+            total_size: totalSize(),
+            output_size: totalOutputSize(),
+            output_format: outputFormat.value,
+            quality: Number(qualityInput.value),
+            max_side: maxSideSelect.value,
+            file_types: fileTypes()
+          });
+        } catch (error) {
+          setMessage("이미지를 압축하지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
+          track("image_compressor_validation_error", {
+            reason: error?.message || "compression_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function sampleFile(label, color, width, height) {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(1, "#eef3f6");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = color;
+        ctx.fillRect(0, Math.round(height * 0.62), width, Math.round(height * 0.38));
+        ctx.fillStyle = "rgba(255,255,255,0.76)";
+        for (let i = 0; i < 22; i += 1) {
+          ctx.beginPath();
+          ctx.arc((i * 193) % width, (i * 137) % height, 42 + (i % 5) * 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "#14212f";
+        ctx.font = "900 72px sans-serif";
+        ctx.fillText(label, 90, 160);
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], `${label}.jpg`, { type: "image/jpeg" }));
+          }, "image/jpeg", 0.96);
+        });
+      }
+
+      input.addEventListener("change", (event) => {
+        const nextFiles = Array.from(event.target.files || []);
+        const validation = validateFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setFileItems([]);
+          input.value = "";
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("image_compressor_validation_error", {
+            reason: validation.reason,
+            file_count: nextFiles.length,
+            total_size: totalSize(nextFiles)
+          });
+          return;
+        }
+        setFileItems(nextFiles);
+        track("image_compressor_file_select", {
+          file_count: fileItems.length,
+          total_size: totalSize(),
+          file_types: fileTypes()
+        });
+      });
+
+      for (const control of [outputFormat, maxSideSelect, qualityInput]) {
+        control.addEventListener("input", () => {
+          for (const item of fileItems) releaseResult(item);
+          renderFiles();
+        });
+      }
+
+      sampleButton.addEventListener("click", async () => {
+        setFileItems([
+          await sampleFile("sample-photo", "#117a7a", 2400, 1600),
+          await sampleFile("document-photo", "#b54708", 1800, 2400)
+        ]);
+        input.value = "";
+        track("image_compressor_sample_apply", { file_count: fileItems.length });
+      });
+
+      resetButton.addEventListener("click", () => {
+        setFileItems([]);
+        input.value = "";
+        outputFormat.value = "image/jpeg";
+        maxSideSelect.value = "1600";
+        qualityInput.value = "82";
+        renderFiles();
+        track("image_compressor_reset");
+      });
+
+      compressButton.addEventListener("click", compressImages);
+
+      compressList.addEventListener("click", (event) => {
+        const link =
+          event.target instanceof Element ? event.target.closest("[data-download-image]") : null;
+        if (!link) return;
+        track("image_compressor_download", {
+          output_format: outputFormat.value,
+          before_size: Number(link.dataset.beforeSize || 0),
+          after_size: Number(link.dataset.afterSize || 0)
+        });
+      });
+
+      window.addEventListener("pagehide", () => releaseItems());
+
+      renderFiles();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .compress-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .compress-panel,
+  .compress-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .range-field {
+    margin-top: 12px;
+  }
+
+  .range-field input {
+    padding-inline: 0;
+    accent-color: var(--accent);
+  }
+
+  .range-field strong {
+    color: var(--accent-dark);
+  }
+
+  .format-badge,
+  :global(.pending-badge) {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .compress-summary {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .compress-summary > span,
+  :global(.compress-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .compress-summary strong {
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .compress-summary p,
+  :global(.compress-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .compress-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  :global(.compress-row) {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  :global(.compress-row img) {
+    width: 58px;
+    height: 58px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    object-fit: cover;
+  }
+
+  :global(.compress-row .btn) {
+    min-height: 34px;
+    padding: 8px 10px;
+  }
+
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 1100px) {
+    .compress-workspace {
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+    }
+
+    .compress-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .compress-workspace,
+    .two-columns {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.compress-row) {
+      grid-template-columns: 58px minmax(0, 1fr);
+    }
+
+    :global(.compress-row .btn),
+    :global(.compress-row .pending-badge) {
+      grid-column: 1 / -1;
+      width: 100%;
+      justify-self: stretch;
+      text-align: center;
+    }
+  }
+</style>

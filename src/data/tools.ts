@@ -8,9 +8,10 @@ export type ToolId =
   | "amount-korean"
   | "withholding-tax"
   | "stamp-background"
-  | "jpg-to-pdf";
+  | "jpg-to-pdf"
+  | "image-compressor";
 
-export type ToolCategoryId = "business" | "pdf";
+export type ToolCategoryId = "business" | "pdf" | "image";
 
 export type ToolCategory = {
   id: ToolCategoryId;
@@ -56,6 +57,15 @@ export const toolCategories: ToolCategory[] = [
     path: "/categories/pdf/",
     description:
       "JPG, PNG, WebP 이미지를 PDF로 묶는 파일 도구를 한국 업무 문서 제출 흐름에 맞춰 브라우저에서 처리합니다.",
+    status: "active"
+  },
+  {
+    id: "image",
+    title: "이미지 도구",
+    shortTitle: "이미지",
+    path: "/categories/image/",
+    description:
+      "사진과 이미지 파일을 제출하기 좋은 크기와 용량으로 브라우저에서 줄입니다.",
     status: "active"
   }
 ];
@@ -446,7 +456,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["stamp-background", "business-nameplate"]
+    relatedToolIds: ["image-compressor", "stamp-background"]
+  },
+  {
+    id: "image-compressor",
+    title: "사진 용량 줄이기",
+    shortTitle: "사진압축",
+    path: "/tools/photo-size-reducer/",
+    category: "image",
+    description:
+      "JPG, PNG, WebP 사진과 이미지를 브라우저에서 압축해 제출 가능한 용량으로 줄입니다.",
+    pageTitle: "사진 용량 줄이기 - 이미지 압축 무료",
+    metaDescription:
+      "JPG, PNG, WebP 사진 용량을 브라우저에서 줄이세요. 업로드 없이 품질과 최대 크기를 조절해 제출용 이미지로 압축합니다.",
+    primaryQuery: "사진 용량 줄이기",
+    secondaryQueries: ["이미지 압축", "JPG 용량 줄이기", "PNG 용량 줄이기", "사진 파일 크기 줄이기"],
+    userMoment: "사진 파일이 이메일, 관공서, 학교, 회사 시스템 업로드 제한보다 클 때",
+    featureList: [
+      "여러 이미지 일괄 압축",
+      "JPG/WebP 출력 선택",
+      "품질 조절",
+      "최대 긴 변 크기 조절",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "사진이 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["여러 장을 한 번에 줄일 수 있나요?", "네. 최대 20장, 총 50MB까지 선택해 한 번에 압축할 수 있습니다."],
+      ["JPG와 PNG 모두 가능한가요?", "JPG, PNG, WebP 이미지를 선택할 수 있고, 출력은 제출 호환성이 좋은 JPG 또는 용량 효율이 좋은 WebP 중에서 고를 수 있습니다."],
+      ["이미지 크기도 줄일 수 있나요?", "네. 긴 변 기준으로 1200px, 1600px, 2000px 또는 원본 크기를 선택할 수 있습니다."],
+      ["화질은 어떻게 조절하나요?", "품질 값을 높이면 화질이 좋아지고 파일이 커질 수 있습니다. 제출용은 75~85 정도가 무난합니다."],
+      [
+        "원본 파일이 바뀌나요?",
+        "아니요. 원본 파일은 그대로 두고 압축된 새 이미지 파일을 저장합니다."
+      ]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["jpg-to-pdf", "stamp-background"]
   }
 ];
 

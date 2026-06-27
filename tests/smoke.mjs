@@ -11,6 +11,7 @@ const routes = [
   { path: "/tools/", h1: "전체 도구" },
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
+  { path: "/categories/image/", h1: "이미지 도구" },
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true, documentPreview: true },
@@ -20,7 +21,8 @@ const routes = [
   { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true },
   { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true },
   { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true },
-  { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true }
+  { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true },
+  { path: "/tools/photo-size-reducer/", h1: "사진 용량 줄이기", faq: true, imageCompressor: true }
 ];
 
 function assert(condition, message) {
@@ -136,6 +138,21 @@ async function run() {
         });
         const fileCount = await page.locator(".file-row").count();
         assert(fileCount === 2, `${route.path} should render two sample image rows`);
+      }
+
+      if (route.imageCompressor) {
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".compress-row").length === 2);
+        await page.locator("[data-compress]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("압축 완료") && link?.href.startsWith("blob:");
+        });
+        const didReduce = await page.locator("[data-download-image]").first().evaluate((link) => {
+          return Number(link.dataset.afterSize || 0) < Number(link.dataset.beforeSize || 0);
+        });
+        assert(didReduce, `${route.path} should reduce the sample image size`);
       }
 
       await page.close();
