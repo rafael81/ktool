@@ -104,6 +104,12 @@ Tool pages also include:
 | `image_crop_download` | Image cropper download link is clicked | `output_format`, `after_size`, `output_width`, `output_height` |
 | `image_crop_reset` | Image cropper is reset | none |
 | `image_crop_validation_error` | Image cropper blocks invalid input or crop failure | `reason`, optional `file_count`, optional `total_size` |
+| `image_rotate_file_select` | Image rotator images are selected | `file_count`, `total_size`, `file_types` |
+| `image_rotate_sample_apply` | Image rotator sample images are applied | `file_count` |
+| `image_rotate_rotate` | Image rotator creates rotated image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `rotation_angle`, `file_types` |
+| `image_rotate_download` | Image rotator download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height`, `rotation_angle` |
+| `image_rotate_reset` | Image rotator is reset | none |
+| `image_rotate_validation_error` | Image rotator blocks invalid input or rotation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |
 | `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
 | `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |

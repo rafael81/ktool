@@ -1,0 +1,664 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("image-rotator");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 옆으로 누운 스캔본이나 휴대폰 사진을 제출 전에 올바른 방향으로 정리합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="rotate-workspace" data-image-rotator>
+      <form class="panel rotate-panel" aria-label="이미지 회전 입력">
+        <div class="panel-title">
+          <h2>이미지 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>이미지 파일</span>
+          <span class="file-control">
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <span data-file-label>JPG/PNG/WebP 여러 장 선택</span>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>회전 방향</span>
+          <select data-rotation-angle>
+            <option value="90">오른쪽 90도</option>
+            <option value="-90">왼쪽 90도</option>
+            <option value="180">180도</option>
+          </select>
+        </label>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>출력 형식</span>
+            <select data-output-format>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </label>
+          <label class="field range-field">
+            <span>품질 <strong data-quality-label>90</strong></span>
+            <input data-quality type="range" min="50" max="95" step="1" value="90" />
+          </label>
+        </div>
+
+        <p class="note-box">
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 원본 이미지는 바꾸지 않고 회전된 새 파일을 만듭니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-rotate disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 3v6h-6"/></svg>
+            <span data-rotate-label>회전하기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel rotate-preview-panel" aria-label="이미지 회전 결과">
+        <div class="panel-title">
+          <h2>회전 결과</h2>
+          <span class="format-badge" data-format-badge>JPG</span>
+        </div>
+
+        <div class="rotate-summary">
+          <span>상태</span>
+          <strong data-output-status>이미지를 선택하면 방향을 돌릴 수 있습니다.</strong>
+          <p data-output-meta>회전된 파일은 아직 준비되지 않았습니다.</p>
+        </div>
+
+        <div class="rotate-list" data-rotate-list aria-live="polite">
+          <p class="empty-state">선택된 이미지가 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>이미지는 브라우저 캔버스에서만 처리합니다.</span></li>
+          <li><span class="status-dot"></span><span>파일명과 원본 이미지는 분석 이벤트로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>JPG 출력은 투명 영역을 흰 배경으로 저장합니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>회전할 JPG, PNG, WebP 이미지를 선택합니다.</li>
+        <li>왼쪽 90도, 오른쪽 90도, 180도 중 회전 방향을 고릅니다.</li>
+        <li>회전하기를 누른 뒤 준비된 이미지를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-image-rotator]");
+      if (!root) return;
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) return;
+
+      const maxFiles = 20;
+      const maxFileSize = 12 * 1024 * 1024;
+      const maxTotalSize = 50 * 1024 * 1024;
+      const input = root.querySelector("[data-image-input]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const rotationAngle = root.querySelector("[data-rotation-angle]");
+      const outputFormat = root.querySelector("[data-output-format]");
+      const qualityInput = root.querySelector("[data-quality]");
+      const qualityLabel = root.querySelector("[data-quality-label]");
+      const formatBadge = root.querySelector("[data-format-badge]");
+      const rotateButton = root.querySelector("[data-rotate]");
+      const rotateLabel = root.querySelector("[data-rotate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const rotateList = root.querySelector("[data-rotate-list]");
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let nextItemId = 1;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "image-rotator",
+          tool_title: "이미지 회전",
+          ...params
+        });
+      }
+
+      function toFiles(items = fileItems) {
+        return items.map((item) => item.file);
+      }
+
+      function totalSize(files = toFiles()) {
+        return fileTools.totalSize(files);
+      }
+
+      function totalOutputSize(items = fileItems) {
+        return items.reduce((sum, item) => sum + (item.result?.size || 0), 0);
+      }
+
+      function outputExtension() {
+        return fileTools.outputExtension(outputFormat.value);
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setBusy(isBusy) {
+        rotateButton.disabled = isBusy || fileItems.length === 0;
+        rotateLabel.textContent = isBusy ? "처리 중" : "회전하기";
+      }
+
+      function rotationLabel() {
+        if (rotationAngle.value === "-90") return "왼쪽 90도";
+        if (rotationAngle.value === "180") return "180도";
+        return "오른쪽 90도";
+      }
+
+      function validationMessage(reason) {
+        return fileTools.validationMessage(reason, "회전할 이미지를 선택해 주세요.");
+      }
+
+      function validateFiles(files) {
+        return fileTools.validateImageFiles(files, { maxFiles, maxFileSize, maxTotalSize });
+      }
+
+      function releaseResult(item) {
+        fileTools.revokeResult(item.result);
+        item.result = null;
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function setFileItems(nextFiles) {
+        releaseItems();
+        fileItems = fileTools.createFileItems(nextFiles, () => nextItemId++);
+        renderFiles();
+      }
+
+      function updateControlState() {
+        formatBadge.textContent = outputExtension().toUpperCase();
+        qualityLabel.textContent = qualityInput.value;
+      }
+
+      function renderFiles() {
+        updateControlState();
+        rotateButton.disabled = fileItems.length === 0;
+
+        if (fileItems.length === 0) {
+          fileLabel.textContent = "JPG/PNG/WebP 여러 장 선택";
+          rotateList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
+          setMessage("이미지를 선택하면 방향을 돌릴 수 있습니다.", "회전된 파일은 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        fileLabel.textContent = `${formatter.format(fileItems.length)}장 선택`;
+        rotateList.innerHTML = fileItems
+          .map((item, index) => {
+            const result = item.result;
+            return `
+              <div class="rotate-row">
+                <img src="${result?.url || item.previewUrl}" alt="" loading="lazy" />
+                <div>
+                  <strong>${index + 1}번 이미지</strong>
+                  <p>${fileTools.formatBytes(item.file.size)}${result ? ` → ${fileTools.formatBytes(result.size)} · ${result.width}×${result.height}px` : ` 선택됨 · ${rotationLabel()}`}</p>
+                </div>
+                ${
+                  result
+                    ? `<a class="btn primary" href="${result.url}" download="rotated-image-${index + 1}.${outputExtension()}" data-download-image data-before-size="${item.file.size}" data-after-size="${result.size}" data-output-width="${result.width}" data-output-height="${result.height}" data-output-format="${outputFormat.value}">저장</a>`
+                    : '<span class="pending-badge">대기</span>'
+                }
+              </div>
+            `;
+          })
+          .join("");
+
+        const readyCount = fileItems.filter((item) => item.result).length;
+        if (readyCount > 0) {
+          setMessage(
+            `회전 완료: ${formatter.format(readyCount)}장`,
+            `총 ${fileTools.formatBytes(totalSize())} → ${fileTools.formatBytes(totalOutputSize())}`
+          );
+        } else {
+          setMessage(
+            `${formatter.format(fileItems.length)}장 선택됨`,
+            `${rotationLabel()} 방향으로 회전합니다.`
+          );
+        }
+      }
+
+      function normalizedAngle() {
+        const angle = Number(rotationAngle.value);
+        return Number.isFinite(angle) ? angle : 90;
+      }
+
+      async function rotateItem(item) {
+        const image = await fileTools.imageFromFile(item.file);
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+        if (!sourceWidth || !sourceHeight) throw new Error("image_decode_failed");
+
+        const angle = normalizedAngle();
+        const turnsQuarter = Math.abs(angle) === 90;
+        const canvas = document.createElement("canvas");
+        canvas.width = turnsQuarter ? sourceHeight : sourceWidth;
+        canvas.height = turnsQuarter ? sourceWidth : sourceHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("canvas_context_unavailable");
+        if (outputFormat.value === "image/jpeg") {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.drawImage(image, -sourceWidth / 2, -sourceHeight / 2, sourceWidth, sourceHeight);
+
+        const blob = await fileTools.canvasToBlob(
+          canvas,
+          outputFormat.value,
+          Number(qualityInput.value) / 100
+        );
+        releaseResult(item);
+        item.result = {
+          size: blob.size,
+          url: URL.createObjectURL(blob),
+          width: canvas.width,
+          height: canvas.height
+        };
+      }
+
+      async function rotateImages() {
+        const files = toFiles();
+        const validation = validateFiles(files);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("image_rotate_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+
+        setBusy(true);
+        setMessage("이미지 회전 중", `${formatter.format(fileItems.length)}장 이미지를 정리하고 있습니다.`);
+        try {
+          for (const item of fileItems) {
+            await rotateItem(item);
+          }
+          renderFiles();
+          track("image_rotate_rotate", {
+            ...fileTools.safeFileAnalyticsPayload(files),
+            output_size: totalOutputSize(),
+            output_format: outputFormat.value,
+            quality: Number(qualityInput.value),
+            rotation_angle: normalizedAngle()
+          });
+        } catch (error) {
+          setMessage("이미지를 회전하지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
+          track("image_rotate_validation_error", {
+            reason: error?.message || "rotate_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function sampleFile(label, color, width, height) {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(1, "#eef3f6");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = color;
+        ctx.fillRect(Math.round(width * 0.08), Math.round(height * 0.18), Math.round(width * 0.52), Math.round(height * 0.56));
+        ctx.fillStyle = "#f3b44b";
+        ctx.fillRect(Math.round(width * 0.65), Math.round(height * 0.22), Math.round(width * 0.22), Math.round(height * 0.42));
+        ctx.strokeStyle = "rgba(20,33,47,0.22)";
+        ctx.lineWidth = Math.max(8, Math.round(width * 0.008));
+        ctx.strokeRect(Math.round(width * 0.05), Math.round(height * 0.06), Math.round(width * 0.9), Math.round(height * 0.88));
+        ctx.fillStyle = "#14212f";
+        ctx.font = `900 ${Math.round(width * 0.06)}px sans-serif`;
+        ctx.fillText(label, Math.round(width * 0.1), Math.round(height * 0.18));
+        ctx.font = `700 ${Math.round(width * 0.028)}px sans-serif`;
+        ctx.fillText(`${width} x ${height}`, Math.round(width * 0.1), Math.round(height * 0.25));
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], `${label}.jpg`, { type: "image/jpeg" }));
+          }, "image/jpeg", 0.94);
+        });
+      }
+
+      input.addEventListener("change", (event) => {
+        const nextFiles = Array.from(event.target.files || []);
+        const validation = validateFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setFileItems([]);
+          input.value = "";
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("image_rotate_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(nextFiles)
+          });
+          return;
+        }
+        setFileItems(nextFiles);
+        track("image_rotate_file_select", {
+          ...fileTools.safeFileAnalyticsPayload(toFiles())
+        });
+      });
+
+      for (const control of [rotationAngle, outputFormat, qualityInput]) {
+        control.addEventListener("input", () => {
+          for (const item of fileItems) releaseResult(item);
+          renderFiles();
+        });
+        control.addEventListener("change", () => {
+          for (const item of fileItems) releaseResult(item);
+          renderFiles();
+        });
+      }
+
+      sampleButton.addEventListener("click", async () => {
+        setFileItems([
+          await sampleFile("scan-sideways", "#117a7a", 1800, 1200),
+          await sampleFile("receipt-sideways", "#b54708", 1600, 1000)
+        ]);
+        input.value = "";
+        track("image_rotate_sample_apply", { file_count: fileItems.length });
+      });
+
+      resetButton.addEventListener("click", () => {
+        setFileItems([]);
+        input.value = "";
+        rotationAngle.value = "90";
+        outputFormat.value = "image/jpeg";
+        qualityInput.value = "90";
+        renderFiles();
+        track("image_rotate_reset");
+      });
+
+      rotateButton.addEventListener("click", rotateImages);
+
+      rotateList.addEventListener("click", (event) => {
+        const link =
+          event.target instanceof Element ? event.target.closest("[data-download-image]") : null;
+        if (!link) return;
+        track("image_rotate_download", {
+          output_format: link.dataset.outputFormat,
+          before_size: Number(link.dataset.beforeSize || 0),
+          after_size: Number(link.dataset.afterSize || 0),
+          output_width: Number(link.dataset.outputWidth || 0),
+          output_height: Number(link.dataset.outputHeight || 0),
+          rotation_angle: normalizedAngle()
+        });
+      });
+
+      window.addEventListener("pagehide", () => releaseItems());
+
+      renderFiles();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .rotate-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .rotate-panel,
+  .rotate-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .range-field input {
+    padding-inline: 0;
+    accent-color: var(--accent);
+  }
+
+  .range-field strong {
+    color: var(--accent-dark);
+  }
+
+  .format-badge,
+  :global(.pending-badge) {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .rotate-summary {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .rotate-summary > span,
+  :global(.rotate-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .rotate-summary strong {
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .rotate-summary p,
+  :global(.rotate-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .rotate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  :global(.rotate-row) {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  :global(.rotate-row img) {
+    width: 58px;
+    height: 58px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    object-fit: cover;
+  }
+
+  :global(.rotate-row .btn) {
+    min-height: 34px;
+    padding: 8px 10px;
+  }
+
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 1100px) {
+    .rotate-workspace {
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+    }
+
+    .rotate-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .rotate-workspace,
+    .two-columns {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.rotate-row) {
+      grid-template-columns: 58px minmax(0, 1fr);
+    }
+
+    :global(.rotate-row .btn),
+    :global(.rotate-row .pending-badge) {
+      grid-column: 1 / -1;
+      width: 100%;
+      justify-self: stretch;
+      text-align: center;
+    }
+  }
+</style>

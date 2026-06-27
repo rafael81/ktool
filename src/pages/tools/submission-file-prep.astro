@@ -6,11 +6,12 @@ import { collectionPageSchema, faqPageSchema } from "@/data/seo";
 const pagePath = "/tools/submission-file-prep/";
 const pageTitle = "제출용 파일 준비 - 사진 PDF 문서 제출 도구 모음";
 const pageDescription =
-  "사진 용량 줄이기, HEIC JPG 변환, 이미지 자르기, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
+  "사진 용량 줄이기, HEIC JPG 변환, 이미지 회전, 이미지 자르기, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
 
 const primaryTools = [
   getTool("heic-to-jpg"),
   getTool("image-converter"),
+  getTool("image-rotator"),
   getTool("image-cropper"),
   getTool("image-resizer"),
   getTool("image-compressor"),
@@ -38,6 +39,11 @@ const flowGroups = [
         label: "HEIC 사진",
         detail: "iPhone HEIC가 열리지 않으면 먼저 JPG로 바꿉니다.",
         tool: getTool("heic-to-jpg")
+      },
+      {
+        label: "누운 사진",
+        detail: "스캔본이나 사진이 옆으로 누워 있으면 방향을 돌립니다.",
+        tool: getTool("image-rotator")
       },
       {
         label: "용량 초과",
@@ -112,6 +118,7 @@ const flowGroups = [
 
 const situations = [
   { label: "파일 형식이 맞지 않음", tool: getTool("heic-to-jpg") },
+  { label: "사진 방향이 잘못됨", tool: getTool("image-rotator") },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper") },
   { label: "사진 크기 제한이 있음", tool: getTool("image-resizer") },
@@ -139,7 +146,7 @@ const faqs = [
   ],
   [
     "어떤 도구부터 써야 할지 모르겠어요.",
-    "업로드 오류 문구를 기준으로 고르면 쉽습니다. 형식 오류는 변환, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
+    "업로드 오류 문구를 기준으로 고르면 쉽습니다. 형식 오류는 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
   ]
 ] satisfies [string, string][];
 
@@ -166,7 +173,7 @@ const structuredData = [
         <h1>제출용 파일 준비</h1>
         <p>
           관공서, 학교, 회사, 거래처에 파일을 올리기 직전 필요한 형식 변환, 용량 줄이기,
-          이미지 자르기, 크기 조정, PDF 묶기, 업무 문서 작성을 한 흐름으로 고릅니다.
+          이미지 회전, 자르기, 크기 조정, PDF 묶기, 업무 문서 작성을 한 흐름으로 고릅니다.
         </p>
       </div>
       <div class="quick-links" aria-label="제출용 파일 준비 바로가기">

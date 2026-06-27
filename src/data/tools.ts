@@ -12,6 +12,7 @@ export type ToolId =
   | "image-compressor"
   | "image-resizer"
   | "image-cropper"
+  | "image-rotator"
   | "image-converter"
   | "heic-to-jpg";
 
@@ -536,7 +537,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-cropper", "image-converter"]
+    relatedToolIds: ["image-cropper", "image-rotator"]
   },
   {
     id: "image-cropper",
@@ -571,7 +572,42 @@ export const tools: ToolInfo[] = [
       ["여러 장을 한 번에 자를 수 있나요?", "자르기는 영역을 눈으로 확인해야 하는 작업이라 현재는 한 장씩 처리합니다."]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-resizer", "image-compressor"]
+    relatedToolIds: ["image-rotator", "image-resizer"]
+  },
+  {
+    id: "image-rotator",
+    title: "이미지 회전",
+    shortTitle: "이미지회전",
+    path: "/tools/image-rotator/",
+    category: "image",
+    description:
+      "JPG, PNG, WebP 이미지를 브라우저에서 왼쪽, 오른쪽, 180도로 회전해 제출용 이미지로 저장합니다.",
+    pageTitle: "이미지 회전 - 사진 방향 돌리기 무료",
+    metaDescription:
+      "이미지 회전을 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 왼쪽, 오른쪽, 180도로 돌려 저장합니다.",
+    primaryQuery: "이미지 회전",
+    secondaryQueries: ["사진 회전", "JPG 회전", "이미지 방향 돌리기", "스캔본 회전"],
+    userMoment: "스캔본이나 휴대폰 사진이 옆으로 누워 있어 제출 전에 방향을 바로잡아야 할 때",
+    featureList: [
+      "여러 이미지 일괄 회전",
+      "왼쪽 90도/오른쪽 90도/180도 회전",
+      "JPG/PNG/WebP 출력 선택",
+      "JPG/WebP 품질 조절",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["여러 장을 한 번에 회전할 수 있나요?", "네. 최대 20장, 총 50MB까지 선택해 같은 방향으로 한 번에 회전할 수 있습니다."],
+      ["어떤 방향으로 회전할 수 있나요?", "왼쪽 90도, 오른쪽 90도, 180도 회전을 지원합니다."],
+      ["출력 형식은 무엇을 지원하나요?", "JPG, PNG, WebP로 저장할 수 있습니다. 제출 호환성이 중요하면 JPG를 추천합니다."],
+      ["원본 파일이 바뀌나요?", "아니요. 원본 파일은 그대로 두고 회전된 새 이미지 파일을 저장합니다."],
+      ["사진 EXIF 방향 정보도 고쳐지나요?", "이 도구는 브라우저가 읽은 이미지를 실제 픽셀 방향으로 다시 그려 저장합니다. 복잡한 EXIF 메타데이터 보존은 목적에 포함하지 않습니다."]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-cropper", "jpg-to-pdf"]
   },
   {
     id: "image-converter",

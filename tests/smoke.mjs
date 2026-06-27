@@ -26,6 +26,7 @@ const routes = [
   { path: "/tools/photo-size-reducer/", h1: "사진 용량 줄이기", faq: true, imageCompressor: true },
   { path: "/tools/image-resizer/", h1: "이미지 리사이즈", faq: true, imageResizer: true },
   { path: "/tools/image-cropper/", h1: "이미지 자르기", faq: true, imageCropper: true },
+  { path: "/tools/image-rotator/", h1: "이미지 회전", faq: true, imageRotator: true },
   { path: "/tools/image-converter/", h1: "WebP JPG 변환", faq: true, imageConverter: true },
   { path: "/tools/heic-jpg-converter/", h1: "HEIC JPG 변환", faq: true, heicConverter: true }
 ];
@@ -105,6 +106,7 @@ async function run() {
         const expectedLinks = [
           "/tools/heic-jpg-converter/",
           "/tools/photo-size-reducer/",
+          "/tools/image-rotator/",
           "/tools/image-cropper/",
           "/tools/image-resizer/",
           "/tools/jpg-to-pdf-converter/",
@@ -230,6 +232,36 @@ async function run() {
         );
       }
 
+      if (route.imageRotator) {
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".rotate-row").length === 2);
+        await page.locator("[data-rotate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("회전 완료") && link?.href.startsWith("blob:");
+        });
+        const firstResult = await page.locator("[data-download-image]").first().evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputFormat: link.dataset.outputFormat,
+            width: Number(link.dataset.outputWidth || 0),
+            height: Number(link.dataset.outputHeight || 0),
+            afterSize: Number(link.dataset.afterSize || 0),
+            magic: Array.from(bytes.slice(0, 3))
+          };
+        });
+        assert(
+          firstResult.outputFormat === "image/jpeg" &&
+            firstResult.width === 1200 &&
+            firstResult.height === 1800 &&
+            firstResult.afterSize > 0 &&
+            firstResult.magic.join(",") === "255,216,255",
+          `${route.path} should rotate the landscape sample to a portrait JPG blob`
+        );
+      }
+
       if (route.imageConverter) {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".convert-row").length === 2);
@@ -300,6 +332,7 @@ async function assertFileAnalyticsPrivacy(browser) {
   const fileTools = [
     { path: "/tools/image-resizer/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/image-cropper/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
+    { path: "/tools/image-rotator/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/image-converter/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/heic-jpg-converter/", input: "[data-heic-input]", name: `${secret}.heic`, mimeType: "image/heic" }
   ];

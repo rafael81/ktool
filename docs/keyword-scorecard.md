@@ -26,6 +26,7 @@ Implemented and deployed:
 - HEIC JPG 변환
 - 제출용 파일 준비
 - 이미지 자르기
+- 이미지 회전
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
@@ -34,6 +35,7 @@ The third image wedge is WebP JPG 변환 because it reuses the same browser-loca
 The fourth image wedge is HEIC JPG 변환 because iPhone HEIC compatibility is a concrete submission blocker and the decoder can be lazy-loaded only when users convert.
 The submission-prep hub is now added as a cross-tool workflow page because the image/PDF tool set is large enough to route users by upload error or submission condition instead of forcing them to pick a tool name first.
 The fifth image wedge is 이미지 자르기 because it completes the common submission-prep sequence after format, size, and compression: remove irrelevant margins or background before resizing or PDF bundling.
+The sixth image wedge is 이미지 회전 because sideways scan/photo orientation is a common low-friction blocker before crop, resize, and JPG PDF bundling.
 
 ## Decision
 
@@ -191,6 +193,7 @@ Reference URLs checked:
 | 47 | JPG PDF 변환 | PDF/image | 스캔 사진과 증빙 이미지를 한 PDF로 묶어 제출해야 함 | 4 | iLovePDF, Adobe, Smallpdf, PDF24, image converters | 2 | 4 | 4 | 4 | 5 | 23 | **BUILD** | Narrower than generic PDF tools, browser-local, and tied to Korean document submission workflows. |
 | 48 | 제출용 파일 준비 | Workflow hub | 제출처 오류 문구에 맞춰 사진, PDF, 문서 도구를 골라야 함 | 3 | blogs, generic PDF/image tool lists, competitor category pages | 4 | 5 | 5 | 3 | 5 | 25 | **BUILD** | Built as a cross-tool routing page after the image/PDF cluster reached enough breadth to support workflow-led discovery. |
 | 49 | 이미지 자르기 | Image | 사진의 여백, 주변 배경, 불필요한 영역을 제거해야 함 | 4 | Adobe Express, iLoveIMG, Canva, ResizePixel, crop utilities | 2 | 4 | 5 | 3 | 5 | 23 | **BUILD** | Built as the next browser-local submission-prep tool after the workflow hub exposed a clear crop-before-resize/PDF path. |
+| 50 | 이미지 회전 | Image | 옆으로 누운 스캔본이나 사진 방향을 바로잡아야 함 | 3 | iLoveIMG, Adobe Express, ResizePixel, PDF/image utility sites | 3 | 4 | 5 | 3 | 5 | 23 | **BUILD** | Built as a small, high-fit browser-local tool that strengthens the scan/photo submission path before crop, resize, or PDF bundling. |
 
 ## First Sprint Spec Seeds
 
