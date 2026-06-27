@@ -15,7 +15,8 @@ const routes = [
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true },
   { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true },
-  { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true }
+  { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true },
+  { path: "/tools/vat-calculator/", h1: "부가세 계산기", faq: true }
 ];
 
 function assert(condition, message) {

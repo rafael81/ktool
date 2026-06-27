@@ -32,6 +32,7 @@ After verification:
    - `https://k-document-tool.pages.dev/tools/estimate-generator/`
    - `https://k-document-tool.pages.dev/tools/invoice-generator/`
    - `https://k-document-tool.pages.dev/tools/receipt-generator/`
+   - `https://k-document-tool.pages.dev/tools/vat-calculator/`
 
 Do not request indexing for `https://k-document-tool.pages.dev/categories/pdf/` yet. It is a reserved category page with `noindex,follow` until the first PDF tool ships.
 
@@ -47,7 +48,7 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same eight indexable URLs listed above.
+2. Request collection for the same nine indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
 
 Skip `https://k-document-tool.pages.dev/categories/pdf/` until it has at least one live PDF tool.

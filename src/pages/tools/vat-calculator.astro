@@ -1,0 +1,436 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("vat-calculator");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 견적서, 청구서, 거래명세서에 넣기 전 금액을 원 단위로 확인합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="calculator-workspace" data-vat-calculator>
+      <form class="panel calculator-panel" aria-label="부가세 계산 입력">
+        <div class="panel-title">
+          <h2>계산 입력</h2>
+        </div>
+
+        <fieldset class="mode-field">
+          <legend>입력 기준</legend>
+          <label class="mode-option">
+            <input type="radio" name="vat-mode" value="supply" checked data-vat-mode />
+            <span>공급가액 기준</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="vat-mode" value="total" data-vat-mode />
+            <span>합계금액 기준</span>
+          </label>
+        </fieldset>
+
+        <label class="field amount-field">
+          <span data-amount-label>공급가액</span>
+          <input
+            data-vat-amount
+            inputmode="numeric"
+            autocomplete="off"
+            value="100000"
+            aria-describedby="vat-help"
+          />
+        </label>
+
+        <p class="note-box" id="vat-help">
+          일반과세자 부가가치세율 10% 기준입니다. 간이과세, 면세, 영세율, 업종별 특례는 반영하지 않습니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-copy-result>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            복사
+          </button>
+        </div>
+      </form>
+
+      <section class="result-panel" aria-label="부가세 계산 결과">
+        <div class="panel-title">
+          <h2>계산 결과</h2>
+          <span class="rate-badge">VAT 10%</span>
+        </div>
+        <div class="result-grid">
+          <div class="result-card">
+            <span>공급가액</span>
+            <strong data-supply-result>100,000원</strong>
+          </div>
+          <div class="result-card accent">
+            <span>부가세</span>
+            <strong data-vat-result>10,000원</strong>
+          </div>
+          <div class="result-card total">
+            <span>합계금액</span>
+            <strong data-total-result>110,000원</strong>
+          </div>
+        </div>
+        <div class="formula-box" data-formula>
+          공급가액 100,000원 + 부가세 10,000원 = 합계금액 110,000원
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>확인 사항</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>일반과세자 10% 기준의 단순 계산입니다.</span></li>
+          <li><span class="status-dot"></span><span>세금 신고, 공제, 과세 여부 판단을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>입력한 금액은 서버로 보내지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>계산 기준</h2>
+      <p>
+        K문서툴 부가세 계산기는 일반과세자 부가가치세율 10% 기준으로 공급가액, 부가세,
+        합계금액을 계산합니다. 공식 기준은
+        <a href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7696&mi=2275" rel="noreferrer">국세청 부가가치세 세율 안내</a>와
+        <a href="https://law.go.kr/lsInfoP.do?ancYnChk=0&lsId=001571" rel="noreferrer">부가가치세법 제30조</a>를 확인하세요.
+      </p>
+      <ol>
+        <li>공급가액 기준: 공급가액 × 10% = 부가세, 공급가액 + 부가세 = 합계금액</li>
+        <li>합계금액 기준: 합계금액 ÷ 1.1 = 공급가액, 합계금액 - 공급가액 = 부가세</li>
+        <li>계산 결과는 원 단위로 반올림해 표시합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-vat-calculator]");
+      if (!root) return;
+
+      const currency = new Intl.NumberFormat("ko-KR");
+      const amountInput = root.querySelector("[data-vat-amount]");
+      const amountLabel = root.querySelector("[data-amount-label]");
+      const modeInputs = [...root.querySelectorAll("[data-vat-mode]")];
+      const supplyResult = root.querySelector("[data-supply-result]");
+      const vatResult = root.querySelector("[data-vat-result]");
+      const totalResult = root.querySelector("[data-total-result]");
+      const formula = root.querySelector("[data-formula]");
+      const copyButton = root.querySelector("[data-copy-result]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const resetButton = root.querySelector("[data-reset]");
+
+      function parseAmount(value) {
+        const normalized = String(value || "").replace(/[^\d.-]/g, "");
+        const parsed = Number(normalized);
+        return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+      }
+
+      function won(value) {
+        return `${currency.format(Math.round(value))}원`;
+      }
+
+      function currentMode() {
+        return modeInputs.find((input) => input.checked)?.value || "supply";
+      }
+
+      function calculate() {
+        const mode = currentMode();
+        const amount = parseAmount(amountInput.value);
+        let supply = 0;
+        let vat = 0;
+        let total = 0;
+
+        if (mode === "total") {
+          total = Math.round(amount);
+          supply = Math.round(total / 1.1);
+          vat = total - supply;
+          amountLabel.textContent = "합계금액";
+        } else {
+          supply = Math.round(amount);
+          vat = Math.round(supply * 0.1);
+          total = supply + vat;
+          amountLabel.textContent = "공급가액";
+        }
+
+        supplyResult.textContent = won(supply);
+        vatResult.textContent = won(vat);
+        totalResult.textContent = won(total);
+        formula.textContent = `공급가액 ${won(supply)} + 부가세 ${won(vat)} = 합계금액 ${won(total)}`;
+        return { mode, supply, vat, total };
+      }
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "vat-calculator",
+          tool_title: "부가세 계산기",
+          ...params
+        });
+      }
+
+      amountInput.addEventListener("input", calculate);
+      for (const input of modeInputs) {
+        input.addEventListener("change", () => {
+          calculate();
+          track("calculator_mode_change", { calculator_mode: currentMode() });
+        });
+      }
+
+      sampleButton?.addEventListener("click", () => {
+        amountInput.value = currentMode() === "total" ? "110000" : "100000";
+        calculate();
+        track("calculator_sample_apply", { calculator_mode: currentMode() });
+      });
+
+      resetButton?.addEventListener("click", () => {
+        amountInput.value = "";
+        calculate();
+        track("calculator_reset", { calculator_mode: currentMode() });
+      });
+
+      copyButton?.addEventListener("click", async () => {
+        const result = calculate();
+        const text = `공급가액 ${won(result.supply)} / 부가세 ${won(result.vat)} / 합계금액 ${won(result.total)}`;
+        try {
+          await navigator.clipboard.writeText(text);
+          copyButton.textContent = "복사됨";
+          setTimeout(() => {
+            copyButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>복사';
+          }, 1200);
+          track("calculator_copy", { calculator_mode: result.mode });
+        } catch {
+          track("calculator_copy_error", { calculator_mode: result.mode });
+        }
+      });
+
+      calculate();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .calculator-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .calculator-panel,
+  .result-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .mode-field {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    border: 0;
+    margin: 0 0 14px;
+    padding: 0;
+  }
+
+  .mode-field legend {
+    grid-column: 1 / -1;
+    color: #344457;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .mode-option {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 10px;
+  }
+
+  .mode-option:has(input:checked) {
+    border-color: var(--accent);
+    background: #e8f4f2;
+    color: var(--accent-dark);
+  }
+
+  .mode-option input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .amount-field input {
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .result-card {
+    display: grid;
+    min-height: 124px;
+    align-content: center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 18px;
+  }
+
+  .result-card span {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .result-card strong {
+    color: var(--ink);
+    font-size: clamp(23px, 3vw, 34px);
+    line-height: 1.1;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+
+  .result-card.accent {
+    background: #f8fbfc;
+  }
+
+  .result-card.total {
+    border-color: var(--accent);
+    background: #e8f4f2;
+  }
+
+  .rate-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .formula-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    color: #344457;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.6;
+    margin-top: 14px;
+    padding: 16px;
+  }
+
+  .content-section a {
+    color: var(--accent-dark);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 1100px) {
+    .calculator-workspace {
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    }
+
+    .calculator-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .calculator-workspace,
+    .result-grid,
+    .mode-field {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

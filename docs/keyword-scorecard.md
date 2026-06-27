@@ -4,6 +4,21 @@ Generated: 2026-06-25 KST
 Project: K문서툴
 Status: v0.2, Naver DataLab demand added, ready for first-sprint spec
 
+## Implementation Update
+
+Updated: 2026-06-27 KST
+
+Implemented and deployed:
+
+- 사업자 명판 만들기 무료
+- 거래명세서 자동작성
+- 견적서 자동작성
+- 영수증 자동작성
+- 청구서 자동작성
+- 부가세 계산기
+
+PDF tools remain deferred until the business-document pages have crawl and usage data.
+
 ## Decision
 
 Build these first 3 tools:

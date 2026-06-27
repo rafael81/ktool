@@ -3,7 +3,8 @@ export type ToolId =
   | "transaction-statement"
   | "estimate"
   | "receipt"
-  | "invoice";
+  | "invoice"
+  | "vat-calculator";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -41,7 +42,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "업무 문서",
     path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 청구서, 영수증, 사업자 명판처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
@@ -129,7 +130,7 @@ export const tools: ToolInfo[] = [
       ["모바일에서도 작성할 수 있나요?", "모바일 입력과 미리보기를 지원하되, 최종 인쇄는 데스크톱 브라우저가 더 안정적입니다."]
     ],
     trustNote: "일반 거래 내역 정리용 양식입니다. 세금계산서나 전자세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["estimate", "invoice"]
+    relatedToolIds: ["vat-calculator", "invoice"]
   },
   {
     id: "estimate",
@@ -166,7 +167,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "견적 전달용 문서 생성 도구입니다. 계약 체결이나 세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["invoice", "transaction-statement"]
+    relatedToolIds: ["vat-calculator", "invoice"]
   },
   {
     id: "receipt",
@@ -203,7 +204,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "일반 거래 내역 확인용 양식입니다. 세금계산서, 현금영수증, 카드 매출전표를 대신하지 않습니다.",
-    relatedToolIds: ["invoice", "transaction-statement"]
+    relatedToolIds: ["vat-calculator", "invoice"]
   },
   {
     id: "invoice",
@@ -241,7 +242,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "입금 요청용 일반 문서입니다. 세금계산서, 전자세금계산서, 계약 체결을 대신하지 않습니다.",
-    relatedToolIds: ["receipt", "estimate"]
+    relatedToolIds: ["vat-calculator", "receipt"]
+  },
+  {
+    id: "vat-calculator",
+    title: "부가세 계산기",
+    shortTitle: "부가세",
+    path: "/tools/vat-calculator/",
+    category: "business",
+    description:
+      "공급가액 또는 합계금액을 입력해 부가세와 총액을 빠르게 계산합니다.",
+    pageTitle: "부가세 계산기 - 공급가액 부가세 합계금액 계산",
+    metaDescription:
+      "공급가액 또는 합계금액을 입력해 부가세와 총액을 계산하세요. 일반과세 10% 기준으로 브라우저에서 바로 계산합니다.",
+    primaryQuery: "부가세 계산기",
+    secondaryQueries: ["부가세 포함 계산", "공급가액 계산기", "부가세 10% 계산", "합계금액 공급가액 계산"],
+    userMoment: "견적서, 거래명세서, 청구서 금액을 입력하기 전에 공급가액과 부가세를 빠르게 맞춰야 하는 순간",
+    featureList: [
+      "공급가액 기준 계산",
+      "합계금액 기준 역산",
+      "부가세 10% 계산",
+      "계산 결과 복사",
+      "브라우저 안에서 즉시 계산"
+    ],
+    faqs: [
+      [
+        "부가세 계산 기준은 무엇인가요?",
+        "일반과세자의 부가가치세율 10% 기준으로 계산합니다. 간이과세, 면세, 영세율, 업종별 특례는 반영하지 않습니다."
+      ],
+      ["공급가액 기준 계산은 어떻게 하나요?", "입력한 공급가액에 10%를 곱해 부가세를 구하고, 공급가액과 부가세를 더해 합계금액을 표시합니다."],
+      ["합계금액 기준 역산은 어떻게 하나요?", "입력한 합계금액을 1.1로 나누어 공급가액을 구하고, 합계금액에서 공급가액을 뺀 금액을 부가세로 표시합니다."],
+      ["원 단위 반올림은 어떻게 처리하나요?", "브라우저 계산 결과는 원 단위로 반올림해 표시합니다. 내부 회계 기준이 따로 있으면 그 기준을 우선하세요."],
+      ["세금 신고용으로 써도 되나요?", "이 도구는 문서 작성 전 금액 확인용입니다. 신고, 공제, 과세 여부 판단은 홈택스나 세무 전문가의 확인이 필요합니다."],
+      [
+        "입력한 금액이 서버에 저장되나요?",
+        "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 입력한 금액은 서버로 보내지 않습니다."
+      ]
+    ],
+    trustNote: "일반과세 10% 기준의 금액 확인용 계산기입니다. 세무 신고나 과세 여부 판단을 대신하지 않습니다.",
+    relatedToolIds: ["estimate", "invoice"]
   }
 ];
 

@@ -46,6 +46,11 @@ Tool pages also include:
 | `tool_row_add` | A document item row is added | `row_count`, `document_title` |
 | `tool_row_remove` | A document item row is removed | `row_count`, `document_title` |
 | `tool_print` | Print/PDF action is requested | `row_count`, `vat_mode`, `document_title` |
+| `calculator_mode_change` | VAT calculator mode changes | `calculator_mode` |
+| `calculator_sample_apply` | VAT calculator sample amount is applied | `calculator_mode` |
+| `calculator_reset` | VAT calculator is reset | `calculator_mode` |
+| `calculator_copy` | VAT calculator result is copied | `calculator_mode` |
+| `calculator_copy_error` | VAT calculator result copy fails | `calculator_mode` |
 
 ## Provider hook example
 
