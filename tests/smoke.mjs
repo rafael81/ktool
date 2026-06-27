@@ -147,13 +147,19 @@ async function run() {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".file-row").length === 2);
         const sizesBefore = await page.locator(".file-row p").allTextContents();
-        await page.locator('[data-move-file="0"][data-direction="down"]').click();
-        const sizesAfter = await page.locator(".file-row p").allTextContents();
+        await page.locator(".file-row").first().dragTo(page.locator(".file-row").nth(1));
+        const sizesAfterDrag = await page.locator(".file-row p").allTextContents();
         assert(
           sizesBefore.length === 2 &&
-            sizesBefore[0] === sizesAfter[1] &&
-            sizesBefore[1] === sizesAfter[0],
-          `${route.path} should reorder selected images before PDF generation`
+            sizesBefore[0] === sizesAfterDrag[1] &&
+            sizesBefore[1] === sizesAfterDrag[0],
+          `${route.path} should drag reorder selected images before PDF generation`
+        );
+        await page.locator('[data-move-file="1"][data-direction="up"]').click();
+        const sizesAfterButton = await page.locator(".file-row p").allTextContents();
+        assert(
+          sizesAfterButton[0] === sizesBefore[0] && sizesAfterButton[1] === sizesBefore[1],
+          `${route.path} should button reorder selected images before PDF generation`
         );
         await page.locator("[data-generate]").click();
         await page.waitForFunction(() => {
@@ -163,6 +169,10 @@ async function run() {
         });
         const fileCount = await page.locator(".file-row").count();
         assert(fileCount === 2, `${route.path} should render two sample image rows`);
+        await page.locator('[data-remove-file="0"]').click();
+        const reducedFileCount = await page.locator(".file-row").count();
+        const reducedStatus = await page.locator("[data-output-status]").textContent();
+        assert(reducedFileCount === 1 && reducedStatus.includes("1장"), `${route.path} should remove one selected image`);
       }
 
       if (route.imageCompressor) {

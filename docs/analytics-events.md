@@ -80,7 +80,8 @@ Tool pages also include:
 | `stamp_background_validation_error` | Stamp background remover blocks invalid input | `reason`, optional `file_size` |
 | `jpg_pdf_file_select` | JPG PDF converter images are selected | `file_count`, `total_size`, `file_types` |
 | `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
-| `jpg_pdf_reorder` | JPG PDF converter image order changes | `from_position`, `to_position`, `file_count` |
+| `jpg_pdf_reorder` | JPG PDF converter image order changes | `from_position`, `to_position`, `file_count`, `method` |
+| `jpg_pdf_remove` | JPG PDF converter image is removed from the selected list | `from_position`, `file_count` |
 | `jpg_pdf_generate` | JPG PDF converter creates a PDF blob | `file_count`, `total_size`, `output_size`, `page_size`, `margin`, `file_types` |
 | `jpg_pdf_download` | JPG PDF converter download link is clicked | `file_count`, `output_size`, `page_size`, `margin` |
 | `jpg_pdf_reset` | JPG PDF converter is reset | none |

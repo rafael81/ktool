@@ -79,7 +79,7 @@ const structuredData = [
         </div>
 
         <p class="note-box">
-          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 선택 후 목록에서 이미지 순서를 조정할 수 있습니다.
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 선택 후 목록에서 이미지를 끌거나 버튼으로 순서를 조정할 수 있습니다.
         </p>
 
         <div class="button-row">
@@ -141,7 +141,7 @@ const structuredData = [
       <h2>사용 방법</h2>
       <ol>
         <li>PDF로 묶을 JPG, PNG, WebP 이미지를 선택합니다.</li>
-        <li>필요하면 이미지 목록의 위/아래 버튼으로 페이지 순서를 맞춥니다.</li>
+        <li>필요하면 이미지 목록을 끌거나 위/아래 버튼으로 페이지 순서를 맞춥니다.</li>
         <li>페이지 크기와 여백을 고른 뒤 PDF를 저장합니다.</li>
       </ol>
     </section>
@@ -219,6 +219,7 @@ const structuredData = [
       let pdfUrl = "";
       let outputBytes = 0;
       let nextItemId = 1;
+      let dragSourceIndex = -1;
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -294,7 +295,7 @@ const structuredData = [
         fileList.innerHTML = fileItems
           .map(
             (item, index) => `
-              <div class="file-row" data-file-row>
+              <div class="file-row" data-file-row data-file-index="${index}" draggable="true" aria-label="${index + 1}번째 PDF 이미지">
                 <img src="${item.previewUrl}" alt="" loading="lazy" />
                 <span>${index + 1}</span>
                 <strong>${fileTypeLabel(item.file)}</strong>
@@ -302,6 +303,7 @@ const structuredData = [
                 <div class="file-actions">
                   <button type="button" data-move-file="${index}" data-direction="up" aria-label="${index + 1}번째 이미지를 앞으로 이동" ${index === 0 ? "disabled" : ""}>↑</button>
                   <button type="button" data-move-file="${index}" data-direction="down" aria-label="${index + 1}번째 이미지를 뒤로 이동" ${index === fileItems.length - 1 ? "disabled" : ""}>↓</button>
+                  <button type="button" data-remove-file="${index}" aria-label="${index + 1}번째 이미지 삭제">×</button>
                 </div>
               </div>
             `
@@ -313,18 +315,50 @@ const structuredData = [
         );
       }
 
-      function moveFile(index, direction) {
-        const offset = direction === "up" ? -1 : 1;
-        const nextIndex = index + offset;
-        if (nextIndex < 0 || nextIndex >= fileItems.length) return;
+      function reorderFile(fromIndex, toIndex, method = "button") {
+        if (fromIndex === toIndex) return;
+        if (fromIndex < 0 || fromIndex >= fileItems.length) return;
+        if (toIndex < 0 || toIndex >= fileItems.length) return;
         const nextItems = [...fileItems];
-        [nextItems[index], nextItems[nextIndex]] = [nextItems[nextIndex], nextItems[index]];
+        const [movedItem] = nextItems.splice(fromIndex, 1);
+        nextItems.splice(toIndex, 0, movedItem);
         fileItems = nextItems;
         renderFiles();
         track("jpg_pdf_reorder", {
+          from_position: fromIndex + 1,
+          to_position: toIndex + 1,
+          file_count: fileItems.length,
+          method
+        });
+      }
+
+      function moveFile(index, direction) {
+        const offset = direction === "up" ? -1 : 1;
+        reorderFile(index, index + offset, "button");
+      }
+
+      function removeFile(index) {
+        if (index < 0 || index >= fileItems.length) return;
+        const nextItems = [...fileItems];
+        const [removedItem] = nextItems.splice(index, 1);
+        releaseItems([removedItem]);
+        fileItems = nextItems;
+        if (fileItems.length === 0) input.value = "";
+        renderFiles();
+        track("jpg_pdf_remove", {
           from_position: index + 1,
-          to_position: nextIndex + 1,
           file_count: fileItems.length
+        });
+      }
+
+      function fileRowFromEvent(event) {
+        const target = event.target instanceof Element ? event.target : null;
+        return target?.closest("[data-file-row]");
+      }
+
+      function clearDragState() {
+        fileList.querySelectorAll("[data-file-row]").forEach((row) => {
+          row.classList.remove("is-dragging", "is-drag-over");
         });
       }
 
@@ -485,9 +519,56 @@ const structuredData = [
       });
 
       fileList.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-move-file]");
-        if (!button) return;
-        moveFile(Number(button.dataset.moveFile), button.dataset.direction);
+        const target = event.target instanceof Element ? event.target : null;
+        const moveButton = target?.closest("[data-move-file]");
+        if (moveButton) {
+          moveFile(Number(moveButton.dataset.moveFile), moveButton.dataset.direction);
+          return;
+        }
+
+        const removeButton = target?.closest("[data-remove-file]");
+        if (removeButton) removeFile(Number(removeButton.dataset.removeFile));
+      });
+
+      fileList.addEventListener("dragstart", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || !event.dataTransfer) return;
+        dragSourceIndex = Number(row.dataset.fileIndex);
+        row.classList.add("is-dragging");
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(dragSourceIndex));
+      });
+
+      fileList.addEventListener("dragover", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || dragSourceIndex < 0 || !event.dataTransfer) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        fileList.querySelectorAll(".is-drag-over").forEach((item) => {
+          if (item !== row) item.classList.remove("is-drag-over");
+        });
+        row.classList.add("is-drag-over");
+      });
+
+      fileList.addEventListener("dragleave", (event) => {
+        const row = fileRowFromEvent(event);
+        const relatedTarget = event.relatedTarget instanceof Node ? event.relatedTarget : null;
+        if (row && !row.contains(relatedTarget)) row.classList.remove("is-drag-over");
+      });
+
+      fileList.addEventListener("drop", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || dragSourceIndex < 0) return;
+        event.preventDefault();
+        const targetIndex = Number(row.dataset.fileIndex);
+        reorderFile(dragSourceIndex, targetIndex, "drag");
+        dragSourceIndex = -1;
+        clearDragState();
+      });
+
+      fileList.addEventListener("dragend", () => {
+        dragSourceIndex = -1;
+        clearDragState();
       });
 
       generateButton.addEventListener("click", generatePdf);
@@ -630,7 +711,18 @@ const structuredData = [
     border: 1px solid var(--line);
     border-radius: 8px;
     background: #fff;
+    cursor: grab;
     padding: 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  :global(.file-row.is-dragging) {
+    opacity: 0.58;
+  }
+
+  :global(.file-row.is-drag-over) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.14);
   }
 
   :global(.file-row img) {
@@ -663,6 +755,7 @@ const structuredData = [
   :global(.file-actions) {
     display: flex;
     gap: 4px;
+    justify-content: flex-end;
   }
 
   :global(.file-actions button) {

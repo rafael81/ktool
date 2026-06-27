@@ -296,9 +296,10 @@ Acceptance gate:
 
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
 - 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped.
+- JPG PDF 변환: improved after the image-tool cluster with drag reorder and per-image removal, because page order mistakes are a direct submission-prep failure point.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 
 ## Next Step
 
-Use crawl and analytics data to decide whether the next loop should improve image-tool conversion, add a submission-prep workflow hub, explore QR/image extraction utilities, or return to a Korean business-document form.
+Use crawl and analytics data to decide whether the next loop should improve image-tool conversion, tighten PDF submission-prep completion, explore QR/image extraction utilities, or return to a Korean business-document form.
