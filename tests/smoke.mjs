@@ -171,6 +171,8 @@ async function run() {
       }
 
       if (route.path === "/tools/") {
+        const catalogShortcutRows = await page.locator("[data-prep-shortcuts] .shortcut-row").count();
+        assert(catalogShortcutRows === 7, `${route.path} should render prep shortcuts as compact rows`);
         const catalogRootCount = await page.locator("[data-tool-catalog]").count();
         assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();

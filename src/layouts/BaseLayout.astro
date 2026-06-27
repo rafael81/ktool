@@ -765,6 +765,65 @@ const analyticsPage = {
     padding: 6px 8px;
   }
 
+  .shortcut-list {
+    display: grid;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .shortcut-row {
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr) minmax(160px, 240px);
+    gap: 16px;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding: 15px 0;
+  }
+
+  .shortcut-row:hover .shortcut-row-copy strong,
+  .shortcut-row:focus-visible .shortcut-row-copy strong {
+    color: var(--accent-dark);
+  }
+
+  .shortcut-row:focus-visible {
+    border-radius: 8px;
+    box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.13);
+    outline: none;
+  }
+
+  .shortcut-row-label {
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .shortcut-row-copy {
+    display: grid;
+    gap: 5px;
+  }
+
+  .shortcut-row-copy strong {
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .shortcut-row-copy span {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .shortcut-row-tool {
+    justify-self: end;
+    border: 1px solid #cfe0dc;
+    border-radius: 7px;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.2;
+    padding: 6px 8px;
+  }
+
   .featured-tool-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1128,6 +1187,15 @@ const analyticsPage = {
       justify-content: flex-start;
     }
 
+    .shortcut-row {
+      grid-template-columns: 120px minmax(0, 1fr);
+    }
+
+    .shortcut-row-tool {
+      grid-column: 2;
+      justify-self: start;
+    }
+
     .catalog-toolbar {
       grid-template-columns: 1fr;
     }
@@ -1204,6 +1272,15 @@ const analyticsPage = {
     .workflow-row-meta {
       grid-column: auto;
       justify-content: flex-start;
+    }
+
+    .shortcut-row {
+      grid-template-columns: 1fr;
+      gap: 7px;
+    }
+
+    .shortcut-row-tool {
+      grid-column: auto;
     }
 
     .featured-tool-list {

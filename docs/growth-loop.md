@@ -172,6 +172,7 @@ Completed:
 39. Run the updated CEO review for the document-suite expansion loop and choose workflow package pages as the next product layer before adding generic PDF suite tools.
 40. Add three workflow package pages for photo/scan submission, business document submission, and freelance billing, then simplify header navigation so users start from a package or category instead of a long tool list.
 41. Replace the long `/tools/` card catalog with a searchable dense list and category filters so users can find a document tool by task, file type, or error wording without scrolling through template-like cards.
+42. Replace the `/tools/` problem-situation card grid with compact action rows so the catalog page keeps one utilitarian scanning rhythm from workflow packages through search.
 
 Next after crawl data appears:
 
