@@ -58,7 +58,8 @@ const flowGroups = [
       {
         label: "불필요한 여백",
         detail: "주변 배경이나 빈 여백은 제출할 영역만 남깁니다.",
-        tool: getTool("image-cropper")
+        tool: getTool("image-cropper"),
+        href: `${getTool("image-cropper").path}?preset=document`
       },
       {
         label: "픽셀 제한",
@@ -127,7 +128,7 @@ const situations = [
   { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter") },
   { label: "사진 방향이 잘못됨", tool: getTool("image-rotator") },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
-  { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper") },
+  { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper"), href: `${getTool("image-cropper").path}?preset=document` },
   { label: "사진 크기 제한이 있음", tool: getTool("image-resizer"), href: `${getTool("image-resizer").path}?preset=long-1200` },
   { label: "이미지 여러 장을 PDF로 제출", tool: getTool("jpg-to-pdf") },
   { label: "거래처 문서가 필요함", tool: getTool("transaction-statement") },
@@ -191,7 +192,8 @@ const pdfDecisionHints = [
     signal: "여백·배경이 많음",
     recommendation: "자르기 후 PDF",
     detail: "제출할 영역만 남기고 여러 장을 PDF로 묶습니다.",
-    tool: getTool("image-cropper")
+    tool: getTool("image-cropper"),
+    href: `${getTool("image-cropper").path}?preset=document`
   }
 ];
 
@@ -343,7 +345,7 @@ const structuredData = [
         <div>
           {pdfDecisionHints.map((hint) => (
             <a
-              href={hint.tool.path}
+              href={hint.href ?? hint.tool.path}
               data-analytics-event="prep_pdf_decision_click"
               data-analytics-tool-id={hint.tool.id}
               data-analytics-tool-title={hint.tool.title}

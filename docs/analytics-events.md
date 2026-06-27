@@ -116,10 +116,12 @@ Tool pages also include:
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_crop_file_select` | Image cropper image is selected | `file_count`, `total_size`, `file_types` |
 | `image_crop_sample_apply` | Image cropper sample image is applied | `file_count` |
-| `image_crop_preset_change` | Image cropper aspect preset changes | `aspect_preset` |
-| `image_crop_crop` | Image cropper creates a cropped image blob | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `crop_width`, `crop_height`, `aspect_preset`, `file_types` |
+| `image_crop_preset_arrival` | Image cropper is opened with a URL preset | `source`, `preset`, `aspect_preset` |
+| `image_crop_preset_change` | Image cropper submission area preset changes | `preset`, `aspect_preset` |
+| `image_crop_aspect_change` | Image cropper aspect ratio changes directly | `aspect_preset` |
+| `image_crop_crop` | Image cropper creates a cropped image blob | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `crop_width`, `crop_height`, `aspect_preset`, `preset`, `file_types` |
 | `image_crop_download` | Image cropper download link is clicked | `output_format`, `after_size`, `output_width`, `output_height` |
-| `image_crop_next_pdf_click` | Image cropper next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `crop_width`, `crop_height`, `aspect_preset`, `target_tool_id`, `href` |
+| `image_crop_next_pdf_click` | Image cropper next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `crop_width`, `crop_height`, `aspect_preset`, `preset`, `target_tool_id`, `href` |
 | `image_crop_reset` | Image cropper is reset | none |
 | `image_crop_validation_error` | Image cropper blocks invalid input or crop failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_rotate_file_select` | Image rotator images are selected | `file_count`, `total_size`, `file_types` |

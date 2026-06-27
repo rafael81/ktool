@@ -69,6 +69,18 @@ const structuredData = [
           </select>
         </label>
 
+        <label class="field preset-field">
+          <span>제출 영역 프리셋</span>
+          <select data-crop-preset>
+            <option value="profile">프로필·증명 · 1:1</option>
+            <option value="document">문서 영역 · 4:3</option>
+            <option value="portrait">세로 서류 · 3:4</option>
+            <option value="wide">가로 화면 · 16:9</option>
+            <option value="free">직접 자르기</option>
+          </select>
+          <small data-crop-preset-note>프로필·증명용처럼 정사각 영역이 필요할 때 씁니다.</small>
+        </label>
+
         <div class="field-grid two-columns">
           <label class="field">
             <span>X 좌표</span>
@@ -233,6 +245,8 @@ const structuredData = [
       const input = root.querySelector("[data-image-input]");
       const fileLabel = root.querySelector("[data-file-label]");
       const aspectPreset = root.querySelector("[data-aspect-preset]");
+      const cropPreset = root.querySelector("[data-crop-preset]");
+      const cropPresetNote = root.querySelector("[data-crop-preset-note]");
       const cropXInput = root.querySelector("[data-crop-x]");
       const cropYInput = root.querySelector("[data-crop-y]");
       const cropWidthInput = root.querySelector("[data-crop-width]");
@@ -260,6 +274,44 @@ const structuredData = [
       let result = null;
       let renderScale = 1;
       let dragState = null;
+      let isApplyingPreset = false;
+      const cropPresets = {
+        document: {
+          aspect: "4:3",
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "스캔본이나 서류 사진에서 문서 영역만 남기기 좋은 4:3 비율입니다."
+        },
+        profile: {
+          aspect: "1:1",
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "프로필·증명용처럼 정사각 영역이 필요할 때 씁니다."
+        },
+        portrait: {
+          aspect: "3:4",
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "세로 서류나 증빙 이미지를 위아래 여백 없이 남기기 좋습니다."
+        },
+        wide: {
+          aspect: "16:9",
+          outputFormat: "image/jpeg",
+          quality: "88",
+          note: "가로 화면 캡처나 넓은 영수증 이미지를 정리할 때 씁니다."
+        },
+        free: {
+          aspect: "free",
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "제출 영역이 일정하지 않으면 자유 비율로 직접 맞춥니다."
+        }
+      };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(cropPresets, requestedPreset)
+          ? requestedPreset
+          : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -287,6 +339,21 @@ const structuredData = [
         if (aspectPreset.value === "free") return null;
         const [width, height] = aspectPreset.value.split(":").map(Number);
         return width && height ? width / height : 1;
+      }
+
+      function selectedCropPreset() {
+        return cropPresets[cropPreset.value] || cropPresets.profile;
+      }
+
+      function cropPresetPayload() {
+        return {
+          preset: cropPreset.value,
+          aspect_preset: aspectPreset.value
+        };
+      }
+
+      function updateCropPresetNote() {
+        cropPresetNote.textContent = selectedCropPreset().note;
       }
 
       function numberValue(inputElement) {
@@ -396,6 +463,24 @@ const structuredData = [
         cropHeightInput.value = String(crop.height);
         qualityLabel.textContent = qualityInput.value;
         formatBadge.textContent = outputExtension().toUpperCase();
+        updateCropPresetNote();
+      }
+
+      function applyCropPreset(shouldTrack = true) {
+        const preset = selectedCropPreset();
+        isApplyingPreset = true;
+        aspectPreset.value = preset.aspect;
+        outputFormat.value = preset.outputFormat;
+        qualityInput.value = preset.quality;
+        isApplyingPreset = false;
+        if (item) {
+          crop = defaultCrop();
+          releaseResult();
+        }
+        drawPreview();
+        if (shouldTrack) {
+          track("image_crop_preset_change", cropPresetPayload());
+        }
       }
 
       function renderResult() {
@@ -564,7 +649,8 @@ const structuredData = [
             quality: Number(qualityInput.value),
             crop_width: crop.width,
             crop_height: crop.height,
-            aspect_preset: aspectPreset.value
+            aspect_preset: aspectPreset.value,
+            preset: cropPreset.value
           });
         } catch (error) {
           setMessage("이미지를 자르지 못했습니다.", "이미지 파일을 다시 선택하거나 영역을 조정해 주세요.");
@@ -637,6 +723,7 @@ const structuredData = [
       });
 
       aspectPreset.addEventListener("change", () => {
+        if (!isApplyingPreset) cropPreset.value = "free";
         if (!item) {
           drawPreview();
           return;
@@ -644,8 +731,10 @@ const structuredData = [
         crop = defaultCrop();
         releaseResult();
         drawPreview();
-        track("image_crop_preset_change", { aspect_preset: aspectPreset.value });
+        track("image_crop_aspect_change", { aspect_preset: aspectPreset.value });
       });
+
+      cropPreset.addEventListener("change", () => applyCropPreset(true));
 
       for (const control of [cropXInput, cropYInput, cropWidthInput, cropHeightInput]) {
         control.addEventListener("input", () => {
@@ -664,10 +753,12 @@ const structuredData = [
 
       for (const control of [outputFormat, qualityInput]) {
         control.addEventListener("input", () => {
+          if (!isApplyingPreset) cropPreset.value = "free";
           releaseResult();
           drawPreview();
         });
         control.addEventListener("change", () => {
+          if (!isApplyingPreset) cropPreset.value = "free";
           releaseResult();
           drawPreview();
         });
@@ -719,11 +810,9 @@ const structuredData = [
       resetButton.addEventListener("click", () => {
         releaseItem();
         input.value = "";
-        aspectPreset.value = "1:1";
-        outputFormat.value = "image/jpeg";
-        qualityInput.value = "90";
+        cropPreset.value = "profile";
         crop = { x: 0, y: 0, width: 0, height: 0 };
-        drawPreview();
+        applyCropPreset(false);
         track("image_crop_reset");
       });
 
@@ -749,6 +838,7 @@ const structuredData = [
           crop_width: result?.width || 0,
           crop_height: result?.height || 0,
           aspect_preset: aspectPreset.value,
+          preset: cropPreset.value,
           target_tool_id: "jpg-to-pdf",
           href: "/tools/jpg-to-pdf-converter/?from=cropped-images"
         });
@@ -757,7 +847,14 @@ const structuredData = [
       window.addEventListener("resize", drawPreview);
       window.addEventListener("pagehide", releaseItem);
 
-      drawPreview();
+      if (initialPreset) cropPreset.value = initialPreset;
+      applyCropPreset(false);
+      if (initialPreset) {
+        track("image_crop_preset_arrival", {
+          source: "submission-prep",
+          ...cropPresetPayload()
+        });
+      }
     })();
   </script>
 </BaseLayout>
@@ -812,6 +909,13 @@ const structuredData = [
 
   .range-field strong {
     color: var(--accent-dark);
+  }
+
+  .preset-field small {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
   }
 
   .hidden {

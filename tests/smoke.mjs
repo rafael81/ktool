@@ -141,6 +141,8 @@ async function run() {
         assert(compressionPathClickCount === 4, `${route.path} should track the four compression path steps`);
         const resizePresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-resizer/?preset=long-1200"]').count();
         assert(resizePresetRouteCount >= 3, `${route.path} should route image size limits to the 1200px resize preset`);
+        const cropPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-cropper/?preset=document"]').count();
+        assert(cropPresetRouteCount >= 3, `${route.path} should route margin/background issues to the document crop preset`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
@@ -383,6 +385,23 @@ async function run() {
       }
 
       if (route.imageCropper) {
+        await page.goto(`${baseUrl}${route.path}?preset=profile`, { waitUntil: "networkidle" });
+        const cropPresetState = await page.evaluate(() => ({
+          preset: document.querySelector("[data-crop-preset]")?.value,
+          aspect: document.querySelector("[data-aspect-preset]")?.value,
+          outputFormat: document.querySelector("[data-output-format]")?.value,
+          quality: document.querySelector("[data-quality]")?.value,
+          note: document.querySelector("[data-crop-preset-note]")?.textContent || ""
+        }));
+        assert(
+          cropPresetState.preset === "profile" &&
+            cropPresetState.aspect === "1:1" &&
+            cropPresetState.outputFormat === "image/jpeg" &&
+            cropPresetState.quality === "90" &&
+            cropPresetState.note.includes("프로필"),
+          `${route.path} should accept a URL preset for the profile crop target`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => {
           const canvas = document.querySelector("[data-preview-canvas]");
