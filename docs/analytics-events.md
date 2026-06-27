@@ -84,6 +84,8 @@ Tool pages also include:
 | `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
 | `jpg_pdf_compressed_arrival` | JPG PDF converter is opened from the photo-size reducer next-step CTA | `source` |
 | `jpg_pdf_rotated_arrival` | JPG PDF converter is opened from the image rotator next-step CTA | `source` |
+| `jpg_pdf_resized_arrival` | JPG PDF converter is opened from the image resizer next-step CTA | `source` |
+| `jpg_pdf_cropped_arrival` | JPG PDF converter is opened from the image cropper next-step CTA | `source` |
 | `jpg_pdf_reorder` | JPG PDF converter image order changes | `from_position`, `to_position`, `file_count`, `method` |
 | `jpg_pdf_remove` | JPG PDF converter image is removed from the selected list | `from_position`, `file_count` |
 | `jpg_pdf_generate` | JPG PDF converter creates a PDF blob | `file_count`, `total_size`, `output_size`, `page_size`, `margin`, `file_types` |
@@ -102,6 +104,7 @@ Tool pages also include:
 | `image_resize_sample_apply` | Image resizer sample images are applied | `file_count` |
 | `image_resize_resize` | Image resizer creates resized image blobs | `file_count`, `total_size`, `output_size`, `resize_mode`, `output_format`, `quality`, `keep_aspect`, `file_types` |
 | `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
+| `image_resize_next_pdf_click` | Image resizer next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `resize_mode`, `target_tool_id`, `href` |
 | `image_resize_reset` | Image resizer is reset | none |
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_crop_file_select` | Image cropper image is selected | `file_count`, `total_size`, `file_types` |
@@ -109,6 +112,7 @@ Tool pages also include:
 | `image_crop_preset_change` | Image cropper aspect preset changes | `aspect_preset` |
 | `image_crop_crop` | Image cropper creates a cropped image blob | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `crop_width`, `crop_height`, `aspect_preset`, `file_types` |
 | `image_crop_download` | Image cropper download link is clicked | `output_format`, `after_size`, `output_width`, `output_height` |
+| `image_crop_next_pdf_click` | Image cropper next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `crop_width`, `crop_height`, `aspect_preset`, `target_tool_id`, `href` |
 | `image_crop_reset` | Image cropper is reset | none |
 | `image_crop_validation_error` | Image cropper blocks invalid input or crop failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_rotate_file_select` | Image rotator images are selected | `file_count`, `total_size`, `file_types` |

@@ -228,6 +228,22 @@ async function run() {
           rotatedIntakeState === "highlight" && rotatedArrivalText?.includes("회전한 이미지로 PDF 만들기"),
           `${route.path} should tailor the arrival cue for rotated images`
         );
+
+        await page.goto(`${baseUrl}${route.path}?from=resized-images`, { waitUntil: "networkidle" });
+        const resizedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const resizedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          resizedIntakeState === "highlight" && resizedArrivalText?.includes("리사이즈한 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for resized images`
+        );
+
+        await page.goto(`${baseUrl}${route.path}?from=cropped-images`, { waitUntil: "networkidle" });
+        const croppedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const croppedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          croppedIntakeState === "highlight" && croppedArrivalText?.includes("잘라낸 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for cropped images`
+        );
       }
 
       if (route.imageCompressor) {
@@ -282,6 +298,14 @@ async function run() {
           firstResult.width === 1200 && firstResult.height === 800 && firstResult.afterSize > 0,
           `${route.path} should resize the landscape sample to 1200x800`
         );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("리사이즈 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=resized-images",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after resizing`
+        );
       }
 
       if (route.imageCropper) {
@@ -313,6 +337,14 @@ async function run() {
             firstResult.afterSize > 0 &&
             firstResult.magic.join(",") === "255,216,255",
           `${route.path} should crop the sample to a square JPG blob`
+        );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("잘라낸 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=cropped-images",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after cropping`
         );
       }
 

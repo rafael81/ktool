@@ -143,6 +143,25 @@ const structuredData = [
         <div class="crop-result" data-crop-result aria-live="polite">
           <p class="empty-state">자르기 결과가 없습니다.</p>
         </div>
+
+        <div class="next-pdf-card" data-next-pdf hidden>
+          <strong>다음 단계: PDF로 묶기</strong>
+          <p data-next-pdf-message>
+            잘라낸 이미지를 저장한 뒤 JPG PDF 변환에서 다시 선택하면 제출용 PDF로 묶을 수 있습니다.
+          </p>
+          <ol>
+            <li>잘라낸 이미지의 저장 버튼을 눌러 파일을 저장합니다.</li>
+            <li>JPG PDF 변환에서 저장한 이미지를 선택합니다.</li>
+            <li>여러 이미지가 있다면 목록 순서를 맞춘 뒤 PDF로 저장합니다.</li>
+          </ol>
+          <a
+            class="btn primary"
+            href="/tools/jpg-to-pdf-converter/?from=cropped-images"
+            data-next-pdf-link
+          >
+            JPG PDF 변환 열기
+          </a>
+        </div>
       </section>
 
       <aside class="side-panel">
@@ -231,6 +250,9 @@ const structuredData = [
       const canvas = root.querySelector("[data-preview-canvas]");
       const emptyState = root.querySelector("[data-empty-state]");
       const cropResult = root.querySelector("[data-crop-result]");
+      const nextPdfCard = root.querySelector("[data-next-pdf]");
+      const nextPdfMessage = root.querySelector("[data-next-pdf-message]");
+      const nextPdfLink = root.querySelector("[data-next-pdf-link]");
       const ctx = canvas.getContext("2d");
       let item = null;
       let image = null;
@@ -379,6 +401,7 @@ const structuredData = [
       function renderResult() {
         if (!result) {
           cropResult.innerHTML = '<p class="empty-state">자르기 결과가 없습니다.</p>';
+          nextPdfCard.hidden = true;
           return;
         }
 
@@ -392,6 +415,8 @@ const structuredData = [
             <a class="btn primary" href="${result.url}" download="cropped-image.${outputExtension()}" data-download-image data-after-size="${result.size}" data-output-width="${result.width}" data-output-height="${result.height}" data-output-format="${outputFormat.value}">저장</a>
           </div>
         `;
+        nextPdfCard.hidden = false;
+        nextPdfMessage.textContent = `자르기 완료. 먼저 저장 버튼으로 잘라낸 이미지를 저장한 뒤 JPG PDF 변환에서 다시 선택하세요.`;
       }
 
       function drawPreview() {
@@ -716,6 +741,19 @@ const structuredData = [
         });
       });
 
+      nextPdfLink.addEventListener("click", () => {
+        track("image_crop_next_pdf_click", {
+          file_count: result ? 1 : 0,
+          output_size: result?.size || 0,
+          output_format: outputFormat.value,
+          crop_width: result?.width || 0,
+          crop_height: result?.height || 0,
+          aspect_preset: aspectPreset.value,
+          target_tool_id: "jpg-to-pdf",
+          href: "/tools/jpg-to-pdf-converter/?from=cropped-images"
+        });
+      });
+
       window.addEventListener("resize", drawPreview);
       window.addEventListener("pagehide", releaseItem);
 
@@ -887,6 +925,47 @@ const structuredData = [
     padding: 8px 10px;
   }
 
+  .next-pdf-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid #c8dedc;
+    border-radius: 8px;
+    background: #f3faf9;
+    margin-top: 14px;
+    padding: 14px;
+  }
+
+  .next-pdf-card[hidden] {
+    display: none;
+  }
+
+  .next-pdf-card strong {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .next-pdf-card p {
+    color: #344457;
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .next-pdf-card ol {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .next-pdf-card .btn {
+    width: max-content;
+  }
+
   .button-row .btn:disabled {
     cursor: not-allowed;
     opacity: 0.55;
@@ -916,7 +995,8 @@ const structuredData = [
       grid-template-columns: 72px minmax(0, 1fr);
     }
 
-    :global(.crop-row .btn) {
+    :global(.crop-row .btn),
+    .next-pdf-card .btn {
       grid-column: 1 / -1;
       width: 100%;
       justify-self: stretch;
