@@ -8,7 +8,7 @@ const imageTools = getToolsByCategory("image");
 const relatedTools = [...getToolsByCategory("pdf"), ...getToolsByCategory("business")].filter((tool) =>
   ["jpg-to-pdf", "stamp-background", "business-nameplate"].includes(tool.id)
 );
-const plannedImageTools = ["HEIC JPG 변환", "이미지 Base64 변환", "QR 코드 읽기", "사진 배경 제거"];
+const plannedImageTools = ["이미지 Base64 변환", "QR 코드 읽기", "사진 배경 제거", "이미지 자르기"];
 const structuredData = [
   collectionPageSchema({
     name: category.title,

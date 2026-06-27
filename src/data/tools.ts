@@ -11,7 +11,8 @@ export type ToolId =
   | "jpg-to-pdf"
   | "image-compressor"
   | "image-resizer"
-  | "image-converter";
+  | "image-converter"
+  | "heic-to-jpg";
 
 export type ToolCategoryId = "business" | "pdf" | "image";
 
@@ -534,7 +535,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-converter", "image-compressor"]
+    relatedToolIds: ["image-converter", "heic-to-jpg"]
   },
   {
     id: "image-converter",
@@ -572,7 +573,45 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-resizer", "image-compressor"]
+    relatedToolIds: ["heic-to-jpg", "image-resizer"]
+  },
+  {
+    id: "heic-to-jpg",
+    title: "HEIC JPG 변환",
+    shortTitle: "HEIC JPG",
+    path: "/tools/heic-jpg-converter/",
+    category: "image",
+    description:
+      "iPhone HEIC, HEIF 사진을 브라우저에서 JPG 또는 PNG 이미지로 바꿔 저장합니다.",
+    pageTitle: "HEIC JPG 변환 - 아이폰 사진 JPG 변환 무료",
+    metaDescription:
+      "HEIC JPG 변환을 브라우저에서 무료로 처리하세요. iPhone HEIC, HEIF 사진을 업로드 없이 JPG 또는 PNG로 바꿔 저장합니다.",
+    primaryQuery: "HEIC JPG 변환",
+    secondaryQueries: ["HEIC JPG", "아이폰 사진 JPG 변환", "HEIF JPG 변환", "HEIC PNG 변환"],
+    userMoment: "iPhone 사진이 HEIC라서 회사, 관공서, 학교 업로드 시스템에서 열리지 않을 때",
+    featureList: [
+      "HEIC/HEIF 입력 지원",
+      "JPG/PNG 출력 선택",
+      "여러 이미지 일괄 변환",
+      "JPG 품질 조절",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "HEIC 사진이 서버에 업로드되나요?",
+        "아니요. 선택한 HEIC 파일은 브라우저에서만 읽고 변환합니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["iPhone 사진을 JPG로 바꿀 수 있나요?", "네. iPhone에서 촬영된 HEIC 또는 HEIF 사진을 JPG 파일로 저장할 수 있습니다."],
+      ["PNG로도 저장할 수 있나요?", "네. 출력 형식을 PNG로 바꾸면 PNG 이미지로 저장합니다."],
+      ["여러 장을 한 번에 바꿀 수 있나요?", "네. 최대 10장, 총 80MB까지 선택해 한 번에 변환할 수 있습니다."],
+      ["처음 변환이 조금 느린 이유는 뭔가요?", "HEIC는 브라우저 기본 이미지보다 디코딩이 무거워, 처음 변환할 때 HEIC 처리 모듈을 불러옵니다."],
+      [
+        "원본 파일이 바뀌나요?",
+        "아니요. 원본 파일은 그대로 두고 변환된 새 JPG 또는 PNG 파일을 저장합니다."
+      ]
+    ],
+    trustNote: "HEIC 처리는 브라우저에서만 실행하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-converter", "image-resizer"]
   }
 ];
 

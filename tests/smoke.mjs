@@ -24,7 +24,8 @@ const routes = [
   { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true },
   { path: "/tools/photo-size-reducer/", h1: "사진 용량 줄이기", faq: true, imageCompressor: true },
   { path: "/tools/image-resizer/", h1: "이미지 리사이즈", faq: true, imageResizer: true },
-  { path: "/tools/image-converter/", h1: "WebP JPG 변환", faq: true, imageConverter: true }
+  { path: "/tools/image-converter/", h1: "WebP JPG 변환", faq: true, imageConverter: true },
+  { path: "/tools/heic-jpg-converter/", h1: "HEIC JPG 변환", faq: true, heicConverter: true }
 ];
 
 function assert(condition, message) {
@@ -205,6 +206,32 @@ async function run() {
         );
       }
 
+      if (route.heicConverter) {
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".heic-row").length === 1);
+        await page.locator("[data-convert]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("변환 완료") && link?.href.startsWith("blob:");
+        }, null, { timeout: 60_000 });
+        const firstResult = await page.locator("[data-download-image]").first().evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputFormat: link.dataset.outputFormat,
+            afterSize: Number(link.dataset.afterSize || 0),
+            magic: Array.from(bytes.slice(0, 3))
+          };
+        });
+        assert(
+          firstResult.outputFormat === "image/jpeg" &&
+            firstResult.afterSize > 0 &&
+            firstResult.magic.join(",") === "255,216,255",
+          `${route.path} should convert the HEIC sample to a JPG blob`
+        );
+      }
+
       await page.close();
     }
 
@@ -218,13 +245,17 @@ async function run() {
 
 async function assertFileAnalyticsPrivacy(browser) {
   const secret = "SECRET-FILENAME-777";
-  const fileToolPaths = ["/tools/image-resizer/", "/tools/image-converter/"];
+  const fileTools = [
+    { path: "/tools/image-resizer/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
+    { path: "/tools/image-converter/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
+    { path: "/tools/heic-jpg-converter/", input: "[data-heic-input]", name: `${secret}.heic`, mimeType: "image/heic" }
+  ];
   const onePixelPng = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
     "base64"
   );
 
-  for (const toolPath of fileToolPaths) {
+  for (const tool of fileTools) {
     const events = [];
     const leakedRequests = [];
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -244,19 +275,19 @@ async function assertFileAnalyticsPrivacy(browser) {
     });
 
     try {
-      await page.goto(`${baseUrl}${toolPath}`, { waitUntil: "networkidle" });
-      await page.locator("[data-image-input]").setInputFiles({
-        name: `${secret}.png`,
-        mimeType: "image/png",
+      await page.goto(`${baseUrl}${tool.path}`, { waitUntil: "networkidle" });
+      await page.locator(tool.input).setInputFiles({
+        name: tool.name,
+        mimeType: tool.mimeType,
         buffer: onePixelPng
       });
       await page.waitForFunction(() => document.querySelector("[data-file-label]")?.textContent?.includes("1장"));
 
       const eventText = JSON.stringify(events);
-      assert(!eventText.includes(secret), `${toolPath} analytics event payload leaked the uploaded filename`);
+      assert(!eventText.includes(secret), `${tool.path} analytics event payload leaked the uploaded filename`);
       assert(
         leakedRequests.length === 0,
-        `${toolPath} network request leaked uploaded filename: ${leakedRequests.join(", ")}`
+        `${tool.path} network request leaked uploaded filename: ${leakedRequests.join(", ")}`
       );
     } finally {
       await page.close();

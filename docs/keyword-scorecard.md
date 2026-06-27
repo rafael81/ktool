@@ -23,11 +23,13 @@ Implemented and deployed:
 - 사진 용량 줄이기
 - 이미지 리사이즈
 - WebP JPG 변환
+- HEIC JPG 변환
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
 The second image wedge is 이미지 리사이즈 because it strengthens the same submission-prep path without requiring server upload or heavy dependencies.
 The third image wedge is WebP JPG 변환 because it reuses the same browser-local file path and solves a concrete format-compatibility problem before document upload.
+The fourth image wedge is HEIC JPG 변환 because iPhone HEIC compatibility is a concrete submission blocker and the decoder can be lazy-loaded only when users convert.
 
 ## Decision
 
@@ -165,7 +167,7 @@ Reference URLs checked:
 | 27 | 사진 용량 줄이기 | Image | 사진 파일을 업로드/제출 가능한 크기로 줄여야 함 | 5 | iLoveIMG, imgPresso, ResizePixel, Adobe Express, blogs | 2 | 3 | 4 | 4 | 5 | 23 | **BUILD** | Built as the first image category wedge after business/PDF pages, with browser-local compression and a document-submission angle. |
 | 28 | 이미지 압축 | Image | JPG/PNG/GIF 용량을 줄여야 함 | 5 | iLoveIMG, TinyPNG-like guides, imgPresso, ResizePixel | 2 | 3 | 4 | 4 | 5 | 23 | EXPLORE | Viable later with browser-local privacy angle. |
 | 29 | 이미지 리사이즈 | Image | 특정 가로/세로 크기로 줄여야 함 | 4 | Adobe Express, ResizePixel, Shrink.media, blogs | 2 | 3 | 5 | 4 | 5 | 23 | **BUILD** | Built after 사진 용량 줄이기 as the second image submission-prep tool using the shared file-tool helper path. |
-| 30 | HEIC JPG 변환 | Image | iPhone HEIC 사진을 JPG로 바꿔야 함 | 5 | iLoveIMG, Convertio, CleverPDF, PDF24, iMazing | 2 | 3 | 3 | 4 | 5 | 22 | EXPLORE | Useful, but browser HEIC support/dependency size must be checked. |
+| 30 | HEIC JPG 변환 | Image | iPhone HEIC 사진을 JPG로 바꿔야 함 | 5 | iLoveIMG, Convertio, CleverPDF, PDF24, iMazing | 2 | 3 | 3 | 4 | 5 | 22 | **BUILD** | Built with lazy-loaded `heic-to` so the heavy decoder is fetched only when users run HEIC conversion. |
 | 31 | 이미지 Base64 변환 | Dev/image | 이미지를 Data URI/Base64로 바꿔야 함 | 1 | base64-image.de, ioDraw, Aspose, Vivoldi, YTool | 4 | 2 | 5 | 2 | 5 | 19 | DEFER | Easy but smaller developer intent and weaker monetization. |
 | 32 | 이미지 배경 제거 | Image | 사진 배경을 투명하게 지워야 함 | 5 | remove.bg, Adobe, Canva, AI background removers | 1 | 3 | 2 | 4 | 4 | 19 | DEFER | Demand is strong, but generic AI/background-removal incumbents are too strong; stamp-specific support is better. |
 | 33 | WebP JPG 변환 | Image | WebP 이미지를 JPG/PNG로 바꿔야 함 | 4 | Convertio-like tools, browser utilities, blogs | 3 | 3 | 4 | 3 | 5 | 22 | **BUILD** | Built as the third browser-local image utility, focused on format compatibility for upload and document-editing flows. |
@@ -284,10 +286,10 @@ Acceptance gate:
 ## Deferred But Promising
 
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
-- 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped.
+- 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 
 ## Next Step
 
-Use crawl and analytics data to decide whether the next loop should improve image-tool conversion, add a submission-prep workflow hub, explore `HEIC JPG 변환`, or return to a Korean business-document form.
+Use crawl and analytics data to decide whether the next loop should improve image-tool conversion, add a submission-prep workflow hub, explore QR/image extraction utilities, or return to a Korean business-document form.

@@ -92,6 +92,12 @@ Tool pages also include:
 | `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size` |
 | `image_convert_reset` | Image converter is reset | none |
 | `image_convert_validation_error` | Image converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
+| `heic_convert_file_select` | HEIC converter files are selected | `file_count`, `total_size`, `file_types` |
+| `heic_convert_sample_apply` | HEIC converter sample file is applied | `file_count` |
+| `heic_convert_convert` | HEIC converter creates JPG or PNG blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
+| `heic_convert_download` | HEIC converter download link is clicked | `output_format`, `before_size`, `after_size` |
+| `heic_convert_reset` | HEIC converter is reset | none |
+| `heic_convert_validation_error` | HEIC converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 
 Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
 

@@ -1,0 +1,660 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("heic-to-jpg");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} HEIC를 받지 않는 제출처나 문서 편집기에 맞춰 iPhone 사진을 빠르게 정리합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="heic-workspace" data-heic-converter>
+      <form class="panel heic-panel" aria-label="HEIC JPG 변환 입력">
+        <div class="panel-title">
+          <h2>HEIC 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>HEIC 파일</span>
+          <span class="file-control">
+            <input data-heic-input type="file" accept=".heic,.heif,image/heic,image/heif,image/heic-sequence,image/heif-sequence" multiple />
+            <span data-file-label>HEIC/HEIF 여러 장 선택</span>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>출력 형식</span>
+          <select data-output-format>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+          </select>
+        </label>
+
+        <label class="field range-field">
+          <span>품질 <strong data-quality-label>90</strong></span>
+          <input data-quality type="range" min="50" max="95" step="1" value="90" />
+        </label>
+
+        <p class="note-box">
+          최대 10장, 총 80MB, 파일당 20MB까지 처리합니다. 처음 변환할 때 HEIC 처리 모듈을 불러와 몇 초 걸릴 수 있습니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-convert disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/><path d="M18 7l-5 5M6 17l5-5"/></svg>
+            <span data-convert-label>JPG로 변환</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel heic-preview-panel" aria-label="HEIC JPG 변환 결과">
+        <div class="panel-title">
+          <h2>변환 결과</h2>
+          <span class="format-badge" data-format-badge>JPG</span>
+        </div>
+
+        <div class="heic-summary">
+          <span>상태</span>
+          <strong data-output-status>HEIC 파일을 선택하면 JPG로 바꿀 수 있습니다.</strong>
+          <p data-output-meta>변환된 파일은 아직 준비되지 않았습니다.</p>
+        </div>
+
+        <div class="heic-list" data-heic-list aria-live="polite">
+          <p class="empty-state">선택된 HEIC 파일이 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>HEIC 파일은 브라우저 안에서만 디코딩합니다.</span></li>
+          <li><span class="status-dot"></span><span>파일명과 원본 이미지는 분석 이벤트로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>HEIC 모듈은 변환을 누를 때만 불러옵니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>JPG로 바꿀 HEIC 또는 HEIF 사진을 선택합니다.</li>
+        <li>출력 형식을 JPG 또는 PNG 중에서 고릅니다.</li>
+        <li>변환하기를 누른 뒤 준비된 이미지를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    (() => {
+      const root = document.querySelector("[data-heic-converter]");
+      if (!root) return;
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) return;
+
+      const maxFiles = 10;
+      const maxFileSize = 20 * 1024 * 1024;
+      const maxTotalSize = 80 * 1024 * 1024;
+      const heicTypes = ["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"];
+      const input = root.querySelector("[data-heic-input]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const outputFormat = root.querySelector("[data-output-format]");
+      const qualityInput = root.querySelector("[data-quality]");
+      const qualityLabel = root.querySelector("[data-quality-label]");
+      const formatBadge = root.querySelector("[data-format-badge]");
+      const convertButton = root.querySelector("[data-convert]");
+      const convertLabel = root.querySelector("[data-convert-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const heicList = root.querySelector("[data-heic-list]");
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let nextItemId = 1;
+      let heicModulePromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "heic-to-jpg",
+          tool_title: "HEIC JPG 변환",
+          ...params
+        });
+      }
+
+      function toFiles(items = fileItems) {
+        return items.map((item) => item.file);
+      }
+
+      function totalSize(nextFiles = toFiles()) {
+        return fileTools.totalSize(nextFiles);
+      }
+
+      function totalOutputSize(items = fileItems) {
+        return items.reduce((sum, item) => sum + (item.result?.size || 0), 0);
+      }
+
+      function outputExtension() {
+        return outputFormat.value === "image/png" ? "png" : "jpg";
+      }
+
+      function outputLabel() {
+        return outputExtension().toUpperCase();
+      }
+
+      function hasHeicExtension(file) {
+        return /\.(heic|heif)$/i.test(file.name || "");
+      }
+
+      function looksLikeHeic(file) {
+        return heicTypes.includes(file.type) || hasHeicExtension(file);
+      }
+
+      function safeHeicPayload(files) {
+        return {
+          file_count: files.length,
+          total_size: fileTools.totalSize(files),
+          file_types: fileTools.fileTypes(files)
+        };
+      }
+
+      function validateFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > maxFiles) return { ok: false, reason: "too_many_files" };
+        if (totalSize(files) > maxTotalSize) return { ok: false, reason: "total_size_too_large" };
+        for (const file of files) {
+          if (!looksLikeHeic(file)) return { ok: false, reason: "unsupported_file_type" };
+          if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        }
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "HEIC 파일은 최대 10장까지 선택할 수 있습니다.";
+        if (reason === "total_size_too_large") return "전체 HEIC 용량은 80MB 이하로 선택해 주세요.";
+        if (reason === "file_too_large") return "HEIC 파일 한 장은 20MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "HEIC 또는 HEIF 파일만 사용할 수 있습니다.";
+        if (reason === "not_heic") return "HEIC 파일을 읽지 못했습니다. 다른 HEIC 파일로 다시 시도해 주세요.";
+        return "변환할 HEIC 파일을 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setBusy(isBusy) {
+        convertButton.disabled = isBusy || fileItems.length === 0;
+        convertLabel.textContent = isBusy ? "처리 중" : `${outputLabel()}로 변환`;
+      }
+
+      function releaseResult(item) {
+        fileTools.revokeResult(item.result);
+        item.result = null;
+      }
+
+      function releaseItems(items = fileItems) {
+        for (const item of items) releaseResult(item);
+      }
+
+      function createHeicItems(files) {
+        return files.map((file) => ({
+          id: nextItemId++,
+          file,
+          result: null
+        }));
+      }
+
+      function setFileItems(nextFiles) {
+        releaseItems();
+        fileItems = createHeicItems(nextFiles);
+        renderFiles();
+      }
+
+      function updateControlState() {
+        formatBadge.textContent = outputLabel();
+        qualityLabel.textContent = qualityInput.value;
+        convertLabel.textContent = `${outputLabel()}로 변환`;
+      }
+
+      function renderFiles() {
+        updateControlState();
+        convertButton.disabled = fileItems.length === 0;
+
+        if (fileItems.length === 0) {
+          fileLabel.textContent = "HEIC/HEIF 여러 장 선택";
+          heicList.innerHTML = '<p class="empty-state">선택된 HEIC 파일이 없습니다.</p>';
+          setMessage("HEIC 파일을 선택하면 JPG로 바꿀 수 있습니다.", "변환된 파일은 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        fileLabel.textContent = `${formatter.format(fileItems.length)}장 선택`;
+        heicList.innerHTML = fileItems
+          .map((item, index) => {
+            const result = item.result;
+            return `
+              <div class="heic-row" data-heic-row>
+                ${
+                  result
+                    ? `<img src="${result.url}" alt="" loading="lazy" />`
+                    : `<span class="heic-thumb" aria-hidden="true">HEIC</span>`
+                }
+                <div>
+                  <strong>${index + 1}번 이미지</strong>
+                  <p>HEIC · ${fileTools.formatBytes(item.file.size)}${result ? ` → ${outputLabel()} · ${fileTools.formatBytes(result.size)}` : " 선택됨"}</p>
+                </div>
+                ${
+                  result
+                    ? `<a class="btn primary" href="${result.url}" download="converted-heic-${index + 1}.${outputExtension()}" data-download-image data-before-size="${item.file.size}" data-after-size="${result.size}" data-output-format="${result.outputFormat}">저장</a>`
+                    : '<span class="pending-badge">대기</span>'
+                }
+              </div>
+            `;
+          })
+          .join("");
+
+        const readyCount = fileItems.filter((item) => item.result).length;
+        if (readyCount > 0) {
+          setMessage(
+            `변환 완료: ${formatter.format(readyCount)}장`,
+            `총 ${fileTools.formatBytes(totalSize())} → ${fileTools.formatBytes(totalOutputSize())}`
+          );
+        } else {
+          setMessage(
+            `${formatter.format(fileItems.length)}장 선택됨`,
+            `${outputLabel()} 형식으로 변환할 준비가 됐습니다.`
+          );
+        }
+      }
+
+      async function loadHeicModule() {
+        if (!heicModulePromise) heicModulePromise = import("heic-to/csp");
+        return heicModulePromise;
+      }
+
+      async function convertItem(item, heicTo, isHeic) {
+        const confirmedHeic = await isHeic(item.file).catch(() => looksLikeHeic(item.file));
+        if (!confirmedHeic) throw new Error("not_heic");
+        const blob = await heicTo({
+          blob: item.file,
+          type: outputFormat.value,
+          quality: Number(qualityInput.value) / 100
+        });
+        releaseResult(item);
+        item.result = {
+          size: blob.size,
+          url: URL.createObjectURL(blob),
+          outputFormat: outputFormat.value
+        };
+      }
+
+      async function convertImages() {
+        const files = toFiles();
+        const validation = validateFiles(files);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "파일을 다시 선택한 뒤 시도해 주세요.");
+          track("heic_convert_validation_error", {
+            reason: validation.reason,
+            ...safeHeicPayload(files)
+          });
+          return;
+        }
+
+        setBusy(true);
+        setMessage("HEIC 처리 모듈 불러오는 중", "첫 변환은 몇 초 걸릴 수 있습니다.");
+        try {
+          const { heicTo, isHeic } = await loadHeicModule();
+          setMessage("HEIC 변환 중", `${formatter.format(fileItems.length)}장 이미지를 정리하고 있습니다.`);
+          for (const item of fileItems) {
+            await convertItem(item, heicTo, isHeic);
+          }
+          renderFiles();
+          track("heic_convert_convert", {
+            ...safeHeicPayload(files),
+            output_size: totalOutputSize(),
+            output_format: outputFormat.value,
+            quality: Number(qualityInput.value)
+          });
+        } catch (error) {
+          const reason = error?.message || "convert_failed";
+          setMessage("HEIC 파일을 변환하지 못했습니다.", validationMessage(reason));
+          track("heic_convert_validation_error", { reason });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function loadSampleFile() {
+        const response = await fetch("/samples/heic-sample.heic");
+        if (!response.ok) throw new Error("sample_load_failed");
+        const blob = await response.blob();
+        return new File([blob], "sample.heic", { type: "image/heic" });
+      }
+
+      input.addEventListener("change", (event) => {
+        const nextFiles = Array.from(event.target.files || []);
+        const validation = validateFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setFileItems([]);
+          input.value = "";
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("heic_convert_validation_error", {
+            reason: validation.reason,
+            ...safeHeicPayload(nextFiles)
+          });
+          return;
+        }
+        setFileItems(nextFiles);
+        track("heic_convert_file_select", {
+          ...safeHeicPayload(toFiles())
+        });
+      });
+
+      for (const control of [outputFormat, qualityInput]) {
+        control.addEventListener("input", () => {
+          for (const item of fileItems) releaseResult(item);
+          renderFiles();
+        });
+        control.addEventListener("change", () => {
+          for (const item of fileItems) releaseResult(item);
+          renderFiles();
+        });
+      }
+
+      sampleButton.addEventListener("click", async () => {
+        try {
+          setFileItems([await loadSampleFile()]);
+          input.value = "";
+          track("heic_convert_sample_apply", { file_count: fileItems.length });
+        } catch (error) {
+          setMessage("샘플 HEIC 파일을 불러오지 못했습니다.", "직접 HEIC 파일을 선택해 시도해 주세요.");
+          track("heic_convert_validation_error", {
+            reason: error?.message || "sample_failed"
+          });
+        }
+      });
+
+      resetButton.addEventListener("click", () => {
+        setFileItems([]);
+        input.value = "";
+        outputFormat.value = "image/jpeg";
+        qualityInput.value = "90";
+        renderFiles();
+        track("heic_convert_reset");
+      });
+
+      convertButton.addEventListener("click", convertImages);
+
+      heicList.addEventListener("click", (event) => {
+        const link =
+          event.target instanceof Element ? event.target.closest("[data-download-image]") : null;
+        if (!link) return;
+        track("heic_convert_download", {
+          output_format: link.dataset.outputFormat || outputFormat.value,
+          before_size: Number(link.dataset.beforeSize || 0),
+          after_size: Number(link.dataset.afterSize || 0)
+        });
+      });
+
+      window.addEventListener("pagehide", () => releaseItems());
+
+      renderFiles();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .heic-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .heic-panel,
+  .heic-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .range-field {
+    margin-top: 12px;
+  }
+
+  .range-field input {
+    padding-inline: 0;
+    accent-color: var(--accent);
+  }
+
+  .range-field strong {
+    color: var(--accent-dark);
+  }
+
+  .format-badge,
+  :global(.pending-badge) {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .heic-summary {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .heic-summary > span,
+  :global(.heic-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .heic-summary strong {
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .heic-summary p,
+  :global(.heic-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .heic-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  :global(.heic-row) {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  :global(.heic-row img),
+  :global(.heic-thumb) {
+    width: 58px;
+    height: 58px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #f7fbfb;
+    object-fit: cover;
+  }
+
+  :global(.heic-thumb) {
+    display: grid;
+    place-items: center;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  :global(.heic-row .btn) {
+    min-height: 34px;
+    padding: 8px 10px;
+  }
+
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 1100px) {
+    .heic-workspace {
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+    }
+
+    .heic-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .heic-workspace {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.heic-row) {
+      grid-template-columns: 58px minmax(0, 1fr);
+    }
+
+    :global(.heic-row .btn),
+    :global(.heic-row .pending-badge) {
+      grid-column: 1 / -1;
+      width: 100%;
+      justify-self: stretch;
+      text-align: center;
+    }
+  }
+</style>
