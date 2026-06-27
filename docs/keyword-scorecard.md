@@ -120,6 +120,7 @@ Reference URLs checked:
 - MOEL standard labor contract: https://www.moel.go.kr/info/etc/dataroom/view.do?bbs_seq=1358755286341
 - MOEL retirement calculator: https://www.moel.go.kr/retirementpayCal.do
 - Employment Insurance unemployment calculator: https://eiac.ei.go.kr/ei/m/pf/MOW-PF-00-180-C.html
+- NTS comprehensive income tax filing guide: https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=239072
 
 ## Scorecard
 
@@ -161,7 +162,7 @@ Reference URLs checked:
 | 34 | 퇴직금 계산기 | Calculator | 예상 퇴직금을 계산해야 함 | 5 | MOEL, Saramin, NodongOK, Shiftee, FindSemusa | 1 | 5 | 3 | 4 | 1 | 19 | DEFER | Official/authority pages dominate; formula maintenance burden high. |
 | 35 | 실업급여 계산기 | Calculator | 퇴사 후 실업급여 예상액을 알고 싶음 | 5 | Employment Insurance, Saramin, NodongOK, Albamon, FindSemusa | 1 | 5 | 3 | 4 | 1 | 19 | DEFER | Official source and eligibility complexity make this poor v1. |
 | 36 | 주휴수당 계산기 | Calculator | 알바/파트타임 주휴수당을 계산해야 함 | 5 | Shiftee, Alba, NodongOK, Shopl, FindSemusa | 1 | 5 | 4 | 4 | 2 | 21 | DEFER | Demand high, but labor correctness and competitors are strong. |
-| 37 | 3.3% 계산기 | Calculator | 프리랜서 원천징수 후 실수령액을 알고 싶음 | 5 | Pluuug, K-Calculator, withholding.kr, tax sites | 3 | 5 | 5 | 3 | 3 | 24 | EXPLORE | Simple formula, but tax disclaimer and source needed. |
+| 37 | 3.3% 계산기 | Calculator | 프리랜서 원천징수 후 실수령액을 알고 싶음 | 5 | Pluuug, K-Calculator, withholding.kr, tax sites | 3 | 5 | 5 | 3 | 3 | 24 | **BUILD** | Simple formula, strong business-document adjacency, and NTS source supports a careful calculator with disclaimers. |
 | 38 | 부가세 계산기 | Calculator | 공급가/부가세/합계 금액을 빠르게 계산해야 함 | 5 | tax calculators, accounting tools, blogs | 2 | 5 | 5 | 3 | 3 | 23 | EXPLORE | Simple later calculator; not first because docs wedge is stronger. |
 | 39 | 4대보험 계산기 | Calculator | 급여에서 보험료를 계산해야 함 | 5 | official/HR/payroll calculators, tax/accounting sites | 1 | 5 | 2 | 4 | 1 | 18 | DEFER | Rate updates and authority burden too high. |
 | 40 | 연차 계산기 | Calculator | 입사일 기준 연차를 계산해야 함 | 5 | Saramin, Shiftee, Shopl, labor sites | 2 | 5 | 4 | 4 | 2 | 22 | DEFER | Labor rule edge cases; later only with official source. |
@@ -273,7 +274,7 @@ Acceptance gate:
 
 - 도장 누끼 따기: rising DataLab trend and strong workflow fit, but lower demand than 거래명세서/견적서. Build as support or follow-up.
 - 사진 용량 줄이기 / 이미지 압축: broad demand, but only worth doing after the Korean business-doc wedge proves traffic.
-- 3.3% 계산기: simple and Korean-specific, but needs tax source/date/disclaimer discipline.
+- 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.
 - QR 코드 만들기/읽기: easy utility, but weaker business wedge and lower monetization fit.
 
 ## Next Step

@@ -56,6 +56,7 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `tool_row_remove`
 - `calculator_copy`
 - `amount_converter_copy`
+- `withholding_calculator_copy`
 
 Do not send raw document text, business numbers, filenames, addresses, customer names, or uploaded file data.
 
@@ -98,10 +99,11 @@ Completed:
 5. Add a supporting business calculator: `부가세 계산기`.
 6. Add a supporting document formatter: `금액 한글 변환기`.
 7. Add Korean total amount rows to generated business documents.
+8. Add a supporting business calculator: `3.3% 계산기`.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/tools/receipt-generator/`, `/tools/invoice-generator/`, `/tools/vat-calculator/`, and `/tools/amount-korean-converter/`.
-2. Compare starts, print events, calculator copy events, and amount-converter copy events across 거래명세서, 견적서, 청구서, 영수증, 부가세 계산기, 금액 한글 변환기.
-3. If 청구서, 영수증, 부가세 계산기, or 금액 한글 변환기 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
+1. Request indexing/collection for `/tools/receipt-generator/`, `/tools/invoice-generator/`, `/tools/vat-calculator/`, `/tools/amount-korean-converter/`, and `/tools/freelance-withholding-calculator/`.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, and 3.3% calculator copy events across 거래명세서, 견적서, 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기.
+3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, or 3.3% 계산기 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
 4. If business-document pages are indexed cleanly, reconsider the first workflow-specific PDF tool.

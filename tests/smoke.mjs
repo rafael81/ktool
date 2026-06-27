@@ -17,7 +17,8 @@ const routes = [
   { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true, documentPreview: true },
   { path: "/tools/vat-calculator/", h1: "부가세 계산기", faq: true },
-  { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true }
+  { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true },
+  { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true }
 ];
 
 function assert(condition, message) {

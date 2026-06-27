@@ -3,7 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
-const tool = getTool("vat-calculator");
+const tool = getTool("withholding-tax");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
   softwareApplicationSchema(tool, tool.featureList),
@@ -25,7 +25,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 견적서, 청구서, 거래명세서에 넣기 전 금액을 원 단위로 확인합니다.</p>
+        <p>{tool.description} 청구서나 영수증에 넣기 전 총 지급액, 원천징수액, 실수령액을 빠르게 맞춥니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -44,8 +44,8 @@ const structuredData = [
       </div>
     </section>
 
-    <section class="calculator-workspace" data-vat-calculator>
-      <form class="panel calculator-panel" aria-label="부가세 계산 입력">
+    <section class="calculator-workspace" data-withholding-calculator>
+      <form class="panel calculator-panel" aria-label="3.3% 원천징수 계산 입력">
         <div class="panel-title">
           <h2>계산 입력</h2>
         </div>
@@ -53,28 +53,28 @@ const structuredData = [
         <fieldset class="mode-field">
           <legend>입력 기준</legend>
           <label class="mode-option">
-            <input type="radio" name="vat-mode" value="supply" checked data-vat-mode />
-            <span>공급가액 기준</span>
+            <input type="radio" name="withholding-mode" value="gross" checked data-withholding-mode />
+            <span>총 지급액 기준</span>
           </label>
           <label class="mode-option">
-            <input type="radio" name="vat-mode" value="total" data-vat-mode />
-            <span>합계금액 기준</span>
+            <input type="radio" name="withholding-mode" value="net" data-withholding-mode />
+            <span>실수령액 기준</span>
           </label>
         </fieldset>
 
         <label class="field amount-field">
-          <span data-amount-label>공급가액</span>
+          <span data-amount-label>총 지급액</span>
           <input
-            data-vat-amount
+            data-withholding-amount
             inputmode="numeric"
             autocomplete="off"
-            value="100000"
-            aria-describedby="vat-help"
+            value="1000000"
+            aria-describedby="withholding-help"
           />
         </label>
 
-        <p class="note-box" id="vat-help">
-          일반과세자 부가가치세율 10% 기준입니다. 간이과세, 면세, 영세율, 업종별 특례는 반영하지 않습니다.
+        <p class="note-box" id="withholding-help">
+          인적용역 사업소득 3.3% 간편 계산입니다. 사업소득세 3%와 개인지방소득세 0.3%를 원 단위로 반올림합니다.
         </p>
 
         <div class="button-row">
@@ -93,27 +93,35 @@ const structuredData = [
         </div>
       </form>
 
-      <section class="result-panel" aria-label="부가세 계산 결과">
+      <section class="result-panel" aria-label="3.3% 원천징수 계산 결과">
         <div class="panel-title">
           <h2>계산 결과</h2>
-          <span class="rate-badge">VAT 10%</span>
+          <span class="rate-badge">3.3%</span>
         </div>
         <div class="result-grid">
+          <div class="result-card total">
+            <span>총 지급액</span>
+            <strong data-gross-result>1,000,000원</strong>
+          </div>
           <div class="result-card">
-            <span>공급가액</span>
-            <strong data-supply-result>100,000원</strong>
+            <span>사업소득세 3%</span>
+            <strong data-income-tax-result>30,000원</strong>
+          </div>
+          <div class="result-card">
+            <span>개인지방소득세 0.3%</span>
+            <strong data-local-tax-result>3,000원</strong>
           </div>
           <div class="result-card accent">
-            <span>부가세</span>
-            <strong data-vat-result>10,000원</strong>
+            <span>원천징수 합계</span>
+            <strong data-tax-result>33,000원</strong>
           </div>
-          <div class="result-card total">
-            <span>합계금액</span>
-            <strong data-total-result>110,000원</strong>
+          <div class="result-card total net-card">
+            <span>실수령액</span>
+            <strong data-net-result>967,000원</strong>
           </div>
         </div>
         <div class="formula-box" data-formula>
-          공급가액 100,000원 + 부가세 10,000원 = 합계금액 110,000원
+          총 지급액 1,000,000원 - 원천징수 33,000원 = 실수령액 967,000원
         </div>
       </section>
 
@@ -122,8 +130,8 @@ const structuredData = [
           <h3>확인 사항</h3>
         </div>
         <ul class="status-list">
-          <li><span class="status-dot"></span><span>일반과세자 10% 기준의 단순 계산입니다.</span></li>
-          <li><span class="status-dot"></span><span>세금 신고, 공제, 과세 여부 판단을 대신하지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>인적용역 사업소득 3.3% 기준의 단순 계산입니다.</span></li>
+          <li><span class="status-dot"></span><span>근로소득, 기타소득, 비거주자 지급에는 다른 기준이 적용될 수 있습니다.</span></li>
           <li><span class="status-dot"></span><span>입력한 금액은 서버로 보내지 않습니다.</span></li>
         </ul>
       </aside>
@@ -132,16 +140,19 @@ const structuredData = [
     <section class="content-section">
       <h2>계산 기준</h2>
       <p>
-        K문서툴 부가세 계산기는 일반과세자 부가가치세율 10% 기준으로 공급가액, 부가세,
-        합계금액을 계산합니다. 공식 기준은
-        <a href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7696&mi=2275" rel="noreferrer">국세청 부가가치세 세율 안내</a>와
-        <a href="https://law.go.kr/lsInfoP.do?ancYnChk=0&lsId=001571" rel="noreferrer">부가가치세법 제30조</a>를 확인하세요.
+        K문서툴 3.3% 계산기는 국세청의 종합소득세 신고 안내에 나온 인적용역 사업소득 원천징수 설명을 기준으로 합니다.
+        국세청은 인적용역 소득자에게 사업소득을 지급할 때 사업소득세 3%와 개인지방소득세 0.3%를 원천징수한다고 안내합니다.
+        기준 확인일은 2026년 6월 27일입니다.
       </p>
       <ol>
-        <li>공급가액 기준: 공급가액 × 10% = 부가세, 공급가액 + 부가세 = 합계금액</li>
-        <li>합계금액 기준: 합계금액 ÷ 1.1 = 공급가액, 합계금액 - 공급가액 = 부가세</li>
+        <li>총 지급액 기준: 총 지급액 × 3% = 사업소득세, 총 지급액 × 0.3% = 개인지방소득세</li>
+        <li>실수령액 기준: 실수령액 ÷ 96.7% = 총 지급액 추정</li>
         <li>계산 결과는 원 단위로 반올림해 표시합니다.</li>
       </ol>
+      <p>
+        공식 안내는
+        <a href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=239072" rel="noreferrer">국세청 종합소득세 확정신고 안내</a>를 확인하세요.
+      </p>
     </section>
 
     <section class="content-section">
@@ -179,16 +190,18 @@ const structuredData = [
 
   <script is:inline>
     (() => {
-      const root = document.querySelector("[data-vat-calculator]");
+      const root = document.querySelector("[data-withholding-calculator]");
       if (!root) return;
 
       const currency = new Intl.NumberFormat("ko-KR");
-      const amountInput = root.querySelector("[data-vat-amount]");
+      const amountInput = root.querySelector("[data-withholding-amount]");
       const amountLabel = root.querySelector("[data-amount-label]");
-      const modeInputs = [...root.querySelectorAll("[data-vat-mode]")];
-      const supplyResult = root.querySelector("[data-supply-result]");
-      const vatResult = root.querySelector("[data-vat-result]");
-      const totalResult = root.querySelector("[data-total-result]");
+      const modeInputs = [...root.querySelectorAll("[data-withholding-mode]")];
+      const grossResult = root.querySelector("[data-gross-result]");
+      const incomeTaxResult = root.querySelector("[data-income-tax-result]");
+      const localTaxResult = root.querySelector("[data-local-tax-result]");
+      const taxResult = root.querySelector("[data-tax-result]");
+      const netResult = root.querySelector("[data-net-result]");
       const formula = root.querySelector("[data-formula]");
       const copyButton = root.querySelector("[data-copy-result]");
       const sampleButton = root.querySelector("[data-sample]");
@@ -205,39 +218,32 @@ const structuredData = [
       }
 
       function currentMode() {
-        return modeInputs.find((input) => input.checked)?.value || "supply";
+        return modeInputs.find((input) => input.checked)?.value || "gross";
       }
 
       function calculate() {
         const mode = currentMode();
-        const amount = parseAmount(amountInput.value);
-        let supply = 0;
-        let vat = 0;
-        let total = 0;
+        const amount = Math.round(parseAmount(amountInput.value));
+        const gross = mode === "net" ? Math.round(amount / 0.967) : amount;
+        const incomeTax = Math.round(gross * 0.03);
+        const localTax = Math.round(gross * 0.003);
+        const tax = incomeTax + localTax;
+        const net = gross - tax;
 
-        if (mode === "total") {
-          total = Math.round(amount);
-          supply = Math.round(total / 1.1);
-          vat = total - supply;
-          amountLabel.textContent = "합계금액";
-        } else {
-          supply = Math.round(amount);
-          vat = Math.round(supply * 0.1);
-          total = supply + vat;
-          amountLabel.textContent = "공급가액";
-        }
-
-        supplyResult.textContent = won(supply);
-        vatResult.textContent = won(vat);
-        totalResult.textContent = won(total);
-        formula.textContent = `공급가액 ${won(supply)} + 부가세 ${won(vat)} = 합계금액 ${won(total)}`;
-        return { mode, supply, vat, total };
+        amountLabel.textContent = mode === "net" ? "실수령액" : "총 지급액";
+        grossResult.textContent = won(gross);
+        incomeTaxResult.textContent = won(incomeTax);
+        localTaxResult.textContent = won(localTax);
+        taxResult.textContent = won(tax);
+        netResult.textContent = won(net);
+        formula.textContent = `총 지급액 ${won(gross)} - 원천징수 ${won(tax)} = 실수령액 ${won(net)}`;
+        return { mode, gross, incomeTax, localTax, tax, net };
       }
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
-          tool_id: "vat-calculator",
-          tool_title: "부가세 계산기",
+          tool_id: "withholding-tax",
+          tool_title: "3.3% 계산기",
           ...params
         });
       }
@@ -246,34 +252,34 @@ const structuredData = [
       for (const input of modeInputs) {
         input.addEventListener("change", () => {
           calculate();
-          track("calculator_mode_change", { calculator_mode: currentMode() });
+          track("withholding_calculator_mode_change", { calculator_mode: currentMode() });
         });
       }
 
       sampleButton?.addEventListener("click", () => {
-        amountInput.value = currentMode() === "total" ? "110000" : "100000";
+        amountInput.value = currentMode() === "net" ? "967000" : "1000000";
         calculate();
-        track("calculator_sample_apply", { calculator_mode: currentMode() });
+        track("withholding_calculator_sample_apply", { calculator_mode: currentMode() });
       });
 
       resetButton?.addEventListener("click", () => {
         amountInput.value = "";
         calculate();
-        track("calculator_reset", { calculator_mode: currentMode() });
+        track("withholding_calculator_reset", { calculator_mode: currentMode() });
       });
 
       copyButton?.addEventListener("click", async () => {
         const result = calculate();
-        const text = `공급가액 ${won(result.supply)} / 부가세 ${won(result.vat)} / 합계금액 ${won(result.total)}`;
+        const text = `총 지급액 ${won(result.gross)} / 사업소득세 ${won(result.incomeTax)} / 개인지방소득세 ${won(result.localTax)} / 실수령액 ${won(result.net)}`;
         try {
           await navigator.clipboard.writeText(text);
           copyButton.textContent = "복사됨";
           setTimeout(() => {
             copyButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>복사';
           }, 1200);
-          track("calculator_copy", { calculator_mode: result.mode });
+          track("withholding_calculator_copy", { calculator_mode: result.mode });
         } catch {
-          track("calculator_copy_error", { calculator_mode: result.mode });
+          track("withholding_calculator_copy_error", { calculator_mode: result.mode });
         }
       });
 
@@ -350,7 +356,7 @@ const structuredData = [
 
   .result-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 12px;
   }
 
@@ -362,6 +368,7 @@ const structuredData = [
     border: 1px solid var(--line);
     border-radius: 8px;
     background: #fff;
+    grid-column: span 2;
     padding: 18px;
   }
 
@@ -373,7 +380,7 @@ const structuredData = [
 
   .result-card strong {
     color: var(--ink);
-    font-size: clamp(23px, 3vw, 34px);
+    font-size: clamp(22px, 2.7vw, 32px);
     line-height: 1.1;
     white-space: nowrap;
     word-break: keep-all;
@@ -386,6 +393,10 @@ const structuredData = [
   .result-card.total {
     border-color: var(--accent);
     background: #e8f4f2;
+  }
+
+  .net-card {
+    grid-column: span 4;
   }
 
   .rate-badge {
@@ -428,9 +439,17 @@ const structuredData = [
 
   @media (max-width: 760px) {
     .calculator-workspace,
-    .result-grid,
     .mode-field {
       grid-template-columns: 1fr;
+    }
+
+    .result-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .result-card,
+    .net-card {
+      grid-column: auto;
     }
   }
 </style>

@@ -5,7 +5,8 @@ export type ToolId =
   | "receipt"
   | "invoice"
   | "vat-calculator"
-  | "amount-korean";
+  | "amount-korean"
+  | "withholding-tax";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -43,7 +44,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "업무 문서",
     path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 한글 금액 변환처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 한글 금액 변환, 3.3% 계산처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
@@ -247,7 +248,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "입금 요청용 일반 문서입니다. 세금계산서, 전자세금계산서, 계약 체결을 대신하지 않습니다.",
-    relatedToolIds: ["vat-calculator", "amount-korean"]
+    relatedToolIds: ["withholding-tax", "vat-calculator"]
   },
   {
     id: "vat-calculator",
@@ -327,6 +328,45 @@ export const tools: ToolInfo[] = [
     ],
     trustNote: "문서 작성을 돕는 표기 변환 도구입니다. 계약서나 증빙 문서의 법적 효력을 보장하지 않습니다.",
     relatedToolIds: ["invoice", "estimate"]
+  },
+  {
+    id: "withholding-tax",
+    title: "3.3% 계산기",
+    shortTitle: "3.3%",
+    path: "/tools/freelance-withholding-calculator/",
+    category: "business",
+    description:
+      "프리랜서와 인적용역 사업소득의 3.3% 원천징수액과 실수령액을 계산합니다.",
+    pageTitle: "3.3% 계산기 - 프리랜서 원천징수 실수령액 계산",
+    metaDescription:
+      "프리랜서, 인적용역 사업소득의 총 지급액 또는 실수령액을 입력해 사업소득세 3%, 개인지방소득세 0.3%, 실수령액을 계산하세요.",
+    primaryQuery: "3.3% 계산기",
+    secondaryQueries: ["프리랜서 세금 계산기", "사업소득 원천징수 계산", "3.3 세금 계산", "프리랜서 실수령액 계산"],
+    userMoment: "프리랜서 용역비를 청구하거나 지급 전에 원천징수액과 실수령액을 맞춰야 하는 순간",
+    featureList: [
+      "총 지급액 기준 3.3% 계산",
+      "실수령액 기준 총 지급액 역산",
+      "사업소득세 3% 계산",
+      "개인지방소득세 0.3% 계산",
+      "계산 결과 복사",
+      "브라우저 안에서 즉시 계산"
+    ],
+    faqs: [
+      [
+        "3.3%는 무엇인가요?",
+        "국세청 안내 기준으로 인적용역 사업소득 지급 시 사업소득세 3%와 개인지방소득세 0.3%를 합한 원천징수율입니다."
+      ],
+      ["총 지급액 기준 계산은 어떻게 하나요?", "입력한 총 지급액에 3%를 곱해 사업소득세를, 0.3%를 곱해 개인지방소득세를 계산하고 이를 뺀 금액을 실수령액으로 표시합니다."],
+      ["실수령액으로 총 지급액을 역산할 수 있나요?", "네. 실수령액을 96.7%로 나누어 총 지급액을 추정하고, 그 금액 기준으로 원천징수액을 계산합니다."],
+      ["근로소득이나 기타소득에도 쓰면 되나요?", "아니요. 이 도구는 인적용역 사업소득 3.3% 간편 계산용입니다. 근로소득, 기타소득, 법인 지급, 비거주자 지급은 다른 기준이 적용될 수 있습니다."],
+      ["신고용 세액으로 확정해도 되나요?", "이 도구는 문서 작성 전 금액 확인용입니다. 실제 신고, 환급, 소득 구분, 필요경비 판단은 홈택스나 세무 전문가의 확인이 필요합니다."],
+      [
+        "입력한 금액이 서버에 저장되나요?",
+        "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 입력한 금액은 서버로 보내지 않습니다."
+      ]
+    ],
+    trustNote: "인적용역 사업소득 3.3% 기준의 간편 계산기입니다. 신고, 환급, 소득 구분 판단을 대신하지 않습니다.",
+    relatedToolIds: ["invoice", "receipt"]
   }
 ];
 

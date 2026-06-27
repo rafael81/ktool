@@ -56,6 +56,11 @@ Tool pages also include:
 | `amount_converter_copy` | Korean amount converter result is copied | none |
 | `amount_converter_copy_error` | Korean amount converter result copy fails | none |
 | `amount_converter_validation_error` | Korean amount converter input is clamped or rejected | `reason` |
+| `withholding_calculator_mode_change` | 3.3% calculator mode changes | `calculator_mode` |
+| `withholding_calculator_sample_apply` | 3.3% calculator sample amount is applied | `calculator_mode` |
+| `withholding_calculator_reset` | 3.3% calculator is reset | `calculator_mode` |
+| `withholding_calculator_copy` | 3.3% calculator result is copied | `calculator_mode` |
+| `withholding_calculator_copy_error` | 3.3% calculator result copy fails | `calculator_mode` |
 
 ## Provider hook example
 
