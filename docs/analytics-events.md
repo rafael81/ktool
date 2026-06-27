@@ -107,9 +107,11 @@ Tool pages also include:
 | `image_compressor_validation_error` | Photo size reducer blocks invalid input or compression failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_resize_file_select` | Image resizer images are selected | `file_count`, `total_size`, `file_types` |
 | `image_resize_sample_apply` | Image resizer sample images are applied | `file_count` |
-| `image_resize_resize` | Image resizer creates resized image blobs | `file_count`, `total_size`, `output_size`, `resize_mode`, `output_format`, `quality`, `keep_aspect`, `file_types` |
+| `image_resize_preset_arrival` | Image resizer is opened with a URL preset | `source`, `preset`, `resize_mode`, `long_side`, `width`, `height`, `keep_aspect` |
+| `image_resize_preset_change` | Image resizer submission size preset changes | `preset`, `resize_mode`, `long_side`, `width`, `height`, `keep_aspect` |
+| `image_resize_resize` | Image resizer creates resized image blobs | `file_count`, `total_size`, `output_size`, `resize_mode`, `output_format`, `quality`, `keep_aspect`, `preset`, `file_types` |
 | `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
-| `image_resize_next_pdf_click` | Image resizer next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `resize_mode`, `target_tool_id`, `href` |
+| `image_resize_next_pdf_click` | Image resizer next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `resize_mode`, `preset`, `target_tool_id`, `href` |
 | `image_resize_reset` | Image resizer is reset | none |
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_crop_file_select` | Image cropper image is selected | `file_count`, `total_size`, `file_types` |

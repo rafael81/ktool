@@ -139,6 +139,8 @@ async function run() {
         );
         const compressionPathClickCount = await page.locator('[data-analytics-event="prep_compression_path_click"]').count();
         assert(compressionPathClickCount === 4, `${route.path} should track the four compression path steps`);
+        const resizePresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-resizer/?preset=long-1200"]').count();
+        assert(resizePresetRouteCount >= 3, `${route.path} should route image size limits to the 1200px resize preset`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
@@ -334,6 +336,25 @@ async function run() {
       }
 
       if (route.imageResizer) {
+        await page.goto(`${baseUrl}${route.path}?preset=square-800`, { waitUntil: "networkidle" });
+        const resizePresetState = await page.evaluate(() => ({
+          preset: document.querySelector("[data-resize-preset]")?.value,
+          mode: document.querySelector("[data-resize-mode]")?.value,
+          width: document.querySelector("[data-target-width]")?.value,
+          height: document.querySelector("[data-target-height]")?.value,
+          keepAspect: document.querySelector("[data-keep-aspect]")?.checked,
+          note: document.querySelector("[data-resize-preset-note]")?.textContent || ""
+        }));
+        assert(
+          resizePresetState.preset === "square-800" &&
+            resizePresetState.mode === "exact" &&
+            resizePresetState.width === "800" &&
+            resizePresetState.height === "800" &&
+            resizePresetState.keepAspect === true &&
+            resizePresetState.note.includes("800×800px"),
+          `${route.path} should accept a URL preset for the 800x800-fit resize target`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".resize-row").length === 2);
         await page.locator("[data-resize]").click();

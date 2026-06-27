@@ -63,7 +63,8 @@ const flowGroups = [
       {
         label: "픽셀 제한",
         detail: "가로·세로 또는 긴 변 기준이 있으면 크기를 맞춥니다.",
-        tool: getTool("image-resizer")
+        tool: getTool("image-resizer"),
+        href: `${getTool("image-resizer").path}?preset=long-1200`
       },
       {
         label: "PDF 한 개",
@@ -127,7 +128,7 @@ const situations = [
   { label: "사진 방향이 잘못됨", tool: getTool("image-rotator") },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper") },
-  { label: "사진 크기 제한이 있음", tool: getTool("image-resizer") },
+  { label: "사진 크기 제한이 있음", tool: getTool("image-resizer"), href: `${getTool("image-resizer").path}?preset=long-1200` },
   { label: "이미지 여러 장을 PDF로 제출", tool: getTool("jpg-to-pdf") },
   { label: "거래처 문서가 필요함", tool: getTool("transaction-statement") },
   { label: "도장·명판 이미지를 넣어야 함", tool: getTool("business-nameplate") }
@@ -150,7 +151,8 @@ const pdfPathTools = [
     label: "3",
     title: "크기·용량",
     detail: "업로드 제한에 맞춰 리사이즈하거나 압축합니다.",
-    tool: getTool("image-resizer")
+    tool: getTool("image-resizer"),
+    href: `${getTool("image-resizer").path}?preset=long-1200`
   },
   {
     label: "4",
@@ -324,7 +326,7 @@ const structuredData = [
       <div class="pdf-path-steps">
         {pdfPathTools.map((step) => (
           <a
-            href={step.tool.path}
+            href={step.href ?? step.tool.path}
             data-analytics-event="prep_pdf_path_click"
             data-analytics-tool-id={step.tool.id}
             data-analytics-tool-title={step.tool.title}
@@ -422,7 +424,7 @@ const structuredData = [
       {situations.map((item) => (
         <a
           class="situation-link"
-          href={item.tool.path}
+          href={item.href ?? item.tool.path}
           data-analytics-event="prep_situation_click"
           data-analytics-tool-id={item.tool.id}
           data-analytics-tool-title={item.tool.title}
@@ -454,7 +456,7 @@ const structuredData = [
                     <p>{step.detail}</p>
                   </div>
                   <a
-                    href={step.tool.path}
+                    href={step.href ?? step.tool.path}
                     data-analytics-event="prep_flow_tool_click"
                     data-analytics-tool-id={step.tool.id}
                     data-analytics-tool-title={step.tool.title}

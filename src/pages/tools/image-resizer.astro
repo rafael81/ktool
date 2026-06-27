@@ -58,12 +58,24 @@ const structuredData = [
           </span>
         </label>
 
-        <label class="field">
+        <label class="field preset-field">
           <span>리사이즈 방식</span>
           <select data-resize-mode>
             <option value="long-side">긴 변 기준</option>
             <option value="exact">직접 크기</option>
           </select>
+        </label>
+
+        <label class="field">
+          <span>제출 크기 프리셋</span>
+          <select data-resize-preset>
+            <option value="long-1200">기본 제출 · 긴 변 1200px</option>
+            <option value="long-800">용량 우선 · 긴 변 800px</option>
+            <option value="long-1600">글자 선명 · 긴 변 1600px</option>
+            <option value="square-800">800×800 제한 · 비율 유지</option>
+            <option value="custom">직접 설정</option>
+          </select>
+          <small data-resize-preset-note>제출 호환성이 좋은 긴 변 1200px JPG로 맞춥니다.</small>
         </label>
 
         <div class="field-grid two-columns" data-long-side-controls>
@@ -228,6 +240,8 @@ const structuredData = [
       const input = root.querySelector("[data-image-input]");
       const fileLabel = root.querySelector("[data-file-label]");
       const resizeMode = root.querySelector("[data-resize-mode]");
+      const resizePreset = root.querySelector("[data-resize-preset]");
+      const resizePresetNote = root.querySelector("[data-resize-preset-note]");
       const outputFormat = root.querySelector("[data-output-format]");
       const longSideInput = root.querySelector("[data-long-side]");
       const widthInput = root.querySelector("[data-target-width]");
@@ -252,6 +266,47 @@ const structuredData = [
       const formatter = new Intl.NumberFormat("ko-KR");
       let fileItems = [];
       let nextItemId = 1;
+      let isApplyingPreset = false;
+      const resizePresets = {
+        "long-1200": {
+          mode: "long-side",
+          longSide: "1200",
+          outputFormat: "image/jpeg",
+          quality: "88",
+          note: "제출 호환성이 좋은 긴 변 1200px JPG로 맞춥니다."
+        },
+        "long-800": {
+          mode: "long-side",
+          longSide: "800",
+          outputFormat: "image/jpeg",
+          quality: "84",
+          note: "용량을 더 줄여야 할 때 긴 변 800px JPG로 낮춥니다."
+        },
+        "long-1600": {
+          mode: "long-side",
+          longSide: "1600",
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "글자 판독이 중요하면 긴 변 1600px JPG로 여유를 둡니다."
+        },
+        "square-800": {
+          mode: "exact",
+          width: "800",
+          height: "800",
+          keepAspect: true,
+          outputFormat: "image/jpeg",
+          quality: "88",
+          note: "프로필·증명용처럼 800×800px 제한이 있을 때 원본 비율을 유지해 맞춥니다."
+        },
+        custom: {
+          note: "제출처 안내에 맞춰 크기와 형식을 직접 조정합니다."
+        }
+      };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(resizePresets, requestedPreset)
+          ? requestedPreset
+          : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -275,6 +330,25 @@ const structuredData = [
 
       function outputExtension() {
         return fileTools.outputExtension(outputFormat.value);
+      }
+
+      function selectedPreset() {
+        return resizePresets[resizePreset.value] || resizePresets.custom;
+      }
+
+      function presetPayload() {
+        return {
+          preset: resizePreset.value,
+          resize_mode: resizeMode.value,
+          long_side: resizeMode.value === "long-side" ? numberValue(longSideInput) : null,
+          width: resizeMode.value === "exact" ? numberValue(widthInput) : null,
+          height: resizeMode.value === "exact" ? numberValue(heightInput) : null,
+          keep_aspect: keepAspect.checked
+        };
+      }
+
+      function updatePresetNote() {
+        resizePresetNote.textContent = selectedPreset().note;
       }
 
       function setMessage(status, meta = "") {
@@ -338,6 +412,30 @@ const structuredData = [
         aspectControl.classList.toggle("hidden", !exact);
         formatBadge.textContent = outputExtension().toUpperCase();
         qualityLabel.textContent = qualityInput.value;
+        updatePresetNote();
+      }
+
+      function applyResizePreset(shouldTrack = true) {
+        const preset = selectedPreset();
+        if (resizePreset.value !== "custom") {
+          isApplyingPreset = true;
+          resizeMode.value = preset.mode;
+          outputFormat.value = preset.outputFormat;
+          qualityInput.value = preset.quality;
+          if (preset.mode === "long-side") {
+            longSideInput.value = preset.longSide;
+          } else {
+            widthInput.value = preset.width;
+            heightInput.value = preset.height;
+            keepAspect.checked = preset.keepAspect;
+          }
+          isApplyingPreset = false;
+        }
+        for (const item of fileItems) releaseResult(item);
+        renderFiles();
+        if (shouldTrack) {
+          track("image_resize_preset_change", presetPayload());
+        }
       }
 
       function renderFiles() {
@@ -460,7 +558,8 @@ const structuredData = [
             resize_mode: resizeMode.value,
             output_format: outputFormat.value,
             quality: Number(qualityInput.value),
-            keep_aspect: keepAspect.checked
+            keep_aspect: keepAspect.checked,
+            preset: resizePreset.value
           });
         } catch (error) {
           setMessage("이미지를 리사이즈하지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
@@ -521,14 +620,18 @@ const structuredData = [
 
       for (const control of [resizeMode, outputFormat, longSideInput, widthInput, heightInput, keepAspect, qualityInput]) {
         control.addEventListener("input", () => {
+          if (!isApplyingPreset) resizePreset.value = "custom";
           for (const item of fileItems) releaseResult(item);
           renderFiles();
         });
         control.addEventListener("change", () => {
+          if (!isApplyingPreset) resizePreset.value = "custom";
           for (const item of fileItems) releaseResult(item);
           renderFiles();
         });
       }
+
+      resizePreset.addEventListener("change", () => applyResizePreset(true));
 
       sampleButton.addEventListener("click", async () => {
         setFileItems([
@@ -542,14 +645,8 @@ const structuredData = [
       resetButton.addEventListener("click", () => {
         setFileItems([]);
         input.value = "";
-        resizeMode.value = "long-side";
-        outputFormat.value = "image/jpeg";
-        longSideInput.value = "1200";
-        widthInput.value = "800";
-        heightInput.value = "800";
-        keepAspect.checked = true;
-        qualityInput.value = "88";
-        renderFiles();
+        resizePreset.value = "long-1200";
+        applyResizePreset(false);
         track("image_resize_reset");
       });
 
@@ -574,6 +671,7 @@ const structuredData = [
           output_size: totalOutputSize(),
           output_format: outputFormat.value,
           resize_mode: resizeMode.value,
+          preset: resizePreset.value,
           target_tool_id: "jpg-to-pdf",
           href: "/tools/jpg-to-pdf-converter/?from=resized-images"
         });
@@ -581,7 +679,14 @@ const structuredData = [
 
       window.addEventListener("pagehide", () => releaseItems());
 
-      renderFiles();
+      if (initialPreset) resizePreset.value = initialPreset;
+      applyResizePreset(false);
+      if (initialPreset) {
+        track("image_resize_preset_arrival", {
+          source: "submission-prep",
+          ...presetPayload()
+        });
+      }
     })();
   </script>
 </BaseLayout>
@@ -641,6 +746,13 @@ const structuredData = [
 
   .range-field strong {
     color: var(--accent-dark);
+  }
+
+  .preset-field small {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
   }
 
   .check-field {
