@@ -1,0 +1,9 @@
+---
+import WorkflowPackagePage from "@/components/WorkflowPackagePage.astro";
+import { getWorkflowPackage } from "@/data/workflowPackages";
+
+const workflowPackage = getWorkflowPackage("photo-scan-submission");
+if (!workflowPackage) throw new Error("Missing photo-scan-submission workflow package");
+---
+
+<WorkflowPackagePage workflowPackage={workflowPackage} />

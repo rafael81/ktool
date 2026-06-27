@@ -1,5 +1,6 @@
 ---
-import { toolCategories, tools } from "@/data/tools";
+import { toolCategories, tools, type ToolCategoryId } from "@/data/tools";
+import { workflowPackages, type WorkflowPackageId } from "@/data/workflowPackages";
 
 type Props = {
   title: string;
@@ -16,6 +17,29 @@ function normalizePath(path: string) {
 }
 
 const normalizedCanonicalPath = normalizePath(canonicalPath);
+const currentTool = tools.find((tool) => normalizePath(tool.path) === normalizedCanonicalPath);
+const currentWorkflowPackage = workflowPackages.find(
+  (workflowPackage) => normalizePath(workflowPackage.path) === normalizedCanonicalPath
+);
+const workflowCategoryMap: Record<WorkflowPackageId, ToolCategoryId> = {
+  "photo-scan-submission": "image",
+  "business-document-submission": "business",
+  "freelance-billing": "business"
+};
+const currentWorkflowCategory = currentWorkflowPackage
+  ? workflowCategoryMap[currentWorkflowPackage.id]
+  : undefined;
+const primaryWorkflowPackage = workflowPackages[0];
+function isActivePath(path: string) {
+  return normalizePath(path) === normalizedCanonicalPath;
+}
+function isActiveCategory(categoryId: ToolCategoryId) {
+  const shouldHighlightWorkflowCategory = currentWorkflowPackage?.id !== primaryWorkflowPackage.id;
+  return (
+    currentTool?.category === categoryId ||
+    (shouldHighlightWorkflowCategory && currentWorkflowCategory === categoryId)
+  );
+}
 const canonical = new URL(
   normalizedCanonicalPath,
   Astro.site ?? "https://k-document-tool.pages.dev"
@@ -48,12 +72,17 @@ const analyticsPage = {
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <link rel="icon" href="/favicon.svg" />
-    <script
-      is:inline
-      defer
-      src="https://static.cloudflareinsights.com/beacon.min.js"
-      data-cf-beacon='{"token":"54ee976818264e5bbc947006b289846f"}'
-    ></script>
+    <script is:inline>
+      (() => {
+        const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+        if (localHosts.has(window.location.hostname)) return;
+        const beacon = document.createElement("script");
+        beacon.defer = true;
+        beacon.src = "https://static.cloudflareinsights.com/beacon.min.js";
+        beacon.dataset.cfBeacon = '{"token":"54ee976818264e5bbc947006b289846f"}';
+        document.head.appendChild(beacon);
+      })();
+    </script>
     {
       jsonLdItems.map((jsonLd) => (
         <script is:inline type="application/ld+json" set:html={jsonLd}></script>
@@ -133,6 +162,18 @@ const analyticsPage = {
               if (target.dataset.analyticsTargetPreset) {
                 params.target_preset = target.dataset.analyticsTargetPreset;
               }
+              if (target.dataset.analyticsPackageId) {
+                params.package_id = target.dataset.analyticsPackageId;
+              }
+              if (target.dataset.analyticsProblemId) {
+                params.problem_id = target.dataset.analyticsProblemId;
+              }
+              if (target.dataset.analyticsTargetToolId) {
+                params.target_tool_id = target.dataset.analyticsTargetToolId;
+              }
+              if (target.dataset.analyticsTargetToolTitle) {
+                params.target_tool_title = target.dataset.analyticsTargetToolTitle;
+              }
 
               window.kdocTrack(target.dataset.analyticsEvent, params);
             },
@@ -157,6 +198,8 @@ const analyticsPage = {
       <nav class="top-nav" aria-label="주요 도구">
         <a
           href="/tools/"
+          class:list={{ "is-active": isActivePath("/tools/") }}
+          aria-current={isActivePath("/tools/") ? "page" : undefined}
           data-analytics-event="catalog_nav_click"
           data-analytics-label="전체 도구"
         >
@@ -164,32 +207,37 @@ const analyticsPage = {
         </a>
         <a
           href="/tools/submission-file-prep/"
+          class:list={{ "is-active": isActivePath("/tools/submission-file-prep/") }}
+          aria-current={isActivePath("/tools/submission-file-prep/") ? "page" : undefined}
           data-analytics-event="workflow_nav_click"
           data-analytics-label="제출용 파일 준비"
         >
           제출 준비
         </a>
+        <a
+          href={primaryWorkflowPackage.path}
+          class:list={{ "is-active": isActivePath(primaryWorkflowPackage.path) }}
+          aria-current={isActivePath(primaryWorkflowPackage.path) ? "page" : undefined}
+          data-analytics-event="package_nav_click"
+          data-analytics-package-id={primaryWorkflowPackage.id}
+          data-analytics-label={primaryWorkflowPackage.title}
+        >
+          {primaryWorkflowPackage.shortTitle}
+        </a>
         {
           toolCategories.map((category) => (
             <a
               href={category.path}
+              class:list={{
+                "is-active": isActivePath(category.path) || isActiveCategory(category.id)
+              }}
+              aria-current={
+                isActivePath(category.path) || isActiveCategory(category.id) ? "page" : undefined
+              }
               data-analytics-event="category_nav_click"
               data-analytics-label={category.shortTitle}
             >
               {category.shortTitle}
-            </a>
-          ))
-        }
-        {
-          tools.map((tool) => (
-            <a
-              href={tool.path}
-              data-analytics-event="tool_nav_click"
-              data-analytics-tool-id={tool.id}
-              data-analytics-tool-title={tool.title}
-              data-analytics-label={tool.shortTitle}
-            >
-              {tool.shortTitle}
             </a>
           ))
         }
@@ -267,6 +315,7 @@ const analyticsPage = {
   .brand {
     display: inline-flex;
     flex: 0 0 auto;
+    min-height: 44px;
     align-items: center;
     gap: 10px;
     color: var(--ink);
@@ -303,7 +352,10 @@ const analyticsPage = {
   }
 
   .top-nav a {
+    display: inline-flex;
     flex: 0 0 auto;
+    min-height: 44px;
+    align-items: center;
     border-radius: 8px;
     color: var(--muted);
     font-size: 14px;
@@ -313,10 +365,18 @@ const analyticsPage = {
   }
 
   .top-nav a:hover,
-  .top-nav a:focus-visible {
+  .top-nav a:focus-visible,
+  .top-nav a.is-active,
+  .top-nav a[aria-current] {
     background: var(--surface-muted);
     color: var(--ink);
     outline: none;
+  }
+
+  .top-nav a.is-active,
+  .top-nav a[aria-current] {
+    background: #e8f4f2;
+    color: var(--accent-dark);
   }
 
   .page-shell {
@@ -357,6 +417,9 @@ const analyticsPage = {
   }
 
   .quick-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: #fff;
@@ -602,6 +665,18 @@ const analyticsPage = {
     line-height: 1.6;
   }
 
+  .section-link {
+    margin: 16px 0 0;
+    text-align: right;
+  }
+
+  .section-link a {
+    color: var(--accent-dark);
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
   .tool-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -610,6 +685,10 @@ const analyticsPage = {
 
   .tool-grid.single-card-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tool-grid.compact-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .tool-card {
@@ -622,6 +701,15 @@ const analyticsPage = {
     background: #fff;
     padding: 20px;
     box-shadow: var(--shadow);
+  }
+
+  .tool-card.compact-card {
+    min-height: 180px;
+    padding: 18px;
+  }
+
+  .tool-card.compact-card strong {
+    font-size: 19px;
   }
 
   .tool-card .meta {
@@ -663,6 +751,60 @@ const analyticsPage = {
     line-height: 1.6;
     margin: 0;
     padding-left: 12px;
+  }
+
+  .workflow-step-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .workflow-step-list li {
+    margin: 0;
+  }
+
+  .workflow-step-list a {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .workflow-step-list strong,
+  .workflow-step-list span {
+    display: block;
+  }
+
+  .workflow-step-list strong {
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .workflow-step-list span span {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .step-number {
+    display: inline-grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
   }
 
   .faq-list {
@@ -718,6 +860,10 @@ const analyticsPage = {
   }
 
   @media (max-width: 1100px) {
+    .tool-grid.compact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .workspace {
       grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
     }
@@ -759,6 +905,10 @@ const analyticsPage = {
     }
 
     .tool-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-grid.compact-grid {
       grid-template-columns: 1fr;
     }
 

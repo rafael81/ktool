@@ -27,15 +27,14 @@ Tool pages also include:
 | `tool_nav_click` | Header tool nav click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_nav_click` | Header catalog link click | `label`, `href` |
 | `workflow_nav_click` | Header submission-prep workflow link click | `label`, `href` |
+| `package_nav_click` | Header, home, or catalog workflow package link click | `label`, `href`, `package_id` |
 | `category_nav_click` | Header category link click | `label`, `href` |
 | `catalog_quick_link_click` | Home catalog quick-link click | `label`, `href` |
-| `home_workflow_quick_link_click` | Home submission-prep quick-link click | `label`, `href` |
-| `home_workflow_click` | Home workflow card click | `label`, `href` |
 | `home_prep_shortcut_click` | Home problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
 | `category_quick_link_click` | Home category quick-link click | `label`, `href` |
 | `home_category_click` | Home category card click | `label`, `href` |
+| `home_all_tools_click` | Home representative-tool section link to the full catalog | `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
-| `catalog_workflow_click` | Tool catalog workflow card click | `label`, `href` |
 | `catalog_prep_shortcut_click` | Tool catalog problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
 | `catalog_tool_click` | Tool catalog tool card click | `tool_id`, `tool_title`, `label`, `href` |
@@ -45,6 +44,9 @@ Tool pages also include:
 | `category_tool_quick_link_click` | Category page quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_tool_click` | Category page tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `related_tool_click` | Related tool card click | `tool_id`, `tool_title`, `label`, `href` |
+| `package_related_click` | Workflow package related link click | `label`, `href`, `package_id` |
+| `package_problem_click` | Workflow package problem shortcut click | `label`, `href`, `package_id`, `problem_id`, `target_tool_id`, optional `target_preset` |
+| `package_tool_click` | Workflow package step or tool card click | `tool_id`, `tool_title`, `label`, `href`, `package_id` |
 | `planned_category_related_click` | Planned category related tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `tool_quick_link_click` | Tool quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `home_tool_click` | Home tool card click | `tool_id`, `tool_title`, `label`, `href` |

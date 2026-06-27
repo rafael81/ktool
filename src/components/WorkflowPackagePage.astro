@@ -1,0 +1,178 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { WorkflowPackage } from "@/data/workflowPackages";
+import { tools, type ToolInfo } from "@/data/tools";
+import { collectionPageSchema, faqPageSchema, websiteSchema } from "@/data/seo";
+
+type Props = {
+  workflowPackage: WorkflowPackage;
+};
+
+const { workflowPackage } = Astro.props;
+function isTool(tool: ToolInfo | undefined): tool is ToolInfo {
+  return Boolean(tool);
+}
+const packageTools = workflowPackage.toolIds
+  .map((toolId) => tools.find((tool) => tool.id === toolId))
+  .filter(isTool);
+const relatedPackages = [
+  {
+    title: "전체 도구",
+    path: "/tools/",
+    label: "도구 목록"
+  },
+  {
+    title: "제출용 파일 준비",
+    path: "/tools/submission-file-prep/",
+    label: "파일 제출"
+  }
+];
+const structuredData = [
+  websiteSchema(),
+  collectionPageSchema({
+    name: workflowPackage.title,
+    description: workflowPackage.description,
+    path: workflowPackage.path,
+    tools: packageTools
+  }),
+  faqPageSchema(workflowPackage.faqs)
+];
+---
+
+<BaseLayout
+  title={`${workflowPackage.title} - K문서툴`}
+  description={`${workflowPackage.description} ${workflowPackage.secondaryQueries.join(", ")}를 로그인 없이 브라우저에서 처리합니다.`}
+  canonicalPath={workflowPackage.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell workflow-page"
+    data-page-type="workflow-package"
+    data-workflow-package={workflowPackage.id}
+  >
+    <section class="tool-intro workflow-intro">
+      <div>
+        <span class="eyebrow">{workflowPackage.eyebrow}</span>
+        <h1>{workflowPackage.title}</h1>
+        <p>{workflowPackage.description}</p>
+      </div>
+      <div class="quick-links" aria-label="관련 흐름 바로가기">
+        {
+          relatedPackages.map((link) => (
+            <a
+              href={link.path}
+              data-analytics-event="package_related_click"
+              data-analytics-package-id={workflowPackage.id}
+              data-analytics-label={link.title}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>막히는 상황 선택</h2>
+        <p>오류 문구나 제출 조건을 먼저 고르면 필요한 도구와 preset으로 바로 이동합니다.</p>
+      </div>
+      <div class="tool-grid compact-grid">
+        {
+          workflowPackage.problems.map((problem) => (
+            <a
+              class="tool-card compact-card"
+              href={problem.path}
+              data-analytics-event="package_problem_click"
+              data-analytics-package-id={workflowPackage.id}
+              data-analytics-problem-id={problem.id}
+              data-analytics-target-tool-id={problem.targetToolId}
+              data-analytics-target-preset={problem.targetPreset}
+              data-analytics-label={problem.title}
+            >
+              <span class="meta">
+                <span class="meta-tag">{problem.label}</span>
+              </span>
+              <strong>{problem.title}</strong>
+              <p>{problem.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>추천 순서</h2>
+        <p>여러 도구를 써야 할 때 헷갈리지 않도록 제출 전 처리 순서로 정리했습니다.</p>
+      </div>
+      <ol class="workflow-step-list">
+        {
+          workflowPackage.steps.map((step) => (
+            <li>
+              <a
+                href={step.path}
+                data-analytics-event="package_tool_click"
+                data-analytics-package-id={workflowPackage.id}
+                data-analytics-tool-id={step.toolId}
+                data-analytics-label={step.title}
+              >
+                <span class="step-number">{step.label}</span>
+                <span>
+                  <strong>{step.title}</strong>
+                  <span>{step.description}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>이 흐름에 필요한 도구</h2>
+        <p>{workflowPackage.trustNote}</p>
+      </div>
+      <div class="tool-grid">
+        {
+          packageTools.map((tool) => (
+            <a
+              class="tool-card"
+              href={tool.path}
+              data-analytics-event="package_tool_click"
+              data-analytics-package-id={workflowPackage.id}
+              data-analytics-tool-id={tool.id}
+              data-analytics-tool-title={tool.title}
+              data-analytics-label={tool.title}
+            >
+              <span class="meta">
+                <span class="meta-tag">{tool.primaryQuery}</span>
+              </span>
+              <strong>{tool.title}</strong>
+              <p>{tool.description}</p>
+              <p class="trust-note">{tool.trustNote}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>자주 묻는 질문</h2>
+        <p>{workflowPackage.primaryQuery}로 들어온 사용자가 제출 전에 확인하는 내용입니다.</p>
+      </div>
+      <div class="faq-list">
+        {
+          workflowPackage.faqs.map(([question, answer]) => (
+            <details>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

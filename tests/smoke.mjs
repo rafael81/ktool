@@ -10,6 +10,24 @@ const routes = [
   { path: "/", h1: "K문서툴로 문서 제출 직전을 가볍게" },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
+  {
+    path: "/workflows/photo-scan-submission/",
+    h1: "사진·스캔 제출 패키지",
+    faq: true,
+    workflowPackage: "photo-scan-submission"
+  },
+  {
+    path: "/workflows/business-document-submission/",
+    h1: "사업자 서류 제출 패키지",
+    faq: true,
+    workflowPackage: "business-document-submission"
+  },
+  {
+    path: "/workflows/freelance-billing/",
+    h1: "프리랜서 정산·청구 패키지",
+    faq: true,
+    workflowPackage: "freelance-billing"
+  },
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/categories/image/", h1: "이미지 도구" },
@@ -93,6 +111,19 @@ async function run() {
       );
       assert(!overflow, `${route.path} has horizontal overflow on mobile viewport`);
 
+      const headerNavCount = await page.locator("header nav a").count();
+      assert(headerNavCount <= 6, `${route.path} should keep header nav compact`);
+      const shortNavTargets = await page.locator("header nav a").evaluateAll((links) =>
+        links
+          .map((link) => ({ label: link.textContent?.trim(), height: link.getBoundingClientRect().height }))
+          .filter((link) => link.height < 44)
+      );
+      assert(shortNavTargets.length === 0, `${route.path} has nav targets below 44px: ${JSON.stringify(shortNavTargets)}`);
+      if (route.path !== "/") {
+        const activeNavCount = await page.locator("header nav a.is-active").count();
+        assert(activeNavCount >= 1, `${route.path} should expose an active header nav state`);
+      }
+
       if (route.faq) {
         const jsonLdCount = await page.locator('script[type="application/ld+json"]').count();
         assert(jsonLdCount >= 2, `${route.path} should include page structured data and FAQ JSON-LD`);
@@ -101,6 +132,8 @@ async function run() {
       }
 
       if (route.path === "/" || route.path === "/tools/") {
+        const packageLinkCount = await page.locator('a[data-analytics-event="package_nav_click"][data-analytics-package-id]').count();
+        assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
         const eventName = route.path === "/" ? "home_prep_shortcut_click" : "catalog_prep_shortcut_click";
         const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
         assert(shortcutRootCount === 1, `${route.path} should render one prep shortcut section`);
@@ -135,6 +168,40 @@ async function run() {
           const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
           assert(count === 1, `${route.path} should include one prep shortcut to ${href}`);
         }
+      }
+
+      if (route.workflowPackage) {
+        const workflowRootCount = await page
+          .locator(`[data-workflow-package="${route.workflowPackage}"]`)
+          .count();
+        assert(workflowRootCount === 1, `${route.path} should tag the workflow package root`);
+        const workflowText = await page.locator("[data-workflow-package]").textContent();
+        assert(
+          workflowText?.includes("막히는 상황 선택") &&
+            workflowText.includes("추천 순서") &&
+            workflowText.includes("이 흐름에 필요한 도구"),
+          `${route.path} should render problem, sequence, and tool sections`
+        );
+        const problemClickCount = await page.locator('[data-analytics-event="package_problem_click"]').count();
+        assert(problemClickCount >= 6, `${route.path} should render package problem shortcuts`);
+        const problemPackageIds = await page
+          .locator('[data-analytics-event="package_problem_click"]')
+          .evaluateAll((links) => links.map((link) => link.getAttribute("data-analytics-package-id")));
+        assert(
+          problemPackageIds.every((packageId) => packageId === route.workflowPackage),
+          `${route.path} should tag every problem shortcut with the package id`
+        );
+        const targetToolCount = await page.locator('[data-analytics-event="package_problem_click"][data-analytics-target-tool-id]').count();
+        assert(targetToolCount === problemClickCount, `${route.path} should tag every problem shortcut with a target tool`);
+        const packageToolClickCount = await page.locator('[data-analytics-event="package_tool_click"]').count();
+        assert(packageToolClickCount >= 4, `${route.path} should track package step and tool clicks`);
+        const packageToolIds = await page
+          .locator('[data-analytics-event="package_tool_click"]')
+          .evaluateAll((links) => links.map((link) => link.getAttribute("data-analytics-package-id")));
+        assert(
+          packageToolIds.every((packageId) => packageId === route.workflowPackage),
+          `${route.path} should tag every package tool click with the package id`
+        );
       }
 
       if (route.path === "/categories/image/" || route.path === "/categories/pdf/") {

@@ -84,9 +84,10 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `heic_convert_convert`
 - `heic_convert_download`
 - `workflow_nav_click`
-- `home_workflow_click`
+- `package_nav_click`
+- `package_problem_click`
+- `package_tool_click`
 - `home_prep_shortcut_click`
-- `catalog_workflow_click`
 - `catalog_prep_shortcut_click`
 - `category_workflow_click`
 - `category_prep_shortcut_click`
@@ -167,12 +168,13 @@ Completed:
 37. Add image and PDF category problem-situation shortcuts so category visitors can move directly from upload/PDF-prep errors into preset tool states.
 38. Add stable shortcut analytics metadata (`shortcut_id`, target tool, and target preset) to problem-situation shortcuts so follow-up decisions can compare each shortcut against downstream tool starts and downloads.
 39. Run the updated CEO review for the document-suite expansion loop and choose workflow package pages as the next product layer before adding generic PDF suite tools.
+40. Add three workflow package pages for photo/scan submission, business document submission, and freelance billing, then simplify header navigation so users start from a package or category instead of a long tool list.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/tools/submission-file-prep/`, `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, `/tools/image-cropper/`, `/tools/image-rotator/`, `/tools/image-converter/`, `/tools/heic-jpg-converter/`, plus any previously unrequested business tool pages.
-2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF compressed-arrival/rotated-arrival/resized-arrival/cropped-arrival/format-converted-arrival/HEIC-converted-arrival/reorder/remove/generate/download events, image compressor preset-arrival/preset-change/compress/download/next-PDF events, image resize preset-arrival/preset-change/resize/download/next-PDF events, image crop preset-arrival/preset-change/crop/download/next-PDF events, image rotate preset-arrival/preset-change/rotate/download/next-PDF events, image convert preset-arrival/preset-change/convert/download/next-PDF events, HEIC convert preset-arrival/preset-change/convert/download/next-PDF events, home/catalog/category prep shortcut clicks by `shortcut_id` and `target_preset`, future package click-through events by `package_id` and `problem_id`, and submission-prep click-through events including `prep_format_path_click` and `prep_compression_path_click` across the tool set.
+1. Request indexing/collection for `/workflows/photo-scan-submission/`, `/workflows/business-document-submission/`, `/workflows/freelance-billing/`, `/tools/submission-file-prep/`, `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, `/tools/image-cropper/`, `/tools/image-rotator/`, `/tools/image-converter/`, `/tools/heic-jpg-converter/`, plus any previously unrequested business tool pages.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF compressed-arrival/rotated-arrival/resized-arrival/cropped-arrival/format-converted-arrival/HEIC-converted-arrival/reorder/remove/generate/download events, image compressor preset-arrival/preset-change/compress/download/next-PDF events, image resize preset-arrival/preset-change/resize/download/next-PDF events, image crop preset-arrival/preset-change/crop/download/next-PDF events, image rotate preset-arrival/preset-change/rotate/download/next-PDF events, image convert preset-arrival/preset-change/convert/download/next-PDF events, HEIC convert preset-arrival/preset-change/convert/download/next-PDF events, home/catalog/category prep shortcut clicks by `shortcut_id` and `target_preset`, package click-through events by `package_id` and `problem_id`, and submission-prep click-through events including `prep_format_path_click` and `prep_compression_path_click` across the tool set.
 3. If `/tools/submission-file-prep/` gets page views but weak `prep_*` clicks, compare `prep_pdf_path_click`, `prep_pdf_decision_click`, situation clicks, and flow clicks before adding another tool.
 4. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, or HEIC JPG 변환 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
 5. If JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, or HEIC JPG 변환 gets generation/compression/resize/crop/rotate/convert events but weak downloads, compare compressed-arrival follow-through, preflight feedback, target/size/area/direction/output-format preset feedback, post-compression next-step clicks, file list editing, output status, and download affordance before adding more file tools.
-6. If workflow package pages ship before meaningful crawl data arrives, prioritize the first package around the current strongest cluster: 사진/스캔 제출 패키지 linking compression, resize, crop, rotate, conversion, HEIC, and JPG PDF bundling.
+6. If package pages get page views but weak `package_problem_click` or `package_tool_click`, tighten package H1, problem labels, and first-screen ordering before adding generic PDF merge/split/compress tools.

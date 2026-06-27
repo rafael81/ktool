@@ -1,0 +1,9 @@
+---
+import WorkflowPackagePage from "@/components/WorkflowPackagePage.astro";
+import { getWorkflowPackage } from "@/data/workflowPackages";
+
+const workflowPackage = getWorkflowPackage("freelance-billing");
+if (!workflowPackage) throw new Error("Missing freelance-billing workflow package");
+---
+
+<WorkflowPackagePage workflowPackage={workflowPackage} />

@@ -1,0 +1,9 @@
+---
+import WorkflowPackagePage from "@/components/WorkflowPackagePage.astro";
+import { getWorkflowPackage } from "@/data/workflowPackages";
+
+const workflowPackage = getWorkflowPackage("business-document-submission");
+if (!workflowPackage) throw new Error("Missing business-document-submission workflow package");
+---
+
+<WorkflowPackagePage workflowPackage={workflowPackage} />
