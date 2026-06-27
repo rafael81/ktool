@@ -170,6 +170,7 @@ Reference URLs checked:
 | 43 | QR 코드 읽기 | Utility | 캡처 이미지의 QR 내용을 PC에서 읽어야 함 | 4 | iTool, QR reader sites, app pages | 3 | 3 | 4 | 3 | 5 | 22 | EXPLORE | Could be useful adjacent utility, not first. |
 | 44 | 글자수 세기 | Utility/text | 자기소개서/문서 글자수를 세야 함 | 5 | Naver, Saramin, JobKorea, text tools | 1 | 3 | 5 | 4 | 5 | 23 | DEFER | Huge demand, but Naver/job portals dominate and differentiation is weak. |
 | 45 | 맞춤법 검사기 | Utility/text | 한국어 문서 맞춤법을 검사해야 함 | 5 | Naver/Pusan tools, job portals, AI tools | 1 | 4 | 2 | 4 | 4 | 20 | DEFER | Huge demand, but NLP quality burden and dominant incumbents make it a bad v1 target. |
+| 46 | 금액 한글 변환기 | Business utility | 계약서/청구서/견적서에 숫자 금액과 한글 금액을 함께 넣어야 함 | 3 | blogs, calculators, spreadsheet snippets | 4 | 5 | 5 | 2 | 4 | 23 | EXPLORE | Lower confidence than DataLab-backed form terms, but strong adjacency to document generators and low implementation risk. |
 
 ## First Sprint Spec Seeds
 

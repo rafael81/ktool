@@ -4,7 +4,8 @@ export type ToolId =
   | "estimate"
   | "receipt"
   | "invoice"
-  | "vat-calculator";
+  | "vat-calculator"
+  | "amount-korean";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -42,7 +43,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "업무 문서",
     path: "/categories/business/",
     description:
-      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
+      "거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 한글 금액 변환처럼 제출 직전에 필요한 한국형 업무 문서를 브라우저에서 작성합니다.",
     status: "active"
   },
   {
@@ -130,7 +131,7 @@ export const tools: ToolInfo[] = [
       ["모바일에서도 작성할 수 있나요?", "모바일 입력과 미리보기를 지원하되, 최종 인쇄는 데스크톱 브라우저가 더 안정적입니다."]
     ],
     trustNote: "일반 거래 내역 정리용 양식입니다. 세금계산서나 전자세금계산서 발행을 대신하지 않습니다.",
-    relatedToolIds: ["vat-calculator", "invoice"]
+    relatedToolIds: ["vat-calculator", "amount-korean"]
   },
   {
     id: "estimate",
@@ -242,7 +243,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "입금 요청용 일반 문서입니다. 세금계산서, 전자세금계산서, 계약 체결을 대신하지 않습니다.",
-    relatedToolIds: ["vat-calculator", "receipt"]
+    relatedToolIds: ["vat-calculator", "amount-korean"]
   },
   {
     id: "vat-calculator",
@@ -280,7 +281,48 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "일반과세 10% 기준의 금액 확인용 계산기입니다. 세무 신고나 과세 여부 판단을 대신하지 않습니다.",
-    relatedToolIds: ["estimate", "invoice"]
+    relatedToolIds: ["amount-korean", "invoice"]
+  },
+  {
+    id: "amount-korean",
+    title: "금액 한글 변환기",
+    shortTitle: "금액변환",
+    path: "/tools/amount-korean-converter/",
+    category: "business",
+    description:
+      "숫자 금액을 계약서, 청구서, 견적서에 넣기 좋은 한글 금액 표기로 변환합니다.",
+    pageTitle: "금액 한글 변환기 - 숫자 금액을 한글 표기로 변환",
+    metaDescription:
+      "숫자 금액을 입력해 계약서, 청구서, 견적서에 넣기 좋은 한글 금액 표기로 변환하세요. 브라우저에서 바로 복사할 수 있습니다.",
+    primaryQuery: "금액 한글 변환기",
+    secondaryQueries: ["숫자 한글 변환", "한글 금액 변환", "계약서 금액 한글", "금 일백만원정"],
+    userMoment: "계약서, 청구서, 견적서에 숫자 금액과 한글 금액을 함께 넣어야 하는 순간",
+    featureList: [
+      "숫자 금액 한글 표기 변환",
+      "금액 앞 금, 뒤 원정 표기",
+      "쉼표가 들어간 금액 자동 처리",
+      "변환 결과 복사",
+      "브라우저 안에서 즉시 변환"
+    ],
+    faqs: [
+      [
+        "금액 한글 표기는 어디에 쓰나요?",
+        "계약서, 견적서, 청구서, 영수증처럼 숫자 금액 옆에 한글 금액을 함께 적어 금액 오독을 줄이고 싶을 때 씁니다."
+      ],
+      ["원정 표기도 만들 수 있나요?", "네. 숫자 금액을 입력하면 '금 일백만원정'처럼 앞에 금, 뒤에 원정을 붙인 표기를 함께 보여줍니다."],
+      ["음수나 소수도 지원하나요?", "현재 도구는 원 단위의 0 이상 정수 금액만 지원합니다. 외화, 소수, 마이너스 금액은 문서 목적에 맞게 별도로 확인하세요."],
+      ["복사해서 문서에 붙여 넣을 수 있나요?", "복사 버튼을 누르면 '금 ... 원정' 형식의 결과를 클립보드에 복사할 수 있습니다."],
+      [
+        "입력한 금액이 서버에 저장되나요?",
+        "v1 원칙은 브라우저 안에서만 처리하는 것입니다. 입력한 금액은 서버로 보내지 않습니다."
+      ],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 문서 작성을 돕는 표기 변환 도구입니다. 계약서나 증빙 문서의 법적 효력을 보장하지 않습니다."
+      ]
+    ],
+    trustNote: "문서 작성을 돕는 표기 변환 도구입니다. 계약서나 증빙 문서의 법적 효력을 보장하지 않습니다.",
+    relatedToolIds: ["invoice", "estimate"]
   }
 ];
 

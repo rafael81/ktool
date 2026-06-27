@@ -51,6 +51,11 @@ Tool pages also include:
 | `calculator_reset` | VAT calculator is reset | `calculator_mode` |
 | `calculator_copy` | VAT calculator result is copied | `calculator_mode` |
 | `calculator_copy_error` | VAT calculator result copy fails | `calculator_mode` |
+| `amount_converter_sample_apply` | Korean amount converter sample is applied | none |
+| `amount_converter_reset` | Korean amount converter is reset | none |
+| `amount_converter_copy` | Korean amount converter result is copied | none |
+| `amount_converter_copy_error` | Korean amount converter result copy fails | none |
+| `amount_converter_validation_error` | Korean amount converter input is clamped or rejected | `reason` |
 
 ## Provider hook example
 

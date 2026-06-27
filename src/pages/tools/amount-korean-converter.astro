@@ -1,0 +1,394 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("amount-korean");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 숫자와 한글 금액을 함께 넣어야 하는 문서 작성 순간을 빠르게 줄입니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="converter-workspace" data-amount-converter>
+      <form class="panel converter-panel" aria-label="금액 한글 변환 입력">
+        <div class="panel-title">
+          <h2>변환 입력</h2>
+        </div>
+
+        <label class="field amount-field">
+          <span>숫자 금액</span>
+          <input
+            data-amount-input
+            inputmode="numeric"
+            autocomplete="off"
+            value="1000000"
+            aria-describedby="amount-help"
+          />
+        </label>
+
+        <p class="note-box" id="amount-help">
+          원 단위의 0 이상 정수 금액만 변환합니다. 쉼표가 들어간 숫자도 자동으로 처리합니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-copy-result>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            복사
+          </button>
+        </div>
+      </form>
+
+      <section class="result-panel" aria-label="금액 한글 변환 결과">
+        <div class="panel-title">
+          <h2>변환 결과</h2>
+          <span class="format-badge">KRW</span>
+        </div>
+
+        <div class="primary-result">
+          <span>문서 표기</span>
+          <strong data-korean-result>금 일백만원정</strong>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <span>숫자 금액</span>
+            <strong data-number-result>1,000,000원</strong>
+          </div>
+          <div class="result-card">
+            <span>한글 금액</span>
+            <strong data-plain-result>일백만원</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>확인 사항</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>계약서, 청구서, 견적서 보조 표기용입니다.</span></li>
+          <li><span class="status-dot"></span><span>외화, 소수, 음수 금액은 별도로 확인하세요.</span></li>
+          <li><span class="status-dot"></span><span>입력한 금액은 서버로 보내지 않습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>숫자 금액을 원 단위 정수로 입력합니다.</li>
+        <li>문서 표기 영역에서 "금 ... 원정" 결과를 확인합니다.</li>
+        <li>복사 버튼을 눌러 계약서, 청구서, 견적서에 붙여 넣습니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-amount-converter]");
+      if (!root) return;
+
+      const maxAmount = 999999999999999;
+      const digits = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+      const smallUnits = ["", "십", "백", "천"];
+      const bigUnits = ["", "만", "억", "조"];
+      const currency = new Intl.NumberFormat("ko-KR");
+      const amountInput = root.querySelector("[data-amount-input]");
+      const koreanResult = root.querySelector("[data-korean-result]");
+      const numberResult = root.querySelector("[data-number-result]");
+      const plainResult = root.querySelector("[data-plain-result]");
+      const copyButton = root.querySelector("[data-copy-result]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const resetButton = root.querySelector("[data-reset]");
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "amount-korean",
+          tool_title: "금액 한글 변환기",
+          ...params
+        });
+      }
+
+      function parseAmount(value) {
+        const normalized = String(value || "").replace(/[^\d]/g, "");
+        if (!normalized) return 0;
+        const parsed = Number(normalized);
+        if (!Number.isSafeInteger(parsed)) return maxAmount;
+        return Math.min(parsed, maxAmount);
+      }
+
+      function convertChunk(chunk) {
+        const padded = String(chunk).padStart(4, "0");
+        let text = "";
+        for (let index = 0; index < padded.length; index += 1) {
+          const digit = Number(padded[index]);
+          if (!digit) continue;
+          text += `${digits[digit]}${smallUnits[3 - index]}`;
+        }
+        return text;
+      }
+
+      function toKoreanAmount(amount) {
+        if (amount === 0) return "영원";
+        const chunks = [];
+        let rest = amount;
+        while (rest > 0) {
+          chunks.push(rest % 10000);
+          rest = Math.floor(rest / 10000);
+        }
+
+        const parts = [];
+        for (let index = chunks.length - 1; index >= 0; index -= 1) {
+          const chunk = chunks[index];
+          if (!chunk) continue;
+          parts.push(`${convertChunk(chunk)}${bigUnits[index]}`);
+        }
+        return `${parts.join("")}원`;
+      }
+
+      function formatDocumentText(koreanAmount) {
+        return `금 ${koreanAmount}정`;
+      }
+
+      function displayDocumentText(documentText) {
+        return documentText.replace("금 ", "금\u00a0");
+      }
+
+      function render() {
+        const rawDigits = String(amountInput.value || "").replace(/[^\d]/g, "");
+        const tooLarge = rawDigits.length > String(maxAmount).length || Number(rawDigits || 0) > maxAmount;
+        const amount = parseAmount(amountInput.value);
+        const koreanAmount = toKoreanAmount(amount);
+        const documentText = formatDocumentText(koreanAmount);
+
+        koreanResult.textContent = displayDocumentText(documentText);
+        numberResult.textContent = `${currency.format(amount)}원`;
+        plainResult.textContent = koreanAmount.replace(/원$/, "원");
+
+        if (tooLarge) {
+          amountInput.setAttribute("aria-invalid", "true");
+          track("amount_converter_validation_error", { reason: "too_large" });
+        } else {
+          amountInput.removeAttribute("aria-invalid");
+        }
+
+        return { amount, koreanAmount, documentText, tooLarge };
+      }
+
+      amountInput.addEventListener("input", render);
+      amountInput.addEventListener("blur", () => {
+        const result = render();
+        amountInput.value = result.amount ? currency.format(result.amount) : "";
+      });
+      amountInput.addEventListener("focus", () => {
+        amountInput.value = String(parseAmount(amountInput.value) || "");
+        amountInput.select();
+      });
+
+      sampleButton?.addEventListener("click", () => {
+        amountInput.value = "1000000";
+        render();
+        track("amount_converter_sample_apply");
+      });
+
+      resetButton?.addEventListener("click", () => {
+        amountInput.value = "";
+        render();
+        track("amount_converter_reset");
+      });
+
+      copyButton?.addEventListener("click", async () => {
+        const result = render();
+        try {
+          await navigator.clipboard.writeText(result.documentText);
+          copyButton.textContent = "복사됨";
+          setTimeout(() => {
+            copyButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>복사';
+          }, 1200);
+          track("amount_converter_copy");
+        } catch {
+          track("amount_converter_copy_error");
+        }
+      });
+
+      render();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .converter-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .converter-panel,
+  .result-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .amount-field input {
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .amount-field input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .primary-result {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    background: #e8f4f2;
+    padding: clamp(18px, 4vw, 28px);
+  }
+
+  .primary-result span,
+  .result-card span {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .primary-result strong {
+    color: var(--ink);
+    font-size: clamp(28px, 4.2vw, 46px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .result-card {
+    display: grid;
+    min-height: 118px;
+    align-content: center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 18px;
+  }
+
+  .result-card strong {
+    color: var(--ink);
+    font-size: clamp(20px, 2.3vw, 30px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 1100px) {
+    .converter-workspace {
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    }
+
+    .converter-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .converter-workspace,
+    .result-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
