@@ -163,7 +163,8 @@ async function run() {
         assert(
           compressedIntakeText?.includes("정리한 이미지로 PDF 만들기") &&
             compressedIntakeText.includes("사진 용량 줄이기") &&
-            compressedIntakeText.includes("이미지 회전"),
+            compressedIntakeText.includes("이미지 편집") &&
+            compressedIntakeText.includes("형식 변환"),
           `${route.path} should explain the compressed-image-to-PDF arrival flow`
         );
         await page.locator("[data-sample]").click();
@@ -243,6 +244,24 @@ async function run() {
         assert(
           croppedIntakeState === "highlight" && croppedArrivalText?.includes("잘라낸 이미지로 PDF 만들기"),
           `${route.path} should tailor the arrival cue for cropped images`
+        );
+
+        await page.goto(`${baseUrl}${route.path}?from=format-converted-images`, { waitUntil: "networkidle" });
+        const formatConvertedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const formatConvertedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          formatConvertedIntakeState === "highlight" &&
+            formatConvertedArrivalText?.includes("변환한 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for format-converted images`
+        );
+
+        await page.goto(`${baseUrl}${route.path}?from=heic-converted-images`, { waitUntil: "networkidle" });
+        const heicConvertedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const heicConvertedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          heicConvertedIntakeState === "highlight" &&
+            heicConvertedArrivalText?.includes("HEIC 변환 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for HEIC-converted images`
         );
       }
 
@@ -412,6 +431,14 @@ async function run() {
             firstResult.magic.join(",") === "255,216,255",
           `${route.path} should convert the WebP sample to a JPG blob`
         );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("변환 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=format-converted-images",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after format conversion`
+        );
       }
 
       if (route.heicConverter) {
@@ -437,6 +464,14 @@ async function run() {
             firstResult.afterSize > 0 &&
             firstResult.magic.join(",") === "255,216,255",
           `${route.path} should convert the HEIC sample to a JPG blob`
+        );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("변환 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=heic-converted-images",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after HEIC conversion`
         );
       }
 

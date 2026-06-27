@@ -106,6 +106,25 @@ const structuredData = [
         <div class="heic-list" data-heic-list aria-live="polite">
           <p class="empty-state">선택된 HEIC 파일이 없습니다.</p>
         </div>
+
+        <div class="next-pdf-card" data-next-pdf hidden>
+          <strong>다음 단계: PDF로 묶기</strong>
+          <p data-next-pdf-message>
+            변환한 이미지를 저장한 뒤 JPG PDF 변환에서 다시 선택하면 iPhone 사진을 제출용 PDF로 묶을 수 있습니다.
+          </p>
+          <ol>
+            <li>각 변환 이미지의 저장 버튼을 눌러 파일을 저장합니다.</li>
+            <li>JPG PDF 변환에서 저장한 이미지를 선택합니다.</li>
+            <li>제출 전 마지막 확인에서 페이지 순서와 용량을 확인합니다.</li>
+          </ol>
+          <a
+            class="btn primary"
+            href="/tools/jpg-to-pdf-converter/?from=heic-converted-images"
+            data-next-pdf-link
+          >
+            JPG PDF 변환 열기
+          </a>
+        </div>
       </section>
 
       <aside class="side-panel">
@@ -188,6 +207,9 @@ const structuredData = [
       const outputStatus = root.querySelector("[data-output-status]");
       const outputMeta = root.querySelector("[data-output-meta]");
       const heicList = root.querySelector("[data-heic-list]");
+      const nextPdfCard = root.querySelector("[data-next-pdf]");
+      const nextPdfMessage = root.querySelector("[data-next-pdf-message]");
+      const nextPdfLink = root.querySelector("[data-next-pdf-link]");
       const formatter = new Intl.NumberFormat("ko-KR");
       let fileItems = [];
       let nextItemId = 1;
@@ -306,6 +328,7 @@ const structuredData = [
         if (fileItems.length === 0) {
           fileLabel.textContent = "HEIC/HEIF 여러 장 선택";
           heicList.innerHTML = '<p class="empty-state">선택된 HEIC 파일이 없습니다.</p>';
+          nextPdfCard.hidden = true;
           setMessage("HEIC 파일을 선택하면 JPG로 바꿀 수 있습니다.", "변환된 파일은 아직 준비되지 않았습니다.");
           return;
         }
@@ -341,7 +364,10 @@ const structuredData = [
             `변환 완료: ${formatter.format(readyCount)}장`,
             `총 ${fileTools.formatBytes(totalSize())} → ${fileTools.formatBytes(totalOutputSize())}`
           );
+          nextPdfCard.hidden = false;
+          nextPdfMessage.textContent = `${formatter.format(readyCount)}장 변환 완료. 먼저 저장 버튼으로 변환 이미지를 저장한 뒤 JPG PDF 변환에서 다시 선택하세요.`;
         } else {
+          nextPdfCard.hidden = true;
           setMessage(
             `${formatter.format(fileItems.length)}장 선택됨`,
             `${outputLabel()} 형식으로 변환할 준비가 됐습니다.`
@@ -480,6 +506,16 @@ const structuredData = [
         });
       });
 
+      nextPdfLink.addEventListener("click", () => {
+        track("heic_convert_next_pdf_click", {
+          file_count: fileItems.filter((item) => item.result).length,
+          output_size: totalOutputSize(),
+          output_format: outputFormat.value,
+          target_tool_id: "jpg-to-pdf",
+          href: "/tools/jpg-to-pdf-converter/?from=heic-converted-images"
+        });
+      });
+
       window.addEventListener("pagehide", () => releaseItems());
 
       renderFiles();
@@ -584,6 +620,53 @@ const structuredData = [
     margin-top: 16px;
   }
 
+  .next-pdf-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #f2faf9;
+    margin-top: 16px;
+    padding: 16px;
+  }
+
+  .next-pdf-card[hidden] {
+    display: none;
+  }
+
+  .next-pdf-card strong {
+    color: var(--accent-dark);
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .next-pdf-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .next-pdf-card ol {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .next-pdf-card li {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .next-pdf-card .btn {
+    justify-self: start;
+    min-height: 38px;
+    padding: 9px 12px;
+  }
+
   :global(.empty-state) {
     border: 1px dashed var(--line);
     border-radius: 8px;
@@ -658,6 +741,11 @@ const structuredData = [
       width: 100%;
       justify-self: stretch;
       text-align: center;
+    }
+
+    .next-pdf-card .btn {
+      width: 100%;
+      justify-self: stretch;
     }
   }
 </style>

@@ -86,6 +86,8 @@ Tool pages also include:
 | `jpg_pdf_rotated_arrival` | JPG PDF converter is opened from the image rotator next-step CTA | `source` |
 | `jpg_pdf_resized_arrival` | JPG PDF converter is opened from the image resizer next-step CTA | `source` |
 | `jpg_pdf_cropped_arrival` | JPG PDF converter is opened from the image cropper next-step CTA | `source` |
+| `jpg_pdf_format_converted_arrival` | JPG PDF converter is opened from the image converter next-step CTA | `source` |
+| `jpg_pdf_heic_converted_arrival` | JPG PDF converter is opened from the HEIC converter next-step CTA | `source` |
 | `jpg_pdf_reorder` | JPG PDF converter image order changes | `from_position`, `to_position`, `file_count`, `method` |
 | `jpg_pdf_remove` | JPG PDF converter image is removed from the selected list | `from_position`, `file_count` |
 | `jpg_pdf_generate` | JPG PDF converter creates a PDF blob | `file_count`, `total_size`, `output_size`, `page_size`, `margin`, `file_types` |
@@ -126,12 +128,14 @@ Tool pages also include:
 | `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
 | `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
 | `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size` |
+| `image_convert_next_pdf_click` | Image converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `target_tool_id`, `href` |
 | `image_convert_reset` | Image converter is reset | none |
 | `image_convert_validation_error` | Image converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 | `heic_convert_file_select` | HEIC converter files are selected | `file_count`, `total_size`, `file_types` |
 | `heic_convert_sample_apply` | HEIC converter sample file is applied | `file_count` |
 | `heic_convert_convert` | HEIC converter creates JPG or PNG blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
 | `heic_convert_download` | HEIC converter download link is clicked | `output_format`, `before_size`, `after_size` |
+| `heic_convert_next_pdf_click` | HEIC converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `target_tool_id`, `href` |
 | `heic_convert_reset` | HEIC converter is reset | none |
 | `heic_convert_validation_error` | HEIC converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 

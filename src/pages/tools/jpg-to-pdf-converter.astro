@@ -84,7 +84,7 @@ const structuredData = [
 
         <div class="compressed-intake-card" data-compressed-intake>
           <strong data-intake-title>정리한 이미지로 PDF 만들기</strong>
-          <p data-intake-copy>사진 용량 줄이기나 이미지 회전에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.</p>
+          <p data-intake-copy>사진 용량 줄이기, 이미지 편집, 형식 변환 도구에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.</p>
           <ol>
             <li data-intake-step-files>저장한 이미지를 모두 선택합니다.</li>
             <li>목록 순서가 PDF 페이지 순서입니다.</li>
@@ -284,6 +284,18 @@ const structuredData = [
           copy: "이미지 자르기에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.",
           step: "자르기 도구에서 저장한 이미지를 선택합니다.",
           event: "jpg_pdf_cropped_arrival"
+        },
+        "format-converted-images": {
+          title: "변환한 이미지로 PDF 만들기",
+          copy: "WebP JPG 변환에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.",
+          step: "형식 변환 도구에서 저장한 이미지를 모두 선택합니다.",
+          event: "jpg_pdf_format_converted_arrival"
+        },
+        "heic-converted-images": {
+          title: "HEIC 변환 이미지로 PDF 만들기",
+          copy: "HEIC JPG 변환에서 저장한 JPG/PNG 이미지를 여기서 다시 선택해 iPhone 사진을 한 PDF로 묶습니다.",
+          step: "HEIC 변환 도구에서 저장한 이미지를 모두 선택합니다.",
+          event: "jpg_pdf_heic_converted_arrival"
         }
       };
       const arrivalConfig = arrivalSources[arrivalSource];
