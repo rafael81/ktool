@@ -97,6 +97,7 @@ Completed:
 4. Add adjacent business-document tools: `영수증 자동작성`, `청구서 자동작성`.
 5. Add a supporting business calculator: `부가세 계산기`.
 6. Add a supporting document formatter: `금액 한글 변환기`.
+7. Add Korean total amount rows to generated business documents.
 
 Next after crawl data appears:
 

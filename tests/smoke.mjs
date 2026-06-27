@@ -12,10 +12,10 @@ const routes = [
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구", robots: "noindex,follow" },
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
-  { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true },
-  { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true },
-  { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true },
-  { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true },
+  { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true, documentPreview: true },
+  { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true, documentPreview: true },
+  { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true, documentPreview: true },
+  { path: "/tools/receipt-generator/", h1: "영수증 자동작성", faq: true, documentPreview: true },
   { path: "/tools/vat-calculator/", h1: "부가세 계산기", faq: true },
   { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true }
 ];
@@ -87,6 +87,11 @@ async function run() {
         assert(jsonLdCount >= 2, `${route.path} should include SoftwareApplication and FAQ JSON-LD`);
         const detailsCount = await page.locator("details").count();
         assert(detailsCount >= 5, `${route.path} should render visible FAQ entries`);
+      }
+
+      if (route.documentPreview) {
+        const previewText = await page.locator("[data-document-preview]").textContent();
+        assert(previewText?.includes("합계 한글"), `${route.path} should render Korean total amount in preview`);
       }
 
       await page.close();

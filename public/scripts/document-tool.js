@@ -1,4 +1,7 @@
 const currency = new Intl.NumberFormat("ko-KR");
+const koreanDigits = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+const koreanSmallUnits = ["", "십", "백", "천"];
+const koreanBigUnits = ["", "만", "억", "조"];
 
 function numberValue(input) {
   const value = Number(String(input?.value ?? "0").replaceAll(",", ""));
@@ -7,6 +10,41 @@ function numberValue(input) {
 
 function money(value) {
   return currency.format(Math.round(value));
+}
+
+function convertKoreanChunk(chunk) {
+  const padded = String(chunk).padStart(4, "0");
+  let text = "";
+  for (let index = 0; index < padded.length; index += 1) {
+    const digit = Number(padded[index]);
+    if (!digit) continue;
+    text += `${koreanDigits[digit]}${koreanSmallUnits[3 - index]}`;
+  }
+  return text;
+}
+
+function koreanAmount(value) {
+  const safeValue = Math.max(0, Math.min(Math.round(value), 999999999999999));
+  if (safeValue === 0) return "영원";
+
+  const chunks = [];
+  let rest = safeValue;
+  while (rest > 0) {
+    chunks.push(rest % 10000);
+    rest = Math.floor(rest / 10000);
+  }
+
+  const parts = [];
+  for (let index = chunks.length - 1; index >= 0; index -= 1) {
+    const chunk = chunks[index];
+    if (!chunk) continue;
+    parts.push(`${convertKoreanChunk(chunk)}${koreanBigUnits[index]}`);
+  }
+  return `${parts.join("")}원`;
+}
+
+function documentAmount(value) {
+  return `금 ${koreanAmount(value)}정`;
 }
 
 function todayLocal() {
@@ -194,6 +232,10 @@ function renderDocument(root) {
             <th class="right">${money(supplyTotal)}</th>
             <th class="right">${money(vatTotal)}</th>
             <th class="right">${money(grandTotal)}</th>
+          </tr>
+          <tr class="total-korean-row">
+            <th colspan="4">합계 한글</th>
+            <td class="right korean-total" colspan="3">${escapeText(documentAmount(grandTotal))}</td>
           </tr>
         </tfoot>
       </table>
