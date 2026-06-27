@@ -83,6 +83,7 @@ Tool pages also include:
 | `jpg_pdf_file_select` | JPG PDF converter images are selected | `file_count`, `total_size`, `file_types` |
 | `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
 | `jpg_pdf_compressed_arrival` | JPG PDF converter is opened from the photo-size reducer next-step CTA | `source` |
+| `jpg_pdf_rotated_arrival` | JPG PDF converter is opened from the image rotator next-step CTA | `source` |
 | `jpg_pdf_reorder` | JPG PDF converter image order changes | `from_position`, `to_position`, `file_count`, `method` |
 | `jpg_pdf_remove` | JPG PDF converter image is removed from the selected list | `from_position`, `file_count` |
 | `jpg_pdf_generate` | JPG PDF converter creates a PDF blob | `file_count`, `total_size`, `output_size`, `page_size`, `margin`, `file_types` |
@@ -114,6 +115,7 @@ Tool pages also include:
 | `image_rotate_sample_apply` | Image rotator sample images are applied | `file_count` |
 | `image_rotate_rotate` | Image rotator creates rotated image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `rotation_angle`, `file_types` |
 | `image_rotate_download` | Image rotator download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height`, `rotation_angle` |
+| `image_rotate_next_pdf_click` | Image rotator next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `rotation_angle`, `target_tool_id`, `href` |
 | `image_rotate_reset` | Image rotator is reset | none |
 | `image_rotate_validation_error` | Image rotator blocks invalid input or rotation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |

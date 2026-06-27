@@ -161,8 +161,9 @@ async function run() {
       if (route.pdfImageTool) {
         const compressedIntakeText = await page.locator("[data-compressed-intake]").textContent();
         assert(
-          compressedIntakeText?.includes("압축 이미지로 PDF 만들기") &&
-            compressedIntakeText.includes("사진 용량 줄이기"),
+          compressedIntakeText?.includes("정리한 이미지로 PDF 만들기") &&
+            compressedIntakeText.includes("사진 용량 줄이기") &&
+            compressedIntakeText.includes("이미지 회전"),
           `${route.path} should explain the compressed-image-to-PDF arrival flow`
         );
         await page.locator("[data-sample]").click();
@@ -213,6 +214,19 @@ async function run() {
         assert(
           compressedIntakeState === "highlight",
           `${route.path} should highlight the compressed-image arrival cue when opened from the compressor`
+        );
+        const compressedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          compressedArrivalText?.includes("압축 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for compressed images`
+        );
+
+        await page.goto(`${baseUrl}${route.path}?from=rotated-images`, { waitUntil: "networkidle" });
+        const rotatedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const rotatedArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        assert(
+          rotatedIntakeState === "highlight" && rotatedArrivalText?.includes("회전한 이미지로 PDF 만들기"),
+          `${route.path} should tailor the arrival cue for rotated images`
         );
       }
 
@@ -329,6 +343,14 @@ async function run() {
             firstResult.afterSize > 0 &&
             firstResult.magic.join(",") === "255,216,255",
           `${route.path} should rotate the landscape sample to a portrait JPG blob`
+        );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("회전 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/?from=rotated-images",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after rotation`
         );
       }
 

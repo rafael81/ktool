@@ -83,10 +83,10 @@ const structuredData = [
         </p>
 
         <div class="compressed-intake-card" data-compressed-intake>
-          <strong>압축 이미지로 PDF 만들기</strong>
-          <p>사진 용량 줄이기에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.</p>
+          <strong data-intake-title>정리한 이미지로 PDF 만들기</strong>
+          <p data-intake-copy>사진 용량 줄이기나 이미지 회전에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.</p>
           <ol>
-            <li>압축 도구에서 저장한 이미지를 모두 선택합니다.</li>
+            <li data-intake-step-files>저장한 이미지를 모두 선택합니다.</li>
             <li>목록 순서가 PDF 페이지 순서입니다.</li>
             <li>PDF 만들기 후 제출 전 마지막 확인에서 저장 준비 상태를 봅니다.</li>
           </ol>
@@ -235,6 +235,9 @@ const structuredData = [
       const outputMeta = root.querySelector("[data-output-meta]");
       const fileList = root.querySelector("[data-file-list]");
       const compressedIntake = root.querySelector("[data-compressed-intake]");
+      const intakeTitle = root.querySelector("[data-intake-title]");
+      const intakeCopy = root.querySelector("[data-intake-copy]");
+      const intakeStepFiles = root.querySelector("[data-intake-step-files]");
       const preflightItems = {
         files: root.querySelector('[data-preflight-item="files"]'),
         order: root.querySelector('[data-preflight-item="order"]'),
@@ -257,9 +260,27 @@ const structuredData = [
       }
 
       const arrivalSource = new URLSearchParams(window.location.search).get("from");
-      if (arrivalSource === "compressed-images") {
+      const arrivalSources = {
+        "compressed-images": {
+          title: "압축 이미지로 PDF 만들기",
+          copy: "사진 용량 줄이기에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.",
+          step: "압축 도구에서 저장한 이미지를 모두 선택합니다.",
+          event: "jpg_pdf_compressed_arrival"
+        },
+        "rotated-images": {
+          title: "회전한 이미지로 PDF 만들기",
+          copy: "이미지 회전에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.",
+          step: "회전 도구에서 저장한 이미지를 모두 선택합니다.",
+          event: "jpg_pdf_rotated_arrival"
+        }
+      };
+      const arrivalConfig = arrivalSources[arrivalSource];
+      if (arrivalConfig) {
+        intakeTitle.textContent = arrivalConfig.title;
+        intakeCopy.textContent = arrivalConfig.copy;
+        intakeStepFiles.textContent = arrivalConfig.step;
         compressedIntake.dataset.state = "highlight";
-        track("jpg_pdf_compressed_arrival", { source: arrivalSource });
+        track(arrivalConfig.event, { source: arrivalSource });
       }
 
       function formatBytes(bytes) {
