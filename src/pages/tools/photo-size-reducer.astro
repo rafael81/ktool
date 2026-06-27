@@ -287,6 +287,11 @@ const structuredData = [
           quality: ""
         }
       };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(compressionPresets, requestedPreset)
+          ? requestedPreset
+          : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -666,7 +671,15 @@ const structuredData = [
 
       window.addEventListener("pagehide", () => releaseItems());
 
+      if (initialPreset) presetSelect.value = initialPreset;
       applyPreset(false);
+      if (initialPreset) {
+        track("image_compressor_preset_arrival", {
+          preset: presetSelect.value,
+          target_size: selectedPreset().targetBytes || null,
+          source: "submission-prep"
+        });
+      }
     })();
   </script>
 </BaseLayout>

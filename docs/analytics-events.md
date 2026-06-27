@@ -49,6 +49,7 @@ Tool pages also include:
 | `prep_pdf_path_click` | Submission-prep highlighted PDF workflow step or CTA click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_decision_click` | Submission-prep PDF workflow decision hint click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_format_path_click` | Submission-prep format-error workflow step click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_compression_path_click` | Submission-prep compression-limit workflow step click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_situation_click` | Submission-prep situation card click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_flow_tool_click` | Submission-prep flow step tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_tool_click` | Submission-prep tool card click | `tool_id`, `tool_title`, `label`, `href` |
@@ -97,6 +98,7 @@ Tool pages also include:
 | `jpg_pdf_validation_error` | JPG PDF converter blocks invalid input or generation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_compressor_file_select` | Photo size reducer images are selected | `file_count`, `total_size`, `file_types` |
 | `image_compressor_sample_apply` | Photo size reducer sample images are applied | `file_count` |
+| `image_compressor_preset_arrival` | Photo size reducer is opened with a URL preset | `preset`, `target_size`, `source` |
 | `image_compressor_preset_change` | Photo size reducer submission target preset changes | `preset`, `target_size` |
 | `image_compressor_compress` | Photo size reducer creates compressed image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `max_side`, `preset`, `target_size`, `file_types` |
 | `image_compressor_download` | Photo size reducer download link is clicked | `output_format`, `before_size`, `after_size` |

@@ -128,6 +128,17 @@ async function run() {
         );
         const formatPathClickCount = await page.locator('[data-analytics-event="prep_format_path_click"]').count();
         assert(formatPathClickCount === 3, `${route.path} should track the three format path steps`);
+        const compressionPathText = await page.locator("[data-compression-path]").textContent();
+        assert(
+          compressionPathText?.includes("용량 초과가 뜰 때") &&
+            compressionPathText.includes("500KB") &&
+            compressionPathText.includes("1MB") &&
+            compressionPathText.includes("3MB") &&
+            compressionPathText.includes("PDF로 묶기"),
+          `${route.path} should highlight the compression-limit-to-PDF prep path`
+        );
+        const compressionPathClickCount = await page.locator('[data-analytics-event="prep_compression_path_click"]').count();
+        assert(compressionPathClickCount === 4, `${route.path} should track the four compression path steps`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
@@ -284,6 +295,16 @@ async function run() {
           compressionCheck?.includes("1MB 이하") && compressionCheck.includes("JPG"),
           `${route.path} should show the default submission compression target`
         );
+        await page.goto(`${baseUrl}${route.path}?preset=500kb`, { waitUntil: "networkidle" });
+        const presetCompressionCheck = await page.locator("[data-compression-check]").textContent();
+        const presetNote = await page.locator("[data-preset-note]").textContent();
+        assert(
+          presetCompressionCheck?.includes("500KB 이하") &&
+            presetCompressionCheck.includes("JPG") &&
+            presetNote?.includes("빡빡한"),
+          `${route.path} should accept a URL preset for the 500KB compression target`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".compress-row").length === 2);
         await page.locator("[data-compress]").click();

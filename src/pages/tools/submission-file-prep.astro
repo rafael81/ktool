@@ -214,6 +214,37 @@ const formatPathTools = [
   }
 ];
 
+const compressionPathTools = [
+  {
+    label: "500KB",
+    title: "빡빡한 업로드",
+    detail: "민원·학교처럼 제한이 작을 때 먼저 500KB 기준으로 줄입니다.",
+    href: `${getTool("image-compressor").path}?preset=500kb`,
+    tool: getTool("image-compressor")
+  },
+  {
+    label: "1MB",
+    title: "기본 제출",
+    detail: "대부분의 사진 제출은 1MB 이하 JPG 기준으로 먼저 확인합니다.",
+    href: `${getTool("image-compressor").path}?preset=1mb`,
+    tool: getTool("image-compressor")
+  },
+  {
+    label: "3MB",
+    title: "화질 우선",
+    detail: "글자나 증빙이 작게 보이면 3MB 기준으로 여유를 둡니다.",
+    href: `${getTool("image-compressor").path}?preset=3mb`,
+    tool: getTool("image-compressor")
+  },
+  {
+    label: "PDF",
+    title: "여러 장 제출",
+    detail: "압축 이미지를 저장한 뒤 마지막에 한 PDF로 묶습니다.",
+    href: getTool("jpg-to-pdf").path,
+    tool: getTool("jpg-to-pdf")
+  }
+];
+
 const faqs = [
   [
     "제출용 파일은 어떤 순서로 준비하면 되나요?",
@@ -234,6 +265,10 @@ const faqs = [
   [
     "어떤 도구부터 써야 할지 모르겠어요.",
     "업로드 오류 문구를 기준으로 고르면 쉽습니다. HEIC 오류는 HEIC JPG 변환, WebP나 이미지 형식 오류는 WebP JPG 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
+  ],
+  [
+    "용량 제한이 500KB, 1MB, 3MB처럼 다르면 어떻게 고르나요?",
+    "제출처 안내에 적힌 제한값을 먼저 고르세요. 제한이 1MB 이하라면 1MB 프리셋, 더 빡빡하면 500KB, 글자 판독이 중요하고 제한이 넉넉하면 3MB 프리셋으로 압축한 뒤 여러 장은 JPG PDF 변환으로 묶으면 됩니다."
   ]
 ] satisfies [string, string][];
 
@@ -345,6 +380,32 @@ const structuredData = [
           <a
             href={step.tool.path}
             data-analytics-event="prep_format_path_click"
+            data-analytics-tool-id={step.tool.id}
+            data-analytics-tool-title={step.tool.title}
+            data-analytics-label={step.title}
+          >
+            <span>{step.label}</span>
+            <strong>{step.title}</strong>
+            <p>{step.detail}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="compression-path" data-compression-path aria-label="파일 용량 초과 해결 경로">
+      <div class="compression-path-copy">
+        <span>용량 초과가 뜰 때</span>
+        <h2>제출처 제한값에 맞춰 압축하고, 여러 장이면 PDF로 묶기</h2>
+        <p>
+          업로드 제한이 500KB, 1MB, 3MB처럼 적혀 있으면 해당 기준으로 먼저 줄입니다.
+          압축한 이미지가 여러 장이면 저장 후 JPG PDF 변환에서 한 파일로 묶습니다.
+        </p>
+      </div>
+      <div class="compression-path-steps">
+        {compressionPathTools.map((step) => (
+          <a
+            href={step.href}
+            data-analytics-event="prep_compression_path_click"
             data-analytics-tool-id={step.tool.id}
             data-analytics-tool-title={step.tool.title}
             data-analytics-label={step.title}
@@ -615,7 +676,8 @@ const structuredData = [
     text-align: center;
   }
 
-  .format-path {
+  .format-path,
+  .compression-path {
     display: grid;
     grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.6fr);
     gap: 14px;
@@ -628,41 +690,47 @@ const structuredData = [
     padding: 18px;
   }
 
-  .format-path-copy {
+  .format-path-copy,
+  .compression-path-copy {
     display: grid;
     align-content: center;
     gap: 8px;
     min-width: 0;
   }
 
-  .format-path-copy span {
+  .format-path-copy span,
+  .compression-path-copy span {
     color: var(--accent-dark);
     font-size: 13px;
     font-weight: 900;
     line-height: 1.3;
   }
 
-  .format-path-copy h2 {
+  .format-path-copy h2,
+  .compression-path-copy h2 {
     margin: 0;
     color: var(--ink);
     font-size: 22px;
     line-height: 1.3;
   }
 
-  .format-path-copy p {
+  .format-path-copy p,
+  .compression-path-copy p {
     margin: 0;
     color: var(--muted);
     font-size: 14px;
     line-height: 1.6;
   }
 
-  .format-path-steps {
+  .format-path-steps,
+  .compression-path-steps {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 8px;
   }
 
-  .format-path-steps a {
+  .format-path-steps a,
+  .compression-path-steps a {
     display: grid;
     align-content: start;
     gap: 7px;
@@ -672,25 +740,30 @@ const structuredData = [
     padding: 12px;
   }
 
-  .format-path-steps span {
+  .format-path-steps span,
+  .compression-path-steps span {
     display: grid;
-    width: 24px;
+    min-width: 24px;
     height: 24px;
+    width: max-content;
     place-items: center;
     border-radius: 7px;
     background: var(--accent-dark);
     color: #fff;
     font-size: 12px;
     font-weight: 900;
+    padding: 0 7px;
   }
 
-  .format-path-steps strong {
+  .format-path-steps strong,
+  .compression-path-steps strong {
     color: var(--ink);
     font-size: 15px;
     line-height: 1.3;
   }
 
-  .format-path-steps p {
+  .format-path-steps p,
+  .compression-path-steps p {
     margin: 0;
     color: var(--muted);
     font-size: 13px;
@@ -856,7 +929,8 @@ const structuredData = [
 
   @media (max-width: 1040px) {
     .pdf-path,
-    .format-path {
+    .format-path,
+    .compression-path {
       grid-template-columns: 1fr;
     }
 
@@ -881,12 +955,14 @@ const structuredData = [
 
   @media (max-width: 760px) {
     .pdf-path,
-    .format-path {
+    .format-path,
+    .compression-path {
       padding: 16px;
     }
 
     .pdf-path-steps,
-    .format-path-steps {
+    .format-path-steps,
+    .compression-path-steps {
       grid-template-columns: 1fr;
     }
 
