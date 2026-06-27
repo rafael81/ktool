@@ -37,7 +37,9 @@ Tool pages also include:
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
 | `catalog_prep_shortcut_click` | Tool catalog problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
-| `catalog_tool_click` | Tool catalog tool card click | `tool_id`, `tool_title`, `label`, `href` |
+| `catalog_filter_change` | Tool catalog category filter changes | `catalog_category`, `visible_count`, `search_query_length` |
+| `catalog_search_change` | Tool catalog search input changes | `catalog_category`, `visible_count`, `search_query_length` |
+| `catalog_tool_click` | Tool catalog tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_workflow_quick_link_click` | Category page submission-prep quick-link click | `label`, `href` |
 | `category_workflow_click` | Category page workflow card click | `label`, `href` |
 | `category_prep_shortcut_click` | Category page problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
@@ -157,7 +159,7 @@ Tool pages also include:
 | `heic_convert_reset` | HEIC converter is reset | none |
 | `heic_convert_validation_error` | HEIC converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 
-Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
+Never send image filenames, raw image bytes, OCR text, document text, raw catalog search queries, business numbers, addresses, or customer names in analytics events.
 
 ## File tool funnel
 

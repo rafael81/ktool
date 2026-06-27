@@ -170,6 +170,50 @@ async function run() {
         }
       }
 
+      if (route.path === "/tools/") {
+        const catalogRootCount = await page.locator("[data-tool-catalog]").count();
+        assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
+        const catalogRowCount = await page.locator("[data-tool-search-item]").count();
+        assert(catalogRowCount >= 16, `${route.path} should render all tool rows in the catalog`);
+        const initialVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
+        assert(initialVisibleRows === catalogRowCount, `${route.path} should show every tool before filtering`);
+        await page.locator('[data-tool-filter="image"]').click();
+        const imageVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
+        const imageResultText = await page.locator("[data-tool-result-count]").textContent();
+        assert(imageVisibleRows === 6 && imageResultText?.includes("6개"), `${route.path} should filter to six image tools`);
+        await page.locator("[data-tool-search]").fill("HEIC");
+        await page.waitForTimeout(450);
+        const heicVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
+        const heicVisibleText = await page.locator("[data-tool-search-item]:not([hidden])").textContent();
+        assert(
+          heicVisibleRows === 1 && heicVisibleText?.includes("HEIC JPG 변환"),
+          `${route.path} should search within the selected category`
+        );
+        await page.locator("[data-tool-search]").fill("없는도구");
+        await page.waitForTimeout(450);
+        const emptyVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
+        const emptyHidden = await page.locator("[data-tool-empty]").getAttribute("hidden");
+        assert(emptyVisibleRows === 0 && emptyHidden === null, `${route.path} should show an empty catalog state`);
+        const events = [];
+        await page.exposeFunction("captureCatalogEvent", (payload) => {
+          events.push(payload);
+        });
+        await page.addInitScript(() => {
+          window.addEventListener("kdoc:analytics", (event) => {
+            window["captureCatalogEvent"]?.(event.detail);
+          });
+        });
+        await page.reload({ waitUntil: "networkidle" });
+        await page.locator("[data-tool-search]").fill("SECRET-CATALOG-QUERY");
+        await page.waitForTimeout(450);
+        const eventText = JSON.stringify(events);
+        assert(!eventText.includes("SECRET-CATALOG-QUERY"), `${route.path} should not send raw catalog search text`);
+        assert(
+          eventText.includes("catalog_search_change") && eventText.includes("search_query_length"),
+          `${route.path} should track catalog search using only metadata`
+        );
+      }
+
       if (route.workflowPackage) {
         const workflowRootCount = await page
           .locator(`[data-workflow-package="${route.workflowPackage}"]`)
