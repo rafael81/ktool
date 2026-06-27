@@ -227,6 +227,14 @@ async function run() {
           postCompressionCheck?.includes("모두 1MB 이하 통과") && compressedRowsText?.includes("기준 통과"),
           `${route.path} should show submission target pass status after compression`
         );
+        const nextPdfText = await page.locator("[data-next-pdf]").textContent();
+        const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
+        assert(
+          nextPdfText?.includes("다음 단계: PDF로 묶기") &&
+            nextPdfText.includes("압축 이미지를 저장") &&
+            nextPdfHref === "/tools/jpg-to-pdf-converter/",
+          `${route.path} should offer a next-step CTA to the JPG PDF converter after compression`
+        );
       }
 
       if (route.imageResizer) {

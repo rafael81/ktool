@@ -93,6 +93,7 @@ Tool pages also include:
 | `image_compressor_preset_change` | Photo size reducer submission target preset changes | `preset`, `target_size` |
 | `image_compressor_compress` | Photo size reducer creates compressed image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `max_side`, `preset`, `target_size`, `file_types` |
 | `image_compressor_download` | Photo size reducer download link is clicked | `output_format`, `before_size`, `after_size` |
+| `image_compressor_next_pdf_click` | Photo size reducer next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `preset`, `target_size`, `target_tool_id`, `href` |
 | `image_compressor_reset` | Photo size reducer is reset | none |
 | `image_compressor_validation_error` | Photo size reducer blocks invalid input or compression failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_resize_file_select` | Image resizer images are selected | `file_count`, `total_size`, `file_types` |

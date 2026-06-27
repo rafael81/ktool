@@ -295,7 +295,7 @@ Acceptance gate:
 ## Deferred But Promising
 
 - 도장 누끼 따기: built as a support tool for scanned stamp transparent PNG creation.
-- 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped. 사진 용량 줄이기 now has 500KB/1MB/3MB submission presets because "용량 초과" users need an immediate target, not only manual quality sliders.
+- 사진 용량 줄이기 / 이미지 압축, 이미지 리사이즈, WebP JPG 변환, HEIC JPG 변환: built as the first browser-local image utility cluster after the Korean business-doc and JPG PDF wedges shipped. 사진 용량 줄이기 now has 500KB/1MB/3MB submission presets and a post-compression JPG PDF next step because "용량 초과" users need an immediate target and a clear route to bundling multiple compressed images.
 - JPG PDF 변환: improved after the image-tool cluster with drag reorder, per-image removal, and a preflight checklist because page order and save-readiness mistakes are direct submission-prep failure points.
 - 제출용 파일 준비: improved with a highlighted PDF submission path and error-message decision hints, because users with multiple images need a clearer route from cleanup tools to JPG PDF bundling.
 - 3.3% 계산기: built after adding NTS source/date/disclaimer discipline.

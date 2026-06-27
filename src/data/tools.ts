@@ -484,6 +484,7 @@ export const tools: ToolInfo[] = [
     featureList: [
       "여러 이미지 일괄 압축",
       "제출 기준 프리셋",
+      "PDF 묶기 다음 단계",
       "JPG/WebP 출력 선택",
       "품질 조절",
       "최대 긴 변 크기 조절",
