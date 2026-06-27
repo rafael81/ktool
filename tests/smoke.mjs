@@ -108,6 +108,12 @@ async function run() {
           .locator(`[data-prep-shortcuts] a[data-analytics-event="${eventName}"]`)
           .count();
         assert(shortcutClickCount === 7, `${route.path} should track seven problem-situation shortcuts`);
+        const shortcutIdCount = await page.locator("[data-prep-shortcuts] a[data-analytics-shortcut-id]").count();
+        assert(shortcutIdCount === 7, `${route.path} should tag each prep shortcut with a stable shortcut id`);
+        const shortcutToolCount = await page.locator("[data-prep-shortcuts] a[data-analytics-tool-id]").count();
+        assert(shortcutToolCount === 7, `${route.path} should tag each prep shortcut with its target tool id`);
+        const shortcutPresetCount = await page.locator("[data-prep-shortcuts] a[data-analytics-target-preset]").count();
+        assert(shortcutPresetCount === 6, `${route.path} should tag preset-backed prep shortcuts with their target preset`);
         const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
         assert(
           shortcutText?.includes("파일 형식 오류") &&
@@ -138,6 +144,12 @@ async function run() {
           .locator('[data-prep-shortcuts] a[data-analytics-event="category_prep_shortcut_click"]')
           .count();
         assert(shortcutClickCount === 7, `${route.path} should track seven category prep shortcuts`);
+        const shortcutIdCount = await page.locator("[data-prep-shortcuts] a[data-analytics-shortcut-id]").count();
+        assert(shortcutIdCount === 7, `${route.path} should tag each category prep shortcut with a stable shortcut id`);
+        const shortcutToolCount = await page.locator("[data-prep-shortcuts] a[data-analytics-tool-id]").count();
+        assert(shortcutToolCount === 7, `${route.path} should tag each category prep shortcut with its target tool id`);
+        const shortcutPresetCount = await page.locator("[data-prep-shortcuts] a[data-analytics-target-preset]").count();
+        assert(shortcutPresetCount === 6, `${route.path} should tag preset-backed category prep shortcuts with their target preset`);
         const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
         assert(
           shortcutText?.includes("파일 형식 오류") &&

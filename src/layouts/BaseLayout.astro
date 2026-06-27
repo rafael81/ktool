@@ -127,6 +127,12 @@ const analyticsPage = {
               if (target.dataset.analyticsToolTitle) {
                 params.tool_title = target.dataset.analyticsToolTitle;
               }
+              if (target.dataset.analyticsShortcutId) {
+                params.shortcut_id = target.dataset.analyticsShortcutId;
+              }
+              if (target.dataset.analyticsTargetPreset) {
+                params.target_preset = target.dataset.analyticsTargetPreset;
+              }
 
               window.kdocTrack(target.dataset.analyticsEvent, params);
             },

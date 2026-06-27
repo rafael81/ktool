@@ -93,6 +93,10 @@ const submissionPrep = {
               class="tool-card"
               href={shortcut.path}
               data-analytics-event="catalog_prep_shortcut_click"
+              data-analytics-shortcut-id={shortcut.id}
+              data-analytics-tool-id={shortcut.targetToolId}
+              data-analytics-tool-title={shortcut.targetToolTitle}
+              data-analytics-target-preset={shortcut.targetPreset}
               data-analytics-label={shortcut.label}
             >
               <span class="meta">
