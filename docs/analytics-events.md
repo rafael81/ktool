@@ -67,6 +67,14 @@ Tool pages also include:
 | `stamp_background_download` | Transparent stamp PNG is downloaded | `threshold`, `red_only` |
 | `stamp_background_reset` | Stamp background remover is reset | none |
 | `stamp_background_validation_error` | Stamp background remover blocks invalid input | `reason`, optional `file_size` |
+| `jpg_pdf_file_select` | JPG PDF converter images are selected | `file_count`, `total_size`, `file_types` |
+| `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
+| `jpg_pdf_generate` | JPG PDF converter creates a PDF blob | `file_count`, `total_size`, `output_size`, `page_size`, `margin`, `file_types` |
+| `jpg_pdf_download` | JPG PDF converter download link is clicked | `file_count`, `output_size`, `page_size`, `margin` |
+| `jpg_pdf_reset` | JPG PDF converter is reset | none |
+| `jpg_pdf_validation_error` | JPG PDF converter blocks invalid input or generation failure | `reason`, optional `file_count`, optional `total_size` |
+
+Never send image filenames, raw image bytes, OCR text, document text, business numbers, addresses, or customer names in analytics events.
 
 ## Provider hook example
 

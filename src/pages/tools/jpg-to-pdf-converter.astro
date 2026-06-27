@@ -1,0 +1,683 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("jpg-to-pdf");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 주민등록등본 사진, 통장 사본, 사업자 서류처럼 여러 이미지를 한 PDF로 묶어야 할 때 빠르게 정리합니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-workspace" data-jpg-pdf-tool>
+      <form class="panel pdf-panel" aria-label="JPG PDF 변환 입력">
+        <div class="panel-title">
+          <h2>이미지 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>이미지 파일</span>
+          <span class="file-control">
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <span data-file-label>JPG/PNG/WebP 여러 장 선택</span>
+          </span>
+        </label>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>페이지 크기</span>
+            <select data-page-size>
+              <option value="a4-portrait">A4 세로</option>
+              <option value="a4-landscape">A4 가로</option>
+              <option value="image">이미지 크기</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>여백</span>
+            <select data-margin>
+              <option value="normal">보통</option>
+              <option value="narrow">좁게</option>
+              <option value="none">없음</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="note-box">
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. PDF 생성은 브라우저 안에서만 실행됩니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>
+            <span data-generate-label>PDF 만들기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 변환 상태">
+        <div class="panel-title">
+          <h2>변환 결과</h2>
+          <span class="format-badge">PDF</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>이미지를 선택하면 PDF를 만들 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-images.pdf"
+            aria-disabled="true"
+            data-download
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+            PDF 저장
+          </a>
+        </div>
+
+        <div class="file-list" data-file-list aria-live="polite">
+          <p class="empty-state">선택된 이미지가 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>원본 이미지와 파일명은 서버로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>이미지 순서대로 PDF 페이지를 만듭니다.</span></li>
+          <li><span class="status-dot"></span><span>제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>PDF로 묶을 JPG, PNG, WebP 이미지를 선택합니다.</li>
+        <li>페이지 크기와 여백을 고릅니다.</li>
+        <li>PDF 만들기를 누른 뒤 준비된 PDF를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // @ts-nocheck
+    import { PDFDocument } from "pdf-lib";
+
+    const root = document.querySelector("[data-jpg-pdf-tool]");
+    if (root) {
+      const maxFiles = 20;
+      const maxFileSize = 12 * 1024 * 1024;
+      const maxTotalSize = 50 * 1024 * 1024;
+      const maxImageSide = 2200;
+      const pageSizes = {
+        "a4-portrait": [595.28, 841.89],
+        "a4-landscape": [841.89, 595.28]
+      };
+      const marginSizes = {
+        none: 0,
+        narrow: 24,
+        normal: 48
+      };
+
+      const input = root.querySelector("[data-image-input]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const pageSizeSelect = root.querySelector("[data-page-size]");
+      const marginSelect = root.querySelector("[data-margin]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const downloadLink = root.querySelector("[data-download]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const fileList = root.querySelector("[data-file-list]");
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let files = [];
+      let pdfUrl = "";
+      let outputBytes = 0;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "jpg-to-pdf",
+          tool_title: "JPG PDF 변환",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+        if (bytes >= 1024) return `${Math.round(bytes / 1024)}KB`;
+        return `${bytes}B`;
+      }
+
+      function totalSize(nextFiles = files) {
+        return nextFiles.reduce((sum, file) => sum + file.size, 0);
+      }
+
+      function fileTypes(nextFiles = files) {
+        return [...new Set(nextFiles.map((file) => file.type || "unknown"))].join(",");
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || files.length === 0;
+        generateLabel.textContent = isBusy ? "PDF 만드는 중" : "PDF 만들기";
+      }
+
+      function clearPdfUrl() {
+        if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+        pdfUrl = "";
+        outputBytes = 0;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+      }
+
+      function renderFiles() {
+        generateButton.disabled = files.length === 0;
+        clearPdfUrl();
+        if (files.length === 0) {
+          fileLabel.textContent = "JPG/PNG/WebP 여러 장 선택";
+          fileList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
+          setMessage("이미지를 선택하면 PDF를 만들 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        fileLabel.textContent = `${formatter.format(files.length)}장 선택`;
+        fileList.innerHTML = files
+          .map(
+            (file, index) => `
+              <div class="file-row">
+                <span>${index + 1}</span>
+                <strong>${file.type.replace("image/", "").toUpperCase() || "IMG"}</strong>
+                <p>${formatBytes(file.size)}</p>
+              </div>
+            `
+          )
+          .join("");
+        setMessage(
+          `${formatter.format(files.length)}장 선택됨`,
+          `총 ${formatBytes(totalSize())}, PDF 만들기를 누르면 변환합니다.`
+        );
+      }
+
+      function validateFiles(nextFiles) {
+        if (nextFiles.length === 0) return { ok: false, reason: "empty" };
+        if (nextFiles.length > maxFiles) return { ok: false, reason: "too_many_files" };
+        if (totalSize(nextFiles) > maxTotalSize) return { ok: false, reason: "total_size_too_large" };
+        for (const file of nextFiles) {
+          if (!file.type.startsWith("image/")) return { ok: false, reason: "unsupported_file_type" };
+          if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+            return { ok: false, reason: "unsupported_file_type" };
+          }
+          if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        }
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "이미지는 최대 20장까지 선택할 수 있습니다.";
+        if (reason === "total_size_too_large") return "전체 이미지 용량은 50MB 이하로 선택해 주세요.";
+        if (reason === "file_too_large") return "이미지 한 장은 12MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "JPG, PNG, WebP 이미지만 사용할 수 있습니다.";
+        return "PDF로 만들 이미지를 선택해 주세요.";
+      }
+
+      function imageFromFile(file) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(file);
+          const image = new Image();
+          image.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(image);
+          };
+          image.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("image_decode_failed"));
+          };
+          image.src = url;
+        });
+      }
+
+      function canvasToBlob(canvas) {
+        return new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error("canvas_export_failed"));
+            },
+            "image/jpeg",
+            0.92
+          );
+        });
+      }
+
+      async function normalizeImage(file) {
+        const image = await imageFromFile(file);
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+        if (!sourceWidth || !sourceHeight) throw new Error("image_decode_failed");
+
+        const scale = Math.min(1, maxImageSide / Math.max(sourceWidth, sourceHeight));
+        const width = Math.max(1, Math.round(sourceWidth * scale));
+        const height = Math.max(1, Math.round(sourceHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(image, 0, 0, width, height);
+        const blob = await canvasToBlob(canvas);
+        return {
+          bytes: await blob.arrayBuffer(),
+          width,
+          height
+        };
+      }
+
+      function pageSizeFor(image) {
+        if (pageSizeSelect.value === "image") {
+          const width = Math.max(240, Math.min(1440, image.width * 0.75));
+          const height = Math.max(240, Math.min(1440, image.height * 0.75));
+          return [width, height];
+        }
+        return pageSizes[pageSizeSelect.value] || pageSizes["a4-portrait"];
+      }
+
+      async function generatePdf() {
+        const validation = validateFiles(files);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "파일을 다시 선택한 뒤 시도해 주세요.");
+          track("jpg_pdf_validation_error", { reason: validation.reason });
+          return;
+        }
+
+        clearPdfUrl();
+        setBusy(true);
+        setMessage("PDF 만드는 중", `${formatter.format(files.length)}장 이미지를 정리하고 있습니다.`);
+
+        try {
+          const pdfDoc = await PDFDocument.create();
+          const margin = marginSizes[marginSelect.value] ?? marginSizes.normal;
+
+          for (const file of files) {
+            const image = await normalizeImage(file);
+            const embedded = await pdfDoc.embedJpg(image.bytes);
+            const [pageWidth, pageHeight] = pageSizeFor(image);
+            const page = pdfDoc.addPage([pageWidth, pageHeight]);
+            const availableWidth = Math.max(1, pageWidth - margin * 2);
+            const availableHeight = Math.max(1, pageHeight - margin * 2);
+            const imageScale = Math.min(availableWidth / embedded.width, availableHeight / embedded.height);
+            const drawWidth = embedded.width * imageScale;
+            const drawHeight = embedded.height * imageScale;
+            page.drawImage(embedded, {
+              x: (pageWidth - drawWidth) / 2,
+              y: (pageHeight - drawHeight) / 2,
+              width: drawWidth,
+              height: drawHeight
+            });
+          }
+
+          const pdfBytes = await pdfDoc.save();
+          outputBytes = pdfBytes.byteLength;
+          const blob = new Blob([pdfBytes], { type: "application/pdf" });
+          pdfUrl = URL.createObjectURL(blob);
+          downloadLink.href = pdfUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          setMessage(
+            `PDF 준비 완료: ${formatter.format(files.length)}장`,
+            `예상 파일 크기 ${formatBytes(outputBytes)}`
+          );
+          track("jpg_pdf_generate", {
+            file_count: files.length,
+            total_size: totalSize(),
+            output_size: outputBytes,
+            page_size: pageSizeSelect.value,
+            margin: marginSelect.value,
+            file_types: fileTypes()
+          });
+        } catch (error) {
+          setMessage("PDF를 만들지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
+          track("jpg_pdf_validation_error", {
+            reason: error?.message || "pdf_generation_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function sampleFile(label, color, width, height) {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.strokeStyle = "#dbe4ec";
+        ctx.lineWidth = 12;
+        ctx.strokeRect(36, 36, width - 72, height - 72);
+        ctx.fillStyle = color;
+        ctx.fillRect(76, 96, width - 152, 16);
+        ctx.fillRect(76, 146, width - 220, 16);
+        ctx.fillStyle = "#14212f";
+        ctx.font = "900 54px sans-serif";
+        ctx.fillText(label, 76, 250);
+        ctx.font = "700 28px sans-serif";
+        ctx.fillText("K문서툴 샘플 이미지", 76, 310);
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], `${label}.jpg`, { type: "image/jpeg" }));
+          }, "image/jpeg", 0.92);
+        });
+      }
+
+      input.addEventListener("change", (event) => {
+        const nextFiles = Array.from(event.target.files || []);
+        const validation = validateFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          files = [];
+          input.value = "";
+          renderFiles();
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("jpg_pdf_validation_error", {
+            reason: validation.reason,
+            file_count: nextFiles.length,
+            total_size: totalSize(nextFiles)
+          });
+          return;
+        }
+        files = nextFiles;
+        renderFiles();
+        track("jpg_pdf_file_select", {
+          file_count: files.length,
+          total_size: totalSize(),
+          file_types: fileTypes()
+        });
+      });
+
+      pageSizeSelect.addEventListener("change", () => clearPdfUrl());
+      marginSelect.addEventListener("change", () => clearPdfUrl());
+
+      sampleButton.addEventListener("click", async () => {
+        files = [
+          await sampleFile("document-scan", "#117a7a", 1200, 1600),
+          await sampleFile("receipt-photo", "#b54708", 1200, 900)
+        ];
+        input.value = "";
+        renderFiles();
+        track("jpg_pdf_sample_apply", { file_count: files.length });
+      });
+
+      resetButton.addEventListener("click", () => {
+        files = [];
+        input.value = "";
+        renderFiles();
+        track("jpg_pdf_reset");
+      });
+
+      generateButton.addEventListener("click", generatePdf);
+
+      downloadLink.addEventListener("click", (event) => {
+        if (!pdfUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("jpg_pdf_download", {
+          file_count: files.length,
+          output_size: outputBytes,
+          page_size: pageSizeSelect.value,
+          margin: marginSelect.value
+        });
+      });
+
+      renderFiles();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .pdf-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .pdf-panel,
+  .pdf-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .pdf-result-card > span,
+  :global(.file-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .pdf-result-card strong {
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .pdf-result-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .pdf-result-card .btn {
+    width: max-content;
+  }
+
+  .btn.disabled,
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .file-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  :global(.file-row) {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  :global(.file-row span) {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  :global(.file-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    .pdf-workspace {
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+    }
+
+    .pdf-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .pdf-workspace,
+    .two-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .pdf-result-card .btn {
+      width: 100%;
+    }
+
+  }
+</style>

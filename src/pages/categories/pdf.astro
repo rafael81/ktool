@@ -1,36 +1,42 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getToolCategory, getToolsByCategory } from "@/data/tools";
+import { collectionPageSchema } from "@/data/seo";
 
 const category = getToolCategory("pdf");
-const businessTools = getToolsByCategory("business");
-const plannedPdfTools = [
-  "PDF 합치기",
-  "PDF 나누기",
-  "PDF 압축",
-  "PDF JPG 변환",
-  "JPG PDF 변환"
+const pdfTools = getToolsByCategory("pdf");
+const businessTools = getToolsByCategory("business").filter((tool) =>
+  ["stamp-background", "business-nameplate", "transaction-statement"].includes(tool.id)
+);
+const plannedPdfTools = ["PDF 합치기", "PDF 나누기", "PDF 압축", "PDF JPG 변환", "PDF 회전"];
+const structuredData = [
+  collectionPageSchema({
+    name: category.title,
+    description: category.description,
+    path: category.path,
+    tools: pdfTools
+  })
 ];
 ---
 
 <BaseLayout
-  title={`${category.title} - 준비 중 | K문서툴`}
+  title={`${category.title} - K문서툴`}
   description={category.description}
   canonicalPath={category.path}
-  robots="noindex,follow"
+  structuredData={structuredData}
 >
   <main class="page-shell">
     <section class="tool-intro">
       <div>
         <h1>{category.title}</h1>
-        <p>{category.description}</p>
+        <p>{category.description} 사진으로 받은 서류, 스캔본, 증빙 이미지를 제출하기 쉬운 PDF로 정리합니다.</p>
       </div>
-      <div class="quick-links" aria-label="현재 사용 가능한 도구">
+      <div class="quick-links" aria-label="PDF 도구 바로가기">
         {
-          businessTools.map((tool) => (
+          pdfTools.map((tool) => (
             <a
               href={tool.path}
-              data-analytics-event="planned_category_related_click"
+              data-analytics-event="category_tool_quick_link_click"
               data-analytics-tool-id={tool.id}
               data-analytics-tool-title={tool.title}
               data-analytics-label={tool.shortTitle}
@@ -44,34 +50,80 @@ const plannedPdfTools = [
 
     <section class="content-section">
       <div class="section-heading">
-        <h2>준비 중인 PDF 도구</h2>
-        <p>PDF 도구는 파일 크기, 브라우저 성능, 개인정보 처리 기준을 먼저 정한 뒤 추가합니다.</p>
+        <h2>사용 가능한 PDF 도구</h2>
+        <p>파일은 가능한 한 브라우저에서만 처리하고, 제출 직전의 작은 변환 문제부터 해결합니다.</p>
       </div>
       <div class="tool-grid">
         {
-          plannedPdfTools.map((title) => (
-            <article class="tool-card">
+          pdfTools.map((tool) => (
+            <a
+              class="tool-card"
+              href={tool.path}
+              data-analytics-event="category_tool_click"
+              data-analytics-tool-id={tool.id}
+              data-analytics-tool-title={tool.title}
+              data-analytics-label={tool.title}
+            >
               <span class="meta">
-                <span class="meta-tag muted">준비 중</span>
+                <span class="meta-tag">{tool.primaryQuery}</span>
               </span>
-              <strong>{title}</strong>
-              <p>
-                한국 업무 문서 제출 흐름에 맞춰 브라우저 처리, 파일 제한, 진행 상태, 오류 복구를
-                갖춘 뒤 공개할 예정입니다.
-              </p>
-            </article>
+              <strong>{tool.title}</strong>
+              <p>{tool.userMoment}</p>
+              <p class="trust-note">{tool.trustNote}</p>
+            </a>
           ))
         }
       </div>
     </section>
 
     <section class="content-section">
-      <h2>왜 바로 PDF부터 만들지 않나요?</h2>
-      <p>
-        PDF 합치기, 나누기, 압축은 검색 수요가 크지만 iLovePDF, Adobe, Smallpdf, PDF24 같은
-        강한 도구가 이미 자리 잡고 있습니다. K문서툴은 먼저 업무 문서 도구에서 사용 데이터를
-        확인하고, 이후 개인정보와 성능 기준을 지키는 PDF 도구로 확장합니다.
-      </p>
+      <div class="section-heading">
+        <h2>같이 쓰면 좋은 문서 도구</h2>
+        <p>이미지를 PDF로 묶기 전후에 문서 삽입용 이미지와 업무 문서를 함께 정리할 수 있습니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          businessTools.map((tool) => (
+            <a
+              class="tool-card"
+              href={tool.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={tool.id}
+              data-analytics-tool-title={tool.title}
+              data-analytics-label={tool.title}
+            >
+              <span class="meta">
+                <span class="meta-tag">{tool.primaryQuery}</span>
+              </span>
+              <strong>{tool.title}</strong>
+              <p>{tool.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>다음 PDF 도구 후보</h2>
+        <p>범용 PDF 경쟁이 강한 도구는 사용 데이터와 브라우저 처리 안정성을 확인한 뒤 추가합니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          plannedPdfTools.map((title) => (
+            <article class="tool-card">
+              <span class="meta">
+                <span class="meta-tag muted">후보</span>
+              </span>
+              <strong>{title}</strong>
+              <p>
+                한국 업무 문서 제출 흐름에 맞는 파일 제한, 진행 상태, 오류 복구 기준을 먼저
+                정한 뒤 공개합니다.
+              </p>
+            </article>
+          ))
+        }
+      </div>
     </section>
   </main>
 </BaseLayout>

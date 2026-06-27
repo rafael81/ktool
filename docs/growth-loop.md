@@ -58,6 +58,8 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `amount_converter_copy`
 - `withholding_calculator_copy`
 - `stamp_background_download`
+- `jpg_pdf_generate`
+- `jpg_pdf_download`
 
 Do not send raw document text, business numbers, filenames, addresses, customer names, or uploaded file data.
 
@@ -102,10 +104,11 @@ Completed:
 7. Add Korean total amount rows to generated business documents.
 8. Add a supporting business calculator: `3.3% 계산기`.
 9. Add a supporting stamp image tool: `도장 배경 제거`.
+10. Add the first browser-local PDF tool: `JPG PDF 변환`.
 
 Next after crawl data appears:
 
-1. Request indexing/collection for `/tools/receipt-generator/`, `/tools/invoice-generator/`, `/tools/vat-calculator/`, `/tools/amount-korean-converter/`, `/tools/freelance-withholding-calculator/`, and `/tools/stamp-background-remover/`.
-2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, and stamp-background downloads across 거래명세서, 견적서, 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거.
-3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, or 도장 배경 제거 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
-4. If business-document pages are indexed cleanly, reconsider the first workflow-specific PDF tool.
+1. Request indexing/collection for `/categories/pdf/` and `/tools/jpg-to-pdf-converter/`, plus any previously unrequested business tool pages.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, and JPG PDF generate/download events across the tool set.
+3. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, or JPG PDF 변환 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
+4. If JPG PDF 변환 gets generate events but weak downloads, improve file list feedback, output status, and download affordance before adding more PDF tools.

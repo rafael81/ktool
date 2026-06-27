@@ -7,7 +7,8 @@ export type ToolId =
   | "vat-calculator"
   | "amount-korean"
   | "withholding-tax"
-  | "stamp-background";
+  | "stamp-background"
+  | "jpg-to-pdf";
 
 export type ToolCategoryId = "business" | "pdf";
 
@@ -54,8 +55,8 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "PDF",
     path: "/categories/pdf/",
     description:
-      "PDF 합치기, 나누기, 압축 같은 파일 도구를 한국 업무 문서 흐름에 맞춰 준비 중입니다.",
-    status: "planned"
+      "JPG, PNG, WebP 이미지를 PDF로 묶는 파일 도구를 한국 업무 문서 제출 흐름에 맞춰 브라우저에서 처리합니다.",
+    status: "active"
   }
 ];
 
@@ -406,6 +407,44 @@ export const tools: ToolInfo[] = [
     ],
     trustNote: "이미지 배경 정리 도구이며, 인감 증명이나 전자서명 인증을 대신하지 않습니다.",
     relatedToolIds: ["business-nameplate", "invoice"]
+  },
+  {
+    id: "jpg-to-pdf",
+    title: "JPG PDF 변환",
+    shortTitle: "JPG PDF",
+    path: "/tools/jpg-to-pdf-converter/",
+    category: "pdf",
+    description:
+      "JPG, PNG, WebP 이미지를 한 개의 PDF로 묶어 제출용 파일로 저장합니다.",
+    pageTitle: "JPG PDF 변환 - 이미지 여러 장 PDF 만들기",
+    metaDescription:
+      "JPG, PNG, WebP 이미지를 브라우저에서 PDF로 묶어 저장하세요. 스캔 사진과 증빙 이미지를 서버 업로드 없이 제출용 PDF로 변환합니다.",
+    primaryQuery: "JPG PDF 변환",
+    secondaryQueries: ["이미지 PDF 변환", "사진 PDF 만들기", "JPG PDF 만들기", "PNG PDF 변환"],
+    userMoment: "스캔한 서류 사진이나 증빙 이미지를 하나의 PDF로 제출해야 하는 순간",
+    featureList: [
+      "여러 이미지 PDF 묶기",
+      "A4 세로/가로 PDF 생성",
+      "여백 선택",
+      "샘플 이미지로 즉시 테스트",
+      "브라우저 안에서 파일 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 이미지는 브라우저에서 읽고 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["JPG만 가능한가요?", "JPG, PNG, WebP 이미지를 선택할 수 있습니다. PDF 저장 시에는 제출 호환성을 위해 흰 배경 JPG 이미지로 정리해 묶습니다."],
+      ["여러 장을 한 PDF로 만들 수 있나요?", "네. 여러 이미지를 선택하면 선택한 순서대로 한 장씩 PDF 페이지가 됩니다."],
+      ["A4 크기로 만들 수 있나요?", "A4 세로와 A4 가로를 선택할 수 있고, 이미지 원본 비율을 유지해 페이지 안에 맞춥니다."],
+      ["파일 제한이 있나요?", "브라우저 성능을 위해 최대 20장, 총 50MB, 파일당 12MB까지 처리합니다."],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 이미지 파일을 PDF로 묶는 보조 도구입니다. 제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요."
+      ]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["stamp-background", "business-nameplate"]
   }
 ];
 

@@ -1,15 +1,14 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getToolsByCategory, toolCategories, tools } from "@/data/tools";
+import { toolCategories, tools } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
-const businessTools = getToolsByCategory("business");
 ---
 
 <BaseLayout
   title="K문서툴 - 무료 업무 문서 도구"
-  description="사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거를 로그인 없이 브라우저에서 사용하는 한국형 무료 업무 도구입니다."
+  description="사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환을 로그인 없이 브라우저에서 사용하는 한국형 무료 문서 도구입니다."
   structuredData={structuredData}
 >
   <main class="page-shell" data-page-type="home">
@@ -17,7 +16,7 @@ const businessTools = getToolsByCategory("business");
       <div>
         <h1>K문서툴로 문서 제출 직전을 가볍게</h1>
         <p>
-          사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거를 브라우저에서 바로 사용하세요. 한국 업무 문서에
+          사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 금액 한글 변환, 3.3% 계산, 도장 배경 제거, JPG PDF 변환을 브라우저에서 바로 사용하세요. 한국 업무 문서에
           필요한 작은 도구를 로그인 없이 빠르게 제공합니다.
         </p>
       </div>
@@ -45,12 +44,12 @@ const businessTools = getToolsByCategory("business");
 
     <section class="content-section">
       <div class="section-heading">
-        <h2>업무 문서 도구</h2>
-        <p>검색으로 들어온 사용자가 바로 제출용 문서를 만들 수 있는 도구부터 확장합니다.</p>
+        <h2>사용 가능한 도구</h2>
+        <p>검색으로 들어온 사용자가 바로 제출용 문서와 파일을 만들 수 있는 도구부터 확장합니다.</p>
       </div>
       <div class="tool-grid">
         {
-          businessTools.map((tool) => (
+          tools.map((tool) => (
             <a
               class="tool-card"
               href={tool.path}
@@ -74,7 +73,7 @@ const businessTools = getToolsByCategory("business");
     <section class="content-section">
       <div class="section-heading">
         <h2>카테고리</h2>
-        <p>업무 문서 도구를 먼저 강화하고, PDF 도구는 검색 데이터와 구현 안전성이 맞을 때 추가합니다.</p>
+        <p>업무 문서 도구에서 시작해, 브라우저에서 안전하게 처리할 수 있는 PDF 도구로 확장합니다.</p>
       </div>
       <div class="tool-grid">
         {

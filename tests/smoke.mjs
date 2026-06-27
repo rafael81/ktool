@@ -10,7 +10,7 @@ const routes = [
   { path: "/", h1: "K문서툴로 문서 제출 직전을 가볍게" },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/categories/business/", h1: "업무 문서 도구" },
-  { path: "/categories/pdf/", h1: "PDF 도구", robots: "noindex,follow" },
+  { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true, documentPreview: true },
@@ -19,7 +19,8 @@ const routes = [
   { path: "/tools/vat-calculator/", h1: "부가세 계산기", faq: true },
   { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true },
   { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true },
-  { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true }
+  { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true },
+  { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true }
 ];
 
 function assert(condition, message) {
@@ -113,6 +114,18 @@ async function run() {
           return false;
         });
         assert(hasTransparentPixels, `${route.path} should create transparent PNG pixels from the sample image`);
+      }
+
+      if (route.pdfImageTool) {
+        await page.locator("[data-sample]").click();
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const fileCount = await page.locator(".file-row").count();
+        assert(fileCount === 2, `${route.path} should render two sample image rows`);
       }
 
       await page.close();
