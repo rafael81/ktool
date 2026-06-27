@@ -1,0 +1,926 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+
+const tool = getTool("image-cropper");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>{tool.description} 사진의 불필요한 여백이나 주변 배경을 잘라 제출할 영역만 남깁니다.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="crop-workspace" data-image-cropper>
+      <form class="panel crop-panel" aria-label="이미지 자르기 입력">
+        <div class="panel-title">
+          <h2>이미지 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>이미지 파일</span>
+          <span class="file-control">
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" />
+            <span data-file-label>JPG/PNG/WebP 한 장 선택</span>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>자르기 비율</span>
+          <select data-aspect-preset>
+            <option value="1:1">정사각형</option>
+            <option value="free">자유 비율</option>
+            <option value="3:4">3:4 세로</option>
+            <option value="4:3">4:3 가로</option>
+            <option value="16:9">16:9 가로</option>
+          </select>
+        </label>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>X 좌표</span>
+            <input data-crop-x inputmode="numeric" value="0" />
+          </label>
+          <label class="field">
+            <span>Y 좌표</span>
+            <input data-crop-y inputmode="numeric" value="0" />
+          </label>
+          <label class="field">
+            <span>가로 px</span>
+            <input data-crop-width inputmode="numeric" value="0" />
+          </label>
+          <label class="field">
+            <span>세로 px</span>
+            <input data-crop-height inputmode="numeric" value="0" />
+          </label>
+        </div>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>출력 형식</span>
+            <select data-output-format>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </label>
+          <label class="field range-field">
+            <span>품질 <strong data-quality-label>90</strong></span>
+            <input data-quality type="range" min="50" max="95" step="1" value="90" />
+          </label>
+        </div>
+
+        <p class="note-box">
+          한 번에 한 장, 파일당 15MB까지 처리합니다. 미리보기에서 자를 영역을 끌어 옮기거나 좌표를 직접 입력할 수 있습니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-crop disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 3v12a3 3 0 0 0 3 3h12"/><path d="M3 6h12a3 3 0 0 1 3 3v12"/></svg>
+            <span data-crop-label>자르기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel crop-preview-panel" aria-label="이미지 자르기 결과">
+        <div class="panel-title">
+          <h2>자르기 미리보기</h2>
+          <span class="format-badge" data-format-badge>JPG</span>
+        </div>
+
+        <div class="crop-summary">
+          <span>상태</span>
+          <strong data-output-status>이미지를 선택하면 영역을 자를 수 있습니다.</strong>
+          <p data-output-meta>잘라낸 파일은 아직 준비되지 않았습니다.</p>
+        </div>
+
+        <div class="crop-canvas-frame">
+          <canvas data-preview-canvas aria-label="자르기 영역 미리보기"></canvas>
+          <p class="empty-state" data-empty-state>선택된 이미지가 없습니다.</p>
+        </div>
+
+        <div class="crop-result" data-crop-result aria-live="polite">
+          <p class="empty-state">자르기 결과가 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>처리 원칙</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>이미지는 브라우저 캔버스에서만 처리합니다.</span></li>
+          <li><span class="status-dot"></span><span>파일명과 원본 이미지는 분석 이벤트로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>JPG 출력은 투명 영역을 흰 배경으로 저장합니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>자를 JPG, PNG, WebP 이미지를 한 장 선택합니다.</li>
+        <li>정사각형, 3:4, 4:3, 16:9 또는 자유 비율을 고릅니다.</li>
+        <li>미리보기에서 영역을 끌어 옮기거나 좌표를 입력한 뒤 자르기를 누릅니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-image-cropper]");
+      if (!root) return;
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) return;
+
+      const maxFiles = 1;
+      const maxFileSize = 15 * 1024 * 1024;
+      const maxTotalSize = 15 * 1024 * 1024;
+      const minCropSize = 16;
+      const input = root.querySelector("[data-image-input]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const aspectPreset = root.querySelector("[data-aspect-preset]");
+      const cropXInput = root.querySelector("[data-crop-x]");
+      const cropYInput = root.querySelector("[data-crop-y]");
+      const cropWidthInput = root.querySelector("[data-crop-width]");
+      const cropHeightInput = root.querySelector("[data-crop-height]");
+      const outputFormat = root.querySelector("[data-output-format]");
+      const qualityInput = root.querySelector("[data-quality]");
+      const qualityLabel = root.querySelector("[data-quality-label]");
+      const formatBadge = root.querySelector("[data-format-badge]");
+      const cropButton = root.querySelector("[data-crop]");
+      const cropLabel = root.querySelector("[data-crop-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const canvas = root.querySelector("[data-preview-canvas]");
+      const emptyState = root.querySelector("[data-empty-state]");
+      const cropResult = root.querySelector("[data-crop-result]");
+      const ctx = canvas.getContext("2d");
+      let item = null;
+      let image = null;
+      let crop = { x: 0, y: 0, width: 0, height: 0 };
+      let result = null;
+      let renderScale = 1;
+      let dragState = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "image-cropper",
+          tool_title: "이미지 자르기",
+          ...params
+        });
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setBusy(isBusy) {
+        cropButton.disabled = isBusy || !item;
+        cropLabel.textContent = isBusy ? "처리 중" : "자르기";
+      }
+
+      function outputExtension() {
+        return fileTools.outputExtension(outputFormat.value);
+      }
+
+      function aspectRatio() {
+        if (aspectPreset.value === "free") return null;
+        const [width, height] = aspectPreset.value.split(":").map(Number);
+        return width && height ? width / height : 1;
+      }
+
+      function numberValue(inputElement) {
+        const value = Number(String(inputElement.value || "").replaceAll(",", ""));
+        return Number.isFinite(value) ? Math.round(value) : 0;
+      }
+
+      function releaseResult() {
+        fileTools.revokeResult(result);
+        result = null;
+      }
+
+      function releaseItem() {
+        if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+        releaseResult();
+        item = null;
+        image = null;
+      }
+
+      function sourceSize() {
+        return {
+          width: image?.naturalWidth || image?.width || 0,
+          height: image?.naturalHeight || image?.height || 0
+        };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "이미지는 한 장만 선택할 수 있습니다.";
+        if (reason === "total_size_too_large" || reason === "file_too_large") {
+          return "이미지 한 장은 15MB 이하만 사용할 수 있습니다.";
+        }
+        if (reason === "crop_too_small") return "자를 영역은 16px 이상이어야 합니다.";
+        return fileTools.validationMessage(reason, "자를 이미지를 선택해 주세요.");
+      }
+
+      function validateFiles(files) {
+        return fileTools.validateImageFiles(files, { maxFiles, maxFileSize, maxTotalSize });
+      }
+
+      function cropLimitForRatio(ratio, sourceWidth, sourceHeight, preferredWidth) {
+        if (!ratio) {
+          return {
+            width: Math.min(sourceWidth, Math.max(minCropSize, preferredWidth)),
+            height: Math.min(sourceHeight, Math.max(minCropSize, crop.height || sourceHeight * 0.8))
+          };
+        }
+
+        const maxWidth = Math.min(sourceWidth, sourceHeight * ratio);
+        const width = Math.min(maxWidth, Math.max(minCropSize, preferredWidth));
+        return { width, height: width / ratio };
+      }
+
+      function clampCrop(nextCrop, keepWidth = true) {
+        const { width: sourceWidth, height: sourceHeight } = sourceSize();
+        if (!sourceWidth || !sourceHeight) return { x: 0, y: 0, width: 0, height: 0 };
+
+        const ratio = aspectRatio();
+        let width = Math.max(minCropSize, Math.round(nextCrop.width || minCropSize));
+        let height = Math.max(minCropSize, Math.round(nextCrop.height || minCropSize));
+
+        if (ratio) {
+          if (keepWidth) height = Math.round(width / ratio);
+          else width = Math.round(height * ratio);
+          const limited = cropLimitForRatio(ratio, sourceWidth, sourceHeight, width);
+          width = Math.round(limited.width);
+          height = Math.round(limited.height);
+        } else {
+          width = Math.min(sourceWidth, width);
+          height = Math.min(sourceHeight, height);
+        }
+
+        const x = Math.min(Math.max(0, Math.round(nextCrop.x || 0)), Math.max(0, sourceWidth - width));
+        const y = Math.min(Math.max(0, Math.round(nextCrop.y || 0)), Math.max(0, sourceHeight - height));
+        return { x, y, width, height };
+      }
+
+      function defaultCrop() {
+        const { width: sourceWidth, height: sourceHeight } = sourceSize();
+        const ratio = aspectRatio();
+        const maxWidth = Math.round(sourceWidth * 0.78);
+        const maxHeight = Math.round(sourceHeight * 0.78);
+        let width = maxWidth;
+        let height = maxHeight;
+
+        if (ratio) {
+          if (maxWidth / maxHeight > ratio) {
+            height = maxHeight;
+            width = Math.round(height * ratio);
+          } else {
+            width = maxWidth;
+            height = Math.round(width / ratio);
+          }
+        }
+
+        return clampCrop({
+          x: Math.round((sourceWidth - width) / 2),
+          y: Math.round((sourceHeight - height) / 2),
+          width,
+          height
+        });
+      }
+
+      function updateControls() {
+        cropXInput.value = String(crop.x);
+        cropYInput.value = String(crop.y);
+        cropWidthInput.value = String(crop.width);
+        cropHeightInput.value = String(crop.height);
+        qualityLabel.textContent = qualityInput.value;
+        formatBadge.textContent = outputExtension().toUpperCase();
+      }
+
+      function renderResult() {
+        if (!result) {
+          cropResult.innerHTML = '<p class="empty-state">자르기 결과가 없습니다.</p>';
+          return;
+        }
+
+        cropResult.innerHTML = `
+          <div class="crop-row">
+            <img src="${result.url}" alt="" />
+            <div>
+              <strong>잘라낸 이미지</strong>
+              <p>${result.width}×${result.height}px · ${fileTools.formatBytes(result.size)}</p>
+            </div>
+            <a class="btn primary" href="${result.url}" download="cropped-image.${outputExtension()}" data-download-image data-after-size="${result.size}" data-output-width="${result.width}" data-output-height="${result.height}" data-output-format="${outputFormat.value}">저장</a>
+          </div>
+        `;
+      }
+
+      function drawPreview() {
+        updateControls();
+        renderResult();
+        cropButton.disabled = !item;
+
+        if (!item || !image) {
+          canvas.classList.add("hidden");
+          emptyState.classList.remove("hidden");
+          fileLabel.textContent = "JPG/PNG/WebP 한 장 선택";
+          setMessage("이미지를 선택하면 영역을 자를 수 있습니다.", "잘라낸 파일은 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        const { width: sourceWidth, height: sourceHeight } = sourceSize();
+        const maxWidth = Math.min(760, Math.max(280, canvas.parentElement.clientWidth - 24));
+        const maxHeight = 520;
+        renderScale = Math.min(maxWidth / sourceWidth, maxHeight / sourceHeight, 1);
+        const displayWidth = Math.max(1, Math.round(sourceWidth * renderScale));
+        const displayHeight = Math.max(1, Math.round(sourceHeight * renderScale));
+
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+        canvas.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
+        ctx.drawImage(image, 0, 0, displayWidth, displayHeight);
+
+        const x = crop.x * renderScale;
+        const y = crop.y * renderScale;
+        const width = crop.width * renderScale;
+        const height = crop.height * renderScale;
+
+        ctx.save();
+        ctx.fillStyle = "rgba(20, 33, 47, 0.48)";
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+        ctx.clearRect(x, y, width, height);
+        ctx.drawImage(
+          image,
+          crop.x,
+          crop.y,
+          crop.width,
+          crop.height,
+          x,
+          y,
+          width,
+          height
+        );
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x + 1.5, y + 1.5, width - 3, height - 3);
+        ctx.strokeStyle = "#117a7a";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 6, y + 6, Math.max(0, width - 12), Math.max(0, height - 12));
+        ctx.restore();
+
+        fileLabel.textContent = "1장 선택";
+        setMessage(
+          `${crop.width}×${crop.height}px 영역 선택됨`,
+          `${fileTools.formatBytes(item.file.size)}, 자르기를 누르면 ${outputExtension().toUpperCase()} 파일을 만듭니다.`
+        );
+      }
+
+      function setCrop(nextCrop, keepWidth = true) {
+        releaseResult();
+        crop = clampCrop(nextCrop, keepWidth);
+        drawPreview();
+      }
+
+      async function setFile(file) {
+        releaseItem();
+        item = {
+          file,
+          previewUrl: URL.createObjectURL(file)
+        };
+        image = await fileTools.imageFromFile(file);
+        crop = defaultCrop();
+        drawPreview();
+      }
+
+      function cropValidation() {
+        if (!item || !image) return { ok: false, reason: "empty" };
+        if (crop.width < minCropSize || crop.height < minCropSize) return { ok: false, reason: "crop_too_small" };
+        return { ok: true };
+      }
+
+      async function cropImage() {
+        const validation = cropValidation();
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "입력값을 다시 확인한 뒤 시도해 주세요.");
+          track("image_crop_validation_error", {
+            reason: validation.reason,
+            ...(item ? fileTools.safeFileAnalyticsPayload([item.file]) : {})
+          });
+          return;
+        }
+
+        setBusy(true);
+        setMessage("이미지 자르는 중", `${crop.width}×${crop.height}px 영역을 저장하고 있습니다.`);
+        try {
+          const outputCanvas = document.createElement("canvas");
+          outputCanvas.width = crop.width;
+          outputCanvas.height = crop.height;
+          const outputCtx = outputCanvas.getContext("2d");
+          if (!outputCtx) throw new Error("canvas_context_unavailable");
+          if (outputFormat.value === "image/jpeg") {
+            outputCtx.fillStyle = "#ffffff";
+            outputCtx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+          }
+          outputCtx.drawImage(
+            image,
+            crop.x,
+            crop.y,
+            crop.width,
+            crop.height,
+            0,
+            0,
+            crop.width,
+            crop.height
+          );
+          const blob = await fileTools.canvasToBlob(
+            outputCanvas,
+            outputFormat.value,
+            Number(qualityInput.value) / 100
+          );
+          releaseResult();
+          result = {
+            size: blob.size,
+            url: URL.createObjectURL(blob),
+            width: crop.width,
+            height: crop.height
+          };
+          drawPreview();
+          setMessage(
+            `자르기 완료: ${crop.width}×${crop.height}px`,
+            `${fileTools.formatBytes(item.file.size)} → ${fileTools.formatBytes(result.size)}`
+          );
+          track("image_crop_crop", {
+            ...fileTools.safeFileAnalyticsPayload([item.file]),
+            output_size: result.size,
+            output_format: outputFormat.value,
+            quality: Number(qualityInput.value),
+            crop_width: crop.width,
+            crop_height: crop.height,
+            aspect_preset: aspectPreset.value
+          });
+        } catch (error) {
+          setMessage("이미지를 자르지 못했습니다.", "이미지 파일을 다시 선택하거나 영역을 조정해 주세요.");
+          track("image_crop_validation_error", {
+            reason: error?.message || "crop_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function pointFromEvent(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (event.clientX - rect.left) / renderScale,
+          y: (event.clientY - rect.top) / renderScale
+        };
+      }
+
+      function sampleFile() {
+        const width = 1800;
+        const height = 1200;
+        const sampleCanvas = document.createElement("canvas");
+        sampleCanvas.width = width;
+        sampleCanvas.height = height;
+        const sampleCtx = sampleCanvas.getContext("2d");
+        const gradient = sampleCtx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(1, "#eef6f4");
+        sampleCtx.fillStyle = gradient;
+        sampleCtx.fillRect(0, 0, width, height);
+        sampleCtx.fillStyle = "#117a7a";
+        sampleCtx.fillRect(280, 180, 780, 780);
+        sampleCtx.fillStyle = "#f3b44b";
+        sampleCtx.fillRect(1100, 220, 360, 520);
+        sampleCtx.strokeStyle = "rgba(20,33,47,0.22)";
+        sampleCtx.lineWidth = 16;
+        sampleCtx.strokeRect(90, 90, width - 180, height - 180);
+        sampleCtx.fillStyle = "#14212f";
+        sampleCtx.font = "900 92px sans-serif";
+        sampleCtx.fillText("CROP", 320, 360);
+        sampleCtx.font = "700 42px sans-serif";
+        sampleCtx.fillText("1800 x 1200", 320, 440);
+        return new Promise((resolve) => {
+          sampleCanvas.toBlob((blob) => {
+            resolve(new File([blob], "sample-crop.jpg", { type: "image/jpeg" }));
+          }, "image/jpeg", 0.94);
+        });
+      }
+
+      input.addEventListener("change", async (event) => {
+        const nextFiles = Array.from(event.target.files || []);
+        const validation = validateFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          releaseItem();
+          input.value = "";
+          drawPreview();
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("image_crop_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(nextFiles)
+          });
+          return;
+        }
+        await setFile(nextFiles[0]);
+        track("image_crop_file_select", {
+          ...fileTools.safeFileAnalyticsPayload([nextFiles[0]])
+        });
+      });
+
+      aspectPreset.addEventListener("change", () => {
+        if (!item) {
+          drawPreview();
+          return;
+        }
+        crop = defaultCrop();
+        releaseResult();
+        drawPreview();
+        track("image_crop_preset_change", { aspect_preset: aspectPreset.value });
+      });
+
+      for (const control of [cropXInput, cropYInput, cropWidthInput, cropHeightInput]) {
+        control.addEventListener("input", () => {
+          const keepWidth = control !== cropHeightInput;
+          setCrop(
+            {
+              x: numberValue(cropXInput),
+              y: numberValue(cropYInput),
+              width: numberValue(cropWidthInput),
+              height: numberValue(cropHeightInput)
+            },
+            keepWidth
+          );
+        });
+      }
+
+      for (const control of [outputFormat, qualityInput]) {
+        control.addEventListener("input", () => {
+          releaseResult();
+          drawPreview();
+        });
+        control.addEventListener("change", () => {
+          releaseResult();
+          drawPreview();
+        });
+      }
+
+      canvas.addEventListener("pointerdown", (event) => {
+        if (!item || !image) return;
+        const point = pointFromEvent(event);
+        const inside =
+          point.x >= crop.x &&
+          point.x <= crop.x + crop.width &&
+          point.y >= crop.y &&
+          point.y <= crop.y + crop.height;
+        canvas.setPointerCapture(event.pointerId);
+        dragState = {
+          pointerId: event.pointerId,
+          startX: point.x,
+          startY: point.y,
+          cropX: inside ? crop.x : point.x - crop.width / 2,
+          cropY: inside ? crop.y : point.y - crop.height / 2
+        };
+        if (!inside) setCrop({ ...crop, x: dragState.cropX, y: dragState.cropY });
+      });
+
+      canvas.addEventListener("pointermove", (event) => {
+        if (!dragState || dragState.pointerId !== event.pointerId) return;
+        const point = pointFromEvent(event);
+        setCrop({
+          ...crop,
+          x: dragState.cropX + point.x - dragState.startX,
+          y: dragState.cropY + point.y - dragState.startY
+        });
+      });
+
+      canvas.addEventListener("pointerup", (event) => {
+        if (dragState?.pointerId === event.pointerId) dragState = null;
+      });
+
+      canvas.addEventListener("pointercancel", () => {
+        dragState = null;
+      });
+
+      sampleButton.addEventListener("click", async () => {
+        await setFile(await sampleFile());
+        input.value = "";
+        track("image_crop_sample_apply", { file_count: 1 });
+      });
+
+      resetButton.addEventListener("click", () => {
+        releaseItem();
+        input.value = "";
+        aspectPreset.value = "1:1";
+        outputFormat.value = "image/jpeg";
+        qualityInput.value = "90";
+        crop = { x: 0, y: 0, width: 0, height: 0 };
+        drawPreview();
+        track("image_crop_reset");
+      });
+
+      cropButton.addEventListener("click", cropImage);
+
+      cropResult.addEventListener("click", (event) => {
+        const link =
+          event.target instanceof Element ? event.target.closest("[data-download-image]") : null;
+        if (!link) return;
+        track("image_crop_download", {
+          output_format: link.dataset.outputFormat,
+          after_size: Number(link.dataset.afterSize || 0),
+          output_width: Number(link.dataset.outputWidth || 0),
+          output_height: Number(link.dataset.outputHeight || 0)
+        });
+      });
+
+      window.addEventListener("resize", drawPreview);
+      window.addEventListener("pagehide", releaseItem);
+
+      drawPreview();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .crop-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 390px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .crop-panel,
+  .crop-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .file-control {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 12px;
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .range-field input {
+    padding-inline: 0;
+    accent-color: var(--accent);
+  }
+
+  .range-field strong {
+    color: var(--accent-dark);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .crop-summary {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .crop-summary > span,
+  :global(.crop-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .crop-summary strong {
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .crop-summary p,
+  :global(.crop-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .crop-canvas-frame {
+    display: grid;
+    min-height: 280px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(45deg, #f2f6f8 25%, transparent 25%),
+      linear-gradient(-45deg, #f2f6f8 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f2f6f8 75%),
+      linear-gradient(-45deg, transparent 75%, #f2f6f8 75%),
+      #fff;
+    background-position:
+      0 0,
+      0 10px,
+      10px -10px,
+      -10px 0;
+    background-size: 20px 20px;
+    margin-top: 16px;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .crop-canvas-frame canvas {
+    max-width: 100%;
+    border-radius: 7px;
+    cursor: move;
+    touch-action: none;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  .crop-result {
+    margin-top: 16px;
+  }
+
+  :global(.crop-row) {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    padding: 12px;
+  }
+
+  :global(.crop-row img) {
+    width: 72px;
+    height: 72px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    object-fit: cover;
+  }
+
+  :global(.crop-row .btn) {
+    min-height: 34px;
+    padding: 8px 10px;
+  }
+
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 1100px) {
+    .crop-workspace {
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+    }
+
+    .crop-workspace .side-panel {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .crop-workspace,
+    .two-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .crop-canvas-frame {
+      min-height: 220px;
+    }
+
+    :global(.crop-row) {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    :global(.crop-row .btn) {
+      grid-column: 1 / -1;
+      width: 100%;
+      justify-self: stretch;
+      text-align: center;
+    }
+  }
+</style>

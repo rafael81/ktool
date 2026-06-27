@@ -97,6 +97,13 @@ Tool pages also include:
 | `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
 | `image_resize_reset` | Image resizer is reset | none |
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
+| `image_crop_file_select` | Image cropper image is selected | `file_count`, `total_size`, `file_types` |
+| `image_crop_sample_apply` | Image cropper sample image is applied | `file_count` |
+| `image_crop_preset_change` | Image cropper aspect preset changes | `aspect_preset` |
+| `image_crop_crop` | Image cropper creates a cropped image blob | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `crop_width`, `crop_height`, `aspect_preset`, `file_types` |
+| `image_crop_download` | Image cropper download link is clicked | `output_format`, `after_size`, `output_width`, `output_height` |
+| `image_crop_reset` | Image cropper is reset | none |
+| `image_crop_validation_error` | Image cropper blocks invalid input or crop failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |
 | `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
 | `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |

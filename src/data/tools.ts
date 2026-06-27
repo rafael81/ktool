@@ -11,6 +11,7 @@ export type ToolId =
   | "jpg-to-pdf"
   | "image-compressor"
   | "image-resizer"
+  | "image-cropper"
   | "image-converter"
   | "heic-to-jpg";
 
@@ -497,7 +498,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-resizer", "image-converter"]
+    relatedToolIds: ["image-resizer", "image-cropper"]
   },
   {
     id: "image-resizer",
@@ -535,7 +536,42 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-converter", "heic-to-jpg"]
+    relatedToolIds: ["image-cropper", "image-converter"]
+  },
+  {
+    id: "image-cropper",
+    title: "이미지 자르기",
+    shortTitle: "이미지자르기",
+    path: "/tools/image-cropper/",
+    category: "image",
+    description:
+      "JPG, PNG, WebP 이미지를 브라우저에서 원하는 영역만 잘라 제출용 이미지로 저장합니다.",
+    pageTitle: "이미지 자르기 - 사진 크롭 무료",
+    metaDescription:
+      "이미지 자르기를 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 원하는 영역만 잘라 JPG, PNG, WebP로 저장합니다.",
+    primaryQuery: "이미지 자르기",
+    secondaryQueries: ["사진 자르기", "사진 크롭", "이미지 크롭", "JPG 자르기"],
+    userMoment: "사진에서 불필요한 여백, 배경, 주변 물체를 잘라내고 제출할 영역만 남겨야 할 때",
+    featureList: [
+      "이미지 영역 자르기",
+      "정사각형/3:4/4:3/16:9 비율 선택",
+      "좌표와 크기 직접 입력",
+      "JPG/PNG/WebP 출력 선택",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["어떤 파일 형식을 자를 수 있나요?", "JPG, PNG, WebP 이미지를 선택할 수 있고, 결과는 JPG, PNG, WebP로 저장할 수 있습니다."],
+      ["정사각형으로 자를 수 있나요?", "네. 기본값은 정사각형이며, 3:4, 4:3, 16:9 또는 자유 비율로도 자를 수 있습니다."],
+      ["정확한 픽셀 좌표를 입력할 수 있나요?", "네. 자를 영역의 X, Y, 가로, 세로 값을 직접 입력해 조정할 수 있습니다."],
+      ["원본 파일이 바뀌나요?", "아니요. 원본 파일은 그대로 두고 잘라낸 새 이미지 파일을 저장합니다."],
+      ["여러 장을 한 번에 자를 수 있나요?", "자르기는 영역을 눈으로 확인해야 하는 작업이라 현재는 한 장씩 처리합니다."]
+    ],
+    trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-resizer", "image-compressor"]
   },
   {
     id: "image-converter",
