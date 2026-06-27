@@ -100,6 +100,37 @@ async function run() {
         assert(detailsCount >= 5, `${route.path} should render visible FAQ entries`);
       }
 
+      if (route.path === "/" || route.path === "/tools/") {
+        const eventName = route.path === "/" ? "home_prep_shortcut_click" : "catalog_prep_shortcut_click";
+        const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
+        assert(shortcutRootCount === 1, `${route.path} should render one prep shortcut section`);
+        const shortcutClickCount = await page
+          .locator(`[data-prep-shortcuts] a[data-analytics-event="${eventName}"]`)
+          .count();
+        assert(shortcutClickCount === 7, `${route.path} should track seven problem-situation shortcuts`);
+        const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
+        assert(
+          shortcutText?.includes("파일 형식 오류") &&
+            shortcutText.includes("용량 초과") &&
+            shortcutText.includes("크기 제한") &&
+            shortcutText.includes("여러 장 PDF"),
+          `${route.path} should expose problem-situation shortcut labels`
+        );
+        const expectedShortcutLinks = [
+          "/tools/image-converter/?preset=jpg",
+          "/tools/heic-jpg-converter/?preset=jpg",
+          "/tools/photo-size-reducer/?preset=1mb",
+          "/tools/image-resizer/?preset=long-1200",
+          "/tools/image-rotator/?preset=right",
+          "/tools/image-cropper/?preset=document",
+          "/tools/jpg-to-pdf-converter/"
+        ];
+        for (const href of expectedShortcutLinks) {
+          const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
+          assert(count === 1, `${route.path} should include one prep shortcut to ${href}`);
+        }
+      }
+
       if (route.submissionPrep) {
         const pdfPathStepCount = await page.locator("[data-pdf-path] a").count();
         assert(pdfPathStepCount >= 5, `${route.path} should render the highlighted PDF submission path`);

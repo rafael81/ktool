@@ -31,10 +31,12 @@ Tool pages also include:
 | `catalog_quick_link_click` | Home catalog quick-link click | `label`, `href` |
 | `home_workflow_quick_link_click` | Home submission-prep quick-link click | `label`, `href` |
 | `home_workflow_click` | Home workflow card click | `label`, `href` |
+| `home_prep_shortcut_click` | Home problem-situation shortcut click | `label`, `href` |
 | `category_quick_link_click` | Home category quick-link click | `label`, `href` |
 | `home_category_click` | Home category card click | `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
 | `catalog_workflow_click` | Tool catalog workflow card click | `label`, `href` |
+| `catalog_prep_shortcut_click` | Tool catalog problem-situation shortcut click | `label`, `href` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
 | `catalog_tool_click` | Tool catalog tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `category_workflow_quick_link_click` | Category page submission-prep quick-link click | `label`, `href` |
