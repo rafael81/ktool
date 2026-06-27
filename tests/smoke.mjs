@@ -107,6 +107,15 @@ async function run() {
           .locator('[data-pdf-path] a[href="/tools/jpg-to-pdf-converter/"][data-analytics-label="PDF 묶기 CTA"]')
           .count();
         assert(pdfPathCtaCount === 1, `${route.path} should include one highlighted JPG PDF CTA`);
+        const pdfDecisionText = await page.locator("[data-pdf-decision]").textContent();
+        assert(
+          pdfDecisionText?.includes("용량 초과") &&
+            pdfDecisionText.includes("사진압축 먼저") &&
+            pdfDecisionText.includes("JPG PDF 변환"),
+          `${route.path} should explain error-message-driven PDF prep decisions`
+        );
+        const pdfDecisionClickCount = await page.locator('[data-analytics-event="prep_pdf_decision_click"]').count();
+        assert(pdfDecisionClickCount >= 4, `${route.path} should track PDF decision hint clicks`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [

@@ -154,6 +154,33 @@ const pdfPathTools = [
   }
 ];
 
+const pdfDecisionHints = [
+  {
+    signal: "용량 초과",
+    recommendation: "사진압축 먼저",
+    detail: "압축 후에도 여러 장이면 마지막에 PDF로 묶습니다.",
+    tool: getTool("image-compressor")
+  },
+  {
+    signal: "여러 파일 업로드 불가",
+    recommendation: "JPG PDF 변환",
+    detail: "목록 순서와 여백을 확인하고 한 파일로 저장합니다.",
+    tool: getTool("jpg-to-pdf")
+  },
+  {
+    signal: "사진이 옆으로 돌아감",
+    recommendation: "회전 후 PDF",
+    detail: "방향을 맞춘 뒤 PDF 페이지 순서를 확인합니다.",
+    tool: getTool("image-rotator")
+  },
+  {
+    signal: "여백·배경이 많음",
+    recommendation: "자르기 후 PDF",
+    detail: "제출할 영역만 남기고 여러 장을 PDF로 묶습니다.",
+    tool: getTool("image-cropper")
+  }
+];
+
 const faqs = [
   [
     "제출용 파일은 어떤 순서로 준비하면 되나요?",
@@ -240,6 +267,24 @@ const structuredData = [
             <p>{step.detail}</p>
           </a>
         ))}
+      </div>
+      <div class="pdf-path-diagnostics" data-pdf-decision>
+        <strong>오류 문구별 추천 순서</strong>
+        <div>
+          {pdfDecisionHints.map((hint) => (
+            <a
+              href={hint.tool.path}
+              data-analytics-event="prep_pdf_decision_click"
+              data-analytics-tool-id={hint.tool.id}
+              data-analytics-tool-title={hint.tool.title}
+              data-analytics-label={hint.signal}
+            >
+              <span>{hint.signal}</span>
+              <b>{hint.recommendation}</b>
+              <p>{hint.detail}</p>
+            </a>
+          ))}
+        </div>
       </div>
       <a
         class="pdf-path-cta"
@@ -446,6 +491,57 @@ const structuredData = [
     line-height: 1.45;
   }
 
+  .pdf-path-diagnostics {
+    display: grid;
+    grid-column: 2 / 4;
+    gap: 10px;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #f2faf9;
+    padding: 13px;
+  }
+
+  .pdf-path-diagnostics > strong {
+    color: var(--accent-dark);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .pdf-path-diagnostics > div {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .pdf-path-diagnostics a {
+    display: grid;
+    gap: 6px;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #fff;
+    padding: 10px;
+  }
+
+  .pdf-path-diagnostics span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .pdf-path-diagnostics b {
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .pdf-path-diagnostics p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
   .pdf-path-cta {
     display: grid;
     min-width: 172px;
@@ -622,6 +718,10 @@ const structuredData = [
       grid-template-columns: 1fr;
     }
 
+    .pdf-path-diagnostics {
+      grid-column: auto;
+    }
+
     .pdf-path-cta {
       min-height: 48px;
       width: 100%;
@@ -643,6 +743,10 @@ const structuredData = [
     }
 
     .pdf-path-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .pdf-path-diagnostics > div {
       grid-template-columns: 1fr;
     }
 
