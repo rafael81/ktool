@@ -152,7 +152,15 @@ async function run() {
       if (route.pdfImageTool) {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".file-row").length === 2);
+        const preflightAfterSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterSample?.includes("2장 선택됨") &&
+            preflightAfterSample.includes("목록 순서대로 PDF 페이지"),
+          `${route.path} should update the preflight checklist after sample selection`
+        );
         const sizesBefore = await page.locator(".file-row p").allTextContents();
+        await page.locator(".file-row").first().scrollIntoViewIfNeeded();
+        await page.locator(".file-row").nth(1).scrollIntoViewIfNeeded();
         await page.locator(".file-row").first().dragTo(page.locator(".file-row").nth(1));
         const sizesAfterDrag = await page.locator(".file-row p").allTextContents();
         assert(
@@ -173,6 +181,11 @@ async function run() {
           const link = document.querySelector("[data-download]");
           return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
         });
+        const preflightAfterGenerate = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterGenerate?.includes("저장 준비 완료"),
+          `${route.path} should show the PDF is ready in the preflight checklist`
+        );
         const fileCount = await page.locator(".file-row").count();
         assert(fileCount === 2, `${route.path} should render two sample image rows`);
         await page.locator('[data-remove-file="0"]').click();

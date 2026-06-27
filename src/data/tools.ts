@@ -440,6 +440,7 @@ export const tools: ToolInfo[] = [
     featureList: [
       "여러 이미지 PDF 묶기",
       "이미지 순서 조정",
+      "제출 전 마지막 확인",
       "A4 세로/가로 PDF 생성",
       "여백 선택",
       "샘플 이미지로 즉시 테스트",

@@ -82,6 +82,16 @@ const structuredData = [
           최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. 선택 후 목록에서 이미지를 끌거나 버튼으로 순서를 조정할 수 있습니다.
         </p>
 
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>제출 전 마지막 확인</strong>
+          <ul>
+            <li data-preflight-item="files">이미지를 선택해 주세요.</li>
+            <li data-preflight-item="order">PDF 페이지 순서는 선택 후 확인합니다.</li>
+            <li data-preflight-item="settings">A4 크기와 여백을 제출처 기준에 맞춥니다.</li>
+            <li data-preflight-item="output">PDF 만들기 후 저장 버튼이 열립니다.</li>
+          </ul>
+        </div>
+
         <div class="button-row">
           <button class="btn" type="button" data-sample>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
@@ -142,7 +152,7 @@ const structuredData = [
       <ol>
         <li>PDF로 묶을 JPG, PNG, WebP 이미지를 선택합니다.</li>
         <li>필요하면 이미지 목록을 끌거나 위/아래 버튼으로 페이지 순서를 맞춥니다.</li>
-        <li>페이지 크기와 여백을 고른 뒤 PDF를 저장합니다.</li>
+        <li>제출 전 마지막 확인에서 순서, 용량, 페이지 설정을 보고 PDF를 저장합니다.</li>
       </ol>
     </section>
 
@@ -214,6 +224,12 @@ const structuredData = [
       const outputStatus = root.querySelector("[data-output-status]");
       const outputMeta = root.querySelector("[data-output-meta]");
       const fileList = root.querySelector("[data-file-list]");
+      const preflightItems = {
+        files: root.querySelector('[data-preflight-item="files"]'),
+        order: root.querySelector('[data-preflight-item="order"]'),
+        settings: root.querySelector('[data-preflight-item="settings"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
       const formatter = new Intl.NumberFormat("ko-KR");
       let fileItems = [];
       let pdfUrl = "";
@@ -253,6 +269,46 @@ const structuredData = [
         outputMeta.textContent = meta;
       }
 
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function updatePreflight() {
+        const files = toFiles();
+        const countText = formatter.format(files.length);
+        const sizeText = formatBytes(totalSize(files));
+
+        if (files.length === 0) {
+          setPreflightItem("files", "pending", "이미지를 선택해 주세요.");
+          setPreflightItem("order", "pending", "PDF 페이지 순서는 선택 후 확인합니다.");
+          setPreflightItem("settings", "ready", "A4 크기와 여백을 제출처 기준에 맞춥니다.");
+          setPreflightItem("output", "pending", "PDF 만들기 후 저장 버튼이 열립니다.");
+          return;
+        }
+
+        setPreflightItem("files", "ready", `${countText}장 선택됨, 총 ${sizeText}`);
+        setPreflightItem(
+          "order",
+          "ready",
+          files.length > 1
+            ? "목록 순서대로 PDF 페이지가 만들어집니다."
+            : "1장 PDF로 저장됩니다."
+        );
+        setPreflightItem(
+          "settings",
+          "ready",
+          `${pageSizeSelect.options[pageSizeSelect.selectedIndex]?.text || "A4 세로"} · ${marginSelect.options[marginSelect.selectedIndex]?.text || "보통"} 여백`
+        );
+        setPreflightItem(
+          "output",
+          pdfUrl ? "ready" : "pending",
+          pdfUrl ? `저장 준비 완료, 예상 ${formatBytes(outputBytes)}` : "PDF 만들기를 누르면 저장 버튼이 열립니다."
+        );
+      }
+
       function setBusy(isBusy) {
         generateButton.disabled = isBusy || fileItems.length === 0;
         generateLabel.textContent = isBusy ? "PDF 만드는 중" : "PDF 만들기";
@@ -265,6 +321,7 @@ const structuredData = [
         downloadLink.href = "#";
         downloadLink.classList.add("disabled");
         downloadLink.setAttribute("aria-disabled", "true");
+        updatePreflight();
       }
 
       function releaseItems(items = fileItems) {
@@ -288,6 +345,7 @@ const structuredData = [
           fileLabel.textContent = "JPG/PNG/WebP 여러 장 선택";
           fileList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
           setMessage("이미지를 선택하면 PDF를 만들 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+          updatePreflight();
           return;
         }
 
@@ -313,6 +371,7 @@ const structuredData = [
           `${formatter.format(fileItems.length)}장 선택됨`,
           `총 ${formatBytes(totalSize())}, PDF 만들기를 누르면 변환합니다.`
         );
+        updatePreflight();
       }
 
       function reorderFile(fromIndex, toIndex, method = "button") {
@@ -439,6 +498,7 @@ const structuredData = [
             `PDF 준비 완료: ${formatter.format(files.length)}장`,
             `예상 파일 크기 ${formatBytes(outputBytes)}`
           );
+          updatePreflight();
           track("jpg_pdf_generate", {
             ...fileTools.safeFileAnalyticsPayload(files),
             output_size: outputBytes,
@@ -500,8 +560,14 @@ const structuredData = [
         });
       });
 
-      pageSizeSelect.addEventListener("change", () => clearPdfUrl());
-      marginSelect.addEventListener("change", () => clearPdfUrl());
+      pageSizeSelect.addEventListener("change", () => {
+        clearPdfUrl();
+        updatePreflight();
+      });
+      marginSelect.addEventListener("change", () => {
+        clearPdfUrl();
+        updatePreflight();
+      });
 
       sampleButton.addEventListener("click", async () => {
         setFileItems([
@@ -679,6 +745,66 @@ const structuredData = [
 
   .pdf-result-card .btn {
     width: max-content;
+  }
+
+  .preflight-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    margin-top: 12px;
+    padding: 14px;
+  }
+
+  .preflight-card strong {
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .preflight-card ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .preflight-card li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .preflight-card li::before {
+    content: "";
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .preflight-card li[data-status="ready"] {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  .preflight-card li[data-status="ready"]::before {
+    content: "✓";
+    border-color: var(--accent);
+    background: var(--accent);
   }
 
   .btn.disabled,
