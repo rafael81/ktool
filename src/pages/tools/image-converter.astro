@@ -58,13 +58,14 @@ const structuredData = [
           </span>
         </label>
 
-        <label class="field">
+        <label class="field format-field">
           <span>출력 형식</span>
           <select data-output-format>
             <option value="image/jpeg">JPG</option>
             <option value="image/png">PNG</option>
             <option value="image/webp">WebP</option>
           </select>
+          <small data-format-preset-note>JPG만 받는 제출처에 맞춰 호환성을 우선합니다.</small>
         </label>
 
         <label class="field range-field">
@@ -196,6 +197,7 @@ const structuredData = [
       const input = root.querySelector("[data-image-input]");
       const fileLabel = root.querySelector("[data-file-label]");
       const outputFormat = root.querySelector("[data-output-format]");
+      const formatPresetNote = root.querySelector("[data-format-preset-note]");
       const qualityInput = root.querySelector("[data-quality]");
       const qualityLabel = root.querySelector("[data-quality-label]");
       const formatBadge = root.querySelector("[data-format-badge]");
@@ -210,6 +212,28 @@ const structuredData = [
       const nextPdfMessage = root.querySelector("[data-next-pdf-message]");
       const nextPdfLink = root.querySelector("[data-next-pdf-link]");
       const formatter = new Intl.NumberFormat("ko-KR");
+      const formatPresets = {
+        jpg: {
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "JPG만 받는 제출처에 맞춰 호환성을 우선합니다."
+        },
+        png: {
+          outputFormat: "image/png",
+          quality: "90",
+          note: "투명 배경이 필요한 이미지나 문서 편집용으로 저장합니다."
+        },
+        webp: {
+          outputFormat: "image/webp",
+          quality: "85",
+          note: "웹 업로드나 용량 절약이 중요할 때 WebP로 저장합니다."
+        }
+      };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(formatPresets, requestedPreset)
+          ? requestedPreset
+          : null;
       let fileItems = [];
       let nextItemId = 1;
 
@@ -254,6 +278,27 @@ const structuredData = [
         convertLabel.textContent = isBusy ? "처리 중" : "변환하기";
       }
 
+      function formatPresetKey() {
+        if (outputFormat.value === "image/png") return "png";
+        if (outputFormat.value === "image/webp") return "webp";
+        return "jpg";
+      }
+
+      function formatPresetPayload() {
+        return {
+          preset: formatPresetKey(),
+          output_format: outputFormat.value,
+          quality: Number(qualityInput.value)
+        };
+      }
+
+      function applyFormatPreset(presetKey) {
+        const preset = formatPresets[presetKey];
+        if (!preset) return;
+        outputFormat.value = preset.outputFormat;
+        qualityInput.value = preset.quality;
+      }
+
       function validationMessage(reason) {
         return fileTools.validationMessage(reason, "변환할 이미지를 선택해 주세요.");
       }
@@ -280,6 +325,7 @@ const structuredData = [
       function updateControlState() {
         formatBadge.textContent = outputExtension().toUpperCase();
         qualityLabel.textContent = qualityInput.value;
+        formatPresetNote.textContent = formatPresets[formatPresetKey()].note;
       }
 
       function renderFiles() {
@@ -377,8 +423,7 @@ const structuredData = [
           track("image_convert_convert", {
             ...fileTools.safeFileAnalyticsPayload(files),
             output_size: totalOutputSize(),
-            output_format: outputFormat.value,
-            quality: Number(qualityInput.value)
+            ...formatPresetPayload()
           });
         } catch (error) {
           setMessage("이미지를 변환하지 못했습니다.", "이미지 파일을 다시 선택하거나 장수를 줄여서 시도해 주세요.");
@@ -445,6 +490,10 @@ const structuredData = [
         });
       });
 
+      outputFormat.addEventListener("change", () => {
+        track("image_convert_preset_change", formatPresetPayload());
+      });
+
       for (const control of [outputFormat, qualityInput]) {
         control.addEventListener("input", () => {
           for (const item of fileItems) releaseResult(item);
@@ -491,7 +540,8 @@ const structuredData = [
           source_type: link.dataset.sourceType || "unknown",
           output_format: link.dataset.outputFormat || outputFormat.value,
           before_size: Number(link.dataset.beforeSize || 0),
-          after_size: Number(link.dataset.afterSize || 0)
+          after_size: Number(link.dataset.afterSize || 0),
+          preset: formatPresetKey()
         });
       });
 
@@ -499,7 +549,7 @@ const structuredData = [
         track("image_convert_next_pdf_click", {
           file_count: fileItems.filter((item) => item.result).length,
           output_size: totalOutputSize(),
-          output_format: outputFormat.value,
+          ...formatPresetPayload(),
           target_tool_id: "jpg-to-pdf",
           href: "/tools/jpg-to-pdf-converter/?from=format-converted-images"
         });
@@ -507,7 +557,14 @@ const structuredData = [
 
       window.addEventListener("pagehide", () => releaseItems());
 
+      if (initialPreset) applyFormatPreset(initialPreset);
       renderFiles();
+      if (initialPreset) {
+        track("image_convert_preset_arrival", {
+          source: "submission-prep",
+          ...formatPresetPayload()
+        });
+      }
     })();
   </script>
 </BaseLayout>
@@ -548,6 +605,12 @@ const structuredData = [
     inset: 0;
     cursor: pointer;
     opacity: 0;
+  }
+
+  .format-field small {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 
   .range-field {

@@ -75,8 +75,12 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `image_rotate_preset_change`
 - `image_rotate_rotate`
 - `image_rotate_download`
+- `image_convert_preset_arrival`
+- `image_convert_preset_change`
 - `image_convert_convert`
 - `image_convert_download`
+- `heic_convert_preset_arrival`
+- `heic_convert_preset_change`
 - `heic_convert_convert`
 - `heic_convert_download`
 - `workflow_nav_click`
@@ -155,11 +159,12 @@ Completed:
 32. Add `이미지 리사이즈` submission size presets and URL preset routing so users with pixel limits can land directly on 800px, 1200px, 1600px, or 800×800-fit settings.
 33. Add `이미지 자르기` submission area presets and URL preset routing so users with margin/background problems can land directly on document, profile, portrait, wide, or free crop settings.
 34. Add `이미지 회전` submission direction URL presets so users with sideways or upside-down photos can land directly on right, left, or 180-degree rotation settings.
+35. Add `WebP JPG 변환` and `HEIC JPG 변환` output format URL presets so users with unsupported image format errors land directly on JPG-compatible output settings.
 
 Next after crawl data appears:
 
 1. Request indexing/collection for `/tools/submission-file-prep/`, `/categories/pdf/`, `/tools/jpg-to-pdf-converter/`, `/categories/image/`, `/tools/photo-size-reducer/`, `/tools/image-resizer/`, `/tools/image-cropper/`, `/tools/image-rotator/`, `/tools/image-converter/`, `/tools/heic-jpg-converter/`, plus any previously unrequested business tool pages.
-2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF compressed-arrival/rotated-arrival/resized-arrival/cropped-arrival/format-converted-arrival/HEIC-converted-arrival/reorder/remove/generate/download events, image compressor preset-arrival/preset-change/compress/download/next-PDF events, image resize preset-arrival/preset-change/resize/download/next-PDF events, image crop preset-arrival/preset-change/crop/download/next-PDF events, image rotate preset-arrival/preset-change/rotate/download/next-PDF events, image convert/download/next-PDF events, HEIC convert/download/next-PDF events, and submission-prep click-through events including `prep_format_path_click` and `prep_compression_path_click` across the tool set.
+2. Compare starts, print events, calculator copy events, amount-converter copy events, 3.3% calculator copy events, stamp-background downloads, JPG PDF compressed-arrival/rotated-arrival/resized-arrival/cropped-arrival/format-converted-arrival/HEIC-converted-arrival/reorder/remove/generate/download events, image compressor preset-arrival/preset-change/compress/download/next-PDF events, image resize preset-arrival/preset-change/resize/download/next-PDF events, image crop preset-arrival/preset-change/crop/download/next-PDF events, image rotate preset-arrival/preset-change/rotate/download/next-PDF events, image convert preset-arrival/preset-change/convert/download/next-PDF events, HEIC convert preset-arrival/preset-change/convert/download/next-PDF events, and submission-prep click-through events including `prep_format_path_click` and `prep_compression_path_click` across the tool set.
 3. If `/tools/submission-file-prep/` gets page views but weak `prep_*` clicks, compare `prep_pdf_path_click`, `prep_pdf_decision_click`, situation clicks, and flow clicks before adding another tool.
 4. If 청구서, 영수증, 부가세 계산기, 금액 한글 변환기, 3.3% 계산기, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, or HEIC JPG 변환 gets impressions but weak starts, tighten page title, intro copy, and sample defaults before adding another tool.
-5. If JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, or HEIC JPG 변환 gets generation/compression/resize/crop/rotate/convert events but weak downloads, compare compressed-arrival follow-through, preflight feedback, target/size/area/direction preset feedback, post-compression next-step clicks, file list editing, output status, and download affordance before adding more file tools.
+5. If JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, or HEIC JPG 변환 gets generation/compression/resize/crop/rotate/convert events but weak downloads, compare compressed-arrival follow-through, preflight feedback, target/size/area/direction/output-format preset feedback, post-compression next-step clicks, file list editing, output status, and download affordance before adding more file tools.

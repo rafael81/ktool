@@ -58,12 +58,13 @@ const structuredData = [
           </span>
         </label>
 
-        <label class="field">
+        <label class="field format-field">
           <span>출력 형식</span>
           <select data-output-format>
             <option value="image/jpeg">JPG</option>
             <option value="image/png">PNG</option>
           </select>
+          <small data-format-preset-note>제출 호환성이 좋은 JPG로 iPhone 사진을 저장합니다.</small>
         </label>
 
         <label class="field range-field">
@@ -197,6 +198,7 @@ const structuredData = [
       const input = root.querySelector("[data-heic-input]");
       const fileLabel = root.querySelector("[data-file-label]");
       const outputFormat = root.querySelector("[data-output-format]");
+      const formatPresetNote = root.querySelector("[data-format-preset-note]");
       const qualityInput = root.querySelector("[data-quality]");
       const qualityLabel = root.querySelector("[data-quality-label]");
       const formatBadge = root.querySelector("[data-format-badge]");
@@ -211,6 +213,23 @@ const structuredData = [
       const nextPdfMessage = root.querySelector("[data-next-pdf-message]");
       const nextPdfLink = root.querySelector("[data-next-pdf-link]");
       const formatter = new Intl.NumberFormat("ko-KR");
+      const formatPresets = {
+        jpg: {
+          outputFormat: "image/jpeg",
+          quality: "90",
+          note: "제출 호환성이 좋은 JPG로 iPhone 사진을 저장합니다."
+        },
+        png: {
+          outputFormat: "image/png",
+          quality: "90",
+          note: "문서 편집이나 투명 처리 후속 작업이 필요할 때 PNG로 저장합니다."
+        }
+      };
+      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const initialPreset =
+        requestedPreset && Object.prototype.hasOwnProperty.call(formatPresets, requestedPreset)
+          ? requestedPreset
+          : null;
       let fileItems = [];
       let nextItemId = 1;
       let heicModulePromise = null;
@@ -292,6 +311,25 @@ const structuredData = [
         convertLabel.textContent = isBusy ? "처리 중" : `${outputLabel()}로 변환`;
       }
 
+      function formatPresetKey() {
+        return outputFormat.value === "image/png" ? "png" : "jpg";
+      }
+
+      function formatPresetPayload() {
+        return {
+          preset: formatPresetKey(),
+          output_format: outputFormat.value,
+          quality: Number(qualityInput.value)
+        };
+      }
+
+      function applyFormatPreset(presetKey) {
+        const preset = formatPresets[presetKey];
+        if (!preset) return;
+        outputFormat.value = preset.outputFormat;
+        qualityInput.value = preset.quality;
+      }
+
       function releaseResult(item) {
         fileTools.revokeResult(item.result);
         item.result = null;
@@ -319,6 +357,7 @@ const structuredData = [
         formatBadge.textContent = outputLabel();
         qualityLabel.textContent = qualityInput.value;
         convertLabel.textContent = `${outputLabel()}로 변환`;
+        formatPresetNote.textContent = formatPresets[formatPresetKey()].note;
       }
 
       function renderFiles() {
@@ -421,8 +460,7 @@ const structuredData = [
           track("heic_convert_convert", {
             ...safeHeicPayload(files),
             output_size: totalOutputSize(),
-            output_format: outputFormat.value,
-            quality: Number(qualityInput.value)
+            ...formatPresetPayload()
           });
         } catch (error) {
           const reason = error?.message || error?.type || "decoder_failed";
@@ -458,6 +496,10 @@ const structuredData = [
         track("heic_convert_file_select", {
           ...safeHeicPayload(toFiles())
         });
+      });
+
+      outputFormat.addEventListener("change", () => {
+        track("heic_convert_preset_change", formatPresetPayload());
       });
 
       for (const control of [outputFormat, qualityInput]) {
@@ -502,7 +544,8 @@ const structuredData = [
         track("heic_convert_download", {
           output_format: link.dataset.outputFormat || outputFormat.value,
           before_size: Number(link.dataset.beforeSize || 0),
-          after_size: Number(link.dataset.afterSize || 0)
+          after_size: Number(link.dataset.afterSize || 0),
+          preset: formatPresetKey()
         });
       });
 
@@ -510,7 +553,7 @@ const structuredData = [
         track("heic_convert_next_pdf_click", {
           file_count: fileItems.filter((item) => item.result).length,
           output_size: totalOutputSize(),
-          output_format: outputFormat.value,
+          ...formatPresetPayload(),
           target_tool_id: "jpg-to-pdf",
           href: "/tools/jpg-to-pdf-converter/?from=heic-converted-images"
         });
@@ -518,7 +561,14 @@ const structuredData = [
 
       window.addEventListener("pagehide", () => releaseItems());
 
+      if (initialPreset) applyFormatPreset(initialPreset);
       renderFiles();
+      if (initialPreset) {
+        track("heic_convert_preset_arrival", {
+          source: "submission-prep",
+          ...formatPresetPayload()
+        });
+      }
     })();
   </script>
 </BaseLayout>
@@ -559,6 +609,12 @@ const structuredData = [
     inset: 0;
     cursor: pointer;
     opacity: 0;
+  }
+
+  .format-field small {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 
   .range-field {

@@ -135,16 +135,20 @@ Tool pages also include:
 | `image_rotate_validation_error` | Image rotator blocks invalid input or rotation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |
 | `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
-| `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
-| `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size` |
-| `image_convert_next_pdf_click` | Image converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `target_tool_id`, `href` |
+| `image_convert_preset_arrival` | Image converter is opened with a URL preset | `source`, `preset`, `output_format`, `quality` |
+| `image_convert_preset_change` | Image converter output format preset changes | `preset`, `output_format`, `quality` |
+| `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `preset`, `file_types` |
+| `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size`, `preset` |
+| `image_convert_next_pdf_click` | Image converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `quality`, `preset`, `target_tool_id`, `href` |
 | `image_convert_reset` | Image converter is reset | none |
 | `image_convert_validation_error` | Image converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 | `heic_convert_file_select` | HEIC converter files are selected | `file_count`, `total_size`, `file_types` |
 | `heic_convert_sample_apply` | HEIC converter sample file is applied | `file_count` |
-| `heic_convert_convert` | HEIC converter creates JPG or PNG blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `file_types` |
-| `heic_convert_download` | HEIC converter download link is clicked | `output_format`, `before_size`, `after_size` |
-| `heic_convert_next_pdf_click` | HEIC converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `target_tool_id`, `href` |
+| `heic_convert_preset_arrival` | HEIC converter is opened with a URL preset | `source`, `preset`, `output_format`, `quality` |
+| `heic_convert_preset_change` | HEIC converter output format preset changes | `preset`, `output_format`, `quality` |
+| `heic_convert_convert` | HEIC converter creates JPG or PNG blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `preset`, `file_types` |
+| `heic_convert_download` | HEIC converter download link is clicked | `output_format`, `before_size`, `after_size`, `preset` |
+| `heic_convert_next_pdf_click` | HEIC converter next-step JPG PDF converter CTA is clicked | `file_count`, `output_size`, `output_format`, `quality`, `preset`, `target_tool_id`, `href` |
 | `heic_convert_reset` | HEIC converter is reset | none |
 | `heic_convert_validation_error` | HEIC converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 

@@ -145,6 +145,10 @@ async function run() {
         assert(cropPresetRouteCount >= 3, `${route.path} should route margin/background issues to the document crop preset`);
         const rotationPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-rotator/?preset=right"]').count();
         assert(rotationPresetRouteCount >= 4, `${route.path} should route sideways images to the right-rotation preset`);
+        const imageFormatPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/image-converter/?preset=jpg"]').count();
+        assert(imageFormatPresetRouteCount >= 4, `${route.path} should route format errors to the JPG image-converter preset`);
+        const heicPresetRouteCount = await page.locator('[data-submission-prep] a[href="/tools/heic-jpg-converter/?preset=jpg"]').count();
+        assert(heicPresetRouteCount >= 4, `${route.path} should route HEIC errors to the JPG HEIC preset`);
         const situationCount = await page.locator(".situation-link").count();
         assert(situationCount >= 6, `${route.path} should render situation-based routing links`);
         const expectedLinks = [
@@ -492,6 +496,19 @@ async function run() {
       }
 
       if (route.imageConverter) {
+        await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
+        const formatPresetState = await page.evaluate(() => ({
+          outputFormat: document.querySelector("[data-output-format]")?.value,
+          quality: document.querySelector("[data-quality]")?.value,
+          note: document.querySelector("[data-format-preset-note]")?.textContent || ""
+        }));
+        assert(
+          formatPresetState.outputFormat === "image/png" &&
+            formatPresetState.quality === "90" &&
+            formatPresetState.note.includes("투명"),
+          `${route.path} should accept a URL preset for PNG output`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".convert-row").length === 2);
         await page.locator("[data-convert]").click();
@@ -528,6 +545,21 @@ async function run() {
       }
 
       if (route.heicConverter) {
+        await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
+        const heicPresetState = await page.evaluate(() => ({
+          outputFormat: document.querySelector("[data-output-format]")?.value,
+          quality: document.querySelector("[data-quality]")?.value,
+          label: document.querySelector("[data-convert-label]")?.textContent || "",
+          note: document.querySelector("[data-format-preset-note]")?.textContent || ""
+        }));
+        assert(
+          heicPresetState.outputFormat === "image/png" &&
+            heicPresetState.quality === "90" &&
+            heicPresetState.label.includes("PNG") &&
+            heicPresetState.note.includes("PNG"),
+          `${route.path} should accept a URL preset for PNG output`
+        );
+        await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".heic-row").length === 1);
         await page.locator("[data-convert]").click();

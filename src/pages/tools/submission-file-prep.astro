@@ -38,12 +38,14 @@ const flowGroups = [
       {
         label: "HEIC 사진",
         detail: "iPhone HEIC가 열리지 않으면 먼저 JPG로 바꿉니다.",
-        tool: getTool("heic-to-jpg")
+        tool: getTool("heic-to-jpg"),
+        href: `${getTool("heic-to-jpg").path}?preset=jpg`
       },
       {
         label: "WebP 오류",
         detail: "WebP나 PNG 형식을 JPG로 바꿔 제출 호환성을 맞춥니다.",
-        tool: getTool("image-converter")
+        tool: getTool("image-converter"),
+        href: `${getTool("image-converter").path}?preset=jpg`
       },
       {
         label: "누운 사진",
@@ -118,15 +120,16 @@ const flowGroups = [
       {
         label: "이미지 형식",
         detail: "문서 편집기가 WebP를 받지 않으면 JPG나 PNG로 바꿉니다.",
-        tool: getTool("image-converter")
+        tool: getTool("image-converter"),
+        href: `${getTool("image-converter").path}?preset=jpg`
       }
     ]
   }
 ];
 
 const situations = [
-  { label: "iPhone HEIC 사진이 안 열림", tool: getTool("heic-to-jpg") },
-  { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter") },
+  { label: "iPhone HEIC 사진이 안 열림", tool: getTool("heic-to-jpg"), href: `${getTool("heic-to-jpg").path}?preset=jpg` },
+  { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter"), href: `${getTool("image-converter").path}?preset=jpg` },
   { label: "사진 방향이 잘못됨", tool: getTool("image-rotator"), href: `${getTool("image-rotator").path}?preset=right` },
   { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper"), href: `${getTool("image-cropper").path}?preset=document` },
@@ -141,7 +144,8 @@ const pdfPathTools = [
     label: "1",
     title: "iPhone HEIC",
     detail: "HEIC면 먼저 JPG로 바꿉니다.",
-    tool: getTool("heic-to-jpg")
+    tool: getTool("heic-to-jpg"),
+    href: `${getTool("heic-to-jpg").path}?preset=jpg`
   },
   {
     label: "2",
@@ -170,7 +174,8 @@ const pdfDecisionHints = [
     signal: "파일 형식 오류",
     recommendation: "변환 후 PDF",
     detail: "HEIC는 HEIC JPG, WebP는 WebP JPG 변환 후 묶습니다.",
-    tool: getTool("image-converter")
+    tool: getTool("image-converter"),
+    href: `${getTool("image-converter").path}?preset=jpg`
   },
   {
     signal: "용량 초과",
@@ -205,13 +210,15 @@ const formatPathTools = [
     label: "1",
     title: "iPhone HEIC",
     detail: "HEIC/HEIF 사진이 열리지 않으면 JPG 또는 PNG로 저장합니다.",
-    tool: getTool("heic-to-jpg")
+    tool: getTool("heic-to-jpg"),
+    href: `${getTool("heic-to-jpg").path}?preset=jpg`
   },
   {
     label: "2",
     title: "WebP·PNG·JPG",
     detail: "제출처가 받는 이미지 형식으로 다시 저장합니다.",
-    tool: getTool("image-converter")
+    tool: getTool("image-converter"),
+    href: `${getTool("image-converter").path}?preset=jpg`
   },
   {
     label: "3",
@@ -385,7 +392,7 @@ const structuredData = [
       <div class="format-path-steps">
         {formatPathTools.map((step) => (
           <a
-            href={step.tool.path}
+            href={step.href ?? step.tool.path}
             data-analytics-event="prep_format_path_click"
             data-analytics-tool-id={step.tool.id}
             data-analytics-tool-title={step.tool.title}
