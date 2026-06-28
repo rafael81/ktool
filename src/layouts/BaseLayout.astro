@@ -387,7 +387,7 @@ const analyticsPage = {
   }
 
   .page-shell {
-    width: min(1440px, 100%);
+    width: min(1180px, 100%);
     margin: 0 auto;
     padding: 34px;
   }
@@ -764,33 +764,37 @@ const analyticsPage = {
 
   .tool-intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 28px;
-    align-items: end;
-    margin-bottom: 24px;
+    grid-template-columns: 1fr;
+    width: min(920px, 100%);
+    gap: 14px;
+    align-items: center;
+    margin: 0 auto 24px;
+    text-align: center;
   }
 
   .tool-intro h1 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(34px, 5vw, 60px);
-    line-height: 1;
+    font-size: clamp(32px, 4.4vw, 52px);
+    line-height: 1.08;
     letter-spacing: 0;
+    word-break: keep-all;
   }
 
   .tool-intro p {
-    max-width: 760px;
-    margin: 14px 0 0;
+    max-width: 680px;
+    margin: 0 auto;
     color: var(--muted);
-    font-size: 18px;
-    line-height: 1.65;
+    font-size: 16px;
+    line-height: 1.55;
+    word-break: keep-all;
   }
 
   .quick-links {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .quick-links a {
@@ -1007,7 +1011,7 @@ const analyticsPage = {
 
   .content-section {
     width: min(1120px, 100%);
-    margin: 54px auto 0;
+    margin: 42px auto 0;
   }
 
   .content-section h2 {
@@ -1020,7 +1024,7 @@ const analyticsPage = {
   .content-section li {
     color: var(--muted);
     font-size: 16px;
-    line-height: 1.75;
+    line-height: 1.62;
   }
 
   .section-heading {
@@ -1610,6 +1614,38 @@ const analyticsPage = {
     margin-top: 7px;
   }
 
+  label.field > .file-control {
+    display: grid !important;
+    min-height: clamp(150px, 18vw, 220px) !important;
+    place-items: center !important;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #101828 !important;
+    text-align: center !important;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  label.field > .file-control:hover,
+  label.field > .file-control:focus-within {
+    border-color: var(--accent) !important;
+    background: #f3f7ff !important;
+    box-shadow: 0 0 0 4px rgba(21, 94, 239, 0.1);
+    transform: translateY(-1px);
+  }
+
+  label.field > .file-control span[data-file-label] {
+    color: #101828;
+    font-size: clamp(17px, 2vw, 22px);
+    font-weight: 900;
+    line-height: 1.35;
+    word-break: keep-all;
+  }
+
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -1627,8 +1663,8 @@ const analyticsPage = {
   }
 
   .home-page {
-    width: min(1180px, 100%);
-    padding: clamp(26px, 4vw, 48px) 24px 64px;
+    width: min(980px, 100%);
+    padding: clamp(24px, 4vw, 44px) 24px 64px;
   }
 
   .home-icon,
@@ -1645,7 +1681,7 @@ const analyticsPage = {
 
   .home-command {
     display: grid;
-    gap: 20px;
+    gap: 22px;
     border: 0;
     border-radius: 0;
     background: transparent;
@@ -1653,27 +1689,29 @@ const analyticsPage = {
   }
 
   .home-command-head {
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 18px;
+    justify-content: center;
+    gap: 12px;
+    border-bottom: 0;
+    padding-bottom: 0;
+    text-align: center;
   }
 
   .home-command-head h1 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(30px, 3.4vw, 44px);
+    font-size: clamp(36px, 5.2vw, 56px);
     font-weight: 800;
     letter-spacing: 0;
-    line-height: 1.08;
+    line-height: 1.04;
     word-break: keep-all;
   }
 
   .home-all-link,
   .section-mini-link {
     display: inline-flex;
+    width: max-content;
     min-height: 44px;
     align-items: center;
     justify-content: center;
@@ -1685,6 +1723,12 @@ const analyticsPage = {
     font-weight: 800;
     padding: 10px 13px;
     white-space: nowrap;
+  }
+
+  .home-command-head .home-all-link {
+    justify-self: center;
+    min-height: 38px;
+    padding: 8px 12px;
   }
 
   .home-all-link:hover,
@@ -1699,8 +1743,8 @@ const analyticsPage = {
 
   .home-command-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 290px);
-    gap: 28px;
+    grid-template-columns: 1fr;
+    gap: 18px;
     align-items: start;
   }
 
@@ -1711,7 +1755,7 @@ const analyticsPage = {
   .home-page .hero-search {
     display: grid;
     max-width: none;
-    gap: 14px;
+    gap: 16px;
     border: 0;
     background: transparent;
     padding: 0;
@@ -1721,13 +1765,14 @@ const analyticsPage = {
   .home-page .hero-search-field {
     display: grid;
     grid-template-columns: 22px minmax(0, 1fr) auto;
-    min-height: 64px;
-    gap: 13px;
+    min-height: 72px;
+    gap: 14px;
     align-items: center;
-    border: 1px solid var(--line-dark);
-    border-radius: 8px;
+    border: 2px solid var(--line-dark);
+    border-radius: 12px;
     background: var(--surface);
-    padding: 0 17px;
+    padding: 0 20px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
   }
 
   .home-page .hero-search-field:focus-within {
@@ -1820,7 +1865,7 @@ const analyticsPage = {
     max-height: none;
     overflow: hidden;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--surface);
   }
 
@@ -1946,8 +1991,8 @@ const analyticsPage = {
     display: grid;
     align-content: start;
     gap: 12px;
-    border-left: 1px solid var(--line);
-    padding-left: 28px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
   }
 
   .home-problem-panel h2 {
@@ -1961,7 +2006,8 @@ const analyticsPage = {
 
   .home-shortcut-stack {
     display: grid;
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
   }
 
   .home-problem-row {
@@ -1998,7 +2044,7 @@ const analyticsPage = {
   }
 
   .home-catalog-summary {
-    width: min(1180px, 100%);
+    width: min(980px, 100%);
     margin-top: 32px;
   }
 

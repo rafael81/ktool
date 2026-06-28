@@ -34,10 +34,7 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
     <section class="tool-intro">
       <div>
         <h1>전체 도구</h1>
-        <p>
-          K문서툴은 검색으로 들어온 사용자가 바로 문서와 파일을 완성할 수 있도록, 업무 문서와
-          브라우저 처리형 PDF·이미지 도구를 검증된 순서로 확장합니다.
-        </p>
+        <p>필요한 도구를 검색해서 바로 실행하세요.</p>
       </div>
       <div class="quick-links" aria-label="카테고리 바로가기">
         <a
@@ -73,71 +70,9 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="section-heading">
-        <h2>흐름별 패키지</h2>
-        <p>처음 온 사용자는 도구 이름보다 제출 상황을 먼저 고르는 편이 빠릅니다.</p>
-      </div>
-      <div class="workflow-list">
-        {
-          workflowPackages.map((workflowPackage) => (
-            <a
-              class="workflow-row"
-              href={workflowPackage.path}
-              data-analytics-event="package_nav_click"
-              data-analytics-package-id={workflowPackage.id}
-              data-analytics-label={workflowPackage.title}
-            >
-              <span class="workflow-row-kicker">{workflowPackage.eyebrow}</span>
-              <span class="workflow-row-copy">
-                <strong>{workflowPackage.title}</strong>
-                <span>{workflowPackage.description}</span>
-              </span>
-              <span class="workflow-row-meta">
-                {workflowPackage.secondaryQueries.slice(0, 3).map((query) => (
-                  <span>{query}</span>
-                ))}
-              </span>
-            </a>
-          ))
-        }
-      </div>
-    </section>
-
-    <section class="content-section" data-prep-shortcuts>
-      <div class="section-heading">
-        <h2>문제상황 바로가기</h2>
-        <p>제출처 오류 문구나 제한 조건을 기준으로 필요한 도구 설정을 바로 엽니다.</p>
-      </div>
-      <div class="shortcut-list">
-        {
-          prepShortcuts.map((shortcut) => (
-            <a
-              class="shortcut-row"
-              href={shortcut.path}
-              data-analytics-event="catalog_prep_shortcut_click"
-              data-analytics-shortcut-id={shortcut.id}
-              data-analytics-tool-id={shortcut.targetToolId}
-              data-analytics-tool-title={shortcut.targetToolTitle}
-              data-analytics-target-preset={shortcut.targetPreset}
-              data-analytics-label={shortcut.label}
-            >
-              <span class="shortcut-row-label">{shortcut.label}</span>
-              <span class="shortcut-row-copy">
-                <strong>{shortcut.title}</strong>
-                <span>{shortcut.description}</span>
-              </span>
-              <span class="shortcut-row-tool">{shortcut.targetToolTitle}</span>
-            </a>
-          ))
-        }
-      </div>
-    </section>
-
     <section class="content-section" data-tool-catalog>
       <div class="section-heading">
         <h2>도구 찾기</h2>
-        <p>문서 이름, 파일 형식, 오류 상황으로 바로 좁힙니다. 검색어 원문은 분석 이벤트로 보내지 않습니다.</p>
       </div>
       <div class="catalog-toolbar">
         <label class="catalog-search-field">
@@ -203,21 +138,67 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
         }
       </div>
       <p class="catalog-empty" data-tool-empty hidden>
-        조건에 맞는 도구가 없습니다. 검색어를 줄이거나 전체 카테고리를 선택하세요.
+        조건에 맞는 도구가 없습니다.
       </p>
+    </section>
+
+    <section class="content-section" data-prep-shortcuts>
+      <div class="section-heading">
+        <h2>자주 막히는 문제</h2>
+      </div>
+      <div class="shortcut-list">
+        {
+          prepShortcuts.map((shortcut) => (
+            <a
+              class="shortcut-row"
+              href={shortcut.path}
+              data-analytics-event="catalog_prep_shortcut_click"
+              data-analytics-shortcut-id={shortcut.id}
+              data-analytics-tool-id={shortcut.targetToolId}
+              data-analytics-tool-title={shortcut.targetToolTitle}
+              data-analytics-target-preset={shortcut.targetPreset}
+              data-analytics-label={shortcut.label}
+            >
+              <span class="shortcut-row-label">{shortcut.label}</span>
+              <span class="shortcut-row-copy">
+                <strong>{shortcut.title}</strong>
+                <span>{shortcut.description}</span>
+              </span>
+              <span class="shortcut-row-tool">{shortcut.targetToolTitle}</span>
+            </a>
+          ))
+        }
+      </div>
     </section>
 
     <section class="content-section">
       <div class="section-heading">
-        <h2>확장 원칙</h2>
-        <p>새 도구는 검색 수요, 경쟁 약점, 한국 업무 흐름 적합도, 구현 안전성을 함께 보고 추가합니다.</p>
+        <h2>묶어서 처리하기</h2>
       </div>
-      <ol>
-        <li>먼저 검색 의도와 사용자 순간을 정합니다.</li>
-        <li>입력값과 파일은 가능한 한 브라우저에서만 처리합니다.</li>
-        <li>FAQ, 신뢰 문구, 관련 도구 링크, 구조화 데이터를 함께 넣습니다.</li>
-        <li>색인 상태와 사용 이벤트를 확인한 뒤 다음 도구를 고릅니다.</li>
-      </ol>
+      <div class="workflow-list">
+        {
+          workflowPackages.map((workflowPackage) => (
+            <a
+              class="workflow-row"
+              href={workflowPackage.path}
+              data-analytics-event="package_nav_click"
+              data-analytics-package-id={workflowPackage.id}
+              data-analytics-label={workflowPackage.title}
+            >
+              <span class="workflow-row-kicker">{workflowPackage.eyebrow}</span>
+              <span class="workflow-row-copy">
+                <strong>{workflowPackage.title}</strong>
+                <span>{workflowPackage.description}</span>
+              </span>
+              <span class="workflow-row-meta">
+                {workflowPackage.secondaryQueries.slice(0, 3).map((query) => (
+                  <span>{query}</span>
+                ))}
+              </span>
+            </a>
+          ))
+        }
+      </div>
     </section>
   </main>
 </BaseLayout>
