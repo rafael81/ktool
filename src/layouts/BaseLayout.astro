@@ -72,10 +72,9 @@ const analyticsPage = {
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <link rel="icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700;800&display=swap"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@1.3.9/dist/web/static/pretendard.min.css"
       rel="stylesheet"
     />
     <script is:inline>
@@ -271,8 +270,9 @@ const analyticsPage = {
     --success: #067647;
     --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
     --radius: 10px;
-    font-family:
-      "IBM Plex Sans KR", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    --font-sans:
+      "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-family: var(--font-sans);
   }
 
   * {
@@ -414,7 +414,7 @@ const analyticsPage = {
     margin: 0;
     color: var(--ink);
     font-size: clamp(40px, 5.8vw, 72px);
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0;
     line-height: 1.02;
     word-break: keep-all;
@@ -471,7 +471,7 @@ const analyticsPage = {
   .hero-search-meta,
   .hero-search-row span,
   .hero-search-row em {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
   }
 
   .hero-search-field span {
@@ -581,7 +581,7 @@ const analyticsPage = {
 
   .home-tool-chip em {
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-style: normal;
     font-weight: 900;
@@ -650,7 +650,7 @@ const analyticsPage = {
 
   .hero-evidence strong {
     color: var(--ink);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 15px;
   }
 
@@ -688,7 +688,7 @@ const analyticsPage = {
   .queue-header {
     background: var(--line-dark);
     color: var(--paper);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -701,7 +701,7 @@ const analyticsPage = {
   .queue-row span:first-child,
   .queue-row span:last-child {
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 700;
   }
@@ -737,7 +737,7 @@ const analyticsPage = {
   .paper-note strong {
     display: block;
     color: var(--stamp);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 13px;
     margin-bottom: 8px;
   }
@@ -776,6 +776,7 @@ const analyticsPage = {
     margin: 0;
     color: var(--ink);
     font-size: clamp(32px, 4.4vw, 52px);
+    font-weight: 700;
     line-height: 1.08;
     letter-spacing: 0;
     word-break: keep-all;
@@ -1141,7 +1142,7 @@ const analyticsPage = {
     border: 1px solid #cfe0dc;
     border-radius: 4px;
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 900;
     line-height: 1.2;
@@ -1175,7 +1176,7 @@ const analyticsPage = {
 
   .shortcut-row-label {
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 900;
   }
@@ -1202,7 +1203,7 @@ const analyticsPage = {
     border: 1px solid #cfe0dc;
     border-radius: 4px;
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 900;
     line-height: 1.2;
@@ -1272,7 +1273,7 @@ const analyticsPage = {
   .category-row-status,
   .category-row-link {
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 700;
   }
@@ -1400,7 +1401,7 @@ const analyticsPage = {
 
   .catalog-tool-category {
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 900;
   }
@@ -1433,7 +1434,7 @@ const analyticsPage = {
     border: 1px solid #d4e2df;
     border-radius: 4px;
     color: var(--accent-dark);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 900;
     line-height: 1.2;
@@ -1702,7 +1703,7 @@ const analyticsPage = {
     margin: 0;
     color: var(--ink);
     font-size: clamp(36px, 5.2vw, 56px);
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0;
     line-height: 1.04;
     word-break: keep-all;
@@ -1804,7 +1805,7 @@ const analyticsPage = {
     border-radius: 5px;
     background: #f9fafb;
     color: #667085;
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 800;
     line-height: 1;
