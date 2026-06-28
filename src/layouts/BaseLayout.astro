@@ -1627,8 +1627,8 @@ const analyticsPage = {
   }
 
   .home-page {
-    width: min(1480px, 100%);
-    padding: 30px;
+    width: min(1180px, 100%);
+    padding: clamp(26px, 4vw, 48px) 24px 64px;
   }
 
   .home-icon,
@@ -1643,105 +1643,47 @@ const analyticsPage = {
     stroke-width: 1.85;
   }
 
-  .home-console {
+  .home-command {
     display: grid;
-    grid-template-columns: 218px minmax(0, 1fr) minmax(260px, 330px);
-    min-height: min(720px, calc(100svh - 128px));
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: var(--surface);
-    box-shadow: var(--shadow);
+    gap: 20px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
   }
 
-  .home-sidebar {
-    display: grid;
-    align-content: start;
-    gap: 6px;
-    border-right: 1px solid var(--line);
-    background: #fbfcfe;
-    padding: 18px;
-  }
-
-  .home-side-link {
-    display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) auto;
-    min-height: 42px;
-    gap: 10px;
-    align-items: center;
-    border-radius: 10px;
-    color: #4b5565;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 9px 10px;
-  }
-
-  .home-side-link:hover,
-  .home-side-link:focus-visible,
-  .home-side-link.is-active {
-    background: #eff4ff;
-    color: var(--accent-dark);
-    outline: none;
-  }
-
-  .home-side-link span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .home-side-link em {
-    color: #98a2b3;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 800;
-  }
-
-  .home-workbench {
-    display: grid;
-    align-content: start;
-    gap: 24px;
-    padding: clamp(26px, 4vw, 54px);
-  }
-
-  .home-main-head {
+  .home-command-head {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
     gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
   }
 
-  .home-main-head h1 {
+  .home-command-head h1 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(48px, 6vw, 82px);
+    font-size: clamp(30px, 3.4vw, 44px);
     font-weight: 800;
     letter-spacing: 0;
-    line-height: 0.98;
+    line-height: 1.08;
     word-break: keep-all;
-  }
-
-  .home-main-head p {
-    margin: 14px 0 0;
-    color: var(--muted);
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 1.45;
   }
 
   .home-all-link,
   .section-mini-link {
     display: inline-flex;
-    min-height: 40px;
+    min-height: 44px;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 6px;
     background: var(--surface);
-    color: #344054;
+    color: var(--ink);
     font-size: 13px;
     font-weight: 800;
-    padding: 9px 12px;
+    padding: 10px 13px;
     white-space: nowrap;
   }
 
@@ -1749,10 +1691,21 @@ const analyticsPage = {
   .home-all-link:focus-visible,
   .section-mini-link:hover,
   .section-mini-link:focus-visible {
-    border-color: #b2c2e8;
-    background: #eff4ff;
-    color: var(--accent-dark);
+    border-color: var(--line-dark);
+    background: var(--line-dark);
+    color: #fff;
     outline: none;
+  }
+
+  .home-command-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 290px);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .home-tool-finder {
+    min-width: 0;
   }
 
   .home-page .hero-search {
@@ -1768,19 +1721,18 @@ const analyticsPage = {
   .home-page .hero-search-field {
     display: grid;
     grid-template-columns: 22px minmax(0, 1fr) auto;
-    min-height: 74px;
-    gap: 14px;
+    min-height: 64px;
+    gap: 13px;
     align-items: center;
-    border: 1px solid #98a2b3;
-    border-radius: 14px;
+    border: 1px solid var(--line-dark);
+    border-radius: 8px;
     background: var(--surface);
-    padding: 0 18px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    padding: 0 17px;
   }
 
   .home-page .hero-search-field:focus-within {
     border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(21, 94, 239, 0.12);
+    box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.14);
   }
 
   .home-page .hero-search-field input {
@@ -1788,8 +1740,8 @@ const analyticsPage = {
     border: 0;
     background: transparent;
     color: var(--ink);
-    font-size: clamp(18px, 2vw, 22px);
-    font-weight: 650;
+    font-size: clamp(18px, 2vw, 21px);
+    font-weight: 700;
     padding: 0;
   }
 
@@ -1804,9 +1756,10 @@ const analyticsPage = {
 
   .home-page .hero-search-field kbd {
     border: 1px solid var(--line);
-    border-radius: 7px;
+    border-radius: 5px;
     background: #f9fafb;
     color: #667085;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 12px;
     font-weight: 800;
     line-height: 1;
@@ -1815,6 +1768,13 @@ const analyticsPage = {
 
   .home-search-icon {
     color: #667085;
+  }
+
+  .home-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
   }
 
   .home-filter-list {
@@ -1828,7 +1788,7 @@ const analyticsPage = {
     min-height: 40px;
     align-items: center;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 6px;
     background: var(--surface);
     color: #344054;
     cursor: pointer;
@@ -1840,8 +1800,8 @@ const analyticsPage = {
   .home-filter-list button:hover,
   .home-filter-list button:focus-visible,
   .home-filter-list button.is-active {
-    border-color: var(--accent);
-    background: var(--accent);
+    border-color: var(--line-dark);
+    background: var(--line-dark);
     color: #fff;
     outline: none;
   }
@@ -1852,6 +1812,7 @@ const analyticsPage = {
     font-family: inherit;
     font-size: 13px;
     font-weight: 800;
+    white-space: nowrap;
   }
 
   .home-page .hero-search-results {
@@ -1859,18 +1820,19 @@ const analyticsPage = {
     max-height: none;
     overflow: hidden;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 8px;
     background: var(--surface);
   }
 
   .home-page .hero-search-row {
     display: grid;
-    grid-template-columns: 52px minmax(0, 1fr) auto;
-    gap: 14px;
+    grid-template-columns: minmax(116px, 0.28fr) minmax(0, 1fr) auto;
+    min-height: 64px;
+    gap: 16px;
     align-items: center;
     border-bottom: 1px solid var(--line);
     border-radius: 0;
-    padding: 16px 20px;
+    padding: 10px 14px;
   }
 
   .home-page .hero-search-row:last-child {
@@ -1883,31 +1845,47 @@ const analyticsPage = {
 
   .home-page .hero-search-row:hover,
   .home-page .hero-search-row:focus-visible {
-    background: #f9fafb;
+    background: #f8fafc;
     box-shadow: none;
     outline: none;
   }
 
   .home-page .hero-search-row:hover strong,
   .home-page .hero-search-row:focus-visible strong {
-    color: var(--accent-dark);
+    color: var(--ink);
   }
 
   .home-icon-tile {
     display: grid;
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     place-items: center;
     border: 1px solid var(--line);
-    border-radius: 11px;
-    background: #fff;
+    border-radius: 6px;
+    background: #f9fafb;
     color: #344054;
     flex: 0 0 auto;
   }
 
+  .home-row-meta {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .home-row-meta > span:last-child {
+    overflow: hidden;
+    color: #667085;
+    font-size: 13px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .home-row-copy {
     display: grid;
-    gap: 4px;
     min-width: 0;
   }
 
@@ -1915,7 +1893,7 @@ const analyticsPage = {
   .home-row-copy strong {
     overflow: hidden;
     color: var(--ink);
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
     line-height: 1.25;
     text-overflow: ellipsis;
@@ -1932,27 +1910,31 @@ const analyticsPage = {
 
   .home-page .hero-search-row em {
     justify-self: end;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    color: #344054;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line-dark);
+    border-radius: 6px;
+    background: var(--line-dark);
+    color: #fff;
     font-family: inherit;
     font-size: 13px;
     font-style: normal;
     font-weight: 800;
-    padding: 8px 12px;
+    padding: 8px 13px;
     white-space: nowrap;
   }
 
   .home-page .hero-search-row:hover em,
   .home-page .hero-search-row:focus-visible em {
-    border-color: #b2c2e8;
-    background: #eff4ff;
-    color: var(--accent-dark);
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
   }
 
   .home-page .hero-search-empty {
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 8px;
     background: #fff;
     color: #667085;
     font-size: 14px;
@@ -1960,19 +1942,18 @@ const analyticsPage = {
     padding: 18px;
   }
 
-  .home-issue-panel {
+  .home-problem-panel {
     display: grid;
     align-content: start;
-    gap: 18px;
+    gap: 12px;
     border-left: 1px solid var(--line);
-    background: #fcfcfd;
-    padding: clamp(22px, 3vw, 34px);
+    padding-left: 28px;
   }
 
-  .home-issue-panel h2 {
+  .home-problem-panel h2 {
     margin: 0;
     color: var(--ink);
-    font-size: 21px;
+    font-size: 16px;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.2;
@@ -1985,28 +1966,24 @@ const analyticsPage = {
 
   .home-problem-row {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    gap: 12px;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 10px;
     align-items: center;
-    min-height: 68px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--surface);
+    min-height: 52px;
+    border-bottom: 1px solid var(--line);
     color: var(--ink);
-    padding: 12px;
+    padding: 8px 0;
   }
 
   .home-problem-row:hover,
   .home-problem-row:focus-visible {
-    border-color: #b2c2e8;
-    background: #f9fbff;
-    color: var(--accent-dark);
+    color: var(--accent);
     outline: none;
   }
 
   .home-problem-row strong {
     overflow: hidden;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 800;
     line-height: 1.25;
     text-overflow: ellipsis;
@@ -2014,7 +1991,7 @@ const analyticsPage = {
   }
 
   .home-problem-row em {
-    color: #98a2b3;
+    color: #667085;
     font-size: 13px;
     font-style: normal;
     font-weight: 800;
@@ -2030,7 +2007,7 @@ const analyticsPage = {
   }
 
   .home-catalog-summary .section-heading h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .home-catalog-summary .home-tool-groups {
@@ -2045,15 +2022,14 @@ const analyticsPage = {
   }
 
   .home-catalog-summary .home-tool-chip {
-    border-radius: 12px;
+    border-radius: 6px;
     background: var(--surface);
     padding: 12px 14px;
   }
 
   .home-catalog-summary .home-tool-chip:hover,
   .home-catalog-summary .home-tool-chip:focus-visible {
-    border-color: #b2c2e8;
-    background: #f9fbff;
+    border-color: var(--line-dark);
     outline: none;
   }
 
@@ -2072,20 +2048,20 @@ const analyticsPage = {
       padding: 24px;
     }
 
-    .home-console {
-      grid-template-columns: 196px minmax(0, 1fr);
-      min-height: 0;
+    .home-command-grid {
+      grid-template-columns: 1fr;
     }
 
-    .home-issue-panel {
-      grid-column: 1 / -1;
-      grid-template-columns: minmax(180px, auto) minmax(0, 1fr);
+    .home-problem-panel {
       border-top: 1px solid var(--line);
       border-left: 0;
+      padding-top: 22px;
+      padding-left: 0;
     }
 
     .home-shortcut-stack {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 18px;
     }
 
     .home-hero {
@@ -2169,67 +2145,38 @@ const analyticsPage = {
       padding: 16px;
     }
 
-    .home-console {
-      display: grid;
-      grid-template-columns: 1fr;
-      border-radius: 14px;
-    }
-
-    .home-sidebar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      border-right: 0;
-      border-bottom: 1px solid var(--line);
-      padding: 12px;
-      scrollbar-width: none;
-    }
-
-    .home-sidebar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .home-side-link {
-      flex: 0 0 auto;
-      grid-template-columns: 18px auto;
-      min-height: 38px;
-      padding: 8px 10px;
-      white-space: nowrap;
-    }
-
-    .home-side-link em {
-      display: none;
-    }
-
-    .home-workbench {
+    .home-command {
       gap: 18px;
-      padding: 22px 16px;
+      border-radius: 0;
+      padding: 0;
     }
 
-    .home-main-head {
+    .home-command-head {
       align-items: flex-start;
       flex-direction: column;
       gap: 12px;
+      padding-bottom: 18px;
     }
 
-    .home-main-head h1 {
-      font-size: clamp(40px, 14vw, 56px);
-    }
-
-    .home-main-head p {
-      font-size: 15px;
-      margin-top: 10px;
+    .home-command-head h1 {
+      font-size: clamp(30px, 9vw, 38px);
     }
 
     .home-page .hero-search-field {
       grid-template-columns: 20px minmax(0, 1fr);
-      min-height: 60px;
+      min-height: 58px;
       gap: 10px;
       padding: 0 14px;
     }
 
     .home-page .hero-search-field kbd {
       display: none;
+    }
+
+    .home-filter-bar {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .home-filter-list {
@@ -2248,26 +2195,35 @@ const analyticsPage = {
     }
 
     .home-page .hero-search-row {
-      grid-template-columns: 44px minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
       padding: 14px;
     }
 
+    .home-row-meta {
+      grid-column: 1 / -1;
+      grid-template-columns: 34px minmax(0, auto);
+      justify-content: start;
+    }
+
     .home-icon-tile {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+    }
+
+    .home-page .hero-search-row .home-row-copy strong,
+    .home-row-copy strong {
+      white-space: normal;
     }
 
     .home-page .hero-search-row em {
-      grid-column: 2;
-      justify-self: start;
+      align-self: center;
       padding: 6px 10px;
     }
 
-    .home-issue-panel {
-      grid-template-columns: 1fr;
-      padding: 18px 16px;
+    .home-problem-panel {
+      padding-top: 18px;
     }
 
     .home-shortcut-stack {
