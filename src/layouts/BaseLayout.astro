@@ -1993,80 +1993,259 @@ const analyticsPage = {
 
   .home-page {
     width: min(1500px, 100%);
-    padding: clamp(28px, 4vw, 52px) 24px 76px;
-  }
-
-  .home-hero-icon {
-    width: 18px;
-    height: 18px;
-    color: currentColor;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.85;
+    padding: clamp(18px, 2.5vw, 30px) 24px 76px;
   }
 
   .home-hero-lite {
     display: grid;
     justify-items: center;
-    gap: 12px;
-    padding: clamp(38px, 7vw, 74px) 0 42px;
+    gap: 11px;
+    padding: clamp(22px, 3.2vw, 36px) 0 28px;
     text-align: center;
   }
 
   .home-hero-visual {
-    position: relative;
     display: grid;
-    width: 116px;
-    height: 116px;
+    width: 180px;
+    height: 150px;
     place-items: center;
-    color: var(--ink);
+    margin-bottom: 2px;
   }
 
-  .home-hero-visual .home-hero-icon {
-    width: 104px;
-    height: 104px;
-    stroke-width: 1.35;
+  .home-hero-illust {
+    width: 180px;
+    height: auto;
+    overflow: visible;
   }
 
-  .home-hero-visual span {
-    position: absolute;
-    top: 43px;
-    left: 50%;
-    color: var(--ink);
-    font-size: 20px;
-    font-weight: 900;
-    line-height: 1;
-    transform: translateX(-50%);
+  .home-hero-illust path,
+  .home-hero-illust rect,
+  .home-hero-illust circle {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-document {
+    animation: hero-document-bob 3.4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hero-document-page {
+    fill: #fff;
+    stroke: #111827;
+    stroke-width: 4;
+  }
+
+  .hero-document-fold,
+  .hero-document-line,
+  .hero-smile,
+  .hero-arm,
+  .hero-leg {
+    fill: none;
+    stroke: #111827;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hero-document-fold {
+    stroke-width: 4;
+  }
+
+  .hero-document-line,
+  .hero-arm,
+  .hero-leg {
+    stroke-width: 3.5;
+  }
+
+  .hero-smile {
+    stroke-width: 3;
+  }
+
+  .hero-eye {
+    fill: #111827;
+  }
+
+  .hero-arm-right {
+    animation: hero-wave 2.6s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: left bottom;
+  }
+
+  .hero-float {
+    animation: hero-chip-float 4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hero-float-two {
+    animation-delay: -1.1s;
+  }
+
+  .hero-float-three {
+    animation-delay: -2.1s;
+  }
+
+  .hero-float rect {
+    fill: #fff;
+    stroke: #d0d5dd;
+    stroke-width: 2;
+  }
+
+  .hero-float path {
+    fill: none;
+    stroke: #155eef;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+  }
+
+  .hero-shield {
+    animation: hero-shield-pulse 2.8s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hero-shield path:first-child {
+    fill: #eff4ff;
+    stroke: #155eef;
+    stroke-linejoin: round;
+    stroke-width: 3;
+  }
+
+  .hero-shield path:last-child {
+    fill: none;
+    stroke: #155eef;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+  }
+
+  .hero-sparkles path {
+    animation: hero-sparkle 2.5s ease-in-out infinite;
+    fill: none;
+    stroke: #f59e0b;
+    stroke-linecap: round;
+    stroke-width: 3;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hero-sparkles path:nth-child(2) {
+    animation-delay: -0.8s;
+  }
+
+  .hero-sparkles path:nth-child(3) {
+    animation-delay: -1.4s;
+  }
+
+  @keyframes hero-document-bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-0.6deg);
+    }
+
+    50% {
+      transform: translateY(-5px) rotate(0.8deg);
+    }
+  }
+
+  @keyframes hero-chip-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  @keyframes hero-wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    50% {
+      transform: rotate(-8deg);
+    }
+  }
+
+  @keyframes hero-shield-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes hero-sparkle {
+    0%,
+    100% {
+      opacity: 0.42;
+      transform: scale(0.82);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
   }
 
   .home-hero-lite h1 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(38px, 5vw, 48px);
+    font-size: clamp(38px, 5vw, 50px);
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.08;
     word-break: keep-all;
   }
 
-  .home-hero-lite p {
-    max-width: 680px;
+  .home-hero-lead {
+    max-width: 760px;
     margin: 0;
-    color: #344054;
-    font-size: clamp(17px, 2.2vw, 20px);
-    font-weight: 500;
-    line-height: 1.55;
+    color: var(--ink);
+    font-size: clamp(21px, 2.8vw, 28px);
+    font-weight: 800;
+    line-height: 1.35;
     word-break: keep-all;
   }
 
-  .home-hero-lite small {
-    color: #98a2b3;
-    font-size: 14px;
+  .home-hero-subcopy {
+    max-width: 760px;
+    margin: 0;
+    color: #667085;
+    font-size: clamp(15px, 1.8vw, 17px);
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.65;
     word-break: keep-all;
+  }
+
+  .home-trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .home-trust-badges span {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12.5px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 
   .home-tool-finder {
@@ -2577,6 +2756,16 @@ const analyticsPage = {
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .hero-document,
+    .hero-arm-right,
+    .hero-float,
+    .hero-shield,
+    .hero-sparkles path {
+      animation: none;
+    }
+  }
+
   @media (max-width: 1100px) {
     .home-category-tools {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2620,22 +2809,33 @@ const analyticsPage = {
 
     .home-hero-lite {
       gap: 10px;
-      padding: 32px 0 34px;
+      padding: 28px 0 32px;
     }
 
     .home-hero-visual {
-      width: 86px;
-      height: 86px;
+      width: 150px;
+      height: 125px;
     }
 
-    .home-hero-visual .home-hero-icon {
-      width: 78px;
-      height: 78px;
+    .home-hero-illust {
+      width: 150px;
     }
 
-    .home-hero-visual span {
-      top: 31px;
-      font-size: 16px;
+    .home-hero-subcopy {
+      max-width: 330px;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    .home-trust-badges {
+      max-width: 330px;
+      gap: 6px;
+    }
+
+    .home-trust-badges span {
+      min-height: 30px;
+      font-size: 12px;
+      padding: 7px 10px;
     }
 
     .home-tool-finder {

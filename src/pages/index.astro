@@ -65,18 +65,58 @@ function iconForTool(toolId: ToolId) {
 
 <BaseLayout
   title="K문서툴 - 무료 업무 문서 도구"
-  description="제출용 파일 준비, 사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, HEIC JPG 변환을 로그인 없이 사용하는 한국형 무료 문서 도구입니다."
+  description="설치 없이 쓰는 무료 문서 도구입니다. 사진 변환·편집, PDF, 개인정보 보호, 계산기까지 브라우저에서 바로 사용하고 파일은 서버로 전송되지 않습니다."
   structuredData={structuredData}
 >
   <main class="page-shell home-page" data-page-type="home">
     <section class="home-hero-lite" aria-labelledby="home-title">
       <div class="home-hero-visual" aria-hidden="true">
-        <FileText class="home-hero-icon" />
-        <span>K</span>
+        <svg class="home-hero-illust" viewBox="0 0 180 150" role="img">
+          <g class="hero-float hero-float-one">
+            <rect x="18" y="44" width="38" height="28" rx="10" />
+            <path d="M30 55h14M30 62h9" />
+          </g>
+          <g class="hero-float hero-float-two">
+            <rect x="126" y="38" width="36" height="32" rx="10" />
+            <path d="M136 58l6-7 5 5 5-8" />
+          </g>
+          <g class="hero-float hero-float-three">
+            <rect x="122" y="92" width="42" height="28" rx="10" />
+            <path d="M134 102h18M134 110h10" />
+          </g>
+          <g class="hero-document">
+            <path class="hero-document-page" d="M68 18h33l24 24v76a14 14 0 0 1-14 14H68a14 14 0 0 1-14-14V32a14 14 0 0 1 14-14Z" />
+            <path class="hero-document-fold" d="M101 18v20a8 8 0 0 0 8 8h16" />
+            <path class="hero-document-line" d="M72 82h36M72 96h28" />
+            <circle class="hero-eye" cx="78" cy="62" r="3.2" />
+            <circle class="hero-eye" cx="101" cy="62" r="3.2" />
+            <path class="hero-smile" d="M82 72c5 5 14 5 19 0" />
+            <path class="hero-arm hero-arm-left" d="M55 82c-10 2-15 8-17 17" />
+            <path class="hero-arm hero-arm-right" d="M125 82c10 2 15 8 17 17" />
+            <path class="hero-leg hero-leg-left" d="M76 132v12" />
+            <path class="hero-leg hero-leg-right" d="M104 132v12" />
+          </g>
+          <g class="hero-shield">
+            <path d="M88 83l12 4v11c0 8-5 14-12 17-7-3-12-9-12-17V87l12-4Z" />
+            <path d="M83 98l4 4 8-10" />
+          </g>
+          <g class="hero-sparkles">
+            <path d="M38 28v12M32 34h12" />
+            <path d="M145 18v10M140 23h10" />
+            <path d="M156 128v10M151 133h10" />
+          </g>
+        </svg>
       </div>
       <h1 id="home-title">K문서툴</h1>
-      <p>브라우저에서 바로 사용하는 무료 문서·PDF·이미지 도구</p>
-      <small>업무 문서·PDF·이미지 등 {tools.length}가지 도구 무료 제공</small>
+      <p class="home-hero-lead">설치 없이 쓰는 무료 도구 501종</p>
+      <p class="home-hero-subcopy">
+        사진 변환·편집, PDF, 개인정보 보호, 계산기까지. 파일은 서버로 전송되지 않습니다.
+      </p>
+      <div class="home-trust-badges" aria-label="주요 장점">
+        <span>설치 없음</span>
+        <span>무료</span>
+        <span>서버 전송 없음</span>
+      </div>
     </section>
 
     <section id="tool-search" class="home-tool-finder" aria-label="도구 검색">
