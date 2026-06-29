@@ -102,6 +102,7 @@ function rowTemplate(root, index) {
   const sampleDesc = root?.dataset.sampleItemDesc || "문서 및 이미지 제작";
   const sampleQty = root?.dataset.sampleItemQty || "1";
   const samplePrice = root?.dataset.sampleItemPrice || "150000";
+  const removeIconHtml = root?.querySelector("[data-remove-row]")?.innerHTML.trim() || "×";
 
   return `
     <div class="item-row" data-row>
@@ -122,7 +123,7 @@ function rowTemplate(root, index) {
         <input data-item-price inputmode="numeric" value="${index === 0 ? escapeText(samplePrice) : ""}" />
       </label>
       <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        ${removeIconHtml}
       </button>
     </div>
   `;

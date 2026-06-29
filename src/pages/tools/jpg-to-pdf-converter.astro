@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
 
 const tool = getTool("jpg-to-pdf");
 const relatedTools = getRelatedTools(tool);
@@ -69,9 +70,7 @@ const structuredData = [
         <label class="pdf-dropzone file-control" data-upload-zone>
           <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
           <span class="pdf-upload-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H9l2 2h6.5A2.5 2.5 0 0 1 20 9.5v7A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"></path>
-            </svg>
+            <FolderOpen aria-hidden="true" />
           </span>
           <strong>사진을 여기로 끌어다 놓으세요</strong>
           <span data-file-label>여러 장 선택 가능 · 선택 순서가 PDF 순서</span>
@@ -101,15 +100,15 @@ const structuredData = [
 
         <div class="button-row pdf-action-row">
           <button class="btn" type="button" data-sample>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <Plus aria-hidden="true" />
             샘플
           </button>
           <button class="btn" type="button" data-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            <RefreshCw aria-hidden="true" />
             초기화
           </button>
           <button class="btn primary" type="button" data-generate disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>
+            <FileOutput aria-hidden="true" />
             <span data-generate-label>PDF 만들기</span>
           </button>
         </div>
@@ -132,7 +131,7 @@ const structuredData = [
             aria-disabled="true"
             data-download
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+            <Download aria-hidden="true" />
             PDF 저장
           </a>
         </div>

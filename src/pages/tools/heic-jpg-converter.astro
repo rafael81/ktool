@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
@@ -78,15 +79,15 @@ const structuredData = [
 
         <div class="button-row">
           <button class="btn" type="button" data-sample>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <IconGlyph name="plus" aria-hidden="true" />
             샘플
           </button>
           <button class="btn" type="button" data-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            <IconGlyph name="refresh" aria-hidden="true" />
             초기화
           </button>
           <button class="btn primary" type="button" data-convert disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/><path d="M18 7l-5 5M6 17l5-5"/></svg>
+            <IconGlyph name="repeat" aria-hidden="true" />
             <span data-convert-label>JPG로 변환</span>
           </button>
         </div>

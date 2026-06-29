@@ -1,0 +1,38 @@
+---
+import {
+  Copy,
+  Crop,
+  Download,
+  FileOutput,
+  Maximize2,
+  Plus,
+  Printer,
+  RefreshCw,
+  Repeat2,
+  RotateCw,
+  SlidersHorizontal,
+  X,
+  type IconProps
+} from "@lucide/astro";
+
+const iconByName = {
+  copy: Copy,
+  crop: Crop,
+  download: Download,
+  "file-output": FileOutput,
+  maximize: Maximize2,
+  plus: Plus,
+  printer: Printer,
+  refresh: RefreshCw,
+  repeat: Repeat2,
+  rotate: RotateCw,
+  sliders: SlidersHorizontal,
+  x: X
+};
+
+type IconName = keyof typeof iconByName;
+const { name, ...iconProps } = Astro.props as IconProps & { name: IconName };
+const Icon = iconByName[name] ?? FileOutput;
+---
+
+<Icon {...iconProps} />

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
@@ -67,15 +68,15 @@ const structuredData = [
 
         <div class="button-row">
           <button class="btn" type="button" data-sample>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <IconGlyph name="plus" aria-hidden="true" />
             샘플
           </button>
           <button class="btn" type="button" data-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            <IconGlyph name="refresh" aria-hidden="true" />
             초기화
           </button>
           <button class="btn primary" type="button" data-copy-result>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <IconGlyph name="copy" aria-hidden="true" />
             복사
           </button>
         </div>
@@ -173,6 +174,7 @@ const structuredData = [
       const numberResult = root.querySelector("[data-number-result]");
       const plainResult = root.querySelector("[data-plain-result]");
       const copyButton = root.querySelector("[data-copy-result]");
+      const copyButtonHtml = copyButton?.innerHTML;
       const sampleButton = root.querySelector("[data-sample]");
       const resetButton = root.querySelector("[data-reset]");
 
@@ -278,7 +280,7 @@ const structuredData = [
           await navigator.clipboard.writeText(result.documentText);
           copyButton.textContent = "복사됨";
           setTimeout(() => {
-            copyButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>복사';
+            copyButton.innerHTML = copyButtonHtml || "복사";
           }, 1200);
           track("amount_converter_copy");
         } catch {

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
@@ -104,7 +105,7 @@ const structuredData = [
           <div class="panel-title">
             <h3>품목</h3>
             <button class="btn" type="button" data-add-row>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              <IconGlyph name="plus" aria-hidden="true" />
               추가
             </button>
           </div>
@@ -127,7 +128,7 @@ const structuredData = [
                 <input data-item-price inputmode="numeric" value="800000" />
               </label>
               <button class="btn row-remove" type="button" data-remove-row aria-label="품목 삭제">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                <IconGlyph name="x" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -135,15 +136,15 @@ const structuredData = [
 
         <div class="button-row">
           <button class="btn" type="button" data-sample>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <IconGlyph name="plus" aria-hidden="true" />
             샘플
           </button>
           <button class="btn" type="button" data-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            <IconGlyph name="refresh" aria-hidden="true" />
             초기화
           </button>
           <button class="btn primary" type="button" data-print>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>
+            <IconGlyph name="printer" aria-hidden="true" />
             인쇄/PDF
           </button>
         </div>

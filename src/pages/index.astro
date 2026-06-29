@@ -3,6 +3,20 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { toolCategories, tools, type ToolId } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 import { prepShortcuts } from "@/data/prepShortcuts";
+import {
+  Archive,
+  Calculator,
+  Crop,
+  FileText,
+  Files,
+  Image,
+  RotateCw,
+  Search,
+  Smartphone,
+  Stamp,
+  TriangleAlert,
+  type IconProps
+} from "@lucide/astro";
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
@@ -17,35 +31,36 @@ const featuredTools = featuredToolIds
   .map((id) => tools.find((tool) => tool.id === id))
   .filter((tool): tool is (typeof tools)[number] => Boolean(tool));
 const primaryShortcuts = prepShortcuts;
-const toolIconById: Partial<Record<ToolId, string>> = {
-  "transaction-statement": "file-text",
-  "jpg-to-pdf": "file-stack",
-  "image-compressor": "compress",
-  "heic-to-jpg": "phone-image",
-  "image-converter": "image",
-  "image-resizer": "image",
-  "image-cropper": "crop",
-  "image-rotator": "rotate",
-  "business-nameplate": "file-text",
-  estimate: "file-text",
-  receipt: "file-text",
-  invoice: "file-text",
-  "vat-calculator": "calculator",
-  "amount-korean": "calculator",
-  "withholding-tax": "calculator",
-  "stamp-background": "stamp"
+type LucideIcon = (_props: IconProps) => unknown;
+const toolIconById: Partial<Record<ToolId, LucideIcon>> = {
+  "transaction-statement": FileText,
+  "jpg-to-pdf": Files,
+  "image-compressor": Archive,
+  "heic-to-jpg": Smartphone,
+  "image-converter": Image,
+  "image-resizer": Image,
+  "image-cropper": Crop,
+  "image-rotator": RotateCw,
+  "business-nameplate": FileText,
+  estimate: FileText,
+  receipt: FileText,
+  invoice: FileText,
+  "vat-calculator": Calculator,
+  "amount-korean": Calculator,
+  "withholding-tax": Calculator,
+  "stamp-background": Stamp
 };
-const shortcutIconById: Record<string, string> = {
-  "format-jpg": "alert",
-  "heic-jpg": "phone-image",
-  "compress-1mb": "compress",
-  "resize-long-1200": "image",
-  "rotate-right": "rotate",
-  "crop-document": "crop",
-  "bundle-jpg-pdf": "file-stack"
+const shortcutIconById: Record<string, LucideIcon> = {
+  "format-jpg": TriangleAlert,
+  "heic-jpg": Smartphone,
+  "compress-1mb": Archive,
+  "resize-long-1200": Image,
+  "rotate-right": RotateCw,
+  "crop-document": Crop,
+  "bundle-jpg-pdf": Files
 };
 function iconForTool(toolId: ToolId) {
-  return toolIconById[toolId] ?? "file-text";
+  return toolIconById[toolId] ?? FileText;
 }
 ---
 
@@ -55,84 +70,6 @@ function iconForTool(toolId: ToolId) {
   structuredData={structuredData}
 >
   <main class="page-shell home-page" data-page-type="home">
-    <svg aria-hidden="true" class="home-icons">
-      <symbol id="icon-search" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m20 20-3.2-3.2"></path>
-      </symbol>
-      <symbol id="icon-grid" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-        <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-        <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-        <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-      </symbol>
-      <symbol id="icon-file-text" viewBox="0 0 24 24">
-        <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
-        <path d="M14 2v5h5"></path>
-        <path d="M8 13h8"></path>
-        <path d="M8 17h5"></path>
-      </symbol>
-      <symbol id="icon-file-stack" viewBox="0 0 24 24">
-        <path d="M8 7V5a2 2 0 0 1 2-2h6l4 4v10a2 2 0 0 1-2 2h-2"></path>
-        <path d="M16 3v5h4"></path>
-        <path d="M4 9h7l4 4v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"></path>
-        <path d="M11 9v4h4"></path>
-      </symbol>
-      <symbol id="icon-image" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-        <circle cx="8.5" cy="9" r="1.5"></circle>
-        <path d="m21 16-5-5L5 20"></path>
-      </symbol>
-      <symbol id="icon-phone-image" viewBox="0 0 24 24">
-        <rect x="7" y="2.5" width="10" height="19" rx="2.4"></rect>
-        <path d="M10 6h4"></path>
-        <path d="M10 15.5 12 13l5 5"></path>
-        <circle cx="10.5" cy="10.5" r="1"></circle>
-      </symbol>
-      <symbol id="icon-compress" viewBox="0 0 24 24">
-        <path d="M8 3v5H3"></path>
-        <path d="M3 8 9 2"></path>
-        <path d="M16 21v-5h5"></path>
-        <path d="m21 16-6 6"></path>
-        <path d="M21 8h-5V3"></path>
-        <path d="m15 9 6-6"></path>
-        <path d="M3 16h5v5"></path>
-        <path d="m9 15-6 6"></path>
-      </symbol>
-      <symbol id="icon-alert" viewBox="0 0 24 24">
-        <path d="M12 9v4"></path>
-        <path d="M12 17h.01"></path>
-        <path d="M10.3 3.8 2.6 17.1A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.9L13.7 3.8a2 2 0 0 0-3.4 0z"></path>
-      </symbol>
-      <symbol id="icon-crop" viewBox="0 0 24 24">
-        <path d="M6 2v14a2 2 0 0 0 2 2h14"></path>
-        <path d="M18 22V8a2 2 0 0 0-2-2H2"></path>
-      </symbol>
-      <symbol id="icon-rotate" viewBox="0 0 24 24">
-        <path d="M21 12a9 9 0 1 1-3-6.7"></path>
-        <path d="M21 3v6h-6"></path>
-      </symbol>
-      <symbol id="icon-calculator" viewBox="0 0 24 24">
-        <rect x="5" y="2" width="14" height="20" rx="2"></rect>
-        <path d="M8 6h8"></path>
-        <path d="M8 10h.01"></path>
-        <path d="M12 10h.01"></path>
-        <path d="M16 10h.01"></path>
-        <path d="M8 14h.01"></path>
-        <path d="M12 14h.01"></path>
-        <path d="M16 14h.01"></path>
-        <path d="M8 18h.01"></path>
-        <path d="M12 18h.01"></path>
-        <path d="M16 18h.01"></path>
-      </symbol>
-      <symbol id="icon-stamp" viewBox="0 0 24 24">
-        <path d="M9 13h6l1 6H8z"></path>
-        <path d="M12 13V4"></path>
-        <path d="M9 7h6"></path>
-        <path d="M6 21h12"></path>
-      </symbol>
-    </svg>
-
     <section class="home-command" aria-labelledby="home-title">
       <div class="home-command-head">
         <div>
@@ -153,7 +90,7 @@ function iconForTool(toolId: ToolId) {
           <form class="hero-search home-search-panel" data-home-tool-search role="search">
             <label class="hero-search-field">
               <span class="visually-hidden">도구 검색</span>
-              <svg class="home-search-icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+              <Search class="home-search-icon" aria-hidden="true" />
               <input
                 type="search"
                 autocomplete="off"
@@ -182,45 +119,47 @@ function iconForTool(toolId: ToolId) {
 
             <div class="hero-search-results home-result-list">
               {
-                tools.map((tool) => (
-                  <a
-                    class:list={{
-                      "hero-search-row": true,
-                      "is-default": featuredToolSet.has(tool.id)
-                    }}
-                    href={tool.path}
-                    hidden={!featuredToolSet.has(tool.id)}
-                    data-home-search-item
-                    data-home-search-category={tool.category}
-                    data-default-visible={featuredToolSet.has(tool.id) ? "true" : "false"}
-                    data-analytics-event="home_search_tool_click"
-                    data-analytics-tool-id={tool.id}
-                    data-analytics-tool-title={tool.title}
-                    data-analytics-label={tool.title}
-                    data-home-search-text={[
-                      tool.title,
-                      tool.shortTitle,
-                      tool.primaryQuery,
-                      ...tool.secondaryQueries,
-                      tool.description,
-                      tool.userMoment,
-                      categoryById.get(tool.category)?.title ?? ""
-                    ].join(" ")}
-                  >
-                    <span class="home-row-meta">
-                      <span class="home-icon-tile">
-                        <svg class="home-icon" aria-hidden="true">
-                          <use href={`#icon-${iconForTool(tool.id)}`}></use>
-                        </svg>
+                tools.map((tool) => {
+                  const ToolIcon = iconForTool(tool.id);
+
+                  return (
+                    <a
+                      class:list={{
+                        "hero-search-row": true,
+                        "is-default": featuredToolSet.has(tool.id)
+                      }}
+                      href={tool.path}
+                      hidden={!featuredToolSet.has(tool.id)}
+                      data-home-search-item
+                      data-home-search-category={tool.category}
+                      data-default-visible={featuredToolSet.has(tool.id) ? "true" : "false"}
+                      data-analytics-event="home_search_tool_click"
+                      data-analytics-tool-id={tool.id}
+                      data-analytics-tool-title={tool.title}
+                      data-analytics-label={tool.title}
+                      data-home-search-text={[
+                        tool.title,
+                        tool.shortTitle,
+                        tool.primaryQuery,
+                        ...tool.secondaryQueries,
+                        tool.description,
+                        tool.userMoment,
+                        categoryById.get(tool.category)?.title ?? ""
+                      ].join(" ")}
+                    >
+                      <span class="home-row-meta">
+                        <span class="home-icon-tile">
+                          <ToolIcon class="home-icon" aria-hidden="true" />
+                        </span>
+                        <span>{categoryById.get(tool.category)?.shortTitle}</span>
                       </span>
-                      <span>{categoryById.get(tool.category)?.shortTitle}</span>
-                    </span>
-                    <span class="home-row-copy">
-                      <strong>{tool.title}</strong>
-                    </span>
-                    <em aria-hidden="true">실행</em>
-                  </a>
-                ))
+                      <span class="home-row-copy">
+                        <strong>{tool.title}</strong>
+                      </span>
+                      <em aria-hidden="true">실행</em>
+                    </a>
+                  );
+                })
               }
             </div>
             <p class="hero-search-empty" data-home-search-empty hidden>
@@ -233,26 +172,28 @@ function iconForTool(toolId: ToolId) {
           <h2>문제 바로가기</h2>
           <div class="home-shortcut-stack">
             {
-              primaryShortcuts.map((shortcut) => (
-                <a
-                  class="home-problem-row"
-                  href={shortcut.path}
-                  data-analytics-event="home_prep_shortcut_click"
-                  data-analytics-shortcut-id={shortcut.id}
-                  data-analytics-tool-id={shortcut.targetToolId}
-                  data-analytics-tool-title={shortcut.targetToolTitle}
-                  data-analytics-target-preset={shortcut.targetPreset}
-                  data-analytics-label={shortcut.label}
-                >
-                  <span class="home-icon-tile">
-                    <svg class="home-icon" aria-hidden="true">
-                      <use href={`#icon-${shortcutIconById[shortcut.id] ?? "alert"}`}></use>
-                    </svg>
-                  </span>
-                  <strong>{shortcut.label}</strong>
-                  <em aria-hidden="true">실행</em>
-                </a>
-              ))
+              primaryShortcuts.map((shortcut) => {
+                const ShortcutIcon = shortcutIconById[shortcut.id] ?? TriangleAlert;
+
+                return (
+                  <a
+                    class="home-problem-row"
+                    href={shortcut.path}
+                    data-analytics-event="home_prep_shortcut_click"
+                    data-analytics-shortcut-id={shortcut.id}
+                    data-analytics-tool-id={shortcut.targetToolId}
+                    data-analytics-tool-title={shortcut.targetToolTitle}
+                    data-analytics-target-preset={shortcut.targetPreset}
+                    data-analytics-label={shortcut.label}
+                  >
+                    <span class="home-icon-tile">
+                      <ShortcutIcon class="home-icon" aria-hidden="true" />
+                    </span>
+                    <strong>{shortcut.label}</strong>
+                    <em aria-hidden="true">실행</em>
+                  </a>
+                );
+              })
             }
           </div>
         </aside>

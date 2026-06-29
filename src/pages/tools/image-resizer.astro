@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
 import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
 
@@ -120,15 +121,15 @@ const structuredData = [
 
         <div class="button-row">
           <button class="btn" type="button" data-sample>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <IconGlyph name="plus" aria-hidden="true" />
             샘플
           </button>
           <button class="btn" type="button" data-reset>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+            <IconGlyph name="refresh" aria-hidden="true" />
             초기화
           </button>
           <button class="btn primary" type="button" data-resize disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/><path d="M8 12h8M12 8v8"/></svg>
+            <IconGlyph name="maximize" aria-hidden="true" />
             <span data-resize-label>크기 줄이기</span>
           </button>
         </div>
