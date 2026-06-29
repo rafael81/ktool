@@ -1,6 +1,7 @@
 ---
 import { toolCategories, tools, type ToolCategoryId } from "@/data/tools";
 import { workflowPackages, type WorkflowPackageId } from "@/data/workflowPackages";
+import { Search } from "@lucide/astro";
 
 type Props = {
   title: string;
@@ -191,57 +192,52 @@ const analyticsPage = {
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="K문서툴 홈">
-        <span class="brand-mark">K</span>
-        <span>문서툴</span>
-      </a>
-      <nav class="top-nav" aria-label="주요 도구">
-        <a
-          href="/tools/"
-          class:list={{ "is-active": isActivePath("/tools/") }}
-          aria-current={isActivePath("/tools/") ? "page" : undefined}
-          data-analytics-event="catalog_nav_click"
-          data-analytics-label="전체 도구"
-        >
-          전체 도구
+      <div class="site-header-inner">
+        <a class="brand" href="/" aria-label="K문서툴 홈">
+          <span class="brand-mark">K</span>
+          <span>문서툴</span>
         </a>
-        <a
-          href="/tools/submission-file-prep/"
-          class:list={{ "is-active": isActivePath("/tools/submission-file-prep/") }}
-          aria-current={isActivePath("/tools/submission-file-prep/") ? "page" : undefined}
-          data-analytics-event="workflow_nav_click"
-          data-analytics-label="제출용 파일 준비"
-        >
-          제출 준비
-        </a>
-        <a
-          href={primaryWorkflowPackage.path}
-          class:list={{ "is-active": isActivePath(primaryWorkflowPackage.path) }}
-          aria-current={isActivePath(primaryWorkflowPackage.path) ? "page" : undefined}
-          data-analytics-event="package_nav_click"
-          data-analytics-package-id={primaryWorkflowPackage.id}
-          data-analytics-label={primaryWorkflowPackage.title}
-        >
-          {primaryWorkflowPackage.shortTitle}
-        </a>
-        {
-          toolCategories.map((category) => (
-            <a
-              href={category.path}
-              class:list={{
-                "is-active": isActivePath(category.path) || isActiveCategory(category.id)
-              }}
-              aria-current={
-                isActivePath(category.path) || isActiveCategory(category.id) ? "page" : undefined
-              }
-              data-analytics-event="category_nav_click"
-              data-analytics-label={category.shortTitle}
-            >
-              {category.shortTitle}
-            </a>
-          ))
-        }
-      </nav>
+        <nav class="top-nav" aria-label="주요 도구">
+          <a
+            href="/tools/"
+            class:list={{ "is-active": isActivePath("/tools/") }}
+            aria-current={isActivePath("/tools/") ? "page" : undefined}
+            data-analytics-event="catalog_nav_click"
+            data-analytics-label="전체 도구"
+          >
+            전체 도구
+          </a>
+          {
+            toolCategories.map((category) => (
+              <a
+                href={category.path}
+                class:list={{
+                  "is-active": isActivePath(category.path) || isActiveCategory(category.id)
+                }}
+                aria-current={
+                  isActivePath(category.path) || isActiveCategory(category.id) ? "page" : undefined
+                }
+                data-analytics-event="category_nav_click"
+                data-analytics-label={category.shortTitle}
+              >
+                {category.shortTitle}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="site-actions">
+          <a
+            class="site-search-link"
+            href="/#tool-search"
+            data-analytics-event="header_search_click"
+            data-analytics-label="검색"
+          >
+            <Search class="site-search-icon" aria-hidden="true" />
+            <span>검색</span>
+            <kbd>⌘K</kbd>
+          </a>
+        </div>
+      </div>
     </header>
     <slot />
   </body>
@@ -302,16 +298,21 @@ const analyticsPage = {
     position: sticky;
     top: 0;
     z-index: 20;
-    display: flex;
-    min-width: 0;
-    min-height: 68px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
     border-bottom: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.94);
-    padding: 0 34px;
     backdrop-filter: blur(16px);
+  }
+
+  .site-header-inner {
+    display: flex;
+    width: min(1500px, 100%);
+    min-width: 0;
+    height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0 auto;
+    padding: 0 24px;
   }
 
   .brand {
@@ -345,7 +346,8 @@ const analyticsPage = {
     max-width: 100%;
     min-width: 0;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 2px;
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -357,13 +359,13 @@ const analyticsPage = {
   .top-nav a {
     display: inline-flex;
     flex: 0 0 auto;
-    min-height: 44px;
+    min-height: 36px;
     align-items: center;
     border-radius: 8px;
     color: var(--muted);
     font-size: 13px;
     font-weight: 700;
-    padding: 10px 12px;
+    padding: 8px 10px;
     white-space: nowrap;
   }
 
@@ -380,6 +382,58 @@ const analyticsPage = {
   .top-nav a[aria-current] {
     background: #eff4ff;
     color: var(--accent-dark);
+  }
+
+  .site-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .site-search-link {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  .site-search-link:hover,
+  .site-search-link:focus-visible {
+    border-color: #98a2b3;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .site-search-icon {
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  .site-search-link kbd {
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    background: #f9fafb;
+    color: #667085;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 4px 5px;
   }
 
   .page-shell {
@@ -1670,36 +1724,6 @@ const analyticsPage = {
     stroke-width: 1.85;
   }
 
-  .home-command {
-    display: grid;
-    gap: 22px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
-  }
-
-  .home-command-head {
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    border-bottom: 0;
-    padding-bottom: 0;
-    text-align: center;
-  }
-
-  .home-command-head h1 {
-    margin: 0;
-    color: var(--ink);
-    font-size: 27px;
-    font-weight: 800;
-    letter-spacing: -0.6px;
-    line-height: 1.6;
-    word-break: keep-all;
-  }
-
-  .home-all-link,
   .section-mini-link {
     display: inline-flex;
     width: max-content;
@@ -1716,27 +1740,12 @@ const analyticsPage = {
     white-space: nowrap;
   }
 
-  .home-command-head .home-all-link {
-    justify-self: center;
-    min-height: 38px;
-    padding: 8px 12px;
-  }
-
-  .home-all-link:hover,
-  .home-all-link:focus-visible,
   .section-mini-link:hover,
   .section-mini-link:focus-visible {
     border-color: var(--line-dark);
     background: var(--line-dark);
     color: #fff;
     outline: none;
-  }
-
-  .home-command-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    align-items: start;
   }
 
   .home-tool-finder {
@@ -1860,6 +1869,10 @@ const analyticsPage = {
     background: var(--surface);
   }
 
+  .home-page .hero-search-results[hidden] {
+    display: none;
+  }
+
   .home-page .hero-search-row {
     display: grid;
     grid-template-columns: minmax(116px, 0.28fr) minmax(0, 1fr) auto;
@@ -1978,128 +1991,266 @@ const analyticsPage = {
     padding: 18px;
   }
 
-  .home-problem-panel {
-    display: grid;
-    align-content: start;
-    gap: 12px;
-    border-top: 1px solid var(--line);
-    padding-top: 18px;
+  .home-page {
+    width: min(1500px, 100%);
+    padding: clamp(28px, 4vw, 52px) 24px 76px;
   }
 
-  .home-problem-panel h2 {
+  .home-hero-icon {
+    width: 18px;
+    height: 18px;
+    color: currentColor;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.85;
+  }
+
+  .home-hero-lite {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    padding: clamp(38px, 7vw, 74px) 0 42px;
+    text-align: center;
+  }
+
+  .home-hero-visual {
+    position: relative;
+    display: grid;
+    width: 116px;
+    height: 116px;
+    place-items: center;
+    color: var(--ink);
+  }
+
+  .home-hero-visual .home-hero-icon {
+    width: 104px;
+    height: 104px;
+    stroke-width: 1.35;
+  }
+
+  .home-hero-visual span {
+    position: absolute;
+    top: 43px;
+    left: 50%;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+    transform: translateX(-50%);
+  }
+
+  .home-hero-lite h1 {
     margin: 0;
     color: var(--ink);
-    font-size: 16px;
+    font-size: clamp(38px, 5vw, 48px);
     font-weight: 800;
     letter-spacing: 0;
-    line-height: 1.2;
+    line-height: 1.08;
+    word-break: keep-all;
   }
 
-  .home-shortcut-stack {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 18px;
+  .home-hero-lite p {
+    max-width: 680px;
+    margin: 0;
+    color: #344054;
+    font-size: clamp(17px, 2.2vw, 20px);
+    font-weight: 500;
+    line-height: 1.55;
+    word-break: keep-all;
   }
 
-  .home-problem-row {
-    display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) auto;
-    gap: 10px;
-    align-items: center;
-    min-height: 52px;
-    border-bottom: 1px solid var(--line);
-    color: var(--ink);
-    padding: 8px 0;
-  }
-
-  .home-problem-row:hover,
-  .home-problem-row:focus-visible {
-    color: var(--accent);
-    outline: none;
-  }
-
-  .home-problem-row strong {
-    overflow: hidden;
+  .home-hero-lite small {
+    color: #98a2b3;
     font-size: 14px;
+    font-weight: 600;
+    line-height: 1.45;
+    word-break: keep-all;
+  }
+
+  .home-tool-finder {
+    width: min(720px, 100%);
+    margin: 0 auto 58px;
+  }
+
+  .home-page .hero-search-field {
+    min-height: 48px;
+  }
+
+  .home-category-catalog {
+    display: grid;
+    gap: 26px;
+  }
+
+  .home-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .home-section-title h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(22px, 2.8vw, 27px);
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.22;
+    word-break: keep-all;
+  }
+
+  .home-category-stack {
+    display: grid;
+    gap: 42px;
+  }
+
+  .home-category-section {
+    display: grid;
+    gap: 18px;
+    padding-top: 4px;
+  }
+
+  .home-category-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .home-category-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 8px;
+    color: var(--accent);
+    background: #eff4ff;
+  }
+
+  .home-category-icon .home-icon {
+    width: 30px;
+    height: 30px;
+    stroke-width: 1.9;
+  }
+
+  .home-category-heading h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.18;
+  }
+
+  .home-category-heading p {
+    margin: 4px 0 0;
+    color: #98a2b3;
+    font-size: 13px;
     font-weight: 700;
-    line-height: 1.25;
+  }
+
+  .home-category-section[data-home-category-section="business"] .home-category-icon,
+  .home-category-section[data-home-category-section="business"] .home-tool-card-icon {
+    background: #eef4ff;
+    color: #155eef;
+  }
+
+  .home-category-section[data-home-category-section="pdf"] .home-category-icon,
+  .home-category-section[data-home-category-section="pdf"] .home-tool-card-icon {
+    background: #fff1f3;
+    color: #e11d48;
+  }
+
+  .home-category-section[data-home-category-section="image"] .home-category-icon,
+  .home-category-section[data-home-category-section="image"] .home-tool-card-icon {
+    background: #fffbeb;
+    color: #d97706;
+  }
+
+  .home-category-tools {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .home-tool-card {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    min-height: 116px;
+    align-items: start;
+    gap: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    padding: 18px;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .home-tool-card:hover,
+  .home-tool-card:focus-visible {
+    border-color: #98a2b3;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .home-tool-card-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 8px;
+  }
+
+  .home-tool-card-copy {
+    display: grid;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .home-tool-card-copy strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .home-problem-row em {
+  .home-tool-card-copy span {
+    display: -webkit-box;
+    overflow: hidden;
     color: #667085;
     font-size: 13px;
-    font-style: normal;
-    font-weight: 800;
+    font-weight: 500;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
-  .home-catalog-summary {
-    width: min(980px, 100%);
-    margin-top: 32px;
-  }
-
-  .home-catalog-summary .section-heading {
-    align-items: center;
-  }
-
-  .home-catalog-summary .section-heading h2 {
-    font-size: 18.5px;
-  }
-
-  .home-catalog-summary .home-tool-groups {
-    border-top: 1px solid var(--line);
-    gap: 16px;
-    padding-top: 16px;
-  }
-
-  .home-catalog-summary .home-tool-group h3 {
-    color: #344054;
-    font-size: 14px;
-  }
-
-  .home-catalog-summary .home-tool-chip {
-    border-radius: 6px;
-    background: var(--surface);
-    padding: 12px 14px;
-  }
-
-  .home-catalog-summary .home-tool-chip:hover,
-  .home-catalog-summary .home-tool-chip:focus-visible {
-    border-color: var(--line-dark);
-    outline: none;
-  }
-
-  .home-catalog-summary .home-tool-chip span {
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .home-catalog-summary .home-tool-chip em {
-    color: #667085;
+  .home-tool-card em {
+    align-self: start;
+    color: #98a2b3;
     font-family: inherit;
     font-size: 12px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .home-tool-card:hover em,
+  .home-tool-card:focus-visible em {
+    color: var(--accent);
   }
 
   @media (max-width: 1100px) {
     .home-page {
       padding: 24px;
-    }
-
-    .home-command-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .home-problem-panel {
-      border-top: 1px solid var(--line);
-      border-left: 0;
-      padding-top: 22px;
-      padding-left: 0;
-    }
-
-    .home-shortcut-stack {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0 18px;
     }
 
     .home-hero {
@@ -2183,23 +2334,6 @@ const analyticsPage = {
       padding: 16px;
     }
 
-    .home-command {
-      gap: 18px;
-      border-radius: 0;
-      padding: 0;
-    }
-
-    .home-command-head {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 12px;
-      padding-bottom: 18px;
-    }
-
-    .home-command-head h1 {
-      font-size: 23px;
-    }
-
     .home-page .hero-search-field {
       grid-template-columns: 20px minmax(0, 1fr);
       min-height: 58px;
@@ -2258,14 +2392,6 @@ const analyticsPage = {
     .home-page .hero-search-row em {
       align-self: center;
       padding: 6px 10px;
-    }
-
-    .home-problem-panel {
-      padding-top: 18px;
-    }
-
-    .home-shortcut-stack {
-      grid-template-columns: 1fr;
     }
 
     .home-hero {
@@ -2448,6 +2574,112 @@ const analyticsPage = {
 
     .button-row {
       margin-top: 14px;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .home-category-tools {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      position: sticky;
+      align-items: stretch;
+      flex-direction: initial;
+      gap: 0;
+      padding: 0;
+    }
+
+    .site-header-inner {
+      height: 58px;
+      padding: 0 16px;
+    }
+
+    .top-nav {
+      display: none;
+    }
+
+    .brand {
+      min-height: 40px;
+    }
+
+    .site-search-link {
+      min-height: 36px;
+      padding: 7px 9px;
+    }
+
+    .site-search-link kbd {
+      display: none;
+    }
+
+    .home-page {
+      padding: 18px 16px 48px;
+    }
+
+    .home-hero-lite {
+      gap: 10px;
+      padding: 32px 0 34px;
+    }
+
+    .home-hero-visual {
+      width: 86px;
+      height: 86px;
+    }
+
+    .home-hero-visual .home-hero-icon {
+      width: 78px;
+      height: 78px;
+    }
+
+    .home-hero-visual span {
+      top: 31px;
+      font-size: 16px;
+    }
+
+    .home-tool-finder {
+      margin-bottom: 42px;
+    }
+
+    .home-section-title {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .home-category-stack {
+      gap: 34px;
+    }
+
+    .home-category-icon {
+      width: 54px;
+      height: 54px;
+    }
+
+    .home-category-heading h3 {
+      font-size: 22px;
+    }
+
+    .home-category-tools {
+      grid-template-columns: 1fr;
+    }
+
+    .home-tool-card {
+      grid-template-columns: 40px minmax(0, 1fr);
+      min-height: 0;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .home-tool-card-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .home-tool-card em {
+      grid-column: 2;
+      justify-self: start;
     }
   }
 

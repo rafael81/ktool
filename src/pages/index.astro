@@ -1,8 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { toolCategories, tools, type ToolId } from "@/data/tools";
+import { toolCategories, tools, type ToolCategoryId, type ToolId } from "@/data/tools";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
-import { prepShortcuts } from "@/data/prepShortcuts";
 import {
   Archive,
   Calculator,
@@ -14,7 +13,6 @@ import {
   Search,
   Smartphone,
   Stamp,
-  TriangleAlert,
   type IconProps
 } from "@lucide/astro";
 
@@ -30,8 +28,18 @@ const featuredToolSet = new Set<ToolId>(featuredToolIds);
 const featuredTools = featuredToolIds
   .map((id) => tools.find((tool) => tool.id === id))
   .filter((tool): tool is (typeof tools)[number] => Boolean(tool));
-const primaryShortcuts = prepShortcuts;
+const toolsByCategory = new Map(
+  toolCategories.map((category) => [
+    category.id,
+    tools.filter((tool) => tool.category === category.id)
+  ])
+);
 type LucideIcon = (_props: IconProps) => unknown;
+const categoryIconById: Record<ToolCategoryId, LucideIcon> = {
+  business: FileText,
+  pdf: Files,
+  image: Image
+};
 const toolIconById: Partial<Record<ToolId, LucideIcon>> = {
   "transaction-statement": FileText,
   "jpg-to-pdf": Files,
@@ -50,15 +58,6 @@ const toolIconById: Partial<Record<ToolId, LucideIcon>> = {
   "withholding-tax": Calculator,
   "stamp-background": Stamp
 };
-const shortcutIconById: Record<string, LucideIcon> = {
-  "format-jpg": TriangleAlert,
-  "heic-jpg": Smartphone,
-  "compress-1mb": Archive,
-  "resize-long-1200": Image,
-  "rotate-right": RotateCw,
-  "crop-document": Crop,
-  "bundle-jpg-pdf": Files
-};
 function iconForTool(toolId: ToolId) {
   return toolIconById[toolId] ?? FileText;
 }
@@ -70,166 +69,157 @@ function iconForTool(toolId: ToolId) {
   structuredData={structuredData}
 >
   <main class="page-shell home-page" data-page-type="home">
-    <section class="home-command" aria-labelledby="home-title">
-      <div class="home-command-head">
-        <div>
-          <h1 id="home-title">도구 바로 쓰기</h1>
-        </div>
-        <a
-          class="home-all-link"
-          href="/tools/"
-          data-analytics-event="home_search_all_tools_click"
-          data-analytics-label="전체 도구"
-        >
-          전체 {tools.length}개
-        </a>
+    <section class="home-hero-lite" aria-labelledby="home-title">
+      <div class="home-hero-visual" aria-hidden="true">
+        <FileText class="home-hero-icon" />
+        <span>K</span>
       </div>
-
-      <div class="home-command-grid">
-        <section class="home-tool-finder" aria-label="도구 검색">
-          <form class="hero-search home-search-panel" data-home-tool-search role="search">
-            <label class="hero-search-field">
-              <span class="visually-hidden">도구 검색</span>
-              <Search class="home-search-icon" aria-hidden="true" />
-              <input
-                type="search"
-                autocomplete="off"
-                inputmode="search"
-                placeholder="PDF, HEIC, 거래명세서"
-                data-home-search-input
-              />
-              <kbd>Enter</kbd>
-            </label>
-
-            <div class="home-filter-bar">
-              <div class="home-filter-list" aria-label="카테고리 필터">
-                <button class="is-active" type="button" data-home-category-filter="all">전체</button>
-                {
-                  toolCategories.map((category) => (
-                    <button type="button" data-home-category-filter={category.id}>
-                      {category.shortTitle}
-                    </button>
-                  ))
-                }
-              </div>
-              <div class="hero-search-meta">
-                <span data-home-search-count>인기 도구 {featuredTools.length}개</span>
-              </div>
-            </div>
-
-            <div class="hero-search-results home-result-list">
-              {
-                tools.map((tool) => {
-                  const ToolIcon = iconForTool(tool.id);
-
-                  return (
-                    <a
-                      class:list={{
-                        "hero-search-row": true,
-                        "is-default": featuredToolSet.has(tool.id)
-                      }}
-                      href={tool.path}
-                      hidden={!featuredToolSet.has(tool.id)}
-                      data-home-search-item
-                      data-home-search-category={tool.category}
-                      data-default-visible={featuredToolSet.has(tool.id) ? "true" : "false"}
-                      data-analytics-event="home_search_tool_click"
-                      data-analytics-tool-id={tool.id}
-                      data-analytics-tool-title={tool.title}
-                      data-analytics-label={tool.title}
-                      data-home-search-text={[
-                        tool.title,
-                        tool.shortTitle,
-                        tool.primaryQuery,
-                        ...tool.secondaryQueries,
-                        tool.description,
-                        tool.userMoment,
-                        categoryById.get(tool.category)?.title ?? ""
-                      ].join(" ")}
-                    >
-                      <span class="home-row-meta">
-                        <span class="home-icon-tile">
-                          <ToolIcon class="home-icon" aria-hidden="true" />
-                        </span>
-                        <span>{categoryById.get(tool.category)?.shortTitle}</span>
-                      </span>
-                      <span class="home-row-copy">
-                        <strong>{tool.title}</strong>
-                      </span>
-                      <em aria-hidden="true">실행</em>
-                    </a>
-                  );
-                })
-              }
-            </div>
-            <p class="hero-search-empty" data-home-search-empty hidden>
-              결과 없음
-            </p>
-          </form>
-        </section>
-
-        <aside class="home-problem-panel" aria-label="문제 바로가기" data-prep-shortcuts>
-          <h2>문제 바로가기</h2>
-          <div class="home-shortcut-stack">
-            {
-              primaryShortcuts.map((shortcut) => {
-                const ShortcutIcon = shortcutIconById[shortcut.id] ?? TriangleAlert;
-
-                return (
-                  <a
-                    class="home-problem-row"
-                    href={shortcut.path}
-                    data-analytics-event="home_prep_shortcut_click"
-                    data-analytics-shortcut-id={shortcut.id}
-                    data-analytics-tool-id={shortcut.targetToolId}
-                    data-analytics-tool-title={shortcut.targetToolTitle}
-                    data-analytics-target-preset={shortcut.targetPreset}
-                    data-analytics-label={shortcut.label}
-                  >
-                    <span class="home-icon-tile">
-                      <ShortcutIcon class="home-icon" aria-hidden="true" />
-                    </span>
-                    <strong>{shortcut.label}</strong>
-                    <em aria-hidden="true">실행</em>
-                  </a>
-                );
-              })
-            }
-          </div>
-        </aside>
-      </div>
+      <h1 id="home-title">K문서툴</h1>
+      <p>브라우저에서 바로 사용하는 무료 문서·PDF·이미지 도구</p>
+      <small>업무 문서·PDF·이미지 등 {tools.length}가지 도구 무료 제공</small>
     </section>
 
-    <section class="content-section home-catalog-summary">
-      <div class="section-heading">
-        <h2>전체 도구</h2>
-        <a class="section-mini-link" href="/tools/">목록 보기</a>
+    <section id="tool-search" class="home-tool-finder" aria-label="도구 검색">
+      <form class="hero-search home-search-panel" data-home-tool-search role="search">
+        <label class="hero-search-field">
+          <span class="visually-hidden">도구 검색</span>
+          <Search class="home-search-icon" aria-hidden="true" />
+          <input
+            type="search"
+            autocomplete="off"
+            inputmode="search"
+            placeholder="PDF, HEIC, 거래명세서"
+            data-home-search-input
+          />
+          <kbd>Enter</kbd>
+        </label>
+
+        <div class="home-filter-bar">
+          <div class="home-filter-list" aria-label="카테고리 필터">
+            <button class="is-active" type="button" data-home-category-filter="all">전체</button>
+            {
+              toolCategories.map((category) => (
+                <button type="button" data-home-category-filter={category.id}>
+                  {category.shortTitle}
+                </button>
+              ))
+            }
+          </div>
+          <div class="hero-search-meta">
+            <span data-home-search-count>인기 도구 {featuredTools.length}개</span>
+          </div>
+        </div>
+
+        <div class="hero-search-results home-result-list" data-home-search-results hidden>
+          {
+            tools.map((tool) => {
+              const ToolIcon = iconForTool(tool.id);
+
+              return (
+                <a
+                  class:list={{
+                    "hero-search-row": true,
+                    "is-default": featuredToolSet.has(tool.id)
+                  }}
+                  href={tool.path}
+                  hidden={!featuredToolSet.has(tool.id)}
+                  data-home-search-item
+                  data-home-search-category={tool.category}
+                  data-default-visible={featuredToolSet.has(tool.id) ? "true" : "false"}
+                  data-analytics-event="home_search_tool_click"
+                  data-analytics-tool-id={tool.id}
+                  data-analytics-tool-title={tool.title}
+                  data-analytics-label={tool.title}
+                  data-home-search-text={[
+                    tool.title,
+                    tool.shortTitle,
+                    tool.primaryQuery,
+                    ...tool.secondaryQueries,
+                    tool.description,
+                    tool.userMoment,
+                    categoryById.get(tool.category)?.title ?? ""
+                  ].join(" ")}
+                >
+                  <span class="home-row-meta">
+                    <span class="home-icon-tile">
+                      <ToolIcon class="home-icon" aria-hidden="true" />
+                    </span>
+                    <span>{categoryById.get(tool.category)?.shortTitle}</span>
+                  </span>
+                  <span class="home-row-copy">
+                    <strong>{tool.title}</strong>
+                    <span>{tool.shortTitle}</span>
+                  </span>
+                  <em aria-hidden="true">실행</em>
+                </a>
+              );
+            })
+          }
+        </div>
+        <p class="hero-search-empty" data-home-search-empty hidden>
+          결과 없음
+        </p>
+      </form>
+    </section>
+
+    <section class="home-category-catalog" aria-labelledby="home-catalog-title">
+      <div class="home-section-title">
+        <h2 id="home-catalog-title">회원가입 없이 무제한 무료</h2>
+        <a
+          class="section-mini-link"
+          href="/tools/"
+          data-analytics-event="home_catalog_all_click"
+          data-analytics-label="전체 도구"
+        >
+          전체 도구
+        </a>
       </div>
-      <div class="home-tool-groups">
+      <div class="home-category-stack">
         {
-          toolCategories.map((category) => (
-            <section class="home-tool-group">
-              <h3>{category.shortTitle}</h3>
-              <div class="home-tool-chip-list">
-                {tools
-                  .filter((tool) => tool.category === category.id)
-                  .map((tool) => (
-                    <a
-                      class="home-tool-chip"
-                      href={tool.path}
-                      data-home-all-tool
-                      data-analytics-event="home_all_tool_click"
-                      data-analytics-tool-id={tool.id}
-                      data-analytics-tool-title={tool.title}
-                      data-analytics-label={tool.title}
-                    >
-                      <span>{tool.title}</span>
-                      <em aria-hidden="true">실행</em>
-                    </a>
-                  ))}
-              </div>
-            </section>
-          ))
+          toolCategories.map((category) => {
+            const CategoryIcon = categoryIconById[category.id];
+            const categoryTools = toolsByCategory.get(category.id) ?? [];
+
+            return (
+              <section class="home-category-section" data-home-category-section={category.id}>
+                <div class="home-category-heading">
+                  <span class="home-category-icon" aria-hidden="true">
+                    <CategoryIcon class="home-icon" />
+                  </span>
+                  <div>
+                    <h3>{category.shortTitle}</h3>
+                    <p>{categoryTools.length}개 도구</p>
+                  </div>
+                </div>
+                <div class="home-category-tools">
+                  {categoryTools.map((tool) => {
+                    const ToolIcon = iconForTool(tool.id);
+
+                    return (
+                      <a
+                        class="home-tool-card"
+                        href={tool.path}
+                        data-home-all-tool
+                        data-analytics-event="home_all_tool_click"
+                        data-analytics-tool-id={tool.id}
+                        data-analytics-tool-title={tool.title}
+                        data-analytics-label={tool.title}
+                      >
+                        <span class="home-tool-card-icon" aria-hidden="true">
+                          <ToolIcon class="home-icon" />
+                        </span>
+                        <span class="home-tool-card-copy">
+                          <strong>{tool.title}</strong>
+                          <span>{tool.description}</span>
+                        </span>
+                        <em aria-hidden="true">실행</em>
+                      </a>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })
         }
       </div>
     </section>
@@ -243,10 +233,10 @@ function iconForTool(toolId: ToolId) {
 
     const searchInput = root.querySelector("[data-home-search-input]");
     const items = Array.from(root.querySelectorAll("[data-home-search-item]"));
+    const resultsNode = root.querySelector("[data-home-search-results]");
     const filterButtons = Array.from(root.querySelectorAll("[data-home-category-filter]"));
     const countNode = root.querySelector("[data-home-search-count]");
     const emptyNode = root.querySelector("[data-home-search-empty]");
-    const defaultCount = items.filter((item) => item.dataset.defaultVisible === "true").length;
     let activeCategory = "all";
     let searchTimer = 0;
 
@@ -268,27 +258,23 @@ function iconForTool(toolId: ToolId) {
 
     function applySearch({ shouldTrack } = {}) {
       const query = normalize(searchInput?.value);
+      const defaultMode = !query && activeCategory === "all";
       let visibleCount = 0;
 
       items.forEach((item) => {
         const matchesQuery = query ? normalize(item.dataset.homeSearchText).includes(query) : true;
         const matchesCategory =
           activeCategory === "all" || item.dataset.homeSearchCategory === activeCategory;
-        const defaultVisible =
-          !query && activeCategory === "all" ? item.dataset.defaultVisible === "true" : true;
-        const visible = matchesQuery && matchesCategory && defaultVisible;
+        const visible = !defaultMode && matchesQuery && matchesCategory;
         item.hidden = !visible;
         if (visible) visibleCount += 1;
       });
 
+      if (resultsNode) resultsNode.hidden = defaultMode;
       if (countNode) {
-        if (query || activeCategory !== "all") {
-          countNode.textContent = `${visibleCount}개 결과`;
-        } else {
-          countNode.textContent = `인기 도구 ${defaultCount}개`;
-        }
+        countNode.textContent = defaultMode ? "검색어 입력" : `${visibleCount}개 결과`;
       }
-      if (emptyNode) emptyNode.hidden = visibleCount !== 0;
+      if (emptyNode) emptyNode.hidden = defaultMode || visibleCount !== 0;
       if (shouldTrack) track(visibleCount);
     }
 

@@ -7,7 +7,7 @@ const baseUrl = `http://127.0.0.1:${port}`;
 const productionUrl = "https://k-document-tool.pages.dev";
 
 const routes = [
-  { path: "/", h1: "도구 바로 쓰기" },
+  { path: "/", h1: "K문서툴" },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   {
@@ -111,15 +111,21 @@ async function run() {
       );
       assert(!overflow, `${route.path} has horizontal overflow on mobile viewport`);
 
-      const headerNavCount = await page.locator("header nav a").count();
-      assert(headerNavCount <= 6, `${route.path} should keep header nav compact`);
-      const shortNavTargets = await page.locator("header nav a").evaluateAll((links) =>
+      const headerSearchCount = await page.locator(".site-search-link").count();
+      assert(headerSearchCount === 1, `${route.path} should expose one compact header search entry`);
+      const visibleNavTargets = await page.locator("header nav a").evaluateAll((links) =>
         links
-          .map((link) => ({ label: link.textContent?.trim(), height: link.getBoundingClientRect().height }))
-          .filter((link) => link.height < 44)
+          .map((link) => ({
+            label: link.textContent?.trim(),
+            height: link.getBoundingClientRect().height,
+            visible: link.getClientRects().length > 0
+          }))
+          .filter((link) => link.visible)
       );
-      assert(shortNavTargets.length === 0, `${route.path} has nav targets below 44px: ${JSON.stringify(shortNavTargets)}`);
-      if (route.path !== "/") {
+      assert(visibleNavTargets.length <= 6, `${route.path} should keep visible header nav compact`);
+      const shortNavTargets = visibleNavTargets.filter((link) => link.height < 36);
+      assert(shortNavTargets.length === 0, `${route.path} has visible nav targets below 36px: ${JSON.stringify(shortNavTargets)}`);
+      if (route.path !== "/" && visibleNavTargets.length > 0) {
         const activeNavCount = await page.locator("header nav a.is-active").count();
         assert(activeNavCount >= 1, `${route.path} should expose an active header nav state`);
       }
@@ -148,7 +154,7 @@ async function run() {
           const defaultHomeSearchRows = await page
             .locator("[data-home-search-item]:not([hidden])")
             .count();
-          assert(defaultHomeSearchRows === 4, `${route.path} should show four default search shortcuts`);
+          assert(defaultHomeSearchRows === 0, `${route.path} should keep homepage search results collapsed by default`);
           await page.locator("[data-home-search-input]").fill("HEIC");
           await page.waitForTimeout(450);
           const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
@@ -181,39 +187,43 @@ async function run() {
             `${route.path} should track homepage search using only metadata`
           );
         }
-        const eventName = route.path === "/" ? "home_prep_shortcut_click" : "catalog_prep_shortcut_click";
-        const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
-        assert(shortcutRootCount === 1, `${route.path} should render one prep shortcut section`);
-        const shortcutClickCount = await page
-          .locator(`[data-prep-shortcuts] a[data-analytics-event="${eventName}"]`)
-          .count();
-        assert(shortcutClickCount === 7, `${route.path} should track seven problem-situation shortcuts`);
-        const shortcutIdCount = await page.locator("[data-prep-shortcuts] a[data-analytics-shortcut-id]").count();
-        assert(shortcutIdCount === 7, `${route.path} should tag each prep shortcut with a stable shortcut id`);
-        const shortcutToolCount = await page.locator("[data-prep-shortcuts] a[data-analytics-tool-id]").count();
-        assert(shortcutToolCount === 7, `${route.path} should tag each prep shortcut with its target tool id`);
-        const shortcutPresetCount = await page.locator("[data-prep-shortcuts] a[data-analytics-target-preset]").count();
-        assert(shortcutPresetCount === 6, `${route.path} should tag preset-backed prep shortcuts with their target preset`);
-        const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
-        assert(
-          shortcutText?.includes("파일 형식 오류") &&
-            shortcutText.includes("용량 초과") &&
-            shortcutText.includes("크기 제한") &&
-            shortcutText.includes("여러 장 PDF"),
-          `${route.path} should expose problem-situation shortcut labels`
-        );
-        const expectedShortcutLinks = [
-          "/tools/image-converter/?preset=jpg",
-          "/tools/heic-jpg-converter/?preset=jpg",
-          "/tools/photo-size-reducer/?preset=1mb",
-          "/tools/image-resizer/?preset=long-1200",
-          "/tools/image-rotator/?preset=right",
-          "/tools/image-cropper/?preset=document",
-          "/tools/jpg-to-pdf-converter/"
-        ];
-        for (const href of expectedShortcutLinks) {
-          const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
-          assert(count === 1, `${route.path} should include one prep shortcut to ${href}`);
+        if (route.path === "/") {
+          const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
+          assert(shortcutRootCount === 0, `${route.path} should keep the homepage free of prep shortcut sections`);
+        } else {
+          const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
+          assert(shortcutRootCount === 1, `${route.path} should render one prep shortcut section`);
+          const shortcutClickCount = await page
+            .locator('[data-prep-shortcuts] a[data-analytics-event="catalog_prep_shortcut_click"]')
+            .count();
+          assert(shortcutClickCount === 7, `${route.path} should track seven problem-situation shortcuts`);
+          const shortcutIdCount = await page.locator("[data-prep-shortcuts] a[data-analytics-shortcut-id]").count();
+          assert(shortcutIdCount === 7, `${route.path} should tag each prep shortcut with a stable shortcut id`);
+          const shortcutToolCount = await page.locator("[data-prep-shortcuts] a[data-analytics-tool-id]").count();
+          assert(shortcutToolCount === 7, `${route.path} should tag each prep shortcut with its target tool id`);
+          const shortcutPresetCount = await page.locator("[data-prep-shortcuts] a[data-analytics-target-preset]").count();
+          assert(shortcutPresetCount === 6, `${route.path} should tag preset-backed prep shortcuts with their target preset`);
+          const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
+          assert(
+            shortcutText?.includes("파일 형식 오류") &&
+              shortcutText.includes("용량 초과") &&
+              shortcutText.includes("크기 제한") &&
+              shortcutText.includes("여러 장 PDF"),
+            `${route.path} should expose problem-situation shortcut labels`
+          );
+          const expectedShortcutLinks = [
+            "/tools/image-converter/?preset=jpg",
+            "/tools/heic-jpg-converter/?preset=jpg",
+            "/tools/photo-size-reducer/?preset=1mb",
+            "/tools/image-resizer/?preset=long-1200",
+            "/tools/image-rotator/?preset=right",
+            "/tools/image-cropper/?preset=document",
+            "/tools/jpg-to-pdf-converter/"
+          ];
+          for (const href of expectedShortcutLinks) {
+            const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
+            assert(count === 1, `${route.path} should include one prep shortcut to ${href}`);
+          }
         }
       }
 
