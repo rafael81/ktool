@@ -111,6 +111,16 @@ async function run() {
       );
       assert(!overflow, `${route.path} has horizontal overflow on mobile viewport`);
 
+      if (route.path.startsWith("/tools/") && route.path !== "/tools/") {
+        const visibleSidePanels = await page.locator(".side-panel").evaluateAll((panels) =>
+          panels.filter((panel) => {
+            const rect = panel.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0 && getComputedStyle(panel).display !== "none";
+          }).length
+        );
+        assert(visibleSidePanels === 0, `${route.path} should not show explanatory side panels in the workspace`);
+      }
+
       const headerSearchCount = await page.locator(".site-search-link").count();
       assert(headerSearchCount === 1, `${route.path} should expose one compact header search entry`);
       const visibleNavTargets = await page.locator("header nav a").evaluateAll((links) =>
