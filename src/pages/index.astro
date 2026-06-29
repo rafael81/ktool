@@ -18,6 +18,7 @@ import {
 
 const structuredData = [websiteSchema(), toolItemListSchema(tools)];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
+const toolCountLabel = `${tools.length}종`;
 const featuredToolIds: ToolId[] = [
   "transaction-statement",
   "jpg-to-pdf",
@@ -108,7 +109,7 @@ function iconForTool(toolId: ToolId) {
         </svg>
       </div>
       <h1 id="home-title">K문서툴</h1>
-      <p class="home-hero-lead">설치 없이 쓰는 무료 도구 501종</p>
+      <p class="home-hero-lead">설치 없이 쓰는 무료 도구 {toolCountLabel}</p>
       <p class="home-hero-subcopy">
         사진 변환·편집, PDF, 개인정보 보호, 계산기까지. 파일은 서버로 전송되지 않습니다.
       </p>
