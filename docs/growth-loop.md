@@ -255,6 +255,7 @@ Completed:
 87. Tighten the high-intent `도장 배경 제거` page around the organic promise: free transparent PNG creation, first-screen no-install/no-server-transfer/PNG-save badges, and WebPage structured data.
 88. Retighten the indexed `사업자 명판 만들기 무료` page after the first Google impression: expose stamp composition, transparent PNG output, server-transfer reassurance, and matching WebPage keywords in the first-screen promise.
 89. Retighten the homepage after the first Google impression: focus the title/meta on free PDF/image/document tools, add homepage WebPage keywords, and put the indexed `명판 PNG` path into first-screen quick starts.
+90. Retighten the `/tools/` catalog to match the homepage entry promise: focused free PDF/image/document title/meta, WebPage keywords, `명판 PNG` quick start, and nameplate-aware catalog search placeholder.
 
 Next after crawl data appears:
 

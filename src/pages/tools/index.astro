@@ -1,18 +1,33 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { toolCategories, tools, type ToolId } from "@/data/tools";
-import { collectionPageSchema, toolItemListSchema, websiteSchema } from "@/data/seo";
+import { collectionPageSchema, toolItemListSchema, webPageSchema, websiteSchema } from "@/data/seo";
 import { prepShortcuts } from "@/data/prepShortcuts";
 import { workflowPackages } from "@/data/workflowPackages";
 import { problemPages } from "@/data/problemPages";
 import { Archive, FileText, Files, Smartphone, type IconProps } from "@lucide/astro";
 
+const catalogTitle = "전체 도구 - 무료 PDF 이미지 문서 도구";
+const catalogDescription =
+  "JPG PDF, 사진 1MB 줄이기, HEIC JPG, 사업자 명판, 거래명세서까지 설치 없이 바로 쓰는 무료 도구 목록입니다. 파일과 입력값은 서버로 전송되지 않습니다.";
 const structuredData = [
   websiteSchema(),
+  webPageSchema({
+    name: "K문서툴 전체 도구",
+    description: catalogDescription,
+    path: "/tools/",
+    keywords: [
+      "무료 PDF 도구 목록",
+      "무료 이미지 도구 목록",
+      "무료 업무 문서 도구",
+      "사업자 명판 만들기",
+      "파일 서버 전송 없음"
+    ]
+  }),
   toolItemListSchema(tools),
   collectionPageSchema({
     name: "K문서툴 전체 도구",
-    description: "로그인 없이 브라우저에서 사용하는 한국형 무료 업무 문서 도구 목록입니다.",
+    description: catalogDescription,
     path: "/tools/",
     tools
   })
@@ -62,6 +77,12 @@ const catalogQuickStarts: {
     detail: "문서 작성",
     path: "/tools/transaction-statement-generator/?source=catalog-quick-start",
     toolId: "transaction-statement"
+  },
+  {
+    label: "명판 PNG",
+    detail: "도장 합성",
+    path: "/tools/business-nameplate-maker/?source=catalog-quick-start",
+    toolId: "business-nameplate"
   }
 ];
 type LucideIcon = (_props: IconProps) => unknown;
@@ -69,7 +90,8 @@ const catalogQuickIconByToolId: Partial<Record<ToolId, LucideIcon>> = {
   "jpg-to-pdf": Files,
   "image-compressor": Archive,
   "heic-to-jpg": Smartphone,
-  "transaction-statement": FileText
+  "transaction-statement": FileText,
+  "business-nameplate": FileText
 };
 function iconForCatalogQuickStart(toolId: ToolId) {
   return catalogQuickIconByToolId[toolId] ?? FileText;
@@ -77,8 +99,8 @@ function iconForCatalogQuickStart(toolId: ToolId) {
 ---
 
 <BaseLayout
-  title="전체 도구 - K문서툴"
-  description="제출용 파일 준비, 사업자 명판, 거래명세서, 견적서, 청구서, 영수증, 부가세 계산, 도장 배경 제거, JPG PDF 변환, 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, HEIC JPG 변환 등 한국 업무 문서와 파일을 로그인 없이 처리하는 무료 도구 목록입니다."
+  title={catalogTitle}
+  description={catalogDescription}
   canonicalPath="/tools/"
   structuredData={structuredData}
 >
@@ -140,7 +162,7 @@ function iconForCatalogQuickStart(toolId: ToolId) {
             type="search"
             autocomplete="off"
             inputmode="search"
-            placeholder="거래명세서, HEIC, PDF, 업로드 용량 초과"
+            placeholder="PDF, HEIC, 1MB, 명판, 업로드 용량 초과"
             data-tool-search
           />
         </label>

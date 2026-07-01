@@ -438,6 +438,28 @@ async function run() {
       }
 
       if (route.path === "/tools/") {
+        const catalogTitle = await page.title();
+        const catalogDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        assert(
+          catalogTitle === "전체 도구 - 무료 PDF 이미지 문서 도구" &&
+            catalogDescription?.includes("JPG PDF") &&
+            catalogDescription.includes("사진 1MB") &&
+            catalogDescription.includes("사업자 명판") &&
+            catalogDescription.includes("서버로 전송되지 않습니다"),
+          `${route.path} should expose a focused free PDF/image/document catalog promise`
+        );
+        const catalogJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const catalogWebPageSchema = catalogJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          catalogWebPageSchema?.url === `${productionUrl}/tools/` &&
+            catalogWebPageSchema.keywords?.includes("무료 PDF 도구 목록") &&
+            catalogWebPageSchema.keywords.includes("무료 이미지 도구 목록") &&
+            catalogWebPageSchema.keywords.includes("사업자 명판 만들기") &&
+            catalogWebPageSchema.keywords.includes("파일 서버 전송 없음"),
+          `${route.path} should expose a WebPage schema for catalog organic intent`
+        );
         const problemHubQuickLink = await page.locator('.quick-links a[href="/problems/"]').count();
         assert(problemHubQuickLink === 1, `${route.path} should expose the problem hub from catalog quick links`);
         const catalogShortcutRows = await page.locator("[data-prep-shortcuts] .shortcut-row").count();
@@ -450,8 +472,13 @@ async function run() {
         assert(problemEntryHref === 1, `${route.path} should link to the 1MB photo problem page`);
         const catalogRootCount = await page.locator("[data-tool-catalog]").count();
         assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
+        const catalogSearchPlaceholder = await page.locator("[data-tool-search]").getAttribute("placeholder");
+        assert(
+          catalogSearchPlaceholder?.includes("명판"),
+          `${route.path} should hint the indexed nameplate path in catalog search`
+        );
         const catalogQuickStartCount = await page.locator("[data-catalog-quick-start]").count();
-        assert(catalogQuickStartCount === 4, `${route.path} should expose four catalog quick-start links`);
+        assert(catalogQuickStartCount === 5, `${route.path} should expose five catalog quick-start links`);
         const catalogQuickStartHrefs = await page
           .locator("[data-catalog-quick-start]")
           .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
@@ -459,7 +486,8 @@ async function run() {
           "/tools/jpg-to-pdf-converter/?from=quick-start&source=catalog-quick-start",
           "/tools/photo-size-reducer/?preset=1mb&source=catalog-quick-start",
           "/tools/heic-jpg-converter/?preset=jpg&source=catalog-quick-start",
-          "/tools/transaction-statement-generator/?source=catalog-quick-start"
+          "/tools/transaction-statement-generator/?source=catalog-quick-start",
+          "/tools/business-nameplate-maker/?source=catalog-quick-start"
         ].forEach((href) => {
           assert(catalogQuickStartHrefs.includes(href), `${route.path} should include catalog quick-start link ${href}`);
         });
@@ -467,7 +495,7 @@ async function run() {
           .locator('[data-catalog-quick-start][data-analytics-event="catalog_quick_start_click"][data-analytics-tool-id]')
           .count();
         assert(
-          catalogQuickStartAnalyticsCount === 4,
+          catalogQuickStartAnalyticsCount === 5,
           `${route.path} should tag every catalog quick-start link for analytics`
         );
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();
