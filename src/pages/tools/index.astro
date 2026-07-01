@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { toolCategories, tools } from "@/data/tools";
+import { toolCategories, tools, type ToolId } from "@/data/tools";
 import { collectionPageSchema, toolItemListSchema, websiteSchema } from "@/data/seo";
 import { prepShortcuts } from "@/data/prepShortcuts";
 import { workflowPackages } from "@/data/workflowPackages";
 import { problemPages } from "@/data/problemPages";
+import { Archive, FileText, Files, Smartphone, type IconProps } from "@lucide/astro";
 
 const structuredData = [
   websiteSchema(),
@@ -29,6 +30,50 @@ const emptySearchLinks = [
   { label: "문제 해결", path: "/problems/" }
 ];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
+const catalogQuickStarts: {
+  label: string;
+  detail: string;
+  path: string;
+  toolId: ToolId;
+  preset?: string;
+}[] = [
+  {
+    label: "JPG PDF",
+    detail: "여러 장 묶기",
+    path: "/tools/jpg-to-pdf-converter/",
+    toolId: "jpg-to-pdf"
+  },
+  {
+    label: "사진 1MB",
+    detail: "용량 줄이기",
+    path: "/tools/photo-size-reducer/?preset=1mb",
+    toolId: "image-compressor",
+    preset: "1mb"
+  },
+  {
+    label: "HEIC JPG",
+    detail: "아이폰 사진",
+    path: "/tools/heic-jpg-converter/?preset=jpg",
+    toolId: "heic-to-jpg",
+    preset: "jpg"
+  },
+  {
+    label: "거래명세서",
+    detail: "문서 작성",
+    path: "/tools/transaction-statement-generator/",
+    toolId: "transaction-statement"
+  }
+];
+type LucideIcon = (_props: IconProps) => unknown;
+const catalogQuickIconByToolId: Partial<Record<ToolId, LucideIcon>> = {
+  "jpg-to-pdf": Files,
+  "image-compressor": Archive,
+  "heic-to-jpg": Smartphone,
+  "transaction-statement": FileText
+};
+function iconForCatalogQuickStart(toolId: ToolId) {
+  return catalogQuickIconByToolId[toolId] ?? FileText;
+}
 ---
 
 <BaseLayout
@@ -114,6 +159,36 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
         <p class="catalog-count">
           <span data-tool-result-count>{tools.length}개 도구</span>
         </p>
+      </div>
+      <div class="catalog-quick-starts" aria-label="빠른 시작">
+        {
+          catalogQuickStarts.map((item) => {
+            const tool = tools.find((toolItem) => toolItem.id === item.toolId);
+            if (!tool) return null;
+            const QuickIcon = iconForCatalogQuickStart(item.toolId);
+
+            return (
+              <a
+                class="catalog-quick-start"
+                href={item.path}
+                data-catalog-quick-start
+                data-analytics-event="catalog_quick_start_click"
+                data-analytics-tool-id={tool.id}
+                data-analytics-tool-title={tool.title}
+                data-analytics-target-preset={item.preset}
+                data-analytics-label={item.label}
+              >
+                <span class="catalog-quick-icon" aria-hidden="true">
+                  <QuickIcon class="catalog-icon" />
+                </span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <em>{item.detail}</em>
+                </span>
+              </a>
+            );
+          })
+        }
       </div>
       <div class="catalog-tool-list">
         {

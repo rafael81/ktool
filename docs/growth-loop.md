@@ -230,6 +230,7 @@ Completed:
 62. Add first-screen primary actions to workflow package pages so search visitors can start the recommended tool path without scanning the whole page.
 63. Tighten the indexed `사업자 명판 만들기 무료` page with a shorter first-screen promise, primary PNG save action, and fixed-ratio preview that avoids internal scrolling.
 64. Add homepage first-screen quick-start links for JPG PDF, 1MB compression, HEIC JPG, and 거래명세서 so visitors can run high-intent tools without typing a search.
+65. Add `/tools/` first-screen quick-start links for JPG PDF, 1MB compression, HEIC JPG, and 거래명세서 so catalog visitors can run common tools without filtering or typing.
 
 Next after crawl data appears:
 

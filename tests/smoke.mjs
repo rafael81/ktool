@@ -379,6 +379,26 @@ async function run() {
         assert(problemEntryHref === 1, `${route.path} should link to the 1MB photo problem page`);
         const catalogRootCount = await page.locator("[data-tool-catalog]").count();
         assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
+        const catalogQuickStartCount = await page.locator("[data-catalog-quick-start]").count();
+        assert(catalogQuickStartCount === 4, `${route.path} should expose four catalog quick-start links`);
+        const catalogQuickStartHrefs = await page
+          .locator("[data-catalog-quick-start]")
+          .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+        [
+          "/tools/jpg-to-pdf-converter/",
+          "/tools/photo-size-reducer/?preset=1mb",
+          "/tools/heic-jpg-converter/?preset=jpg",
+          "/tools/transaction-statement-generator/"
+        ].forEach((href) => {
+          assert(catalogQuickStartHrefs.includes(href), `${route.path} should include catalog quick-start link ${href}`);
+        });
+        const catalogQuickStartAnalyticsCount = await page
+          .locator('[data-catalog-quick-start][data-analytics-event="catalog_quick_start_click"][data-analytics-tool-id]')
+          .count();
+        assert(
+          catalogQuickStartAnalyticsCount === 4,
+          `${route.path} should tag every catalog quick-start link for analytics`
+        );
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();
         const catalogToolRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="tool"]').count();
         const catalogProblemRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="problem"]').count();

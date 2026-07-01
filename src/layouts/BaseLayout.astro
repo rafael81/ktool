@@ -1829,6 +1829,71 @@ const analyticsPage = {
     white-space: nowrap;
   }
 
+  .catalog-quick-starts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 14px 0 18px;
+  }
+
+  .catalog-quick-start {
+    display: grid;
+    min-height: 58px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 10px;
+  }
+
+  .catalog-quick-start:hover,
+  .catalog-quick-start:focus-visible {
+    border-color: var(--accent);
+    background: #f8fafc;
+    outline: none;
+  }
+
+  .catalog-quick-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f9fafb;
+    color: var(--accent);
+  }
+
+  .catalog-quick-start span:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .catalog-quick-start strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 13.5px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .catalog-quick-start em {
+    overflow: hidden;
+    color: #667085;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 650;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .catalog-tool-list {
     display: grid;
     border-bottom: 1px solid var(--line);
@@ -2195,6 +2260,7 @@ const analyticsPage = {
     padding: clamp(24px, 4vw, 44px) 24px 64px;
   }
 
+  .catalog-icon,
   .home-icon,
   .home-search-icon {
     width: 18px;
@@ -3020,6 +3086,10 @@ const analyticsPage = {
       text-align: left;
     }
 
+    .catalog-quick-starts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .catalog-tool-row {
       grid-template-columns: 86px minmax(0, 1fr);
     }
@@ -3404,6 +3474,11 @@ const analyticsPage = {
     }
 
     .home-quick-starts {
+      gap: 7px;
+    }
+
+    .catalog-quick-starts {
+      grid-template-columns: 1fr;
       gap: 7px;
     }
 

@@ -44,6 +44,7 @@ Problem-intent pages also include:
 | `home_catalog_all_click` | Home category section link to the full catalog | `label`, `href` |
 | `home_all_tool_click` | Home category tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
+| `catalog_quick_start_click` | Tool catalog first-screen quick-start link click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `catalog_prep_shortcut_click` | Tool catalog problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
 | `catalog_filter_change` | Tool catalog category filter changes | `catalog_category`, `visible_count`, `search_query_length` |
