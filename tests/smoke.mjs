@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: "/workflows/business-document-submission/",
-    h1: "사업자 서류 제출 패키지",
+    h1: "사업자 명판·거래문서 PDF 패키지",
     faq: true,
     workflowPackage: "business-document-submission"
   },
@@ -681,6 +681,38 @@ async function run() {
             `${route.path} should expose CollectionPage keywords for freelance billing search intent`
           );
         }
+        if (route.workflowPackage === "business-document-submission") {
+          const workflowTitle = await page.title();
+          const workflowDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          assert(
+            workflowTitle === "사업자 명판·거래문서 PDF 패키지 - K문서툴" &&
+              workflowDescription?.includes("사업자 명판 만들기") &&
+              workflowDescription.includes("거래명세서 PDF 저장") &&
+              workflowDescription.includes("청구서 PDF 저장") &&
+              workflowDescription.includes("브라우저에서 처리"),
+            `${route.path} should expose focused business nameplate and PDF document intent in title and meta description`
+          );
+          assert(
+            workflowText.includes("사업자 명판 PNG 만들기") &&
+              workflowText.includes("거래명세서 PDF 작성") &&
+              workflowText.includes("견적서 PDF 작성") &&
+              workflowText.includes("청구서 PDF 작성") &&
+              workflowText.includes("사업자 명판 PNG 준비"),
+            `${route.path} should make the nameplate PNG and business PDF document flow visible`
+          );
+          const workflowJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const workflowCollectionSchema = workflowJsonLdItems.find((item) => item["@type"] === "CollectionPage");
+          assert(
+            workflowCollectionSchema?.url === `${productionUrl}${route.path}` &&
+              workflowCollectionSchema.keywords?.includes("사업자 명판 만들기") &&
+              workflowCollectionSchema.keywords.includes("거래명세서 PDF 저장") &&
+              workflowCollectionSchema.keywords.includes("견적서 PDF 저장") &&
+              workflowCollectionSchema.keywords.includes("청구서 PDF 저장"),
+            `${route.path} should expose CollectionPage keywords for business document search intent`
+          );
+        }
         const primaryActionCount = await page.locator("[data-workflow-primary-action]").count();
         assert(primaryActionCount === 1, `${route.path} should expose one first-screen primary workflow action`);
         const primaryActionText = await page.locator("[data-workflow-primary-action]").textContent();
@@ -703,6 +735,15 @@ async function run() {
               primaryActionProblem === "withholding" &&
               primaryActionTargetTool === "withholding-tax",
             `${route.path} should start freelance visitors at the 3.3% withholding calculator`
+          );
+        }
+        if (route.workflowPackage === "business-document-submission") {
+          assert(
+            primaryActionText?.includes("사업자 명판 PNG 만들기") &&
+              primaryActionHref === "/tools/business-nameplate-maker/" &&
+              primaryActionProblem === "company-nameplate" &&
+              primaryActionTargetTool === "business-nameplate",
+            `${route.path} should start business-document visitors at the nameplate PNG maker`
           );
         }
         const stepsLinkHref = await page.locator("[data-workflow-steps-link]").getAttribute("href");

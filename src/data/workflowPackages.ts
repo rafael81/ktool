@@ -165,28 +165,28 @@ export const workflowPackages: WorkflowPackage[] = [
   },
   {
     id: "business-document-submission",
-    title: "사업자 서류 제출 패키지",
-    shortTitle: "사업자 서류",
+    title: "사업자 명판·거래문서 PDF 패키지",
+    shortTitle: "사업자 문서 PDF",
     path: "/workflows/business-document-submission/",
-    eyebrow: "업무 문서 흐름",
+    eyebrow: "사업자 문서 흐름",
     description:
-      "회사 정보, 명판, 도장, 거래 문서, 금액 표기를 브라우저에서 정리해 거래처나 기관 제출용 문서로 준비합니다.",
-    primaryQuery: "사업자 서류 제출 준비",
-    secondaryQueries: ["사업자 명판 만들기", "거래명세서 자동작성", "견적서 자동작성", "도장 배경 제거"],
+      "사업자 명판, 도장 이미지, 거래명세서 PDF, 견적서 PDF, 청구서 PDF, 영수증 PDF, 한글 금액 표기를 한 흐름으로 정리합니다.",
+    primaryQuery: "사업자 명판 거래문서 PDF",
+    secondaryQueries: ["사업자 명판 만들기", "거래명세서 PDF 저장", "견적서 PDF 저장", "청구서 PDF 저장", "도장 배경 제거"],
     trustNote:
-      "문서 작성과 이미지 정리를 돕는 도구이며, 세금계산서 발행이나 인감 증명, 전자서명 인증을 대신하지 않습니다.",
+      "문서 정보는 브라우저에서 처리하며 서버로 전송되지 않습니다. 세금계산서 발행, 인감 증명, 전자서명 인증을 대신하지 않습니다.",
     problems: [
       {
         id: "company-nameplate",
-        label: "회사 정보",
-        title: "사업자 명판 만들기",
-        description: "상호, 대표자, 사업자등록번호, 주소를 문서 삽입용 이미지로 만듭니다.",
+        label: "명판 PNG",
+        title: "사업자 명판 PNG 만들기",
+        description: "상호, 대표자, 사업자등록번호, 주소를 문서에 넣을 명판 이미지로 만듭니다.",
         path: "/tools/business-nameplate-maker/",
         targetToolId: "business-nameplate"
       },
       {
         id: "stamp-background",
-        label: "도장 이미지",
+        label: "도장 PNG",
         title: "도장 배경 제거",
         description: "스캔하거나 촬영한 도장 이미지를 투명 PNG로 정리합니다.",
         path: "/tools/stamp-background-remover/",
@@ -194,40 +194,40 @@ export const workflowPackages: WorkflowPackage[] = [
       },
       {
         id: "transaction-document",
-        label: "거래 내역",
-        title: "거래명세서 작성",
-        description: "공급자, 거래처, 품목, 금액을 입력해 거래명세서를 만듭니다.",
+        label: "거래명세서 PDF",
+        title: "거래명세서 PDF 작성",
+        description: "공급자, 거래처, 품목, 금액을 입력해 거래명세서를 PDF로 저장합니다.",
         path: "/tools/transaction-statement-generator/",
         targetToolId: "transaction-statement"
       },
       {
         id: "estimate-document",
-        label: "견적 전달",
-        title: "견적서 작성",
-        description: "고객명, 품목, 수량, 단가를 입력해 견적서를 만듭니다.",
+        label: "견적서 PDF",
+        title: "견적서 PDF 작성",
+        description: "고객명, 품목, 수량, 단가를 입력해 견적서를 PDF로 저장합니다.",
         path: "/tools/estimate-generator/",
         targetToolId: "estimate"
       },
       {
         id: "invoice-document",
-        label: "입금 요청",
-        title: "청구서 작성",
-        description: "청구 품목, 입금기한, 금액을 정리해 청구서를 만듭니다.",
+        label: "청구서 PDF",
+        title: "청구서 PDF 작성",
+        description: "청구 품목, 입금기한, 금액을 정리해 청구서를 PDF로 저장합니다.",
         path: "/tools/invoice-generator/",
         targetToolId: "invoice"
       },
       {
         id: "receipt-document",
-        label: "영수 확인",
-        title: "영수증 작성",
-        description: "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증을 만듭니다.",
+        label: "영수증 PDF",
+        title: "영수증 PDF 저장",
+        description: "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증을 PDF로 저장합니다.",
         path: "/tools/receipt-generator/",
         targetToolId: "receipt"
       },
       {
         id: "korean-amount",
-        label: "금액 표기",
-        title: "금액 한글 변환",
+        label: "한글 금액",
+        title: "한글 금액 표기 복사",
         description: "계약서, 청구서, 견적서에 넣기 좋은 한글 금액 표기로 바꿉니다.",
         path: "/tools/amount-korean-converter/",
         targetToolId: "amount-korean"
@@ -236,21 +236,21 @@ export const workflowPackages: WorkflowPackage[] = [
     steps: [
       {
         label: "1",
-        title: "회사 정보 준비",
+        title: "사업자 명판 PNG 준비",
         description: "사업자 명판과 도장 이미지를 문서 삽입용으로 정리합니다.",
         toolId: "business-nameplate",
         path: "/tools/business-nameplate-maker/"
       },
       {
         label: "2",
-        title: "문서 작성",
-        description: "거래명세서, 견적서, 청구서, 영수증 중 필요한 문서를 작성합니다.",
+        title: "거래문서 PDF 작성",
+        description: "거래명세서, 견적서, 청구서, 영수증 중 필요한 문서를 작성해 PDF로 저장합니다.",
         toolId: "transaction-statement",
         path: "/tools/transaction-statement-generator/"
       },
       {
         label: "3",
-        title: "금액 확인",
+        title: "부가세와 한글 금액 확인",
         description: "부가세와 한글 금액 표기를 확인해 문서에 넣습니다.",
         toolId: "vat-calculator",
         path: "/tools/vat-calculator/"
@@ -277,8 +277,8 @@ export const workflowPackages: WorkflowPackage[] = [
     faqs: [
       ["사업자 명판 이미지는 법적 효력이 있나요?", "아니요. 문서 삽입용 이미지를 만드는 도구이며 인감 증명이나 전자서명 인증을 대신하지 않습니다."],
       ["거래명세서와 세금계산서는 다른가요?", "거래명세서는 거래 내역 정리용 문서이고 세금계산서나 전자세금계산서 발행을 대신하지 않습니다."],
-      ["입력한 거래처 정보가 저장되나요?", "문서 도구는 브라우저에서 처리하며 입력한 문서 내용을 서버로 보내지 않습니다."],
-      ["PDF로 저장할 수 있나요?", "문서 작성 후 브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
+      ["입력한 거래처 정보가 저장되나요?", "문서 정보는 브라우저에서 처리하며 서버로 전송되지 않습니다."],
+      ["PDF로 저장할 수 있나요?", "거래명세서, 견적서, 청구서, 영수증 작성 후 브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
       ["도장 이미지를 같이 준비할 수 있나요?", "도장 배경 제거 도구로 흰 배경을 투명 PNG로 정리할 수 있습니다."]
     ]
   },
