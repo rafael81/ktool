@@ -18,6 +18,13 @@ type Props = {
 const { problemPage } = Astro.props;
 const targetTool = getTool(problemPage.targetToolId);
 const relatedProblems = problemPage.relatedProblemIds.map(getProblemPage);
+function withProblemSource(path: string) {
+  const url = new URL(path, "https://k-document-tool.pages.dev");
+  url.searchParams.set("source", "problem");
+  url.searchParams.set("problem_id", problemPage.id);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+const problemTargetPath = withProblemSource(problemPage.targetPath);
 const stepNotes = [
   "파일은 서버로 보내지 않고 브라우저에서 엽니다.",
   problemPage.actionNote,
@@ -61,7 +68,7 @@ const structuredData = [
       <div class="quick-links" aria-label="바로가기">
         <a
           class="btn primary"
-          href={problemPage.targetPath}
+          href={problemTargetPath}
           data-problem-primary-link
           data-analytics-event="problem_primary_tool_click"
           data-analytics-tool-id={targetTool.id}
@@ -89,7 +96,7 @@ const structuredData = [
       <div class="shortcut-list">
         <a
           class="shortcut-row"
-          href={problemPage.targetPath}
+          href={problemTargetPath}
           data-analytics-event="problem_tool_click"
           data-analytics-tool-id={targetTool.id}
           data-analytics-tool-title={targetTool.title}

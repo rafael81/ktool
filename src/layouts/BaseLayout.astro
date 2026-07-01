@@ -115,7 +115,8 @@ const jsonLdItems = [...structuredDataItems, ...(breadcrumbSchema ? [breadcrumbS
 );
 const analyticsPage = {
   path: normalizedCanonicalPath,
-  title
+  title,
+  problemIds: problemPages.map((problemPage) => problemPage.id)
 };
 ---
 
@@ -152,6 +153,7 @@ const analyticsPage = {
     <script is:inline define:vars={{ analyticsPage }}>
       (() => {
         const page = analyticsPage;
+        const knownProblemIds = new Set(page.problemIds || []);
 
         function toolContext(node) {
           const root = node?.closest?.("[data-tool-id]");
@@ -182,6 +184,11 @@ const analyticsPage = {
           return String(value || "").replace(/\s+/g, " ").trim();
         }
 
+        function safePreset(value) {
+          const text = compact(value);
+          return /^[a-z0-9-]{1,40}$/i.test(text) ? text : null;
+        }
+
         window.dataLayer = window.dataLayer || [];
         window.kdocTrack = function kdocTrack(eventName, params = {}) {
           const payload = {
@@ -199,6 +206,21 @@ const analyticsPage = {
         function bootAnalytics() {
           const pageContextRoot = document.querySelector("[data-tool-id], [data-problem-id]");
           window.kdocTrack("page_view", pageContext(pageContextRoot));
+
+          const pageTool = document.querySelector("[data-tool-id]");
+          const searchParams = new URLSearchParams(window.location.search);
+          const source = searchParams.get("source");
+          const problemId = searchParams.get("problem_id");
+          if (pageTool && source === "problem" && knownProblemIds.has(problemId)) {
+            const params = {
+              ...toolContext(pageTool),
+              source: "problem",
+              problem_id: problemId
+            };
+            const preset = safePreset(searchParams.get("preset"));
+            if (preset) params.target_preset = preset;
+            window.kdocTrack("tool_problem_arrival", params);
+          }
 
           const startedTools = new Set();
           const markToolStart = (event) => {

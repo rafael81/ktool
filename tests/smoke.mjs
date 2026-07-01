@@ -387,6 +387,12 @@ async function run() {
         assert(primaryLinkCount === 1, `${route.path} should expose one primary problem CTA`);
         const primaryHref = await primaryLink.getAttribute("href");
         assert(primaryHref?.startsWith("/tools/"), `${route.path} primary CTA should send users to a tool`);
+        const primaryTargetUrl = new URL(primaryHref, baseUrl);
+        assert(
+          primaryTargetUrl.searchParams.get("source") === "problem" &&
+            primaryTargetUrl.searchParams.get("problem_id") === problemId,
+          `${route.path} primary CTA should carry a whitelisted problem source into the target tool`
+        );
         await page.evaluate(() => {
           document.querySelector("[data-problem-primary-link]")?.addEventListener(
             "click",
@@ -405,6 +411,22 @@ async function run() {
             primaryClickEvent.tool_title,
           `${route.path} primary CTA analytics should include problem and target tool context`
         );
+        const arrivalPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+        try {
+          await arrivalPage.goto(`${baseUrl}${primaryHref}`, { waitUntil: "networkidle" });
+          const arrivalEvent = await arrivalPage.evaluate(() => {
+            return window.dataLayer?.find((event) => event.event === "tool_problem_arrival");
+          });
+          assert(
+            arrivalEvent?.source === "problem" &&
+              arrivalEvent.problem_id === problemId &&
+              arrivalEvent.tool_id &&
+              arrivalEvent.tool_title,
+            `${route.path} target tool page should emit a problem-source arrival event`
+          );
+        } finally {
+          await arrivalPage.close();
+        }
         const actionLinkCount = await page.locator('[data-problem-action] a[data-analytics-event="problem_tool_click"]').count();
         assert(actionLinkCount === 1, `${route.path} should track the recommended tool click`);
         const stepRows = await page.locator("[data-problem-steps] .workflow-row").count();
