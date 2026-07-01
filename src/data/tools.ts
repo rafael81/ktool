@@ -553,9 +553,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "JPG, PNG, WebP 이미지를 브라우저에서 원하는 영역만 잘라 제출용 이미지로 저장합니다.",
-    pageTitle: "이미지 자르기 - 사진 크롭 무료",
+    pageTitle: "이미지 자르기 - 사진 여백 크롭 무료",
     metaDescription:
-      "이미지 자르기를 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 원하는 영역만 잘라 JPG, PNG, WebP로 저장합니다.",
+      "JPG, PNG, WebP 사진의 여백과 배경을 무료로 자르세요. 설치 없이 문서 영역, 프로필 정사각형, 3:4 사진을 브라우저에서 처리합니다.",
     primaryQuery: "이미지 자르기",
     secondaryQueries: ["사진 자르기", "사진 크롭", "이미지 크롭", "JPG 자르기"],
     userMoment: "사진에서 불필요한 여백, 배경, 주변 물체를 잘라내고 제출할 영역만 남겨야 할 때",

@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("image-cropper");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "사진 여백 자르기",
+      "문서 사진 자르기",
+      "증명사진 정사각형 자르기"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -26,7 +38,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 사진의 불필요한 여백이나 주변 배경을 잘라 제출할 영역만 남깁니다.</p>
+        <p>사진의 여백, 배경, 주변 물체를 잘라내세요. 문서 영역, 프로필 정사각형, 3:4 세로 사진을 브라우저에서 바로 만듭니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -53,9 +65,20 @@ const structuredData = [
 
         <label class="field">
           <span>이미지 파일</span>
-          <span class="file-control">
+          <span class="file-control upload-dropzone">
             <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" />
+            <span class="upload-icon" aria-hidden="true">
+              <IconGlyph name="crop" />
+            </span>
+            <strong>자를 이미지를 선택하세요</strong>
             <span data-file-label>JPG/PNG/WebP 한 장 선택</span>
+            <span class="upload-trust-badges" data-upload-badges aria-label="주요 장점">
+              <span>무료</span>
+              <span>설치 없음</span>
+              <span>서버 전송 없음</span>
+            </span>
+            <em>파일 선택</em>
+            <small>한 장씩 · 최대 15MB · 원본 유지</small>
           </span>
         </label>
 

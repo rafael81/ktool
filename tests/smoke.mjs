@@ -1190,6 +1190,19 @@ async function run() {
       }
 
       if (route.imageCropper) {
+        const cropUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          cropUploadState.height >= 220 &&
+            cropUploadState.text.includes("자를 이미지를 선택하세요") &&
+            cropUploadState.text.includes("파일 선택") &&
+            cropUploadState.text.includes("무료") &&
+            cropUploadState.text.includes("설치 없음") &&
+            cropUploadState.text.includes("서버 전송 없음"),
+          `${route.path} should expose a large direct image crop upload area`
+        );
         await page.goto(`${baseUrl}${route.path}?preset=profile`, { waitUntil: "networkidle" });
         const cropPresetState = await page.evaluate(() => ({
           preset: document.querySelector("[data-crop-preset]")?.value,
