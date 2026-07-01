@@ -900,6 +900,31 @@ async function run() {
               invoiceWebPageSchema.keywords.includes("청구서 PDF 저장"),
             `${route.path} should expose a WebPage schema for 청구서 search intent`
           );
+        } else if (route.path === "/tools/receipt-generator/") {
+          const receiptTitle = await page.title();
+          const receiptDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const receiptTrustText = await page.locator("[data-receipt-trust-badges]").textContent();
+          assert(
+            receiptTitle === "영수증 자동작성 - 무료 양식 PDF 저장" &&
+              receiptDescription?.includes("설치 없이") &&
+              receiptDescription.includes("PDF로 저장") &&
+              receiptTrustText?.includes("무료") &&
+              receiptTrustText.includes("설치 없음") &&
+              receiptTrustText.includes("입력값 저장 안 함") &&
+              receiptTrustText.includes("PDF 저장"),
+            `${route.path} should expose the free/no-install/private/PDF promise on the first screen`
+          );
+          const receiptJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const receiptWebPageSchema = receiptJsonLdItems.find((item) => item["@type"] === "WebPage");
+          assert(
+            receiptWebPageSchema?.url === `${productionUrl}${route.path}` &&
+              receiptWebPageSchema.keywords?.includes("영수증 무료 양식") &&
+              receiptWebPageSchema.keywords.includes("간이영수증 무료 양식") &&
+              receiptWebPageSchema.keywords.includes("영수증 PDF 저장"),
+            `${route.path} should expose a WebPage schema for 영수증 search intent`
+          );
         }
         if (route.path === "/tools/transaction-statement-generator/") {
           await page.goto(`${baseUrl}${route.path}?source=home-quick-start`, { waitUntil: "networkidle" });
