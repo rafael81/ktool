@@ -887,6 +887,41 @@ async function run() {
             primaryTargetUrl.searchParams.get("problem_id") === problemId,
           `${route.path} primary CTA should carry a whitelisted problem source into the target tool`
         );
+        if (route.path === "/problems/file-format-error/") {
+          const formatTitle = await page.title();
+          const formatDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            formatTitle === "파일 형식 오류 해결 - K문서툴" &&
+              formatDescription?.includes("지원하지 않는 파일 형식") &&
+              formatDescription.includes("PNG JPG 변환") &&
+              formatDescription.includes("WebP JPG 변환") &&
+              formatDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused upload-format error title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("파일 형식 오류") &&
+              webPageSchema.keywords.includes("지원하지 않는 파일 형식") &&
+              webPageSchema.keywords.includes("PNG JPG 변환") &&
+              webPageSchema.keywords.includes("WebP JPG 변환"),
+            `${route.path} should expose upload-format error search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/image-converter/") &&
+              primaryTargetUrl.searchParams.get("preset") === "jpg" &&
+              primaryText?.includes("JPG 변환 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("파일 형식 오류") &&
+              actionText.includes("JPG"),
+            `${route.path} should make the first-screen JPG conversion action and privacy promise explicit`
+          );
+        }
         if (route.path === "/problems/images-to-one-pdf/") {
           const imagePdfTitle = await page.title();
           const imagePdfDescription = await page.locator('meta[name="description"]').getAttribute("content");

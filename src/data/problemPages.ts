@@ -293,11 +293,11 @@ export const problemPages: ProblemPage[] = [
     path: "/problems/file-format-error/",
     title: "파일 형식 오류 해결",
     shortTitle: "형식 오류",
-    description: "제출처가 JPG만 받거나 WebP, PNG 파일을 거부할 때 바로 JPG로 변환합니다.",
+    description: "제출처가 JPG만 받거나 WebP, PNG 파일을 거부할 때 JPG로 바꿉니다.",
     metaDescription:
-      "파일 형식 오류가 뜰 때 WebP, PNG, JPG 이미지를 브라우저에서 JPG로 변환하세요. 설치 없이 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
+      "지원하지 않는 파일 형식, JPG만 가능, PNG JPG 변환, WebP JPG 변환을 무료로 처리하세요. 브라우저에서 변환하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "파일 형식 오류",
-    secondaryQueries: ["이미지 JPG 변환", "PNG JPG 변환", "WebP JPG 변환"],
+    secondaryQueries: ["지원하지 않는 파일 형식", "PNG JPG 변환", "WebP JPG 변환"],
     intentQueries: [
       "파일 업로드 안됨",
       "지원하지 않는 파일 형식",
@@ -312,8 +312,9 @@ export const problemPages: ProblemPage[] = [
     targetPath: "/tools/image-converter/?preset=jpg",
     targetLabel: "JPG 변환 시작",
     targetPreset: "jpg",
-    actionNote: "출력 형식을 JPG로 열어 제출 호환성을 먼저 맞춥니다.",
-    steps: ["이미지 파일 선택", "출력 형식 JPG 확인", "변환 파일 저장", "필요하면 PDF로 묶기"],
+    heroBadges: ["무료", "설치 없음", "서버 전송 없음"],
+    actionNote: "JPG 출력 기본값으로 열어 파일 형식 오류를 먼저 해결합니다.",
+    steps: ["문제 파일 선택", "JPG 출력 확인", "변환 파일 저장", "필요하면 PDF로 묶기"],
     faqs: [
       ["파일 형식 오류는 왜 뜨나요?", "제출처가 JPG처럼 정해진 이미지 형식만 허용할 때 WebP, PNG, HEIC 파일에서 자주 발생합니다."],
       ["JPG로 바꾸면 대부분 해결되나요?", "사진 제출은 JPG를 받는 곳이 많아 호환성이 좋습니다. 다만 제출처 안내에 PDF나 PNG가 적혀 있으면 그 기준을 따르세요."],

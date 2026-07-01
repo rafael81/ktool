@@ -268,6 +268,7 @@ Completed:
 100. Retighten the `사진 여러 장 PDF로 묶기` problem landing around photo/PDF submission intent: title/meta/schema keywords, first-screen JPG PDF CTA, and visible free/no-install/no-server-transfer badges.
 101. Retighten the `사진 1MB 이하로 줄이기` problem landing around upload-size-limit intent: title/meta/schema keywords for 1MB, 500KB, and JPG compression, first-screen 1MB CTA, and visible free/no-install/no-server-transfer badges.
 102. Retighten the `HEIC JPG 제출 준비` problem landing around iPhone upload-compatibility intent: title/meta/schema keywords for HEIC JPG conversion, iPhone photo JPG conversion, and HEIC submission errors, first-screen JPG conversion CTA, and visible free/no-install/no-server-transfer badges.
+103. Retighten the `파일 형식 오류 해결` problem landing around unsupported upload-format intent: title/meta/schema keywords for unsupported file formats, PNG JPG conversion, and WebP JPG conversion, first-screen JPG conversion CTA, and visible free/no-install/no-server-transfer badges.
 
 Next after crawl data appears:
 
