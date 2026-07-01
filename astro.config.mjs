@@ -41,6 +41,11 @@ export default defineConfig({
     })
   ],
   output: "static",
+  vite: {
+    optimizeDeps: {
+      include: ["pdf-lib", "heic-to/csp"]
+    }
+  },
   devToolbar: {
     enabled: false
   }
