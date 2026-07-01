@@ -284,53 +284,53 @@ export const workflowPackages: WorkflowPackage[] = [
   },
   {
     id: "freelance-billing",
-    title: "프리랜서 정산·청구 패키지",
-    shortTitle: "프리랜서 정산",
+    title: "프리랜서 3.3% 정산·청구 패키지",
+    shortTitle: "3.3% 정산",
     path: "/workflows/freelance-billing/",
-    eyebrow: "정산 문서 흐름",
+    eyebrow: "프리랜서 정산 흐름",
     description:
-      "프리랜서 작업 후 3.3% 원천징수, 부가세, 청구서, 영수증, 금액 한글 표기를 빠르게 정리합니다.",
-    primaryQuery: "프리랜서 정산 청구서",
-    secondaryQueries: ["3.3% 계산기", "청구서 자동작성", "영수증 자동작성", "부가세 계산기"],
+      "프리랜서 용역비를 청구하기 전 3.3% 원천징수 실수령액, 부가세, 청구서 PDF, 영수증 PDF, 한글 금액 표기를 한 흐름으로 정리합니다.",
+    primaryQuery: "프리랜서 3.3% 정산 청구서",
+    secondaryQueries: ["프리랜서 3.3% 계산", "프리랜서 실수령액 계산", "프리랜서 청구서 PDF", "프리랜서 영수증 PDF", "부가세 계산기"],
     trustNote:
-      "간편 계산과 문서 작성을 돕는 도구이며, 세무 신고나 소득 구분 판단을 대신하지 않습니다.",
+      "3.3% 계산과 문서 작성은 브라우저에서 처리하며, 세무 신고나 소득 구분 판단을 대신하지 않습니다.",
     problems: [
       {
         id: "withholding",
-        label: "3.3%",
-        title: "원천징수 계산",
-        description: "사업소득 3.3% 원천징수액과 실수령액을 빠르게 확인합니다.",
+        label: "3.3% 실수령액",
+        title: "프리랜서 3.3% 실수령액 계산",
+        description: "총 지급액 또는 실수령액 기준으로 원천징수액과 입금액을 먼저 맞춥니다.",
         path: "/tools/freelance-withholding-calculator/",
         targetToolId: "withholding-tax"
       },
       {
         id: "invoice",
-        label: "청구",
-        title: "청구서 작성",
-        description: "작업 완료 후 고객에게 보낼 청구 금액과 입금기한을 정리합니다.",
+        label: "청구서 PDF",
+        title: "프리랜서 청구서 PDF 작성",
+        description: "작업 완료 후 고객에게 보낼 청구 금액, 입금기한, 비고를 정리합니다.",
         path: "/tools/invoice-generator/",
         targetToolId: "invoice"
       },
       {
         id: "receipt",
-        label: "영수",
-        title: "영수증 작성",
-        description: "거래일, 구매자, 품목, 금액을 입력해 영수증을 만듭니다.",
+        label: "영수증 PDF",
+        title: "프리랜서 영수증 PDF 저장",
+        description: "입금 또는 결제 후 거래일, 구매자, 품목, 금액을 영수증으로 남깁니다.",
         path: "/tools/receipt-generator/",
         targetToolId: "receipt"
       },
       {
         id: "estimate",
-        label: "견적",
-        title: "견적서 작성",
-        description: "거래 전 예상 금액과 조건을 고객에게 전달합니다.",
+        label: "견적서 PDF",
+        title: "작업 전 견적서 PDF 준비",
+        description: "거래 전 예상 금액, 조건, 유효기간을 고객에게 전달합니다.",
         path: "/tools/estimate-generator/",
         targetToolId: "estimate"
       },
       {
         id: "vat",
-        label: "부가세",
-        title: "부가세 계산",
+        label: "부가세 10%",
+        title: "부가세 10% 금액 확인",
         description: "공급가액, 부가세, 합계금액을 10% 기준으로 확인합니다.",
         path: "/tools/vat-calculator/",
         targetToolId: "vat-calculator"
@@ -338,7 +338,7 @@ export const workflowPackages: WorkflowPackage[] = [
       {
         id: "korean-amount",
         label: "금액 표기",
-        title: "금액 한글 변환",
+        title: "한글 금액 표기 복사",
         description: "청구서나 견적서에 넣기 좋은 한글 금액 표기로 바꿉니다.",
         path: "/tools/amount-korean-converter/",
         targetToolId: "amount-korean"
@@ -347,28 +347,28 @@ export const workflowPackages: WorkflowPackage[] = [
     steps: [
       {
         label: "1",
-        title: "세금 방식 확인",
-        description: "3.3% 원천징수 또는 부가세 포함 여부를 먼저 확인합니다.",
+        title: "3.3% 실수령액 확인",
+        description: "원천징수 3.3% 기준으로 지급액, 세액, 실수령액을 먼저 맞춥니다.",
         toolId: "withholding-tax",
         path: "/tools/freelance-withholding-calculator/"
       },
       {
         label: "2",
-        title: "청구 문서 작성",
+        title: "청구서 PDF 작성",
         description: "청구서나 견적서로 고객에게 보낼 금액과 조건을 정리합니다.",
         toolId: "invoice",
         path: "/tools/invoice-generator/"
       },
       {
         label: "3",
-        title: "영수 확인",
+        title: "영수증 PDF 저장",
         description: "입금 또는 결제 후 영수증으로 거래 내역을 남깁니다.",
         toolId: "receipt",
         path: "/tools/receipt-generator/"
       },
       {
         label: "4",
-        title: "금액 표기 정리",
+        title: "한글 금액 복사",
         description: "문서에 넣을 숫자 금액과 한글 금액을 함께 확인합니다.",
         toolId: "amount-korean",
         path: "/tools/amount-korean-converter/"
@@ -377,7 +377,7 @@ export const workflowPackages: WorkflowPackage[] = [
     toolIds: ["withholding-tax", "invoice", "receipt", "estimate", "vat-calculator", "amount-korean"],
     faqs: [
       ["3.3% 계산기는 어떤 기준인가요?", "인적용역 사업소득 3.3% 기준의 간편 계산기이며 신고, 환급, 소득 구분 판단을 대신하지 않습니다."],
-      ["청구서와 영수증을 같이 만들 수 있나요?", "청구 전에는 청구서, 결제 후에는 영수증 도구를 이어서 사용할 수 있습니다."],
+      ["프리랜서 청구서와 영수증을 같이 만들 수 있나요?", "청구 전에는 청구서, 결제 후에는 영수증 도구를 이어서 사용하고 PDF로 저장할 수 있습니다."],
       ["부가세 계산도 필요한가요?", "거래 방식에 따라 부가세 계산이 필요할 수 있습니다. 일반과세 10% 기준 확인용으로 사용할 수 있습니다."],
       ["PDF로 저장할 수 있나요?", "문서 작성 후 브라우저의 인쇄 기능에서 PDF 저장을 선택할 수 있습니다."],
       ["입력한 고객 정보가 저장되나요?", "문서 정보는 브라우저에서 처리하며 서버로 보내지 않습니다."]

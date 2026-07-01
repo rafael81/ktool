@@ -34,7 +34,8 @@ const structuredData = [
     name: workflowPackage.title,
     description: workflowPackage.description,
     path: workflowPackage.path,
-    tools: packageTools
+    tools: packageTools,
+    keywords: [workflowPackage.primaryQuery, ...workflowPackage.secondaryQueries]
   }),
   faqPageSchema(workflowPackage.faqs)
 ];

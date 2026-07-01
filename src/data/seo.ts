@@ -123,12 +123,14 @@ export function collectionPageSchema({
   name,
   description,
   path,
-  tools
+  tools,
+  keywords
 }: {
   name: string;
   description: string;
   path: string;
   tools: ToolInfo[];
+  keywords?: string[];
 }) {
   return {
     "@context": "https://schema.org",
@@ -137,6 +139,7 @@ export function collectionPageSchema({
     description,
     url: absoluteUrl(path),
     inLanguage: "ko-KR",
+    ...(keywords?.length ? { keywords: keywords.join(", ") } : {}),
     mainEntity: toolItemListSchema(tools)
   };
 }

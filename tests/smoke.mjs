@@ -24,7 +24,7 @@ const routes = [
   },
   {
     path: "/workflows/freelance-billing/",
-    h1: "프리랜서 정산·청구 패키지",
+    h1: "프리랜서 3.3% 정산·청구 패키지",
     faq: true,
     workflowPackage: "freelance-billing"
   },
@@ -651,6 +651,36 @@ async function run() {
             workflowText.includes("이 흐름에 필요한 도구"),
           `${route.path} should render problem, sequence, and tool sections`
         );
+        if (route.workflowPackage === "freelance-billing") {
+          const workflowTitle = await page.title();
+          const workflowDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          assert(
+            workflowTitle === "프리랜서 3.3% 정산·청구 패키지 - K문서툴" &&
+              workflowDescription?.includes("프리랜서 3.3% 계산") &&
+              workflowDescription.includes("프리랜서 청구서 PDF") &&
+              workflowDescription.includes("브라우저에서 처리"),
+            `${route.path} should expose focused freelance 3.3% billing intent in title and meta description`
+          );
+          assert(
+            workflowText.includes("프리랜서 3.3% 실수령액 계산") &&
+              workflowText.includes("프리랜서 청구서 PDF 작성") &&
+              workflowText.includes("프리랜서 영수증 PDF 저장") &&
+              workflowText.includes("3.3% 실수령액 확인"),
+            `${route.path} should make the freelance 3.3%, invoice PDF, and receipt PDF flow visible`
+          );
+          const workflowJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const workflowCollectionSchema = workflowJsonLdItems.find((item) => item["@type"] === "CollectionPage");
+          assert(
+            workflowCollectionSchema?.url === `${productionUrl}${route.path}` &&
+              workflowCollectionSchema.keywords?.includes("프리랜서 3.3% 계산") &&
+              workflowCollectionSchema.keywords.includes("프리랜서 실수령액 계산") &&
+              workflowCollectionSchema.keywords.includes("프리랜서 청구서 PDF") &&
+              workflowCollectionSchema.keywords.includes("프리랜서 영수증 PDF"),
+            `${route.path} should expose CollectionPage keywords for freelance billing search intent`
+          );
+        }
         const primaryActionCount = await page.locator("[data-workflow-primary-action]").count();
         assert(primaryActionCount === 1, `${route.path} should expose one first-screen primary workflow action`);
         const primaryActionText = await page.locator("[data-workflow-primary-action]").textContent();
@@ -666,6 +696,15 @@ async function run() {
             Boolean(primaryActionTargetTool),
           `${route.path} primary workflow action should jump to a tagged tool preset`
         );
+        if (route.workflowPackage === "freelance-billing") {
+          assert(
+            primaryActionText?.includes("프리랜서 3.3% 실수령액 계산") &&
+              primaryActionHref === "/tools/freelance-withholding-calculator/" &&
+              primaryActionProblem === "withholding" &&
+              primaryActionTargetTool === "withholding-tax",
+            `${route.path} should start freelance visitors at the 3.3% withholding calculator`
+          );
+        }
         const stepsLinkHref = await page.locator("[data-workflow-steps-link]").getAttribute("href");
         const stepsSectionCount = await page.locator("#workflow-steps").count();
         const problemsSectionCount = await page.locator("#workflow-problems").count();

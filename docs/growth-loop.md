@@ -261,6 +261,7 @@ Completed:
 93. Add a dedicated `견적서 양식 PDF 저장하기` problem page so estimate form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the estimate generator.
 94. Add a dedicated `청구서 양식 PDF 저장하기` problem page so invoice form-download and payment-request intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the invoice generator.
 95. Add a dedicated `영수증 양식 PDF 저장하기` problem page so receipt and simple-receipt form intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the receipt generator.
+96. Tighten the `프리랜서 3.3% 정산·청구 패키지` around freelance withholding and billing intent: first-screen 3.3% 실수령액 CTA, 청구서 PDF/영수증 PDF wording, and CollectionPage keywords for freelancer search queries.
 
 Next after crawl data appears:
 

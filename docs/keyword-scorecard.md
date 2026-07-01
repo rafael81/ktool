@@ -47,6 +47,7 @@ The loop then added a dedicated `거래명세서 양식 PDF 저장하기` proble
 The loop then added a dedicated `견적서 양식 PDF 저장하기` problem landing so estimate form-download and PDF-save intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local estimate generator.
 The loop then added a dedicated `청구서 양식 PDF 저장하기` problem landing so invoice form-download and payment-request intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local invoice generator.
 The loop then added a dedicated `영수증 양식 PDF 저장하기` problem landing so receipt and simple-receipt form intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local receipt generator.
+The loop then tightened the `프리랜서 3.3% 정산·청구 패키지` so freelancer withholding visitors see a first-screen 실수령액 calculation CTA, adjacent 청구서 PDF and 영수증 PDF paths, and CollectionPage keywords for freelance billing search intent.
 
 ## Decision
 
