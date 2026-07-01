@@ -661,9 +661,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "iPhone HEIC, HEIF 사진을 브라우저에서 JPG 또는 PNG 이미지로 바꿔 저장합니다.",
-    pageTitle: "HEIC JPG 변환 - 아이폰 사진 JPG 변환 무료",
+    pageTitle: "HEIC JPG 변환 - 아이폰 사진 JPG 무료 변환",
     metaDescription:
-      "HEIC JPG 변환을 브라우저에서 무료로 처리하세요. iPhone HEIC, HEIF 사진을 업로드 없이 JPG 또는 PNG로 바꿔 저장합니다.",
+      "아이폰 HEIC, HEIF 사진을 JPG 또는 PNG로 무료 변환하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "HEIC JPG 변환",
     secondaryQueries: ["HEIC JPG", "아이폰 사진 JPG 변환", "HEIF JPG 변환", "HEIC PNG 변환"],
     userMoment: "iPhone 사진이 HEIC라서 회사, 관공서, 학교 업로드 시스템에서 열리지 않을 때",

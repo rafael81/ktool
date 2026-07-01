@@ -1371,7 +1371,10 @@ async function run() {
         assert(
           heicUploadState.height >= 220 &&
             heicUploadState.text.includes("HEIC 사진을 선택하세요") &&
-            heicUploadState.text.includes("파일 선택"),
+            heicUploadState.text.includes("파일 선택") &&
+            heicUploadState.text.includes("무료") &&
+            heicUploadState.text.includes("설치 없음") &&
+            heicUploadState.text.includes("서버 전송 없음"),
           `${route.path} should expose a large direct HEIC upload area`
         );
         await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
