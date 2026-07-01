@@ -81,11 +81,11 @@ Problem-intent pages also include:
 | `prep_situation_click` | Submission-prep situation card click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_flow_tool_click` | Submission-prep flow step tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_tool_click` | Submission-prep tool card click | `tool_id`, `tool_title`, `label`, `href` |
-| `tool_sample_apply` | Sample data is applied | `tool_id`, `tool_title` |
-| `tool_reset` | Tool form is reset | `tool_id`, `tool_title` |
+| `tool_sample_apply` | Sample data is applied | `tool_id`, `tool_title`, optional `changed_field_count`, `filled_field_count`, `sample_data`, `source` |
+| `tool_reset` | Tool form is reset | `tool_id`, `tool_title`, optional `changed_field_count`, `filled_field_count`, `sample_data`, `source` |
 | `tool_stamp_select` | Nameplate stamp image is selected | `file_type`, `file_size` |
 | `tool_validation_error` | Client-side validation blocks an action | `reason` |
-| `tool_download` | Nameplate PNG is generated and download starts | `file_format`, `background`, `has_stamp` |
+| `tool_download` | Nameplate PNG is generated and download starts | `file_format`, `background`, `has_stamp`, `changed_field_count`, `filled_field_count`, `sample_data`, `source` |
 | `tool_row_add` | A document item row is added | `row_count`, `document_title` |
 | `tool_row_remove` | A document item row is removed | `row_count`, `document_title` |
 | `tool_print` | Print/PDF action is requested | `row_count`, `vat_mode`, `document_title` |

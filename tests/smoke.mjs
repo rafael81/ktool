@@ -180,6 +180,28 @@ async function run() {
             previewMetrics.panelScrollWidth <= previewMetrics.panelClientWidth + 2,
           `${route.path} should not create a tall or internally scrolling nameplate preview`
         );
+        await page.locator('[data-field="company"]').fill("테스트상사");
+        await page.locator("[data-nameplate-download]").click();
+        await page.waitForFunction(() => {
+          return window.dataLayer?.some(
+            (event) => event.event === "tool_download" && event.tool_id === "business-nameplate"
+          );
+        });
+        const nameplateDownloadEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.(
+            (event) => event.event === "tool_download" && event.tool_id === "business-nameplate"
+          );
+        });
+        assert(
+          nameplateDownloadEvent?.file_format === "png" &&
+            nameplateDownloadEvent.background === "transparent" &&
+            nameplateDownloadEvent.has_stamp === false &&
+            nameplateDownloadEvent.changed_field_count >= 1 &&
+            nameplateDownloadEvent.filled_field_count >= 6 &&
+            nameplateDownloadEvent.sample_data === false &&
+            nameplateDownloadEvent.source === "direct",
+          `${route.path} should track safe nameplate download quality signals`
+        );
       }
 
       const headerSearchCount = await page.locator(".site-search-link").count();

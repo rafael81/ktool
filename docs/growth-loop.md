@@ -234,6 +234,7 @@ Completed:
 66. Show first-screen preset arrival cues on `사진 용량 줄이기` and `HEIC JPG 변환` so quick-start visitors can see the selected target before choosing files.
 67. Route home and catalog JPG PDF quick starts through `from=quick-start` so visitors see a tailored first-screen PDF bundling cue before selecting images.
 68. Preserve home/catalog quick-start source parameters on JPG PDF, photo compression, and HEIC preset arrival events so early traffic can be segmented by entry surface.
+69. Add safe download-quality signals to the indexed `사업자 명판 만들기 무료` page so organic arrivals can distinguish sample saves from edited business-nameplate saves without collecting raw business data.
 
 Next after crawl data appears:
 

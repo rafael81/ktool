@@ -172,6 +172,19 @@ const structuredData = [
   const root = document.querySelector("[data-nameplate-tool]");
   const preview = root?.querySelector("[data-preview]");
   let stampData = "";
+  const searchParams = new URLSearchParams(window.location.search);
+  const requestedSource = searchParams.get("source");
+  const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "") ? requestedSource : "direct";
+  const sampleDefaults = {
+    company: "샘플상사",
+    owner: "홍길동",
+    bizNo: "123-45-67890",
+    address: "서울특별시 중구 세종대로 110\n2층 201호",
+    businessType: "서비스업 / 디자인",
+    contact: "02-1234-5678 · hello@example.com",
+    background: "transparent"
+  };
+  const trackedFieldNames = Object.keys(sampleDefaults);
 
   function track(eventName, params = {}) {
     window.kdocTrack?.(eventName, {
@@ -187,6 +200,17 @@ const structuredData = [
 
   function lines(text) {
     return String(text || "").split("\n").filter(Boolean);
+  }
+
+  function fieldSummary() {
+    const changedFieldCount = trackedFieldNames.filter((name) => value(name) !== sampleDefaults[name]).length;
+    const filledFieldCount = trackedFieldNames.filter((name) => String(value(name)).trim()).length;
+    return {
+      changed_field_count: changedFieldCount,
+      filled_field_count: filledFieldCount,
+      sample_data: changedFieldCount === 0 && !stampData,
+      source: arrivalSource
+    };
   }
 
   function svgMarkup() {
@@ -261,14 +285,14 @@ const structuredData = [
     root.querySelector('[data-field="businessType"]').value = "서비스업 / 디자인";
     root.querySelector('[data-field="contact"]').value = "02-1234-5678 · hello@example.com";
     update();
-    track("tool_sample_apply");
+    track("tool_sample_apply", fieldSummary());
   });
 
   root?.querySelector("[data-reset]")?.addEventListener("click", () => {
     stampData = "";
     setTimeout(() => {
       update();
-      track("tool_reset");
+      track("tool_reset", fieldSummary());
     }, 0);
   });
 
@@ -292,7 +316,8 @@ const structuredData = [
       track("tool_download", {
         file_format: "png",
         background: value("background"),
-        has_stamp: Boolean(stampData)
+        has_stamp: Boolean(stampData),
+        ...fieldSummary()
       });
     };
     img.src = url;
