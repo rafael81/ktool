@@ -61,7 +61,15 @@ export function websiteSchema() {
     alternateName: "KDocTool",
     url: siteUrl,
     inLanguage: "ko-KR",
-    description: "로그인 없이 브라우저에서 사용하는 한국형 무료 업무 문서 도구입니다."
+    description: "로그인 없이 브라우저에서 사용하는 한국형 무료 업무 문서 도구입니다.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/?q={search_term_string}`
+      },
+      "query-input": "required name=search_term_string"
+    }
   };
 }
 

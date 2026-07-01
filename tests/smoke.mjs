@@ -174,6 +174,15 @@ async function run() {
           assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
         }
         if (route.path === "/") {
+          const homeJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const websiteSchema = homeJsonLdItems.find((item) => item["@type"] === "WebSite");
+          const searchActionTarget = websiteSchema?.potentialAction?.target?.urlTemplate || "";
+          assert(
+            searchActionTarget === `${productionUrl}/?q={search_term_string}`,
+            `${route.path} should expose a WebSite SearchAction for homepage search`
+          );
           const workbenchCount = await page.locator(".home-hero .workbench").count();
           assert(workbenchCount === 0, `${route.path} should not render the decorative workbench`);
           const homeSearchRootCount = await page.locator("[data-home-tool-search]").count();
@@ -202,6 +211,13 @@ async function run() {
           assert(
             oneMbHomeText?.includes("사진 1MB 이하로 줄이기"),
             `${route.path} should surface problem-intent pages from homepage search`
+          );
+          await page.goto(`${baseUrl}/?q=1MB`, { waitUntil: "networkidle" });
+          const urlQueryValue = await page.locator("[data-home-search-input]").inputValue();
+          const urlQueryText = (await page.locator("[data-home-search-item]:not([hidden])").allTextContents()).join(" ");
+          assert(
+            urlQueryValue === "1MB" && urlQueryText.includes("사진 1MB 이하로 줄이기"),
+            `${route.path} should restore homepage search results from the q URL parameter`
           );
           await page.locator("[data-home-search-input]").fill("없는도구");
           await page.waitForTimeout(450);
