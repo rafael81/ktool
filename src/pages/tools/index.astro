@@ -45,6 +45,13 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
         >
           제출 준비
         </a>
+        <a
+          href="/problems/"
+          data-analytics-event="problem_hub_nav_click"
+          data-analytics-label="문제 해결"
+        >
+          문제 해결
+        </a>
         {
           workflowPackages.map((workflowPackage) => (
             <a

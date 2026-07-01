@@ -28,6 +28,7 @@ const routes = [
     faq: true,
     workflowPackage: "freelance-billing"
   },
+  { path: "/problems/", h1: "문제별 해결", problemHub: true },
   { path: "/problems/file-format-error/", h1: "파일 형식 오류 해결", faq: true, problemPage: true },
   { path: "/problems/heic-jpg-submit/", h1: "HEIC JPG 제출 준비", faq: true, problemPage: true },
   { path: "/problems/photo-under-1mb/", h1: "사진 1MB 이하로 줄이기", faq: true, problemPage: true },
@@ -286,6 +287,8 @@ async function run() {
       }
 
       if (route.path === "/tools/") {
+        const problemHubQuickLink = await page.locator('.quick-links a[href="/problems/"]').count();
+        assert(problemHubQuickLink === 1, `${route.path} should expose the problem hub from catalog quick links`);
         const catalogShortcutRows = await page.locator("[data-prep-shortcuts] .shortcut-row").count();
         assert(catalogShortcutRows === 7, `${route.path} should render prep shortcuts as compact rows`);
         const problemEntryRows = await page.locator("[data-problem-entry-list] .workflow-row").count();
@@ -368,6 +371,38 @@ async function run() {
         assert(
           packageToolIds.every((packageId) => packageId === route.workflowPackage),
           `${route.path} should tag every package tool click with the package id`
+        );
+      }
+
+      if (route.problemHub) {
+        const problemHubRootCount = await page.locator("[data-problem-hub]").count();
+        assert(problemHubRootCount === 1, `${route.path} should render one problem hub section`);
+        const problemRows = await page.locator("[data-problem-hub] .workflow-row").count();
+        assert(problemRows === 7, `${route.path} should link to seven problem intent pages`);
+        const problemHubText = await page.locator("[data-problem-hub]").textContent();
+        assert(
+          problemHubText?.includes("파일 형식 오류 해결") &&
+            problemHubText.includes("사진 1MB 이하로 줄이기") &&
+            problemHubText.includes("여러 장 이미지 PDF로 묶기"),
+          `${route.path} should expose the main problem intents`
+        );
+        const photoProblemHref = await page
+          .locator('[data-problem-hub] a[href="/problems/photo-under-1mb/"]')
+          .count();
+        assert(photoProblemHref === 1, `${route.path} should link to the 1MB photo problem page`);
+        const taggedProblemRows = await page
+          .locator(
+            '[data-problem-hub] a[data-analytics-event="problem_hub_click"][data-analytics-target-problem-id][data-analytics-target-tool-id]'
+          )
+          .count();
+        assert(taggedProblemRows === 7, `${route.path} should tag every problem row with problem and tool metadata`);
+        const jsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const collectionPage = jsonLdItems.find((item) => item["@type"] === "CollectionPage");
+        assert(
+          collectionPage?.mainEntity?.itemListElement?.length === 7,
+          `${route.path} should expose a CollectionPage ItemList for problem pages`
         );
       }
 
@@ -1027,6 +1062,7 @@ async function assertSitemapMetadata() {
   for (const path of [
     "/",
     "/tools/",
+    "/problems/",
     "/problems/file-format-error/",
     "/problems/photo-under-1mb/",
     "/problems/images-to-one-pdf/",

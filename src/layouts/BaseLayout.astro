@@ -26,6 +26,7 @@ const currentWorkflowPackage = workflowPackages.find(
 const currentProblemPage = problemPages.find(
   (problemPage) => normalizePath(problemPage.path) === normalizedCanonicalPath
 );
+const isProblemHub = normalizedCanonicalPath === "/problems/";
 const workflowCategoryMap: Record<WorkflowPackageId, ToolCategoryId> = {
   "photo-scan-submission": "image",
   "business-document-submission": "business",
@@ -59,6 +60,7 @@ function absoluteSiteUrl(path: string) {
 const breadcrumbEntries = [
   { name: "K문서툴", path: "/" },
   ...(normalizedCanonicalPath === "/tools/" ? [{ name: "전체 도구", path: "/tools/" }] : []),
+  ...(isProblemHub ? [{ name: "문제별 해결", path: "/problems/" }] : []),
   ...(normalizedCanonicalPath.startsWith("/tools/") &&
   normalizedCanonicalPath !== "/tools/" &&
   !currentTool
@@ -85,7 +87,7 @@ const breadcrumbEntries = [
     : []),
   ...(currentProblemPage
     ? [
-        { name: "전체 도구", path: "/tools/" },
+        { name: "문제별 해결", path: "/problems/" },
         { name: currentProblemPage.title, path: currentProblemPage.path }
       ]
     : [])
@@ -325,12 +327,21 @@ const analyticsPage = {
         <nav class="top-nav" aria-label="주요 도구">
           <a
             href="/tools/"
-            class:list={{ "is-active": isActivePath("/tools/") || Boolean(currentProblemPage) }}
-            aria-current={isActivePath("/tools/") || currentProblemPage ? "page" : undefined}
+            class:list={{ "is-active": isActivePath("/tools/") }}
+            aria-current={isActivePath("/tools/") ? "page" : undefined}
             data-analytics-event="catalog_nav_click"
             data-analytics-label="전체 도구"
           >
             전체 도구
+          </a>
+          <a
+            href="/problems/"
+            class:list={{ "is-active": isProblemHub || Boolean(currentProblemPage) }}
+            aria-current={isProblemHub || currentProblemPage ? "page" : undefined}
+            data-analytics-event="problem_hub_nav_click"
+            data-analytics-label="문제 해결"
+          >
+            문제 해결
           </a>
           {
             toolCategories.map((category) => (

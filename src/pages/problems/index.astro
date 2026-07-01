@@ -1,0 +1,114 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { problemPages } from "@/data/problemPages";
+import { getTool } from "@/data/tools";
+import { absoluteUrl, websiteSchema } from "@/data/seo";
+
+const problemsWithTools = problemPages.map((problemPage) => ({
+  ...problemPage,
+  targetTool: getTool(problemPage.targetToolId)
+}));
+const problemItemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "K문서툴 문제별 해결",
+  itemListElement: problemPages.map((problemPage, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: problemPage.title,
+    url: absoluteUrl(problemPage.path)
+  }))
+};
+const structuredData = [
+  websiteSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "문제별 해결 - K문서툴",
+    description: "파일 형식 오류, HEIC, 사진 용량, 이미지 크기, 방향, 여백, PDF 묶기 문제를 바로 해결하는 무료 도구 진입점입니다.",
+    url: absoluteUrl("/problems/"),
+    inLanguage: "ko-KR",
+    mainEntity: problemItemListSchema
+  }
+];
+---
+
+<BaseLayout
+  title="문제별 해결 - K문서툴"
+  description="파일 형식 오류, HEIC JPG 제출, 사진 1MB 이하 압축, 이미지 크기 제한, 사진 방향, 문서 여백, 여러 장 이미지 PDF 문제를 바로 고르고 무료로 처리하세요."
+  canonicalPath="/problems/"
+  structuredData={structuredData}
+>
+  <main class="page-shell">
+    <section class="tool-intro">
+      <div>
+        <h1>문제별 해결</h1>
+        <p>오류 메시지나 제출 조건에서 고르고 바로 처리하세요.</p>
+      </div>
+      <div class="quick-links" aria-label="문제 해결 바로가기">
+        <a
+          href="/tools/"
+          data-analytics-event="problem_hub_catalog_click"
+          data-analytics-label="전체 도구"
+        >
+          전체 도구
+        </a>
+        <a
+          href="/tools/submission-file-prep/"
+          data-analytics-event="problem_hub_submission_prep_click"
+          data-analytics-label="제출 준비"
+        >
+          제출 준비
+        </a>
+        <a
+          href="/categories/image/"
+          data-analytics-event="problem_hub_category_click"
+          data-analytics-label="이미지"
+        >
+          이미지
+        </a>
+        <a
+          href="/categories/pdf/"
+          data-analytics-event="problem_hub_category_click"
+          data-analytics-label="PDF"
+        >
+          PDF
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section" data-problem-hub>
+      <div class="section-heading">
+        <h2>자주 막히는 문제</h2>
+      </div>
+      <div class="workflow-list">
+        {
+          problemsWithTools.map((problemPage) => (
+            <a
+              class="workflow-row"
+              href={problemPage.path}
+              data-analytics-event="problem_hub_click"
+              data-analytics-problem-id={problemPage.id}
+              data-analytics-target-problem-id={problemPage.id}
+              data-analytics-target-problem-title={problemPage.title}
+              data-analytics-target-tool-id={problemPage.targetTool.id}
+              data-analytics-target-tool-title={problemPage.targetTool.title}
+              data-analytics-target-preset={problemPage.targetPreset}
+              data-analytics-label={problemPage.title}
+            >
+              <span class="workflow-row-kicker">{problemPage.shortTitle}</span>
+              <span class="workflow-row-copy">
+                <strong>{problemPage.title}</strong>
+                <span>{problemPage.description}</span>
+              </span>
+              <span class="workflow-row-meta">
+                <span>{problemPage.targetTool.shortTitle}</span>
+                {problemPage.targetPreset && <span>{problemPage.targetPreset}</span>}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

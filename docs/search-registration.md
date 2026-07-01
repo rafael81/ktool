@@ -30,6 +30,7 @@ After verification:
    - `https://k-document-tool.pages.dev/workflows/photo-scan-submission/`
    - `https://k-document-tool.pages.dev/workflows/business-document-submission/`
    - `https://k-document-tool.pages.dev/workflows/freelance-billing/`
+   - `https://k-document-tool.pages.dev/problems/`
    - `https://k-document-tool.pages.dev/problems/file-format-error/`
    - `https://k-document-tool.pages.dev/problems/heic-jpg-submit/`
    - `https://k-document-tool.pages.dev/problems/photo-under-1mb/`
@@ -71,7 +72,7 @@ Site URL:
 After site ownership verification:
 
 1. Submit sitemap: `https://k-document-tool.pages.dev/sitemap-index.xml`.
-2. Request collection for the same thirty-two indexable URLs listed above.
+2. Request collection for the same thirty-three indexable URLs listed above.
 3. Check that robots.txt is detected as allowed.
 
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
