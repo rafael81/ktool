@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && npm run analytics:check && astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "astro check && npm run analytics:check",
+    "analytics:check": "node scripts/check-analytics-contract.mjs",
     "seo:health": "node scripts/seo-health.mjs",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "test:smoke": "node tests/smoke.mjs"

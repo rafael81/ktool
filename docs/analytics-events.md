@@ -31,17 +31,16 @@ Problem-intent pages also include:
 | --- | --- | --- |
 | `page_view` | Page analytics boot completes | `tool_id`, `tool_title` on tool pages; `problem_id`, `problem_title` on problem pages |
 | `tool_start` | First input/change inside a tool | `tool_id`, `tool_title` |
-| `tool_nav_click` | Header tool nav click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_nav_click` | Header catalog link click | `label`, `href` |
 | `problem_hub_nav_click` | Header or catalog problem-hub link click | `label`, `href` |
-| `workflow_nav_click` | Header submission-prep workflow link click | `label`, `href` |
 | `package_nav_click` | Header, home, or catalog workflow package link click | `label`, `href`, `package_id` |
 | `category_nav_click` | Header category link click | `label`, `href` |
-| `catalog_quick_link_click` | Home catalog quick-link click | `label`, `href` |
-| `home_prep_shortcut_click` | Home problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
-| `category_quick_link_click` | Home category quick-link click | `label`, `href` |
-| `home_category_click` | Home category card click | `label`, `href` |
-| `home_all_tools_click` | Home representative-tool section link to the full catalog | `label`, `href` |
+| `header_search_click` | Header search shortcut click | `label`, `href` |
+| `home_search_change` | Home search input or category filter changes | `search_category`, `visible_count`, `search_query_length` |
+| `home_search_tool_click` | Home search tool result click | `tool_id`, `tool_title`, `label`, `href` |
+| `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `home_catalog_all_click` | Home category section link to the full catalog | `label`, `href` |
+| `home_all_tool_click` | Home category tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
 | `catalog_prep_shortcut_click` | Tool catalog problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
@@ -54,7 +53,6 @@ Problem-intent pages also include:
 | `problem_hub_submission_prep_click` | Problem hub link to the submission-prep flow | `label`, `href` |
 | `problem_hub_category_click` | Problem hub quick category link click | `label`, `href` |
 | `problem_hub_click` | Problem hub problem-intent row click | `problem_id`, `target_problem_id`, `target_problem_title`, `target_tool_id`, `target_tool_title`, `label`, `href`, optional `target_preset` |
-| `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `tool_problem_arrival` | Tool page opens from a problem page CTA | `tool_id`, `tool_title`, `source`, `problem_id`, `problem_title`, optional `target_preset` |
 | `problem_arrival_back_click` | Problem-source tool page banner link back to the problem page | `tool_id`, `tool_title`, `target_problem_id`, `target_problem_title`, `label`, `href` |
 | `problem_primary_tool_click` | Problem page first CTA click | `problem_id`, `problem_title`, `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
@@ -70,9 +68,7 @@ Problem-intent pages also include:
 | `package_related_click` | Workflow package related link click | `label`, `href`, `package_id` |
 | `package_problem_click` | Workflow package problem shortcut click | `label`, `href`, `package_id`, `problem_id`, `target_tool_id`, optional `target_preset` |
 | `package_tool_click` | Workflow package step or tool card click | `tool_id`, `tool_title`, `label`, `href`, `package_id` |
-| `planned_category_related_click` | Planned category related tool click | `tool_id`, `tool_title`, `label`, `href` |
 | `tool_quick_link_click` | Tool quick-link click | `tool_id`, `tool_title`, `label`, `href` |
-| `home_tool_click` | Home tool card click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_quick_tool_click` | Submission-prep page quick tool link click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_path_click` | Submission-prep highlighted PDF workflow step or CTA click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_decision_click` | Submission-prep PDF workflow decision hint click | `tool_id`, `tool_title`, `label`, `href` |

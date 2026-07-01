@@ -24,6 +24,14 @@ npm run seo:health
 
 This verifies the live `robots.txt`, sitemap index, sitemap URLs, canonical tags, `noindex` meta, and page headings. It does not replace Google Search Console, Naver Search Advisor, or Cloudflare Web Analytics because those require account data.
 
+Run the analytics contract check before relying on browser events:
+
+```bash
+npm run analytics:check
+```
+
+This verifies that every statically discoverable analytics event used in the source is documented in `docs/analytics-events.md`.
+
 ## Signals To Check
 
 ### Google Search Console
@@ -98,11 +106,15 @@ Events are provider-neutral and pushed to `window.dataLayer` plus `kdoc:analytic
 - `heic_convert_preset_change`
 - `heic_convert_convert`
 - `heic_convert_download`
-- `workflow_nav_click`
+- `header_search_click`
+- `home_search_change`
+- `home_search_tool_click`
+- `home_search_problem_click`
+- `home_catalog_all_click`
+- `home_all_tool_click`
 - `package_nav_click`
 - `package_problem_click`
 - `package_tool_click`
-- `home_prep_shortcut_click`
 - `catalog_prep_shortcut_click`
 - `catalog_filter_change`
 - `catalog_search_change`
@@ -199,6 +211,7 @@ Completed:
 51. Raise sitemap freshness hints for problem and workflow entry pages so crawler signals match the current search-intent architecture.
 52. Replace visible "처리 원칙" wording on tool-side trust panels with direct user-facing privacy labels like "서버 전송 없음" and "입력값 저장 안 함".
 53. Add a central analytics sanitizer so event payloads drop sensitive keys, clamp long strings, and remove raw search-query parameters from tracked href values.
+54. Add `npm run analytics:check` so analytics event names cannot drift from `docs/analytics-events.md` as new routes and CTA events are added.
 
 Next after crawl data appears:
 
