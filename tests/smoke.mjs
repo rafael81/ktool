@@ -140,6 +140,8 @@ async function run() {
           }).length
         );
         assert(visibleSidePanels === 0, `${route.path} should not show explanatory side panels in the workspace`);
+        const visibleProblemArrivalCount = await page.locator("[data-problem-arrival]:not([hidden])").count();
+        assert(visibleProblemArrivalCount === 0, `${route.path} should hide the problem arrival banner on direct visits`);
       }
 
       const headerSearchCount = await page.locator(".site-search-link").count();
@@ -423,6 +425,33 @@ async function run() {
               arrivalEvent.tool_id &&
               arrivalEvent.tool_title,
             `${route.path} target tool page should emit a problem-source arrival event`
+          );
+          const arrivalBannerCount = await arrivalPage.locator("[data-problem-arrival]:not([hidden])").count();
+          const arrivalBannerText = await arrivalPage.locator("[data-problem-arrival]").textContent();
+          const arrivalBackHref = await arrivalPage.locator("[data-problem-arrival-link]").evaluate((link) => link.href);
+          assert(
+            arrivalBannerCount === 1 &&
+              arrivalBannerText?.includes(problemTitle) &&
+              arrivalBackHref === `${baseUrl}${route.path}`,
+            `${route.path} target tool page should show a contextual problem arrival banner`
+          );
+          await arrivalPage.evaluate(() => {
+            document.querySelector("[data-problem-arrival-link]")?.addEventListener(
+              "click",
+              (event) => event.preventDefault(),
+              { once: true }
+            );
+          });
+          await arrivalPage.locator("[data-problem-arrival-link]").click();
+          const backClickEvent = await arrivalPage.evaluate(() => {
+            return window.dataLayer?.findLast?.((event) => event.event === "problem_arrival_back_click");
+          });
+          assert(
+            backClickEvent?.target_problem_id === problemId &&
+              backClickEvent.target_problem_title === problemTitle &&
+              backClickEvent.tool_id &&
+              backClickEvent.tool_title,
+            `${route.path} problem arrival back link should include problem and tool analytics context`
           );
         } finally {
           await arrivalPage.close();

@@ -116,7 +116,11 @@ const jsonLdItems = [...structuredDataItems, ...(breadcrumbSchema ? [breadcrumbS
 const analyticsPage = {
   path: normalizedCanonicalPath,
   title,
-  problemIds: problemPages.map((problemPage) => problemPage.id)
+  problems: problemPages.map((problemPage) => ({
+    id: problemPage.id,
+    title: problemPage.title,
+    path: problemPage.path
+  }))
 };
 ---
 
@@ -153,7 +157,8 @@ const analyticsPage = {
     <script is:inline define:vars={{ analyticsPage }}>
       (() => {
         const page = analyticsPage;
-        const knownProblemIds = new Set(page.problemIds || []);
+        const knownProblems = new Map((page.problems || []).map((problem) => [problem.id, problem]));
+        const knownProblemIds = new Set(knownProblems.keys());
 
         function toolContext(node) {
           const root = node?.closest?.("[data-tool-id]");
@@ -189,6 +194,20 @@ const analyticsPage = {
           return /^[a-z0-9-]{1,40}$/i.test(text) ? text : null;
         }
 
+        function showProblemArrivalBanner(problem) {
+          const banner = document.querySelector("[data-problem-arrival]");
+          if (!banner || !problem) return;
+          const title = banner.querySelector("[data-problem-arrival-title]");
+          const link = banner.querySelector("[data-problem-arrival-link]");
+          if (title) title.textContent = problem.title;
+          if (link instanceof HTMLAnchorElement) {
+            link.href = problem.path;
+            link.dataset.analyticsTargetProblemId = problem.id;
+            link.dataset.analyticsTargetProblemTitle = problem.title;
+          }
+          banner.hidden = false;
+        }
+
         window.dataLayer = window.dataLayer || [];
         window.kdocTrack = function kdocTrack(eventName, params = {}) {
           const payload = {
@@ -212,6 +231,7 @@ const analyticsPage = {
           const source = searchParams.get("source");
           const problemId = searchParams.get("problem_id");
           if (pageTool && source === "problem" && knownProblemIds.has(problemId)) {
+            const problem = knownProblems.get(problemId);
             const params = {
               ...toolContext(pageTool),
               source: "problem",
@@ -220,6 +240,7 @@ const analyticsPage = {
             const preset = safePreset(searchParams.get("preset"));
             if (preset) params.target_preset = preset;
             window.kdocTrack("tool_problem_arrival", params);
+            showProblemArrivalBanner(problem);
           }
 
           const startedTools = new Set();
@@ -343,6 +364,28 @@ const analyticsPage = {
         </div>
       </div>
     </header>
+    {
+      currentTool && (
+        <div class="arrival-context" data-problem-arrival hidden>
+          <div class="arrival-context-inner">
+            <strong>이어하기</strong>
+            <span>
+              <b data-problem-arrival-title></b>에서 왔어요. 설정을 확인하고 바로 처리하세요.
+            </span>
+            <a
+              href="/tools/"
+              data-problem-arrival-link
+              data-analytics-event="problem_arrival_back_click"
+              data-analytics-tool-id={currentTool.id}
+              data-analytics-tool-title={currentTool.title}
+              data-analytics-label="문제 보기"
+            >
+              문제 보기
+            </a>
+          </div>
+        </div>
+      )
+    }
     <slot />
   </body>
 </html>
@@ -538,6 +581,52 @@ const analyticsPage = {
     font-weight: 800;
     line-height: 1;
     padding: 4px 5px;
+  }
+
+  .arrival-context {
+    border-bottom: 1px solid #c7d7fe;
+    background: #eff4ff;
+  }
+
+  .arrival-context[hidden] {
+    display: none;
+  }
+
+  .arrival-context-inner {
+    display: flex;
+    width: min(1180px, 100%);
+    min-height: 46px;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+    padding: 8px 34px;
+    color: #344054;
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .arrival-context strong {
+    flex: 0 0 auto;
+    color: var(--accent-dark);
+    font-weight: 900;
+  }
+
+  .arrival-context span {
+    min-width: 0;
+  }
+
+  .arrival-context b {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  .arrival-context a {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: var(--accent-dark);
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .page-shell {
@@ -2615,6 +2704,15 @@ const analyticsPage = {
 
     .home-page {
       padding: 16px;
+    }
+
+    .arrival-context-inner {
+      flex-wrap: wrap;
+      padding: 10px 16px;
+    }
+
+    .arrival-context a {
+      margin-left: 0;
     }
 
     .home-page .hero-search-field {

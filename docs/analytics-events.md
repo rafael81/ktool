@@ -48,6 +48,7 @@ Problem-intent pages also include:
 | `problem_entry_click` | Tool catalog problem-intent row click | `label`, `href` |
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `tool_problem_arrival` | Tool page opens from a problem page CTA | `tool_id`, `tool_title`, `source`, `problem_id`, optional `target_preset` |
+| `problem_arrival_back_click` | Problem-source tool page banner link back to the problem page | `tool_id`, `tool_title`, `target_problem_id`, `target_problem_title`, `label`, `href` |
 | `problem_primary_tool_click` | Problem page first CTA click | `problem_id`, `problem_title`, `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `problem_tool_click` | Problem page recommended tool row click | `problem_id`, `problem_title`, `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `problem_submission_prep_click` | Problem page link to submission-prep hub | `problem_id`, `problem_title`, `label`, `href` |
