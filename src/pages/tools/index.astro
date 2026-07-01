@@ -89,7 +89,7 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
             type="search"
             autocomplete="off"
             inputmode="search"
-            placeholder="거래명세서, HEIC, PDF, 3.3%"
+            placeholder="거래명세서, HEIC, PDF, 업로드 용량 초과"
             data-tool-search
           />
         </label>
@@ -120,6 +120,7 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
               data-analytics-tool-title={tool.title}
               data-analytics-label={tool.title}
               data-tool-search-item
+              data-tool-search-kind="tool"
               data-tool-category={tool.category}
               data-tool-search-text={[
                 tool.title,
@@ -143,6 +144,54 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
               </span>
             </a>
           ))
+        }
+        {
+          problemPages.map((problemPage) => {
+            const targetTool = tools.find((tool) => tool.id === problemPage.targetToolId);
+            if (!targetTool) return null;
+
+            return (
+              <a
+                class="catalog-tool-row"
+                href={problemPage.path}
+                hidden
+                data-analytics-event="catalog_problem_search_click"
+                data-analytics-problem-id={problemPage.id}
+                data-analytics-target-problem-id={problemPage.id}
+                data-analytics-target-problem-title={problemPage.title}
+                data-analytics-target-tool-id={targetTool.id}
+                data-analytics-target-tool-title={targetTool.title}
+                data-analytics-target-preset={problemPage.targetPreset}
+                data-analytics-label={problemPage.title}
+                data-tool-search-item
+                data-tool-search-kind="problem"
+                data-tool-category={targetTool.category}
+                data-tool-search-text={[
+                  problemPage.title,
+                  problemPage.shortTitle,
+                  problemPage.primaryQuery,
+                  ...problemPage.secondaryQueries,
+                  ...problemPage.intentQueries,
+                  problemPage.description,
+                  problemPage.actionNote,
+                  targetTool.title,
+                  targetTool.shortTitle,
+                  categoryById.get(targetTool.category)?.title ?? ""
+                ].join(" ")}
+              >
+                <span class="catalog-tool-category">문제 해결</span>
+                <span class="catalog-tool-copy">
+                  <strong>{problemPage.title}</strong>
+                  <span>{problemPage.description}</span>
+                </span>
+                <span class="catalog-tool-queries">
+                  {problemPage.intentQueries.slice(0, 2).map((query) => (
+                    <span>{query}</span>
+                  ))}
+                </span>
+              </a>
+            );
+          })
         }
       </div>
       <p class="catalog-empty" data-tool-empty hidden>
@@ -270,15 +319,16 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
       let visibleCount = 0;
 
       items.forEach((item) => {
+        const isProblemResult = item.dataset.toolSearchKind === "problem";
         const matchesCategory =
           activeCategory === "all" || item.dataset.toolCategory === activeCategory;
         const matchesQuery = !query || normalize(item.dataset.toolSearchText).includes(query);
-        const visible = matchesCategory && matchesQuery;
+        const visible = matchesCategory && matchesQuery && (!isProblemResult || Boolean(query));
         item.hidden = !visible;
         if (visible) visibleCount += 1;
       });
 
-      if (countNode) countNode.textContent = `${visibleCount}개 도구`;
+      if (countNode) countNode.textContent = query ? `${visibleCount}개 결과` : `${visibleCount}개 도구`;
       if (emptyNode) emptyNode.hidden = visibleCount !== 0;
       if (eventName) track(eventName, visibleCount);
     }

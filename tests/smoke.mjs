@@ -317,9 +317,15 @@ async function run() {
         const catalogRootCount = await page.locator("[data-tool-catalog]").count();
         assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();
-        assert(catalogRowCount >= 16, `${route.path} should render all tool rows in the catalog`);
+        const catalogToolRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="tool"]').count();
+        const catalogProblemRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="problem"]').count();
+        assert(catalogToolRowCount >= 16, `${route.path} should render all tool rows in the catalog`);
+        assert(catalogProblemRowCount === 7, `${route.path} should render seven search-only problem rows in the catalog`);
         const initialVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
-        assert(initialVisibleRows === catalogRowCount, `${route.path} should show every tool before filtering`);
+        assert(
+          initialVisibleRows === catalogToolRowCount && catalogRowCount === catalogToolRowCount + catalogProblemRowCount,
+          `${route.path} should show only tools before searching and keep problem rows search-only`
+        );
         await page.locator('[data-tool-filter="image"]').click();
         const imageVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
         const imageResultText = await page.locator("[data-tool-result-count]").textContent();
@@ -327,11 +333,29 @@ async function run() {
         await page.locator("[data-tool-search]").fill("HEIC");
         await page.waitForTimeout(450);
         const heicVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
-        const heicVisibleText = await page.locator("[data-tool-search-item]:not([hidden])").textContent();
+        const heicVisibleText = (await page.locator("[data-tool-search-item]:not([hidden])").allTextContents()).join(" ");
         assert(
-          heicVisibleRows === 1 && heicVisibleText?.includes("HEIC JPG 변환"),
-          `${route.path} should search within the selected category`
+          heicVisibleRows >= 2 &&
+            heicVisibleText?.includes("HEIC JPG 변환") &&
+            heicVisibleText.includes("HEIC JPG 제출 준비"),
+          `${route.path} should search tools and problem pages within the selected category`
         );
+        await page.locator('[data-tool-filter="all"]').click();
+        const catalogIntentSearches = [
+          ["업로드 용량 초과", "사진 1MB 이하로 줄이기"],
+          ["사진이 옆으로", "사진 방향 바로잡기"],
+          ["지원하지 않는 파일 형식", "파일 형식 오류 해결"]
+        ];
+        for (const [query, expectedTitle] of catalogIntentSearches) {
+          await page.locator("[data-tool-search]").fill(query);
+          await page.waitForTimeout(450);
+          const intentRows = await page.locator('[data-tool-search-item][data-tool-search-kind="problem"]:not([hidden])').count();
+          const intentText = (await page.locator("[data-tool-search-item]:not([hidden])").allTextContents()).join(" ");
+          assert(
+            intentRows >= 1 && intentText.includes(expectedTitle),
+            `${route.path} should match "${query}" to "${expectedTitle}" from catalog search`
+          );
+        }
         await page.locator("[data-tool-search]").fill("없는도구");
         await page.waitForTimeout(450);
         const emptyVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();

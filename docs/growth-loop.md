@@ -191,6 +191,7 @@ Completed:
 43. Add the `/problems/` problem-intent hub so common upload and submission blockers have one crawlable entry point with compact internal links.
 44. Add `npm run seo:health` as the public technical SEO check for live robots, sitemap, canonical, `noindex`, and heading regressions.
 45. Expand homepage problem-intent matching so colloquial blocked-state searches like upload failures, iPhone photo issues, sideways scans, document margins, and multi-image PDF submission route to the right problem page.
+46. Expand `/tools/` catalog search with search-only problem-intent rows so blocked-state queries route to the right problem page without cluttering the default tool list.
 
 Next after crawl data appears:
 
