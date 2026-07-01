@@ -249,6 +249,7 @@ Completed:
 81. Tighten the high-intent `견적서 자동작성` page around the organic promise: free form creation, PDF saving, first-screen no-install/private-input badges, and WebPage structured data.
 82. Tighten the high-intent `청구서 자동작성` page around the organic promise: free form creation, PDF saving, first-screen no-install/private-input badges, and WebPage structured data.
 83. Tighten the high-intent `영수증 자동작성` page around the organic promise: free form creation, PDF saving, first-screen no-install/private-input badges, and WebPage structured data.
+84. Tighten the high-intent `부가세 계산기` page around the organic promise: free 10% VAT calculation, first-screen no-install/private-input/result-copy badges, and WebPage structured data.
 
 Next after crawl data appears:
 

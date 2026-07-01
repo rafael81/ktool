@@ -960,6 +960,34 @@ async function run() {
         }
       }
 
+      if (route.path === "/tools/vat-calculator/") {
+        const vatTitle = await page.title();
+        const vatDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        const vatTrustText = await page.locator("[data-vat-trust-badges]").textContent();
+        assert(
+          vatTitle === "부가세 계산기 - 무료 공급가액 합계금액 계산" &&
+            vatDescription?.includes("무료로 계산") &&
+            vatDescription.includes("설치 없이") &&
+            vatDescription.includes("결과를 복사") &&
+            vatTrustText?.includes("무료") &&
+            vatTrustText.includes("설치 없음") &&
+            vatTrustText.includes("입력값 저장 안 함") &&
+            vatTrustText.includes("결과 복사"),
+          `${route.path} should expose the free/no-install/private/copy promise on the first screen`
+        );
+        const vatJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const vatWebPageSchema = vatJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          vatWebPageSchema?.url === `${productionUrl}${route.path}` &&
+            vatWebPageSchema.keywords?.includes("부가세 무료 계산기") &&
+            vatWebPageSchema.keywords.includes("공급가액 부가세 계산") &&
+            vatWebPageSchema.keywords.includes("합계금액 공급가액 역산"),
+          `${route.path} should expose a WebPage schema for 부가세 search intent`
+        );
+      }
+
       if (route.stampTool) {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => {
