@@ -3,6 +3,7 @@ import type { ToolId } from "@/data/tools";
 export type ProblemPageId =
   | "business-nameplate-stamp"
   | "transaction-statement-pdf"
+  | "estimate-pdf"
   | "file-format-error"
   | "heic-jpg-submit"
   | "photo-under-1mb"
@@ -132,6 +133,56 @@ export const problemPages: ProblemPage[] = [
       ]
     ],
     relatedProblemIds: ["business-nameplate-stamp", "images-to-one-pdf", "file-format-error"]
+  },
+  {
+    id: "estimate-pdf",
+    slug: "estimate-pdf",
+    path: "/problems/estimate-pdf/",
+    title: "견적서 양식 PDF 저장하기",
+    shortTitle: "견적서 PDF",
+    description: "고객명, 품목, 수량, 단가를 입력해 견적서를 바로 작성하고 PDF로 저장합니다. 파일은 서버로 전송되지 않습니다.",
+    metaDescription:
+      "견적서 양식을 무료로 작성하고 PDF로 저장하세요. 고객명, 품목, 수량, 단가, 부가세, 유효기간을 설치 없이 브라우저에서 처리하고 입력값은 서버로 전송되지 않습니다.",
+    primaryQuery: "견적서 양식 PDF",
+    secondaryQueries: ["견적서 양식 무료", "견적서 자동작성", "견적서 PDF 저장"],
+    intentQueries: [
+      "견적서 바로 작성",
+      "무료 견적서 양식",
+      "견적서 인쇄",
+      "견적서 유효기간",
+      "견적서 부가세 계산",
+      "견적서 합계 한글",
+      "견적서 PDF 만들기",
+      "견적서 양식 다운로드"
+    ],
+    targetToolId: "estimate",
+    targetPath: "/tools/estimate-generator/",
+    targetLabel: "견적서 작성",
+    actionNote: "고객명, 품목, 수량, 단가, 유효기간을 입력해 견적서 PDF 만들기를 바로 시작합니다.",
+    steps: ["공급자와 고객 입력", "품목·수량·단가 입력", "유효기간과 합계 확인", "인쇄 또는 PDF 저장"],
+    faqs: [
+      [
+        "견적서 양식을 다운로드해야 하나요?",
+        "아니요. 브라우저에서 바로 입력하고 미리보기를 확인한 뒤 인쇄 화면에서 PDF로 저장할 수 있습니다."
+      ],
+      [
+        "부가세 포함 견적도 만들 수 있나요?",
+        "네. 부가세 별도, 포함, 없음 중에서 선택해 공급가액, 세액, 합계를 확인할 수 있습니다."
+      ],
+      [
+        "견적 유효기간을 넣을 수 있나요?",
+        "네. 유효기간 필드를 입력하면 견적서 미리보기에 함께 표시됩니다."
+      ],
+      [
+        "입력한 고객 정보가 저장되나요?",
+        "아니요. 공급자, 고객, 품목 정보는 브라우저 안에서 문서 미리보기와 인쇄에만 사용하고 서버로 보내지 않습니다."
+      ],
+      [
+        "견적서가 계약서를 대신하나요?",
+        "아니요. 견적서는 금액과 조건을 제안하는 일반 문서이며, 계약 체결이나 세금계산서 발행을 대신하지 않습니다."
+      ]
+    ],
+    relatedProblemIds: ["transaction-statement-pdf", "business-nameplate-stamp", "images-to-one-pdf"]
   },
   {
     id: "file-format-error",

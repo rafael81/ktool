@@ -258,6 +258,7 @@ Completed:
 90. Retighten the `/tools/` catalog to match the homepage entry promise: focused free PDF/image/document title/meta, WebPage keywords, `명판 PNG` quick start, and nameplate-aware catalog search placeholder.
 91. Add a dedicated `사업자 명판 도장 이미지 만들기` problem page so the first indexed nameplate intent has a searchable problem landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the nameplate PNG tool.
 92. Add a dedicated `거래명세서 양식 PDF 저장하기` problem page so form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the transaction statement generator.
+93. Add a dedicated `견적서 양식 PDF 저장하기` problem page so estimate form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the estimate generator.
 
 Next after crawl data appears:
 
