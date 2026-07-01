@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("image-rotator");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "옆으로 누운 사진 돌리기",
+      "사진 방향 바로잡기",
+      "스캔본 방향 회전"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -26,7 +38,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 옆으로 누운 스캔본이나 휴대폰 사진을 제출 전에 올바른 방향으로 정리합니다.</p>
+        <p>옆으로 누운 사진과 스캔본 방향을 바로잡으세요. 왼쪽 90도, 오른쪽 90도, 180도 회전을 브라우저에서 처리합니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -53,9 +65,20 @@ const structuredData = [
 
         <label class="field">
           <span>이미지 파일</span>
-          <span class="file-control">
+          <span class="file-control upload-dropzone">
             <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <span class="upload-icon" aria-hidden="true">
+              <IconGlyph name="rotate" />
+            </span>
+            <strong>방향을 돌릴 이미지를 선택하세요</strong>
             <span data-file-label>JPG/PNG/WebP 여러 장 선택</span>
+            <span class="upload-trust-badges" data-upload-badges aria-label="주요 장점">
+              <span>무료</span>
+              <span>설치 없음</span>
+              <span>서버 전송 없음</span>
+            </span>
+            <em>파일 선택</em>
+            <small>최대 20장 · 총 50MB · 원본 유지</small>
           </span>
         </label>
 

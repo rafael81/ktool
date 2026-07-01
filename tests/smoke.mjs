@@ -1271,6 +1271,19 @@ async function run() {
       }
 
       if (route.imageRotator) {
+        const rotateUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          rotateUploadState.height >= 220 &&
+            rotateUploadState.text.includes("방향을 돌릴 이미지를 선택하세요") &&
+            rotateUploadState.text.includes("파일 선택") &&
+            rotateUploadState.text.includes("무료") &&
+            rotateUploadState.text.includes("설치 없음") &&
+            rotateUploadState.text.includes("서버 전송 없음"),
+          `${route.path} should expose a large direct image rotation upload area`
+        );
         await page.goto(`${baseUrl}${route.path}?preset=left`, { waitUntil: "networkidle" });
         const rotationPresetState = await page.evaluate(() => ({
           angle: document.querySelector("[data-rotation-angle]")?.value,

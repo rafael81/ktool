@@ -588,9 +588,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "JPG, PNG, WebP 이미지를 브라우저에서 왼쪽, 오른쪽, 180도로 회전해 제출용 이미지로 저장합니다.",
-    pageTitle: "이미지 회전 - 사진 방향 돌리기 무료",
+    pageTitle: "이미지 회전 - 사진 방향 바로잡기 무료",
     metaDescription:
-      "이미지 회전을 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 왼쪽, 오른쪽, 180도로 돌려 저장합니다.",
+      "옆으로 누운 JPG, PNG, WebP 사진과 스캔본 방향을 무료로 바로잡으세요. 설치 없이 왼쪽 90도, 오른쪽 90도, 180도 회전을 브라우저에서 처리합니다.",
     primaryQuery: "이미지 회전",
     secondaryQueries: ["사진 회전", "JPG 회전", "이미지 방향 돌리기", "스캔본 회전"],
     userMoment: "스캔본이나 휴대폰 사진이 옆으로 누워 있어 제출 전에 방향을 바로잡아야 할 때",
