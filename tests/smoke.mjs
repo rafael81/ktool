@@ -1020,6 +1020,41 @@ async function run() {
       }
 
       if (route.submissionPrep) {
+        const prepTitle = await page.title();
+        const prepDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        assert(
+          prepTitle === "제출용 파일 준비 - 사진 PDF·1MB·HEIC 변환" &&
+            prepDescription?.includes("사진 PDF 변환") &&
+            prepDescription.includes("스캔본 PDF 만들기") &&
+            prepDescription.includes("사진 1MB 이하로 줄이기") &&
+            prepDescription.includes("HEIC JPG 변환"),
+          `${route.path} should focus the submission-prep title and meta description on photo PDF submission`
+        );
+        const prepQuickLinks = await page.locator('[data-submission-prep] .quick-links a').evaluateAll((links) =>
+          links.map((link) => ({
+            href: link.getAttribute("href"),
+            label: link.textContent?.trim()
+          }))
+        );
+        assert(
+          prepQuickLinks.length === 7 &&
+            prepQuickLinks[0]?.href === "/tools/jpg-to-pdf-converter/" &&
+            prepQuickLinks[1]?.href === "/tools/photo-size-reducer/" &&
+            prepQuickLinks[2]?.href === "/tools/heic-jpg-converter/",
+          `${route.path} should start quick links with JPG PDF, photo compression, and HEIC conversion`
+        );
+        const prepJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const prepCollectionSchema = prepJsonLdItems.find((item) => item["@type"] === "CollectionPage");
+        assert(
+          prepCollectionSchema?.keywords?.includes("사진 PDF 변환") &&
+            prepCollectionSchema.keywords.includes("스캔본 PDF 만들기") &&
+            prepCollectionSchema.keywords.includes("사진 1MB 이하로 줄이기") &&
+            prepCollectionSchema.mainEntity?.itemListElement?.[0]?.url ===
+              `${productionUrl}/tools/jpg-to-pdf-converter/`,
+          `${route.path} should expose submission-prep CollectionPage keywords and start the ItemList with JPG PDF`
+        );
         const pdfPathStepCount = await page.locator("[data-pdf-path] a").count();
         assert(pdfPathStepCount >= 5, `${route.path} should render the highlighted PDF submission path`);
         const pdfPathCtaCount = await page
@@ -1030,6 +1065,7 @@ async function run() {
         assert(
           pdfDecisionText?.includes("용량 초과") &&
             pdfDecisionText.includes("파일 형식 오류") &&
+            pdfDecisionText.includes("여러 파일 업로드 불가") &&
             pdfDecisionText.includes("변환 후 PDF") &&
             pdfDecisionText.includes("사진압축 먼저") &&
             pdfDecisionText.includes("JPG PDF 변환"),

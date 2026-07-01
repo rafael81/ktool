@@ -4,18 +4,18 @@ import { getTool } from "@/data/tools";
 import { collectionPageSchema, faqPageSchema } from "@/data/seo";
 
 const pagePath = "/tools/submission-file-prep/";
-const pageTitle = "제출용 파일 준비 - 사진 PDF 문서 제출 도구 모음";
+const pageTitle = "제출용 파일 준비 - 사진 PDF·1MB·HEIC 변환";
 const pageDescription =
-  "사진 용량 줄이기, HEIC JPG 변환, WebP JPG 변환, 이미지 회전, 이미지 자르기, 이미지 리사이즈, JPG PDF 변환, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
+  "사진 PDF 변환, 스캔본 PDF 만들기, 사진 1MB 이하로 줄이기, HEIC JPG 변환, 이미지 리사이즈, 도장 배경 제거, 업무 문서 작성 도구를 제출 상황별로 빠르게 고르세요.";
 
 const primaryTools = [
+  getTool("jpg-to-pdf"),
+  getTool("image-compressor"),
   getTool("heic-to-jpg"),
   getTool("image-converter"),
   getTool("image-rotator"),
   getTool("image-cropper"),
-  getTool("image-resizer"),
-  getTool("image-compressor"),
-  getTool("jpg-to-pdf")
+  getTool("image-resizer")
 ];
 
 const documentTools = [
@@ -36,6 +36,17 @@ const flowGroups = [
     description: "iPhone 사진, 스캔 이미지, 증빙 사진을 업로드 가능한 형식과 용량으로 맞춥니다.",
     steps: [
       {
+        label: "여러 장 PDF",
+        detail: "사진이나 스캔본이 여러 장이면 최종 목적지는 JPG PDF 변환입니다.",
+        tool: getTool("jpg-to-pdf")
+      },
+      {
+        label: "용량 초과",
+        detail: "업로드 제한보다 큰 사진은 1MB 기준으로 먼저 줄입니다.",
+        tool: getTool("image-compressor"),
+        href: `${getTool("image-compressor").path}?preset=1mb`
+      },
+      {
         label: "HEIC 사진",
         detail: "iPhone HEIC가 열리지 않으면 먼저 JPG로 바꿉니다.",
         tool: getTool("heic-to-jpg"),
@@ -54,11 +65,6 @@ const flowGroups = [
         href: `${getTool("image-rotator").path}?preset=right`
       },
       {
-        label: "용량 초과",
-        detail: "업로드 제한보다 큰 사진은 용량을 줄입니다.",
-        tool: getTool("image-compressor")
-      },
-      {
         label: "불필요한 여백",
         detail: "주변 배경이나 빈 여백은 제출할 영역만 남깁니다.",
         tool: getTool("image-cropper"),
@@ -69,11 +75,6 @@ const flowGroups = [
         detail: "가로·세로 또는 긴 변 기준이 있으면 크기를 맞춥니다.",
         tool: getTool("image-resizer"),
         href: `${getTool("image-resizer").path}?preset=long-1200`
-      },
-      {
-        label: "PDF 한 개",
-        detail: "여러 장의 이미지가 필요하면 한 PDF로 묶습니다.",
-        tool: getTool("jpg-to-pdf")
       }
     ]
   },
@@ -128,13 +129,13 @@ const flowGroups = [
 ];
 
 const situations = [
+  { label: "이미지 여러 장을 PDF로 제출", tool: getTool("jpg-to-pdf") },
+  { label: "파일 용량이 너무 큼", tool: getTool("image-compressor"), href: `${getTool("image-compressor").path}?preset=1mb` },
   { label: "iPhone HEIC 사진이 안 열림", tool: getTool("heic-to-jpg"), href: `${getTool("heic-to-jpg").path}?preset=jpg` },
   { label: "WebP·PNG·JPG 형식을 바꿔야 함", tool: getTool("image-converter"), href: `${getTool("image-converter").path}?preset=jpg` },
   { label: "사진 방향이 잘못됨", tool: getTool("image-rotator"), href: `${getTool("image-rotator").path}?preset=right` },
-  { label: "파일 용량이 너무 큼", tool: getTool("image-compressor") },
   { label: "불필요한 여백을 잘라야 함", tool: getTool("image-cropper"), href: `${getTool("image-cropper").path}?preset=document` },
   { label: "사진 크기 제한이 있음", tool: getTool("image-resizer"), href: `${getTool("image-resizer").path}?preset=long-1200` },
-  { label: "이미지 여러 장을 PDF로 제출", tool: getTool("jpg-to-pdf") },
   { label: "거래처 문서가 필요함", tool: getTool("transaction-statement") },
   { label: "도장·명판 이미지를 넣어야 함", tool: getTool("business-nameplate") }
 ];
@@ -142,27 +143,33 @@ const situations = [
 const pdfPathTools = [
   {
     label: "1",
+    title: "여러 장 여부",
+    detail: "사진이나 스캔본이 여러 장이면 한 PDF로 묶는 것을 먼저 목표로 잡습니다.",
+    tool: getTool("jpg-to-pdf")
+  },
+  {
+    label: "2",
     title: "iPhone HEIC",
     detail: "HEIC면 먼저 JPG로 바꿉니다.",
     tool: getTool("heic-to-jpg"),
     href: `${getTool("heic-to-jpg").path}?preset=jpg`
   },
   {
-    label: "2",
+    label: "3",
     title: "방향·여백",
     detail: "누운 사진은 돌리고, 주변 여백은 자릅니다.",
     tool: getTool("image-rotator"),
     href: `${getTool("image-rotator").path}?preset=right`
   },
   {
-    label: "3",
+    label: "4",
     title: "크기·용량",
     detail: "업로드 제한에 맞춰 리사이즈하거나 압축합니다.",
     tool: getTool("image-resizer"),
     href: `${getTool("image-resizer").path}?preset=long-1200`
   },
   {
-    label: "4",
+    label: "5",
     title: "PDF 묶기",
     detail: "마지막에 여러 장을 한 PDF로 저장합니다.",
     tool: getTool("jpg-to-pdf")
@@ -170,6 +177,12 @@ const pdfPathTools = [
 ];
 
 const pdfDecisionHints = [
+  {
+    signal: "여러 파일 업로드 불가",
+    recommendation: "JPG PDF 변환",
+    detail: "사진 순서와 여백을 확인하고 한 파일로 저장합니다.",
+    tool: getTool("jpg-to-pdf")
+  },
   {
     signal: "파일 형식 오류",
     recommendation: "변환 후 PDF",
@@ -182,12 +195,6 @@ const pdfDecisionHints = [
     recommendation: "사진압축 먼저",
     detail: "압축 후에도 여러 장이면 마지막에 PDF로 묶습니다.",
     tool: getTool("image-compressor")
-  },
-  {
-    signal: "여러 파일 업로드 불가",
-    recommendation: "JPG PDF 변환",
-    detail: "목록 순서와 여백을 확인하고 한 파일로 저장합니다.",
-    tool: getTool("jpg-to-pdf")
   },
   {
     signal: "사진이 옆으로 돌아감",
@@ -262,7 +269,7 @@ const compressionPathTools = [
 const faqs = [
   [
     "제출용 파일은 어떤 순서로 준비하면 되나요?",
-    "제출처가 요구하는 파일 형식, 용량, 픽셀 크기, PDF 여부를 먼저 확인한 뒤 형식 변환, 리사이즈, 용량 줄이기, PDF 묶기 순서로 처리하면 재작업을 줄일 수 있습니다."
+    "사진이나 스캔본이 여러 장이면 최종 목적지를 JPG PDF 변환으로 잡고, 막히는 오류 문구에 따라 HEIC 변환, 회전, 자르기, 리사이즈, 용량 줄이기를 먼저 처리하면 됩니다."
   ],
   [
     "iPhone HEIC 사진은 바로 PDF로 묶어도 되나요?",
@@ -278,11 +285,11 @@ const faqs = [
   ],
   [
     "어떤 도구부터 써야 할지 모르겠어요.",
-    "업로드 오류 문구를 기준으로 고르면 쉽습니다. HEIC 오류는 HEIC JPG 변환, WebP나 이미지 형식 오류는 WebP JPG 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈, 여러 장 제출은 JPG PDF 변환부터 시작하세요."
+    "여러 장 제출은 JPG PDF 변환부터 보세요. 오류 문구가 있으면 HEIC 오류는 HEIC JPG 변환, WebP나 이미지 형식 오류는 WebP JPG 변환, 방향 문제는 이미지 회전, 용량 오류는 사진 용량 줄이기, 여백이나 배경 문제는 이미지 자르기, 크기 오류는 이미지 리사이즈로 이동하면 됩니다."
   ],
   [
     "용량 제한이 500KB, 1MB, 3MB처럼 다르면 어떻게 고르나요?",
-    "제출처 안내에 적힌 제한값을 먼저 고르세요. 제한이 1MB 이하라면 1MB 프리셋, 더 빡빡하면 500KB, 글자 판독이 중요하고 제한이 넉넉하면 3MB 프리셋으로 압축한 뒤 여러 장은 JPG PDF 변환으로 묶으면 됩니다."
+    "제출처 안내에 적힌 제한값을 먼저 고르세요. 제한이 1MB 이하라면 1MB 기준, 더 빡빡하면 500KB, 글자 판독이 중요하고 제한이 넉넉하면 3MB 기준으로 압축한 뒤 여러 장은 JPG PDF 변환으로 묶으면 됩니다."
   ]
 ] satisfies [string, string][];
 
@@ -291,7 +298,8 @@ const structuredData = [
     name: "제출용 파일 준비",
     description: pageDescription,
     path: pagePath,
-    tools: [...primaryTools, ...documentTools, ...stampTools]
+    tools: [...primaryTools, ...documentTools, ...stampTools],
+    keywords: ["사진 PDF 변환", "스캔본 PDF 만들기", "사진 1MB 이하로 줄이기", "HEIC JPG 변환", "제출용 파일 준비"]
   }),
   faqPageSchema(faqs)
 ];
@@ -308,8 +316,8 @@ const structuredData = [
       <div>
         <h1>제출용 파일 준비</h1>
         <p>
-          관공서, 학교, 회사, 거래처에 파일을 올리기 직전 필요한 형식 변환, 용량 줄이기,
-          이미지 회전, 자르기, 크기 조정, PDF 묶기, 업무 문서 작성을 한 흐름으로 고릅니다.
+          관공서, 학교, 회사, 거래처에 사진이나 스캔본을 올리기 직전 필요한 PDF 묶기,
+          1MB 용량 줄이기, HEIC JPG 변환, 이미지 회전, 자르기, 업무 문서 작성을 한 흐름으로 고릅니다.
         </p>
       </div>
       <div class="quick-links" aria-label="제출용 파일 준비 바로가기">
@@ -332,7 +340,7 @@ const structuredData = [
         <span>가장 많이 쓰는 제출 흐름</span>
         <h2>사진 여러 장을 PDF 한 개로 제출</h2>
         <p>
-          이미지가 여러 장이면 먼저 방향, 여백, 크기, 용량을 맞춘 뒤 마지막에 JPG PDF 변환으로 묶는 순서가 재작업을 줄입니다.
+          이미지가 여러 장이면 JPG PDF 변환이 최종 목적지입니다. 오류 문구가 있으면 형식, 방향, 여백, 크기, 용량만 먼저 맞추고 마지막에 한 PDF로 묶습니다.
         </p>
       </div>
       <div class="pdf-path-steps">
