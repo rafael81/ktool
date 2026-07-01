@@ -969,10 +969,14 @@ async function run() {
         await page.goto(`${baseUrl}${route.path}?preset=500kb`, { waitUntil: "networkidle" });
         const presetCompressionCheck = await page.locator("[data-compression-check]").textContent();
         const presetNote = await page.locator("[data-preset-note]").textContent();
+        const presetArrivalText = await page.locator("[data-preset-arrival]").textContent();
+        const presetArrivalHidden = await page.locator("[data-preset-arrival]").getAttribute("hidden");
         assert(
           presetCompressionCheck?.includes("500KB 이하") &&
             presetCompressionCheck.includes("JPG") &&
-            presetNote?.includes("빡빡한"),
+            presetNote?.includes("빡빡한") &&
+            presetArrivalHidden === null &&
+            presetArrivalText?.includes("500KB 이하로 시작"),
           `${route.path} should accept a URL preset for the 500KB compression target`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
@@ -1226,13 +1230,17 @@ async function run() {
           outputFormat: document.querySelector("[data-output-format]")?.value,
           quality: document.querySelector("[data-quality]")?.value,
           label: document.querySelector("[data-convert-label]")?.textContent || "",
-          note: document.querySelector("[data-format-preset-note]")?.textContent || ""
+          note: document.querySelector("[data-format-preset-note]")?.textContent || "",
+          arrivalHidden: document.querySelector("[data-format-preset-arrival]")?.hasAttribute("hidden"),
+          arrivalText: document.querySelector("[data-format-preset-arrival]")?.textContent || ""
         }));
         assert(
           heicPresetState.outputFormat === "image/png" &&
             heicPresetState.quality === "90" &&
             heicPresetState.label.includes("PNG") &&
-            heicPresetState.note.includes("PNG"),
+            heicPresetState.note.includes("PNG") &&
+            heicPresetState.arrivalHidden === false &&
+            heicPresetState.arrivalText.includes("PNG로 시작"),
           `${route.path} should accept a URL preset for PNG output`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });

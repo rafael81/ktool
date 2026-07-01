@@ -51,6 +51,11 @@ const structuredData = [
           <h2>이미지 입력</h2>
         </div>
 
+        <div class="preset-arrival" data-preset-arrival hidden>
+          <strong data-preset-arrival-title>1MB 이하로 시작</strong>
+          <span data-preset-arrival-copy>사진을 선택하면 이 기준으로 바로 줄입니다.</span>
+        </div>
+
         <label class="field">
           <span>이미지 파일</span>
           <span class="file-control upload-dropzone">
@@ -239,6 +244,9 @@ const structuredData = [
       const fileLabel = root.querySelector("[data-file-label]");
       const presetSelect = root.querySelector("[data-compress-preset]");
       const presetNote = root.querySelector("[data-preset-note]");
+      const presetArrival = root.querySelector("[data-preset-arrival]");
+      const presetArrivalTitle = root.querySelector("[data-preset-arrival-title]");
+      const presetArrivalCopy = root.querySelector("[data-preset-arrival-copy]");
       const compressionCheckItems = {
         target: root.querySelector('[data-compression-check-item="target"]'),
         settings: root.querySelector('[data-compression-check-item="settings"]'),
@@ -373,8 +381,21 @@ const structuredData = [
         return `${formatter.format(readyItems.length - passed)}장이 ${formatTargetSize(preset.targetBytes)} 초과`;
       }
 
+      function updatePresetArrival() {
+        if (!presetArrival) return;
+        if (!initialPreset) {
+          presetArrival.hidden = true;
+          return;
+        }
+        const preset = selectedPreset();
+        presetArrival.hidden = false;
+        presetArrivalTitle.textContent = `${preset.label}로 시작`;
+        presetArrivalCopy.textContent = "사진을 선택하면 이 기준으로 바로 줄입니다.";
+      }
+
       function updateCompressionCheck() {
         const preset = selectedPreset();
+        updatePresetArrival();
         presetNote.textContent = preset.note;
         compressionCheckItems.target.textContent = preset.targetBytes
           ? `${formatTargetSize(preset.targetBytes)} 압축 기준`
@@ -755,6 +776,34 @@ const structuredData = [
     color: var(--muted);
     font-size: 13px;
     font-weight: 700;
+    line-height: 1.45;
+  }
+
+  .preset-arrival {
+    display: grid;
+    gap: 5px;
+    border: 1px solid #cae1df;
+    border-radius: 8px;
+    background: #f2faf9;
+    margin-bottom: 14px;
+    padding: 13px;
+  }
+
+  .preset-arrival[hidden] {
+    display: none;
+  }
+
+  .preset-arrival strong {
+    color: var(--accent-dark);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  .preset-arrival span {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 800;
     line-height: 1.45;
   }
 
