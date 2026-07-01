@@ -237,6 +237,7 @@ Completed:
 69. Add safe download-quality signals to the indexed `사업자 명판 만들기 무료` page so organic arrivals can distinguish sample saves from edited business-nameplate saves without collecting raw business data.
 70. Preserve home/catalog quick-start source parameters on the `거래명세서 자동작성` path and document print events so business-document quick-start traffic can be segmented beyond the initial link click.
 71. Preserve `shortcut_id` through problem-situation shortcut URLs and preset-arrival events so catalog/category shortcut clicks can be matched to downstream tool arrivals without raw query text or file data.
+72. Tighten the indexed `사업자 명판 만들기 무료` page around the organic promise: PNG 저장 in the title/meta, one-line first-screen copy, and visible 무료/설치 없음/서버 전송 없음 badges before the form.
 
 Next after crawl data appears:
 
