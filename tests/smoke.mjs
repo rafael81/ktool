@@ -919,6 +919,40 @@ async function run() {
             `${route.path} should make the first-screen JPG PDF action and privacy promise explicit`
           );
         }
+        if (route.path === "/problems/photo-under-1mb/") {
+          const photoCompressTitle = await page.title();
+          const photoCompressDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            photoCompressTitle === "사진 1MB 이하로 줄이기 - K문서툴" &&
+              photoCompressDescription?.includes("사진 1MB 이하로 줄이기") &&
+              photoCompressDescription.includes("500KB 압축") &&
+              photoCompressDescription.includes("JPG 용량 줄이기") &&
+              photoCompressDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused photo compression title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("사진 1MB 이하로 줄이기") &&
+              webPageSchema.keywords.includes("500KB 사진 압축") &&
+              webPageSchema.keywords.includes("JPG 용량 줄이기"),
+            `${route.path} should expose photo compression search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/photo-size-reducer/") &&
+              primaryTargetUrl.searchParams.get("preset") === "1mb" &&
+              primaryText?.includes("사진 1MB 압축 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("500KB") &&
+              actionText.includes("3MB"),
+            `${route.path} should make the first-screen 1MB compression action and privacy promise explicit`
+          );
+        }
         await page.evaluate(() => {
           document.querySelector("[data-problem-primary-link]")?.addEventListener(
             "click",

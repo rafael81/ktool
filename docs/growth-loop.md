@@ -266,6 +266,7 @@ Completed:
 98. Tighten the `사진·스캔 PDF 제출 패키지` around photo/PDF submission intent: first-screen JPG PDF CTA, 사진 PDF/스캔본 PDF/1MB 압축/HEIC JPG wording, and CollectionPage keywords for submission search queries.
 99. Retighten the `제출용 파일 준비` hub around the same photo/PDF submission intent: first quick link JPG PDF, then 1MB compression and HEIC JPG, with matching title/meta, CollectionPage keywords, and PDF-path decision hints.
 100. Retighten the `사진 여러 장 PDF로 묶기` problem landing around photo/PDF submission intent: title/meta/schema keywords, first-screen JPG PDF CTA, and visible free/no-install/no-server-transfer badges.
+101. Retighten the `사진 1MB 이하로 줄이기` problem landing around upload-size-limit intent: title/meta/schema keywords for 1MB, 500KB, and JPG compression, first-screen 1MB CTA, and visible free/no-install/no-server-transfer badges.
 
 Next after crawl data appears:
 
