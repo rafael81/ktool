@@ -193,6 +193,7 @@ Completed:
 45. Expand homepage problem-intent matching so colloquial blocked-state searches like upload failures, iPhone photo issues, sideways scans, document margins, and multi-image PDF submission route to the right problem page.
 46. Expand `/tools/` catalog search with search-only problem-intent rows so blocked-state queries route to the right problem page without cluttering the default tool list.
 47. Surface blocked-state intent phrases visibly on each problem page so those pages explain the same real-world wording used by homepage and catalog search.
+48. Add query-linked `/tools/?q=...` catalog search so problem-intent search states can be shared, tested, and revisited directly.
 
 Next after crawl data appears:
 

@@ -356,6 +356,16 @@ async function run() {
             `${route.path} should match "${query}" to "${expectedTitle}" from catalog search`
           );
         }
+        await page.goto(`${baseUrl}/tools/?q=${encodeURIComponent("업로드 용량 초과")}`, { waitUntil: "networkidle" });
+        const catalogUrlQueryValue = await page.locator("[data-tool-search]").inputValue();
+        const catalogUrlQueryText = (await page.locator("[data-tool-search-item]:not([hidden])").allTextContents()).join(" ");
+        const catalogUrlResultText = await page.locator("[data-tool-result-count]").textContent();
+        assert(
+          catalogUrlQueryValue === "업로드 용량 초과" &&
+            catalogUrlQueryText.includes("사진 1MB 이하로 줄이기") &&
+            catalogUrlResultText?.includes("결과"),
+          `${route.path} should restore catalog search results from the q URL parameter`
+        );
         await page.locator("[data-tool-search]").fill("없는도구");
         await page.waitForTimeout(450);
         const emptyVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
