@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("image-converter");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "WebP JPG 무료 변환",
+      "WebP 업로드 오류",
+      "이미지 형식 오류"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -26,7 +38,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} WebP가 열리지 않거나 JPG만 받는 제출처에 맞춰 이미지를 빠르게 정리합니다.</p>
+        <p>WebP가 열리지 않거나 JPG만 받는 곳에 맞춰 이미지를 변환하세요. WebP, PNG, JPG를 브라우저에서 바로 저장합니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -53,9 +65,20 @@ const structuredData = [
 
         <label class="field">
           <span>이미지 파일</span>
-          <span class="file-control">
+          <span class="file-control upload-dropzone">
             <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <span class="upload-icon" aria-hidden="true">
+              <IconGlyph name="repeat" />
+            </span>
+            <strong>JPG로 바꿀 이미지를 선택하세요</strong>
             <span data-file-label>WebP/PNG/JPG 여러 장 선택</span>
+            <span class="upload-trust-badges" data-upload-badges aria-label="주요 장점">
+              <span>무료</span>
+              <span>설치 없음</span>
+              <span>서버 전송 없음</span>
+            </span>
+            <em>파일 선택</em>
+            <small>최대 20장 · 총 50MB · 원본 유지</small>
           </span>
         </label>
 

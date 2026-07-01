@@ -1343,6 +1343,19 @@ async function run() {
       }
 
       if (route.imageConverter) {
+        const convertUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          convertUploadState.height >= 220 &&
+            convertUploadState.text.includes("JPG로 바꿀 이미지를 선택하세요") &&
+            convertUploadState.text.includes("파일 선택") &&
+            convertUploadState.text.includes("무료") &&
+            convertUploadState.text.includes("설치 없음") &&
+            convertUploadState.text.includes("서버 전송 없음"),
+          `${route.path} should expose a large direct image format upload area`
+        );
         await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
         const formatPresetState = await page.evaluate(() => ({
           outputFormat: document.querySelector("[data-output-format]")?.value,

@@ -623,9 +623,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "WebP, PNG, JPG 이미지를 브라우저에서 JPG, PNG, WebP 형식으로 바꿔 저장합니다.",
-    pageTitle: "WebP JPG 변환 - 이미지 형식 변환 무료",
+    pageTitle: "WebP JPG 변환 - WebP 이미지 JPG 무료 변환",
     metaDescription:
-      "WebP JPG 변환을 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 이미지를 업로드 없이 원하는 형식으로 바꿔 저장합니다.",
+      "WebP 이미지를 JPG로 무료 변환하세요. JPG만 받는 제출처에 맞춰 PNG, JPG, WebP 형식을 설치 없이 브라우저에서 처리합니다.",
     primaryQuery: "WebP JPG 변환",
     secondaryQueries: ["JPG WebP 변환", "PNG JPG 변환", "이미지 형식 변환", "WebP PNG 변환"],
     userMoment: "첨부 시스템이나 문서 편집기가 특정 이미지 형식만 받을 때",
