@@ -13,6 +13,8 @@ Every event includes:
 - `page_title`: current page title
 - `event_time`: ISO timestamp
 
+The shared `window.kdocTrack` helper drops known sensitive keys such as filenames, raw image bytes, OCR text, document text, business numbers, addresses, customer names, email, and phone values. String values are length-limited, object payloads are ignored, and tracked same-origin `href` values keep only safe routing parameters: `from`, `preset`, `problem_id`, and `source`.
+
 Tool pages also include:
 
 - `tool_id`: stable tool id from `src/data/tools.ts`

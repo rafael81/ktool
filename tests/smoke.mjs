@@ -1115,6 +1115,7 @@ async function run() {
 
     await assertSitemapMetadata();
     await assertIndexNowKey();
+    await assertAnalyticsSanitizer(browser);
     await assertAnalyticsPrivacy(browser);
     await assertFileAnalyticsPrivacy(browser);
   } finally {
@@ -1250,6 +1251,49 @@ async function assertAnalyticsPrivacy(browser) {
     const eventText = JSON.stringify(events);
     assert(!eventText.includes(secret), "Analytics event payload leaked raw document input");
     assert(leakedRequests.length === 0, `Network request leaked raw document input: ${leakedRequests.join(", ")}`);
+  } finally {
+    await page.close();
+  }
+}
+
+async function assertAnalyticsSanitizer(browser) {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+
+  try {
+    await page.goto(baseUrl, { waitUntil: "networkidle" });
+    const payload = await page.evaluate(() => {
+      window.kdocTrack("privacy_probe", {
+        label: "x".repeat(220),
+        href: "/tools/?q=SECRETQUERY&preset=jpg&source=problem&problem_id=photo-under-1mb&unsafe=SECRET",
+        file_name: "SECRET-FILENAME.jpg",
+        business_number: "SECRET-BIZ-999-88-77777",
+        event: "SECRET-EVENT-OVERRIDE",
+        raw_image: "SECRET-RAW-IMAGE",
+        file_types: ["image/png", { secret: "SECRET-OBJECT" }, "image/jpeg"]
+      });
+      return window.dataLayer.at(-1);
+    });
+    const eventText = JSON.stringify(payload);
+    const href = new URL(payload.href, baseUrl);
+    assert(payload.event === "privacy_probe", "analytics sanitizer should keep the event name");
+    assert(payload.label.length === 160, "analytics sanitizer should clamp long labels");
+    assert(payload.file_name === undefined, "analytics sanitizer should drop filename fields");
+    assert(payload.business_number === undefined, "analytics sanitizer should drop business number fields");
+    assert(payload.raw_image === undefined, "analytics sanitizer should drop raw image fields");
+    assert(!eventText.includes("SECRET"), "analytics sanitizer should not keep sensitive probe values");
+    assert(href.pathname === "/tools/", "analytics sanitizer should keep same-origin href paths");
+    assert(href.searchParams.get("preset") === "jpg", "analytics sanitizer should keep safe href preset");
+    assert(href.searchParams.get("source") === "problem", "analytics sanitizer should keep safe href source");
+    assert(
+      href.searchParams.get("problem_id") === "photo-under-1mb",
+      "analytics sanitizer should keep safe href problem_id"
+    );
+    assert(!href.searchParams.has("q"), "analytics sanitizer should drop raw search query href params");
+    assert(!href.searchParams.has("unsafe"), "analytics sanitizer should drop unknown href params");
+    assert(
+      payload.file_types.length === 2 && payload.file_types.every((fileType) => typeof fileType === "string"),
+      "analytics sanitizer should keep only primitive aggregate array values"
+    );
   } finally {
     await page.close();
   }

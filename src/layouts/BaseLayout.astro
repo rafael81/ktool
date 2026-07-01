@@ -196,6 +196,92 @@ const analyticsPage = {
           return /^[a-z0-9-]{1,40}$/i.test(text) ? text : null;
         }
 
+        const blockedAnalyticsKeys = new Set([
+          "address",
+          "business_number",
+          "business_registration_number",
+          "buyer_name",
+          "customer_name",
+          "document_text",
+          "email",
+          "file_name",
+          "file_names",
+          "filename",
+          "image_bytes",
+          "ocr_text",
+          "phone",
+          "raw_image",
+          "supplier_name"
+        ]);
+        const safeHrefParams = new Set(["from", "preset", "problem_id", "source"]);
+
+        function normalizeAnalyticsKey(key) {
+          return String(key || "")
+            .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+            .replace(/[^a-z0-9]+/gi, "_")
+            .replace(/^_+|_+$/g, "")
+            .toLowerCase();
+        }
+
+        function isSensitiveAnalyticsKey(key) {
+          const normalized = normalizeAnalyticsKey(key);
+          return (
+            blockedAnalyticsKeys.has(normalized) ||
+            normalized.endsWith("_address") ||
+            normalized.endsWith("_email") ||
+            normalized.endsWith("_file_name") ||
+            normalized.endsWith("_filename") ||
+            normalized.endsWith("_phone")
+          );
+        }
+
+        function safeAnalyticsHref(value) {
+          try {
+            const url = new URL(String(value), window.location.href);
+            if (!["http:", "https:"].includes(url.protocol)) return undefined;
+            if (url.origin !== window.location.origin) return url.origin;
+            const params = new URLSearchParams();
+            url.searchParams.forEach((paramValue, key) => {
+              if (!safeHrefParams.has(key)) return;
+              const text = compact(paramValue);
+              if (/^[a-z0-9-]{1,80}$/i.test(text)) params.set(key, text);
+            });
+            const query = params.toString();
+            return `${url.pathname}${query ? `?${query}` : ""}`;
+          } catch {
+            return undefined;
+          }
+        }
+
+        function safeAnalyticsValue(key, value) {
+          if (value == null || isSensitiveAnalyticsKey(key)) return undefined;
+          if (key === "href") return safeAnalyticsHref(value);
+          if (typeof value === "string") return compact(value).slice(0, 160);
+          if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+          if (typeof value === "boolean") return value;
+          if (Array.isArray(value)) {
+            const items = value
+              .slice(0, 20)
+              .map((item) => {
+                if (typeof item === "string") return compact(item).slice(0, 80);
+                if (typeof item === "number") return Number.isFinite(item) ? item : undefined;
+                if (typeof item === "boolean") return item;
+                return undefined;
+              })
+              .filter((item) => item != null);
+            return items.length ? items : undefined;
+          }
+          return undefined;
+        }
+
+        function safeAnalyticsParams(params) {
+          return Object.fromEntries(
+            Object.entries(params || {})
+              .map(([key, value]) => [key, safeAnalyticsValue(key, value)])
+              .filter(([, value]) => value !== undefined)
+          );
+        }
+
         function showProblemArrivalBanner(problem) {
           const banner = document.querySelector("[data-problem-arrival]");
           if (!banner || !problem) return;
@@ -213,11 +299,11 @@ const analyticsPage = {
         window.dataLayer = window.dataLayer || [];
         window.kdocTrack = function kdocTrack(eventName, params = {}) {
           const payload = {
+            ...safeAnalyticsParams(params),
             event: eventName,
             page_path: page.path,
             page_title: page.title,
-            event_time: new Date().toISOString(),
-            ...params
+            event_time: new Date().toISOString()
           };
           window.dataLayer.push(payload);
           window.dispatchEvent(new CustomEvent("kdoc:analytics", { detail: payload }));
