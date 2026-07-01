@@ -215,6 +215,23 @@ async function run() {
             oneMbHomeText?.includes("사진 1MB 이하로 줄이기"),
             `${route.path} should surface problem-intent pages from homepage search`
           );
+          const problemIntentSearches = [
+            ["업로드 용량 초과", "사진 1MB 이하로 줄이기"],
+            ["사진이 옆으로", "사진 방향 바로잡기"],
+            ["문서 여백 제거", "문서 사진 여백 자르기"],
+            ["지원하지 않는 파일 형식", "파일 형식 오류 해결"],
+            ["아이폰 사진 안열림", "HEIC JPG 제출 준비"],
+            ["한 파일로 제출", "여러 장 이미지 PDF로 묶기"]
+          ];
+          for (const [query, expectedTitle] of problemIntentSearches) {
+            await page.locator("[data-home-search-input]").fill(query);
+            await page.waitForTimeout(450);
+            const intentSearchText = (await page.locator("[data-home-search-item]:not([hidden])").allTextContents()).join(" ");
+            assert(
+              intentSearchText.includes(expectedTitle),
+              `${route.path} should match "${query}" to "${expectedTitle}" from homepage search`
+            );
+          }
           await page.goto(`${baseUrl}/?q=1MB`, { waitUntil: "networkidle" });
           const urlQueryValue = await page.locator("[data-home-search-input]").inputValue();
           const urlQueryText = (await page.locator("[data-home-search-item]:not([hidden])").allTextContents()).join(" ");

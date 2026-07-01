@@ -19,6 +19,7 @@ export type ProblemPage = {
   metaDescription: string;
   primaryQuery: string;
   secondaryQueries: string[];
+  intentQueries: string[];
   targetToolId: ToolId;
   targetPath: string;
   targetLabel: string;
@@ -41,6 +42,16 @@ export const problemPages: ProblemPage[] = [
       "파일 형식 오류가 뜰 때 WebP, PNG, JPG 이미지를 브라우저에서 JPG로 변환하세요. 설치 없이 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "파일 형식 오류",
     secondaryQueries: ["이미지 JPG 변환", "PNG JPG 변환", "WebP JPG 변환"],
+    intentQueries: [
+      "파일 업로드 안됨",
+      "지원하지 않는 파일 형식",
+      "허용되지 않는 확장자",
+      "jpg만 가능",
+      "png jpg 바꾸기",
+      "webp jpg 바꾸기",
+      "파일 확장자 오류",
+      "이미지 형식 바꾸기"
+    ],
     targetToolId: "image-converter",
     targetPath: "/tools/image-converter/?preset=jpg",
     targetLabel: "JPG 변환 시작",
@@ -67,6 +78,16 @@ export const problemPages: ProblemPage[] = [
       "아이폰 HEIC 사진이 제출처에서 열리지 않을 때 브라우저에서 JPG로 변환하세요. 설치 없이 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "HEIC JPG 변환",
     secondaryQueries: ["아이폰 사진 JPG 변환", "HEIC 제출 오류", "HEIF JPG 변환"],
+    intentQueries: [
+      "아이폰 사진 안열림",
+      "아이폰 사진 업로드 안됨",
+      "heic 파일 안열림",
+      "heic jpg로",
+      "heif jpg로",
+      "아이폰 사진 제출",
+      "갤러리 사진 jpg",
+      "휴대폰 사진 변환"
+    ],
     targetToolId: "heic-to-jpg",
     targetPath: "/tools/heic-jpg-converter/?preset=jpg",
     targetLabel: "HEIC JPG 변환",
@@ -93,6 +114,17 @@ export const problemPages: ProblemPage[] = [
       "사진 업로드 용량 초과가 뜰 때 JPG, PNG, WebP 이미지를 1MB 기준으로 줄이세요. 브라우저에서 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "사진 1MB 이하로 줄이기",
     secondaryQueries: ["사진 용량 줄이기", "이미지 압축", "JPG 용량 줄이기"],
+    intentQueries: [
+      "업로드 용량 초과",
+      "사진 용량 초과",
+      "이미지 용량 초과",
+      "1메가 이하",
+      "1mb 이하",
+      "500kb 이하",
+      "3mb 이하",
+      "사진 압축",
+      "증빙 사진 용량"
+    ],
     targetToolId: "image-compressor",
     targetPath: "/tools/photo-size-reducer/?preset=1mb",
     targetLabel: "1MB 압축 시작",
@@ -119,6 +151,16 @@ export const problemPages: ProblemPage[] = [
       "사진 크기 제한이나 픽셀 제한이 있을 때 이미지를 긴 변 1200px 기준으로 줄이세요. 브라우저에서 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "사진 크기 제한",
     secondaryQueries: ["이미지 크기 줄이기", "사진 해상도 줄이기", "이미지 리사이즈"],
+    intentQueries: [
+      "가로 세로 제한",
+      "픽셀 제한",
+      "해상도 초과",
+      "사진 크기 초과",
+      "긴 변 줄이기",
+      "1200px",
+      "800px",
+      "이미지 사이즈 줄이기"
+    ],
     targetToolId: "image-resizer",
     targetPath: "/tools/image-resizer/?preset=long-1200",
     targetLabel: "1200px 리사이즈",
@@ -145,6 +187,16 @@ export const problemPages: ProblemPage[] = [
       "스캔본이나 휴대폰 사진이 옆으로 돌아갔을 때 브라우저에서 오른쪽, 왼쪽, 180도로 회전하세요. 설치 없이 무료로 처리합니다.",
     primaryQuery: "사진 방향 돌리기",
     secondaryQueries: ["이미지 회전", "스캔본 회전", "JPG 회전"],
+    intentQueries: [
+      "사진이 옆으로",
+      "사진 옆으로 돌아감",
+      "스캔본 옆으로",
+      "이미지 방향 오류",
+      "jpg 방향 돌리기",
+      "90도 회전",
+      "사진 거꾸로",
+      "휴대폰 사진 회전"
+    ],
     targetToolId: "image-rotator",
     targetPath: "/tools/image-rotator/?preset=right",
     targetLabel: "오른쪽 90도 회전",
@@ -171,6 +223,16 @@ export const problemPages: ProblemPage[] = [
       "문서 사진의 배경이나 여백이 너무 많을 때 브라우저에서 필요한 영역만 자르세요. 설치 없이 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "문서 사진 자르기",
     secondaryQueries: ["이미지 자르기", "사진 크롭", "스캔본 여백 제거"],
+    intentQueries: [
+      "문서 여백 제거",
+      "사진 여백 자르기",
+      "스캔본 여백",
+      "배경 잘라내기",
+      "책상 배경 제거",
+      "문서만 남기기",
+      "사진 크롭",
+      "제출 사진 자르기"
+    ],
     targetToolId: "image-cropper",
     targetPath: "/tools/image-cropper/?preset=document",
     targetLabel: "문서 영역 자르기",
@@ -197,6 +259,16 @@ export const problemPages: ProblemPage[] = [
       "여러 장의 JPG, PNG, WebP 이미지를 한 개의 PDF로 묶으세요. 브라우저에서 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "여러 장 이미지 PDF",
     secondaryQueries: ["JPG PDF 변환", "사진 PDF 만들기", "이미지 PDF 변환"],
+    intentQueries: [
+      "사진 여러장 pdf",
+      "이미지 여러장 pdf",
+      "jpg 여러장 pdf",
+      "스캔 이미지 pdf",
+      "제출용 pdf 만들기",
+      "증빙사진 pdf",
+      "사진 합쳐서 pdf",
+      "한 파일로 제출"
+    ],
     targetToolId: "jpg-to-pdf",
     targetPath: "/tools/jpg-to-pdf-converter/",
     targetLabel: "PDF로 묶기",
