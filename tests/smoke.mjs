@@ -1045,6 +1045,31 @@ async function run() {
       }
 
       if (route.stampTool) {
+        const stampTitle = await page.title();
+        const stampDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        const stampTrustText = await page.locator("[data-stamp-trust-badges]").textContent();
+        assert(
+          stampTitle === "도장 배경 제거 - 무료 투명 PNG 저장" &&
+            stampDescription?.includes("무료로 제거") &&
+            stampDescription.includes("설치 없이") &&
+            stampDescription.includes("서버로 전송되지 않습니다") &&
+            stampTrustText?.includes("무료") &&
+            stampTrustText.includes("설치 없음") &&
+            stampTrustText.includes("서버 전송 없음") &&
+            stampTrustText.includes("PNG 저장"),
+          `${route.path} should expose the free/no-install/no-server-transfer/PNG promise on the first screen`
+        );
+        const stampJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const stampWebPageSchema = stampJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          stampWebPageSchema?.url === `${productionUrl}${route.path}` &&
+            stampWebPageSchema.keywords?.includes("도장 배경 제거 무료") &&
+            stampWebPageSchema.keywords.includes("도장 투명 PNG 저장") &&
+            stampWebPageSchema.keywords.includes("도장 이미지 서버 전송 없음"),
+          `${route.path} should expose a WebPage schema for 도장 배경 제거 search intent`
+        );
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => {
           const button = document.querySelector("[data-download]");

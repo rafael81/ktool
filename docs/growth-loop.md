@@ -252,6 +252,7 @@ Completed:
 84. Tighten the high-intent `부가세 계산기` page around the organic promise: free 10% VAT calculation, first-screen no-install/private-input/result-copy badges, and WebPage structured data.
 85. Tighten the high-intent `금액 한글 변환기` page around the organic promise: free Korean amount notation conversion, first-screen no-install/private-input/result-copy badges, and WebPage structured data.
 86. Tighten the high-intent `3.3% 계산기` page around the organic promise: free freelancer withholding calculation, first-screen no-install/private-input/result-copy badges, WebPage structured data, and copy fallback feedback.
+87. Tighten the high-intent `도장 배경 제거` page around the organic promise: free transparent PNG creation, first-screen no-install/no-server-transfer/PNG-save badges, and WebPage structured data.
 
 Next after crawl data appears:
 

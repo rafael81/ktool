@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("stamp-background");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "도장 배경 제거 무료",
+      "도장 투명 PNG 저장",
+      "도장 이미지 서버 전송 없음"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -26,7 +38,13 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 배경을 제거한 PNG는 사업자 명판, 청구서, 견적서에 바로 넣을 수 있습니다.</p>
+        <p>스캔 도장 이미지를 선택하면 흰 배경을 제거해 문서에 넣기 좋은 투명 PNG로 저장할 수 있습니다.</p>
+        <div class="tool-trust-badges" data-stamp-trust-badges aria-label="주요 장점">
+          <span>무료</span>
+          <span>설치 없음</span>
+          <span>서버 전송 없음</span>
+          <span>PNG 저장</span>
+        </div>
       </div>
       <div class="quick-links">
         {
@@ -497,6 +515,29 @@ const structuredData = [
       linear-gradient(-45deg, transparent 75%, #eef3f6 75%);
     background-position: 0 0, 0 10px, 10px -10px, -10px 0;
     background-size: 20px 20px;
+  }
+
+  .tool-trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tool-trust-badges span {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 
   @media (max-width: 1100px) {

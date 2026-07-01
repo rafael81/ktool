@@ -393,9 +393,9 @@ export const tools: ToolInfo[] = [
     category: "business",
     description:
       "스캔하거나 촬영한 도장 이미지의 흰 배경을 제거해 문서에 넣기 좋은 투명 PNG로 저장합니다.",
-    pageTitle: "도장 배경 제거 - 스캔 도장 투명 PNG 만들기",
+    pageTitle: "도장 배경 제거 - 무료 투명 PNG 저장",
     metaDescription:
-      "스캔하거나 촬영한 도장 이미지의 흰 배경을 브라우저에서 제거하고 투명 PNG로 저장하세요. 업로드한 이미지는 서버로 보내지 않습니다.",
+      "스캔하거나 촬영한 도장 이미지의 흰 배경을 무료로 제거하고 투명 PNG로 저장하세요. 설치 없이 브라우저에서 처리하며 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "도장 배경 제거",
     secondaryQueries: ["도장 누끼 따기", "스캔 도장 투명하게", "도장 PNG 만들기", "도장 배경 투명"],
     userMoment: "종이에 찍은 도장을 문서 명판, 견적서, 거래명세서에 투명 이미지로 넣어야 하는 순간",
