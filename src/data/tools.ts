@@ -123,9 +123,9 @@ export const tools: ToolInfo[] = [
     category: "business",
     description:
       "공급자, 거래처, 품목, 수량, 단가를 입력해 거래명세서를 바로 작성하고 인쇄합니다.",
-    pageTitle: "거래명세서 자동작성 - 무료 거래명세서 양식",
+    pageTitle: "거래명세서 자동작성 - 무료 양식 PDF 저장",
     metaDescription:
-      "공급자, 거래처, 품목, 수량, 단가를 입력해 거래명세서를 바로 작성하세요. 무료 양식과 인쇄를 지원합니다.",
+      "공급자, 거래처, 품목, 수량, 단가를 입력해 거래명세서를 무료로 작성하세요. 설치 없이 브라우저에서 인쇄하고 PDF로 저장합니다.",
     primaryQuery: "거래명세서 자동작성",
     secondaryQueries: ["거래명세서 양식 무료", "거래명세표 양식", "거래명세서 PDF"],
     userMoment: "거래 내역을 거래처에 바로 보내거나 PDF로 저장해야 하는 순간",

@@ -829,6 +829,29 @@ async function run() {
         const previewText = await page.locator("[data-document-preview]").textContent();
         assert(previewText?.includes("합계 한글"), `${route.path} should render Korean total amount in preview`);
         if (route.path === "/tools/transaction-statement-generator/") {
+          const transactionTitle = await page.title();
+          const transactionDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const transactionTrustText = await page.locator("[data-document-trust-badges]").textContent();
+          assert(
+            transactionTitle === "거래명세서 자동작성 - 무료 양식 PDF 저장" &&
+              transactionDescription?.includes("설치 없이") &&
+              transactionDescription.includes("PDF로 저장") &&
+              transactionTrustText?.includes("무료") &&
+              transactionTrustText.includes("설치 없음") &&
+              transactionTrustText.includes("입력값 저장 안 함") &&
+              transactionTrustText.includes("PDF 저장"),
+            `${route.path} should expose the free/no-install/private/PDF promise on the first screen`
+          );
+          const transactionJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const transactionWebPageSchema = transactionJsonLdItems.find((item) => item["@type"] === "WebPage");
+          assert(
+            transactionWebPageSchema?.url === `${productionUrl}${route.path}` &&
+              transactionWebPageSchema.keywords?.includes("거래명세서 무료 양식") &&
+              transactionWebPageSchema.keywords.includes("거래명세서 PDF 저장"),
+            `${route.path} should expose a WebPage schema for 거래명세서 search intent`
+          );
           await page.goto(`${baseUrl}${route.path}?source=home-quick-start`, { waitUntil: "networkidle" });
           const documentQuickStartArrivalEvent = await page.evaluate(() => {
             return window.dataLayer?.findLast?.((event) => event.event === "document_tool_quick_start_arrival");

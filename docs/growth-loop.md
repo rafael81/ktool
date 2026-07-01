@@ -245,6 +245,7 @@ Completed:
 77. Tighten the high-intent `이미지 자르기` page around the organic promise: margin/background cropping, document/profile presets, a large first-screen upload zone, free/no-install/server-transfer badges, and WebPage structured data.
 78. Tighten the high-intent `이미지 회전` page around the organic promise: sideways scan/photo direction fixes, a large first-screen upload zone, free/no-install/server-transfer badges, and WebPage structured data.
 79. Tighten the high-intent `WebP JPG 변환` page around the organic promise: WebP upload-format fixes, a large first-screen upload zone, free/no-install/server-transfer badges, and WebPage structured data.
+80. Tighten the high-intent `거래명세서 자동작성` page around the organic promise: free form creation, PDF saving, first-screen no-install/private-input badges, and WebPage structured data.
 
 Next after crawl data appears:
 
