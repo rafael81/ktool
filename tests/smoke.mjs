@@ -889,7 +889,11 @@ async function run() {
         assert(
           pdfUploadState.height >= 300 &&
             pdfUploadState.text.includes("사진을 여기로 끌어다 놓으세요") &&
-            pdfUploadState.text.includes("사진 선택"),
+            pdfUploadState.text.includes("사진 선택") &&
+            pdfUploadState.text.includes("무료") &&
+            pdfUploadState.text.includes("설치 없음") &&
+            pdfUploadState.text.includes("서버 전송 없음") &&
+            pdfUploadState.text.includes("최대 20장"),
           `${route.path} should make the upload area the primary first-screen action`
         );
         const compressedIntakeText = await page.locator("[data-compressed-intake]").textContent();

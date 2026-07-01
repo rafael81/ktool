@@ -431,9 +431,9 @@ export const tools: ToolInfo[] = [
     category: "pdf",
     description:
       "JPG, PNG, WebP 이미지를 한 개의 PDF로 묶어 제출용 파일로 저장합니다.",
-    pageTitle: "JPG PDF 변환 - 이미지 여러 장 PDF 만들기",
+    pageTitle: "JPG PDF 변환 - 이미지 여러 장 PDF 만들기 무료",
     metaDescription:
-      "JPG, PNG, WebP 이미지를 브라우저에서 PDF로 묶어 저장하세요. 스캔 사진과 증빙 이미지를 서버 업로드 없이 제출용 PDF로 변환합니다.",
+      "JPG, PNG, WebP 이미지를 무료로 PDF 한 개로 묶어 저장하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "JPG PDF 변환",
     secondaryQueries: ["이미지 PDF 변환", "사진 PDF 만들기", "JPG PDF 만들기", "PNG PDF 변환"],
     userMoment: "스캔한 서류 사진이나 증빙 이미지를 하나의 PDF로 제출해야 하는 순간",
