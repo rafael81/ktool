@@ -241,9 +241,9 @@ async function run() {
             .locator("[data-home-quick-start]")
             .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
           [
-            "/tools/jpg-to-pdf-converter/?from=quick-start",
-            "/tools/photo-size-reducer/?preset=1mb",
-            "/tools/heic-jpg-converter/?preset=jpg",
+            "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
+            "/tools/photo-size-reducer/?preset=1mb&source=home-quick-start",
+            "/tools/heic-jpg-converter/?preset=jpg&source=home-quick-start",
             "/tools/transaction-statement-generator/"
           ].forEach((href) => {
             assert(homeQuickStartHrefs.includes(href), `${route.path} should include quick-start link ${href}`);
@@ -385,9 +385,9 @@ async function run() {
           .locator("[data-catalog-quick-start]")
           .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
         [
-          "/tools/jpg-to-pdf-converter/?from=quick-start",
-          "/tools/photo-size-reducer/?preset=1mb",
-          "/tools/heic-jpg-converter/?preset=jpg",
+          "/tools/jpg-to-pdf-converter/?from=quick-start&source=catalog-quick-start",
+          "/tools/photo-size-reducer/?preset=1mb&source=catalog-quick-start",
+          "/tools/heic-jpg-converter/?preset=jpg&source=catalog-quick-start",
           "/tools/transaction-statement-generator/"
         ].forEach((href) => {
           assert(catalogQuickStartHrefs.includes(href), `${route.path} should include catalog quick-start link ${href}`);
@@ -895,18 +895,22 @@ async function run() {
         const reducedStatus = await page.locator("[data-output-status]").textContent();
         assert(reducedFileCount === 1 && reducedStatus.includes("1장"), `${route.path} should remove one selected image`);
 
-        await page.goto(`${baseUrl}${route.path}?from=quick-start`, { waitUntil: "networkidle" });
+        await page.goto(`${baseUrl}${route.path}?from=quick-start&source=home-quick-start`, { waitUntil: "networkidle" });
         const quickStartIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
         const quickStartArrivalText = await page.locator("[data-compressed-intake]").textContent();
         const quickStartLayout = await page.evaluate(() => ({
           intakeTop: document.querySelector("[data-compressed-intake]")?.getBoundingClientRect().top || 0,
           uploadTop: document.querySelector("[data-upload-zone]")?.getBoundingClientRect().top || 0
         }));
+        const quickStartArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "jpg_pdf_quick_start_arrival");
+        });
         assert(
           quickStartIntakeState === "highlight" &&
             quickStartArrivalText?.includes("여러 장 이미지 PDF로 묶기") &&
             quickStartArrivalText.includes("제출용 PDF") &&
-            quickStartLayout.intakeTop < quickStartLayout.uploadTop,
+            quickStartLayout.intakeTop < quickStartLayout.uploadTop &&
+            quickStartArrivalEvent?.source === "home-quick-start",
           `${route.path} should tailor the arrival cue for quick-start visitors`
         );
 
@@ -993,6 +997,15 @@ async function run() {
             presetArrivalHidden === null &&
             presetArrivalText?.includes("500KB 이하로 시작"),
           `${route.path} should accept a URL preset for the 500KB compression target`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=1mb&source=home-quick-start`, { waitUntil: "networkidle" });
+        const compressorPresetArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_compressor_preset_arrival");
+        });
+        assert(
+          compressorPresetArrivalEvent?.source === "home-quick-start" &&
+            compressorPresetArrivalEvent.preset === "1mb",
+          `${route.path} should preserve quick-start source on compressor preset arrival analytics`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
@@ -1257,6 +1270,15 @@ async function run() {
             heicPresetState.arrivalHidden === false &&
             heicPresetState.arrivalText.includes("PNG로 시작"),
           `${route.path} should accept a URL preset for PNG output`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=jpg&source=catalog-quick-start`, { waitUntil: "networkidle" });
+        const heicPresetArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "heic_convert_preset_arrival");
+        });
+        assert(
+          heicPresetArrivalEvent?.source === "catalog-quick-start" &&
+            heicPresetArrivalEvent.preset === "jpg",
+          `${route.path} should preserve quick-start source on HEIC preset arrival analytics`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();

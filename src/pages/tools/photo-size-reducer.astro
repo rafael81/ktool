@@ -306,11 +306,16 @@ const structuredData = [
           quality: ""
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(compressionPresets, requestedPreset)
           ? requestedPreset
           : "";
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -709,7 +714,7 @@ const structuredData = [
         track("image_compressor_preset_arrival", {
           preset: presetSelect.value,
           target_size: selectedPreset().targetBytes || null,
-          source: "submission-prep"
+          source: arrivalSource
         });
       }
     })();

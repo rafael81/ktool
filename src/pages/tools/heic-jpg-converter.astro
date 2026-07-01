@@ -244,11 +244,16 @@ const structuredData = [
           note: "문서 편집이나 투명 처리 후속 작업이 필요할 때 PNG로 저장합니다."
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(formatPresets, requestedPreset)
           ? requestedPreset
           : null;
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
       let fileItems = [];
       let nextItemId = 1;
       let heicModulePromise = null;
@@ -596,7 +601,7 @@ const structuredData = [
       renderFiles();
       if (initialPreset) {
         track("heic_convert_preset_arrival", {
-          source: "submission-prep",
+          source: arrivalSource,
           ...formatPresetPayload()
         });
       }

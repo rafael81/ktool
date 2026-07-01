@@ -260,7 +260,9 @@ const structuredData = [
         });
       }
 
-      const arrivalSource = new URLSearchParams(window.location.search).get("from");
+      const searchParams = new URLSearchParams(window.location.search);
+      const arrivalSource = searchParams.get("from");
+      const requestedSource = searchParams.get("source");
       const arrivalSources = {
         "quick-start": {
           title: "여러 장 이미지 PDF로 묶기",
@@ -306,12 +308,15 @@ const structuredData = [
         }
       };
       const arrivalConfig = arrivalSources[arrivalSource];
+      const arrivalEventSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : arrivalSource;
       if (arrivalConfig) {
         intakeTitle.textContent = arrivalConfig.title;
         intakeCopy.textContent = arrivalConfig.copy;
         intakeStepFiles.textContent = arrivalConfig.step;
         compressedIntake.dataset.state = "highlight";
-        track(arrivalConfig.event, { source: arrivalSource });
+        track(arrivalConfig.event, { source: arrivalEventSource });
       }
 
       function formatBytes(bytes) {

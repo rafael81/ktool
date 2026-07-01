@@ -91,6 +91,7 @@ If Naver gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`
 - At the same check, Google Search Console still showed `0` clicks and `1` impression over the available 28-day performance view. Visible impression pages were `/` and `/tools/business-nameplate-maker/`.
 - `2026-07-02 03:00 KST`: Chrome CDP login check showed Google Search Console `0` clicks, `1` impression, `0%` CTR, average position `2` over the 28-day performance view. Naver Search Advisor summary still showed no content exposure/click report data.
 - `2026-07-02 03:17 KST`: Chrome CDP login recheck showed Google Search Console still at `0` clicks, `1` impression, `0%` CTR, average position `2`. Page table still included `/` and `/tools/business-nameplate-maker/`; Naver Search Advisor still showed no content exposure/click report data.
+- `2026-07-02 03:41 KST`: Chrome CDP login recheck showed the same Google organic state: `0` clicks, `1` impression, `0%` CTR, average position `2`, updated about `5.5` hours earlier. Naver Search Advisor showed sitemap registered, HTTPS redirect normal, content exposure/click data not yet available, and recent collection requests for image tools plus workflow URLs on `2026-07-02`.
 
 ## IndexNow
 
