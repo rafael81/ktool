@@ -470,6 +470,17 @@ async function run() {
           pageViewEvent?.problem_id === problemId && pageViewEvent.problem_title === problemTitle,
           `${route.path} page_view should include problem analytics context`
         );
+        const problemJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const webPageSchema = problemJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          webPageSchema?.url === `${productionUrl}${route.path}` &&
+            webPageSchema.name?.includes(problemTitle) &&
+            typeof webPageSchema.keywords === "string" &&
+            webPageSchema.keywords.includes(problemTitle.split(" ")[0]),
+          `${route.path} should expose a WebPage schema with URL, title, and problem keywords`
+        );
         const primaryLink = page.locator("[data-problem-primary-link]");
         const primaryLinkCount = await primaryLink.count();
         assert(primaryLinkCount === 1, `${route.path} should expose one primary problem CTA`);

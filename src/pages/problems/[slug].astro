@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getProblemPage, problemPages, type ProblemPage } from "@/data/problemPages";
 import { getTool } from "@/data/tools";
-import { faqPageSchema, websiteSchema } from "@/data/seo";
+import { faqPageSchema, webPageSchema, websiteSchema } from "@/data/seo";
 
 export function getStaticPaths() {
   return problemPages.map((problemPage) => ({
@@ -31,8 +31,17 @@ const stepNotes = [
   "원본은 그대로 두고 새 파일을 저장합니다.",
   "제출 전에 결과 파일을 한 번 확인합니다."
 ];
+const problemKeywords = [
+  ...new Set([problemPage.primaryQuery, ...problemPage.secondaryQueries, ...problemPage.intentQueries])
+];
 const structuredData = [
   websiteSchema(),
+  webPageSchema({
+    name: `${problemPage.title} - K문서툴`,
+    description: problemPage.metaDescription,
+    path: problemPage.path,
+    keywords: problemKeywords
+  }),
   {
     "@context": "https://schema.org",
     "@type": "HowTo",

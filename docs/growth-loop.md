@@ -194,6 +194,7 @@ Completed:
 46. Expand `/tools/` catalog search with search-only problem-intent rows so blocked-state queries route to the right problem page without cluttering the default tool list.
 47. Surface blocked-state intent phrases visibly on each problem page so those pages explain the same real-world wording used by homepage and catalog search.
 48. Add query-linked `/tools/?q=...` catalog search so problem-intent search states can be shared, tested, and revisited directly.
+49. Add WebPage structured data to problem pages with problem-intent keywords so visible blocked-state wording and JSON-LD metadata stay aligned.
 
 Next after crawl data appears:
 

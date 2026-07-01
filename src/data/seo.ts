@@ -73,6 +73,38 @@ export function websiteSchema() {
   };
 }
 
+export function webPageSchema({
+  name,
+  description,
+  path,
+  keywords
+}: {
+  name: string;
+  description: string;
+  path: string;
+  keywords?: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "ko-KR",
+    ...(keywords?.length ? { keywords: keywords.join(", ") } : {}),
+    isPartOf: {
+      "@type": "WebSite",
+      name: brandName,
+      url: siteUrl
+    },
+    publisher: {
+      "@type": "Organization",
+      name: brandName,
+      url: siteUrl
+    }
+  };
+}
+
 export function toolItemListSchema(tools: ToolInfo[]) {
   return {
     "@context": "https://schema.org",
