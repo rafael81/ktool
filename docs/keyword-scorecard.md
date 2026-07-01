@@ -27,6 +27,7 @@ Implemented and deployed:
 - 제출용 파일 준비
 - 이미지 자르기
 - 이미지 회전
+- 사업자 명판 도장 이미지 문제 랜딩
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
@@ -37,6 +38,7 @@ The submission-prep hub is now added as a cross-tool workflow page because the i
 The fifth image wedge is 이미지 자르기 because it completes the common submission-prep sequence after format, size, and compression: remove irrelevant margins or background before resizing or PDF bundling.
 The sixth image wedge is 이미지 회전 because sideways scan/photo orientation is a common low-friction blocker before crop, resize, and JPG PDF bundling.
 The current improvement loop connects 사진 용량 줄이기, 이미지 리사이즈, 이미지 자르기, 이미지 회전, WebP JPG 변환, and HEIC JPG 변환 to JPG PDF 변환 more tightly, and now strengthens the homepage, tool catalog, image/PDF category pages, and 제출용 파일 준비 hub for format-error, compression-limit, pixel-limit, crop-area, rotation-direction, and output-format routing because edited, compressed, resized, cropped, rotated, or compatibility-fixed image submissions need visible preset handoffs with stable analytics metadata, not just generic related-tool links.
+After the first Google impression appeared on the business-nameplate surface, the loop added a dedicated `사업자 명판 도장 이미지 만들기` problem landing so nameplate intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local PNG generator.
 
 ## Decision
 

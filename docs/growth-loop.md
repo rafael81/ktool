@@ -256,6 +256,7 @@ Completed:
 88. Retighten the indexed `사업자 명판 만들기 무료` page after the first Google impression: expose stamp composition, transparent PNG output, server-transfer reassurance, and matching WebPage keywords in the first-screen promise.
 89. Retighten the homepage after the first Google impression: focus the title/meta on free PDF/image/document tools, add homepage WebPage keywords, and put the indexed `명판 PNG` path into first-screen quick starts.
 90. Retighten the `/tools/` catalog to match the homepage entry promise: focused free PDF/image/document title/meta, WebPage keywords, `명판 PNG` quick start, and nameplate-aware catalog search placeholder.
+91. Add a dedicated `사업자 명판 도장 이미지 만들기` problem page so the first indexed nameplate intent has a searchable problem landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the nameplate PNG tool.
 
 Next after crawl data appears:
 

@@ -1,6 +1,7 @@
 import type { ToolId } from "@/data/tools";
 
 export type ProblemPageId =
+  | "business-nameplate-stamp"
   | "file-format-error"
   | "heic-jpg-submit"
   | "photo-under-1mb"
@@ -31,6 +32,56 @@ export type ProblemPage = {
 };
 
 export const problemPages: ProblemPage[] = [
+  {
+    id: "business-nameplate-stamp",
+    slug: "business-nameplate-stamp",
+    path: "/problems/business-nameplate-stamp/",
+    title: "사업자 명판 도장 이미지 만들기",
+    shortTitle: "명판 도장",
+    description: "견적서, 거래명세서, 계약서에 회사 정보와 도장을 넣어야 할 때 명판 PNG를 만듭니다.",
+    metaDescription:
+      "사업자명, 대표자, 사업자등록번호, 주소와 도장을 합친 사업자 명판 이미지를 무료로 만드세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "사업자 명판 도장 이미지",
+    secondaryQueries: ["사업자 명판 만들기", "명판 도장 합성", "전자 사업자 명판"],
+    intentQueries: [
+      "견적서 명판 넣기",
+      "거래명세서 도장 합성",
+      "사업자등록번호 명판",
+      "회사 정보 이미지",
+      "문서용 명판 PNG",
+      "도장 들어간 명판",
+      "명판 이미지 만들기",
+      "전자 명판 만들기"
+    ],
+    targetToolId: "business-nameplate",
+    targetPath: "/tools/business-nameplate-maker/",
+    targetLabel: "명판 PNG 만들기",
+    actionNote: "상호, 대표자, 사업자등록번호, 주소와 도장을 한 장의 PNG로 저장합니다.",
+    steps: ["사업자 정보 입력", "도장 이미지 선택", "배경 투명 여부 확인", "PNG 저장"],
+    faqs: [
+      [
+        "사업자 명판 이미지는 어디에 넣나요?",
+        "견적서, 거래명세서, 계약서, 발주서처럼 회사 정보와 도장을 반복해서 넣는 문서에 이미지로 삽입할 때 씁니다."
+      ],
+      [
+        "도장까지 한 번에 합성할 수 있나요?",
+        "네. 도장 PNG 또는 JPG를 선택하면 명판 미리보기에 함께 배치하고 한 장의 PNG로 저장할 수 있습니다."
+      ],
+      [
+        "투명 배경으로 저장할 수 있나요?",
+        "네. 문서 위에 자연스럽게 올릴 수 있도록 투명 배경 PNG 저장을 지원합니다."
+      ],
+      [
+        "입력한 사업자 정보가 저장되나요?",
+        "아니요. 사업자명, 대표자명, 사업자등록번호, 주소, 도장 이미지는 브라우저 안에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      [
+        "법적 효력이 있는 전자서명인가요?",
+        "아니요. 이 도구는 문서 삽입용 이미지를 만드는 용도이며, 전자서명 인증이나 인감 증명을 대신하지 않습니다."
+      ]
+    ],
+    relatedProblemIds: ["file-format-error", "document-photo-crop", "images-to-one-pdf"]
+  },
   {
     id: "file-format-error",
     slug: "file-format-error",
