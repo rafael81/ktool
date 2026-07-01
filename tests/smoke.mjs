@@ -919,6 +919,40 @@ async function run() {
             `${route.path} should make the first-screen JPG PDF action and privacy promise explicit`
           );
         }
+        if (route.path === "/problems/heic-jpg-submit/") {
+          const heicTitle = await page.title();
+          const heicDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            heicTitle === "HEIC JPG 제출 준비 - K문서툴" &&
+              heicDescription?.includes("HEIC JPG 변환") &&
+              heicDescription.includes("아이폰 사진 JPG 변환") &&
+              heicDescription.includes("HEIC 제출 오류") &&
+              heicDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused iPhone HEIC conversion title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("HEIC JPG 변환") &&
+              webPageSchema.keywords.includes("아이폰 사진 JPG 변환") &&
+              webPageSchema.keywords.includes("HEIC 제출 오류"),
+            `${route.path} should expose HEIC submission search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/heic-jpg-converter/") &&
+              primaryTargetUrl.searchParams.get("preset") === "jpg" &&
+              primaryText?.includes("HEIC JPG 변환 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("JPG") &&
+              actionText.includes("업로드"),
+            `${route.path} should make the first-screen HEIC JPG action and privacy promise explicit`
+          );
+        }
         if (route.path === "/problems/photo-under-1mb/") {
           const photoCompressTitle = await page.title();
           const photoCompressDescription = await page.locator('meta[name="description"]').getAttribute("content");
