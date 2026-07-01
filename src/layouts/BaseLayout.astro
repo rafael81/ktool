@@ -213,7 +213,7 @@ const analyticsPage = {
           "raw_image",
           "supplier_name"
         ]);
-        const safeHrefParams = new Set(["from", "preset", "problem_id", "source"]);
+        const safeHrefParams = new Set(["from", "preset", "problem_id", "shortcut_id", "source"]);
 
         function normalizeAnalyticsKey(key) {
           return String(key || "")

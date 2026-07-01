@@ -234,11 +234,18 @@ const structuredData = [
           note: "웹 업로드나 용량 절약이 중요할 때 WebP로 저장합니다."
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(formatPresets, requestedPreset)
           ? requestedPreset
           : null;
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
       let fileItems = [];
       let nextItemId = 1;
 
@@ -566,7 +573,8 @@ const structuredData = [
       renderFiles();
       if (initialPreset) {
         track("image_convert_preset_arrival", {
-          source: "submission-prep",
+          source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {}),
           ...formatPresetPayload()
         });
       }

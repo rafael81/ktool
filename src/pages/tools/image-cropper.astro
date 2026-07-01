@@ -312,11 +312,18 @@ const structuredData = [
           note: "제출 영역이 일정하지 않으면 자유 비율로 직접 맞춥니다."
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(cropPresets, requestedPreset)
           ? requestedPreset
           : "";
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -856,7 +863,8 @@ const structuredData = [
       applyCropPreset(false);
       if (initialPreset) {
         track("image_crop_preset_arrival", {
-          source: "submission-prep",
+          source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {}),
           ...cropPresetPayload()
         });
       }

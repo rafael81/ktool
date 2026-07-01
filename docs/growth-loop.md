@@ -236,6 +236,7 @@ Completed:
 68. Preserve home/catalog quick-start source parameters on JPG PDF, photo compression, and HEIC preset arrival events so early traffic can be segmented by entry surface.
 69. Add safe download-quality signals to the indexed `사업자 명판 만들기 무료` page so organic arrivals can distinguish sample saves from edited business-nameplate saves without collecting raw business data.
 70. Preserve home/catalog quick-start source parameters on the `거래명세서 자동작성` path and document print events so business-document quick-start traffic can be segmented beyond the initial link click.
+71. Preserve `shortcut_id` through problem-situation shortcut URLs and preset-arrival events so catalog/category shortcut clicks can be matched to downstream tool arrivals without raw query text or file data.
 
 Next after crawl data appears:
 

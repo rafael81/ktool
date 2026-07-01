@@ -242,11 +242,18 @@ const structuredData = [
           note: "거꾸로 찍힌 스캔본이나 사진을 뒤집습니다."
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(rotationPresets, requestedPreset)
           ? requestedPreset
           : null;
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
       let fileItems = [];
       let nextItemId = 1;
 
@@ -576,7 +583,8 @@ const structuredData = [
       renderFiles();
       if (initialPreset) {
         track("image_rotate_preset_arrival", {
-          source: "submission-prep",
+          source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {}),
           ...rotationPresetPayload()
         });
       }

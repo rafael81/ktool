@@ -307,11 +307,18 @@ const structuredData = [
           note: "제출처 안내에 맞춰 크기와 형식을 직접 조정합니다."
         }
       };
-      const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestedPreset = searchParams.get("preset");
+      const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(resizePresets, requestedPreset)
           ? requestedPreset
           : "";
+      const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
+        ? requestedSource
+        : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -688,7 +695,8 @@ const structuredData = [
       applyResizePreset(false);
       if (initialPreset) {
         track("image_resize_preset_arrival", {
-          source: "submission-prep",
+          source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {}),
           ...presetPayload()
         });
       }

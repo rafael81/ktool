@@ -13,7 +13,7 @@ Every event includes:
 - `page_title`: current page title
 - `event_time`: ISO timestamp
 
-The shared `window.kdocTrack` helper drops known sensitive keys such as filenames, raw image bytes, OCR text, document text, business numbers, addresses, customer names, email, and phone values. String values are length-limited, object payloads are ignored, and tracked same-origin `href` values keep only safe routing parameters: `from`, `preset`, `problem_id`, and `source`.
+The shared `window.kdocTrack` helper drops known sensitive keys such as filenames, raw image bytes, OCR text, document text, business numbers, addresses, customer names, email, and phone values. String values are length-limited, object payloads are ignored, and tracked same-origin `href` values keep only safe routing parameters: `from`, `preset`, `problem_id`, `shortcut_id`, and `source`.
 
 Tool pages also include:
 
@@ -114,6 +114,7 @@ Problem-intent pages also include:
 | `jpg_pdf_file_select` | JPG PDF converter images are selected | `file_count`, `total_size`, `file_types` |
 | `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
 | `jpg_pdf_quick_start_arrival` | JPG PDF converter is opened from a home or catalog quick-start CTA | `source` |
+| `jpg_pdf_prep_shortcut_arrival` | JPG PDF converter is opened from a problem-situation shortcut | `source`, `shortcut_id` |
 | `jpg_pdf_compressed_arrival` | JPG PDF converter is opened from the photo-size reducer next-step CTA | `source` |
 | `jpg_pdf_rotated_arrival` | JPG PDF converter is opened from the image rotator next-step CTA | `source` |
 | `jpg_pdf_resized_arrival` | JPG PDF converter is opened from the image resizer next-step CTA | `source` |
@@ -128,7 +129,7 @@ Problem-intent pages also include:
 | `jpg_pdf_validation_error` | JPG PDF converter blocks invalid input or generation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_compressor_file_select` | Photo size reducer images are selected | `file_count`, `total_size`, `file_types` |
 | `image_compressor_sample_apply` | Photo size reducer sample images are applied | `file_count` |
-| `image_compressor_preset_arrival` | Photo size reducer is opened with a URL preset | `preset`, `target_size`, `source` |
+| `image_compressor_preset_arrival` | Photo size reducer is opened with a URL preset | `preset`, `target_size`, `source`, optional `shortcut_id` |
 | `image_compressor_preset_change` | Photo size reducer submission target preset changes | `preset`, `target_size` |
 | `image_compressor_compress` | Photo size reducer creates compressed image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `max_side`, `preset`, `target_size`, `file_types` |
 | `image_compressor_download` | Photo size reducer download link is clicked | `output_format`, `before_size`, `after_size` |
@@ -137,7 +138,7 @@ Problem-intent pages also include:
 | `image_compressor_validation_error` | Photo size reducer blocks invalid input or compression failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_resize_file_select` | Image resizer images are selected | `file_count`, `total_size`, `file_types` |
 | `image_resize_sample_apply` | Image resizer sample images are applied | `file_count` |
-| `image_resize_preset_arrival` | Image resizer is opened with a URL preset | `source`, `preset`, `resize_mode`, `long_side`, `width`, `height`, `keep_aspect` |
+| `image_resize_preset_arrival` | Image resizer is opened with a URL preset | `source`, optional `shortcut_id`, `preset`, `resize_mode`, `long_side`, `width`, `height`, `keep_aspect` |
 | `image_resize_preset_change` | Image resizer submission size preset changes | `preset`, `resize_mode`, `long_side`, `width`, `height`, `keep_aspect` |
 | `image_resize_resize` | Image resizer creates resized image blobs | `file_count`, `total_size`, `output_size`, `resize_mode`, `output_format`, `quality`, `keep_aspect`, `preset`, `file_types` |
 | `image_resize_download` | Image resizer download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height` |
@@ -146,7 +147,7 @@ Problem-intent pages also include:
 | `image_resize_validation_error` | Image resizer blocks invalid input or resize failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_crop_file_select` | Image cropper image is selected | `file_count`, `total_size`, `file_types` |
 | `image_crop_sample_apply` | Image cropper sample image is applied | `file_count` |
-| `image_crop_preset_arrival` | Image cropper is opened with a URL preset | `source`, `preset`, `aspect_preset` |
+| `image_crop_preset_arrival` | Image cropper is opened with a URL preset | `source`, optional `shortcut_id`, `preset`, `aspect_preset` |
 | `image_crop_preset_change` | Image cropper submission area preset changes | `preset`, `aspect_preset` |
 | `image_crop_aspect_change` | Image cropper aspect ratio changes directly | `aspect_preset` |
 | `image_crop_crop` | Image cropper creates a cropped image blob | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `crop_width`, `crop_height`, `aspect_preset`, `preset`, `file_types` |
@@ -156,7 +157,7 @@ Problem-intent pages also include:
 | `image_crop_validation_error` | Image cropper blocks invalid input or crop failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_rotate_file_select` | Image rotator images are selected | `file_count`, `total_size`, `file_types` |
 | `image_rotate_sample_apply` | Image rotator sample images are applied | `file_count` |
-| `image_rotate_preset_arrival` | Image rotator is opened with a URL preset | `source`, `preset`, `rotation_angle` |
+| `image_rotate_preset_arrival` | Image rotator is opened with a URL preset | `source`, optional `shortcut_id`, `preset`, `rotation_angle` |
 | `image_rotate_preset_change` | Image rotator submission direction preset changes | `preset`, `rotation_angle` |
 | `image_rotate_rotate` | Image rotator creates rotated image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `rotation_angle`, `preset`, `file_types` |
 | `image_rotate_download` | Image rotator download link is clicked | `output_format`, `before_size`, `after_size`, `output_width`, `output_height`, `rotation_angle`, `preset` |
@@ -165,7 +166,7 @@ Problem-intent pages also include:
 | `image_rotate_validation_error` | Image rotator blocks invalid input or rotation failure | `reason`, optional `file_count`, optional `total_size` |
 | `image_convert_file_select` | Image converter images are selected | `file_count`, `total_size`, `file_types` |
 | `image_convert_sample_apply` | Image converter sample images are applied | `file_count` |
-| `image_convert_preset_arrival` | Image converter is opened with a URL preset | `source`, `preset`, `output_format`, `quality` |
+| `image_convert_preset_arrival` | Image converter is opened with a URL preset | `source`, optional `shortcut_id`, `preset`, `output_format`, `quality` |
 | `image_convert_preset_change` | Image converter output format preset changes | `preset`, `output_format`, `quality` |
 | `image_convert_convert` | Image converter creates converted image blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `preset`, `file_types` |
 | `image_convert_download` | Image converter download link is clicked | `source_type`, `output_format`, `before_size`, `after_size`, `preset` |
@@ -174,7 +175,7 @@ Problem-intent pages also include:
 | `image_convert_validation_error` | Image converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 | `heic_convert_file_select` | HEIC converter files are selected | `file_count`, `total_size`, `file_types` |
 | `heic_convert_sample_apply` | HEIC converter sample file is applied | `file_count` |
-| `heic_convert_preset_arrival` | HEIC converter is opened with a URL preset | `source`, `preset`, `output_format`, `quality` |
+| `heic_convert_preset_arrival` | HEIC converter is opened with a URL preset | `source`, optional `shortcut_id`, `preset`, `output_format`, `quality` |
 | `heic_convert_preset_change` | HEIC converter output format preset changes | `preset`, `output_format`, `quality` |
 | `heic_convert_convert` | HEIC converter creates JPG or PNG blobs | `file_count`, `total_size`, `output_size`, `output_format`, `quality`, `preset`, `file_types` |
 | `heic_convert_download` | HEIC converter download link is clicked | `output_format`, `before_size`, `after_size`, `preset` |

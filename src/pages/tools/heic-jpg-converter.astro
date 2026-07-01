@@ -247,6 +247,7 @@ const structuredData = [
       const searchParams = new URLSearchParams(window.location.search);
       const requestedPreset = searchParams.get("preset");
       const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(formatPresets, requestedPreset)
           ? requestedPreset
@@ -254,6 +255,7 @@ const structuredData = [
       const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
         ? requestedSource
         : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
       let fileItems = [];
       let nextItemId = 1;
       let heicModulePromise = null;
@@ -602,6 +604,7 @@ const structuredData = [
       if (initialPreset) {
         track("heic_convert_preset_arrival", {
           source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {}),
           ...formatPresetPayload()
         });
       }

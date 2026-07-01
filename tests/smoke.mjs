@@ -373,13 +373,13 @@ async function run() {
             `${route.path} should expose problem-situation shortcut labels`
           );
           const expectedShortcutLinks = [
-            "/tools/image-converter/?preset=jpg",
-            "/tools/heic-jpg-converter/?preset=jpg",
-            "/tools/photo-size-reducer/?preset=1mb",
-            "/tools/image-resizer/?preset=long-1200",
-            "/tools/image-rotator/?preset=right",
-            "/tools/image-cropper/?preset=document",
-            "/tools/jpg-to-pdf-converter/"
+            "/tools/image-converter/?preset=jpg&source=prep-shortcut&shortcut_id=format-jpg",
+            "/tools/heic-jpg-converter/?preset=jpg&source=prep-shortcut&shortcut_id=heic-jpg",
+            "/tools/photo-size-reducer/?preset=1mb&source=prep-shortcut&shortcut_id=compress-1mb",
+            "/tools/image-resizer/?preset=long-1200&source=prep-shortcut&shortcut_id=resize-long-1200",
+            "/tools/image-rotator/?preset=right&source=prep-shortcut&shortcut_id=rotate-right",
+            "/tools/image-cropper/?preset=document&source=prep-shortcut&shortcut_id=crop-document",
+            "/tools/jpg-to-pdf-converter/?from=prep-shortcut&source=prep-shortcut&shortcut_id=bundle-jpg-pdf"
           ];
           for (const href of expectedShortcutLinks) {
             const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
@@ -732,13 +732,13 @@ async function run() {
           `${route.path} should expose category problem-situation shortcut labels`
         );
         const expectedShortcutLinks = [
-          "/tools/image-converter/?preset=jpg",
-          "/tools/heic-jpg-converter/?preset=jpg",
-          "/tools/photo-size-reducer/?preset=1mb",
-          "/tools/image-resizer/?preset=long-1200",
-          "/tools/image-rotator/?preset=right",
-          "/tools/image-cropper/?preset=document",
-          "/tools/jpg-to-pdf-converter/"
+          "/tools/image-converter/?preset=jpg&source=prep-shortcut&shortcut_id=format-jpg",
+          "/tools/heic-jpg-converter/?preset=jpg&source=prep-shortcut&shortcut_id=heic-jpg",
+          "/tools/photo-size-reducer/?preset=1mb&source=prep-shortcut&shortcut_id=compress-1mb",
+          "/tools/image-resizer/?preset=long-1200&source=prep-shortcut&shortcut_id=resize-long-1200",
+          "/tools/image-rotator/?preset=right&source=prep-shortcut&shortcut_id=rotate-right",
+          "/tools/image-cropper/?preset=document&source=prep-shortcut&shortcut_id=crop-document",
+          "/tools/jpg-to-pdf-converter/?from=prep-shortcut&source=prep-shortcut&shortcut_id=bundle-jpg-pdf"
         ];
         for (const href of expectedShortcutLinks) {
           const count = await page.locator(`[data-prep-shortcuts] a[href="${href}"]`).count();
@@ -967,6 +967,15 @@ async function run() {
             quickStartArrivalEvent?.source === "home-quick-start",
           `${route.path} should tailor the arrival cue for quick-start visitors`
         );
+        await page.goto(`${baseUrl}${route.path}?from=prep-shortcut&source=prep-shortcut&shortcut_id=bundle-jpg-pdf`, { waitUntil: "networkidle" });
+        const prepShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "jpg_pdf_prep_shortcut_arrival");
+        });
+        assert(
+          prepShortcutArrivalEvent?.source === "prep-shortcut" &&
+            prepShortcutArrivalEvent.shortcut_id === "bundle-jpg-pdf",
+          `${route.path} should preserve prep shortcut id on JPG PDF arrival analytics`
+        );
 
         await page.goto(`${baseUrl}${route.path}?from=compressed-images`, { waitUntil: "networkidle" });
         const compressedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
@@ -1061,6 +1070,16 @@ async function run() {
             compressorPresetArrivalEvent.preset === "1mb",
           `${route.path} should preserve quick-start source on compressor preset arrival analytics`
         );
+        await page.goto(`${baseUrl}${route.path}?preset=1mb&source=prep-shortcut&shortcut_id=compress-1mb`, { waitUntil: "networkidle" });
+        const compressorShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_compressor_preset_arrival");
+        });
+        assert(
+          compressorShortcutArrivalEvent?.source === "prep-shortcut" &&
+            compressorShortcutArrivalEvent.shortcut_id === "compress-1mb" &&
+            compressorShortcutArrivalEvent.preset === "1mb",
+          `${route.path} should preserve prep shortcut id on compressor preset arrival analytics`
+        );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".compress-row").length === 2);
@@ -1110,6 +1129,16 @@ async function run() {
             resizePresetState.note.includes("800×800px"),
           `${route.path} should accept a URL preset for the 800x800-fit resize target`
         );
+        await page.goto(`${baseUrl}${route.path}?preset=long-1200&source=prep-shortcut&shortcut_id=resize-long-1200`, { waitUntil: "networkidle" });
+        const resizeShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_resize_preset_arrival");
+        });
+        assert(
+          resizeShortcutArrivalEvent?.source === "prep-shortcut" &&
+            resizeShortcutArrivalEvent.shortcut_id === "resize-long-1200" &&
+            resizeShortcutArrivalEvent.preset === "long-1200",
+          `${route.path} should preserve prep shortcut id on resize preset arrival analytics`
+        );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".resize-row").length === 2);
@@ -1155,6 +1184,16 @@ async function run() {
             cropPresetState.quality === "90" &&
             cropPresetState.note.includes("프로필"),
           `${route.path} should accept a URL preset for the profile crop target`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=document&source=prep-shortcut&shortcut_id=crop-document`, { waitUntil: "networkidle" });
+        const cropShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_crop_preset_arrival");
+        });
+        assert(
+          cropShortcutArrivalEvent?.source === "prep-shortcut" &&
+            cropShortcutArrivalEvent.shortcut_id === "crop-document" &&
+            cropShortcutArrivalEvent.preset === "document",
+          `${route.path} should preserve prep shortcut id on crop preset arrival analytics`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
@@ -1207,6 +1246,16 @@ async function run() {
           rotationPresetState.angle === "-90" && rotationPresetState.note.includes("왼쪽"),
           `${route.path} should accept a URL preset for left rotation`
         );
+        await page.goto(`${baseUrl}${route.path}?preset=right&source=prep-shortcut&shortcut_id=rotate-right`, { waitUntil: "networkidle" });
+        const rotateShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_rotate_preset_arrival");
+        });
+        assert(
+          rotateShortcutArrivalEvent?.source === "prep-shortcut" &&
+            rotateShortcutArrivalEvent.shortcut_id === "rotate-right" &&
+            rotateShortcutArrivalEvent.preset === "right",
+          `${route.path} should preserve prep shortcut id on rotation preset arrival analytics`
+        );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => document.querySelectorAll(".rotate-row").length === 2);
@@ -1258,6 +1307,16 @@ async function run() {
             formatPresetState.quality === "90" &&
             formatPresetState.note.includes("투명"),
           `${route.path} should accept a URL preset for PNG output`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=jpg&source=prep-shortcut&shortcut_id=format-jpg`, { waitUntil: "networkidle" });
+        const convertShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "image_convert_preset_arrival");
+        });
+        assert(
+          convertShortcutArrivalEvent?.source === "prep-shortcut" &&
+            convertShortcutArrivalEvent.shortcut_id === "format-jpg" &&
+            convertShortcutArrivalEvent.preset === "jpg",
+          `${route.path} should preserve prep shortcut id on image-converter preset arrival analytics`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
@@ -1333,6 +1392,16 @@ async function run() {
           heicPresetArrivalEvent?.source === "catalog-quick-start" &&
             heicPresetArrivalEvent.preset === "jpg",
           `${route.path} should preserve quick-start source on HEIC preset arrival analytics`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=jpg&source=prep-shortcut&shortcut_id=heic-jpg`, { waitUntil: "networkidle" });
+        const heicShortcutArrivalEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "heic_convert_preset_arrival");
+        });
+        assert(
+          heicShortcutArrivalEvent?.source === "prep-shortcut" &&
+            heicShortcutArrivalEvent.shortcut_id === "heic-jpg" &&
+            heicShortcutArrivalEvent.preset === "jpg",
+          `${route.path} should preserve prep shortcut id on HEIC preset arrival analytics`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
@@ -1558,7 +1627,7 @@ async function assertAnalyticsSanitizer(browser) {
     const payload = await page.evaluate(() => {
       window.kdocTrack("privacy_probe", {
         label: "x".repeat(220),
-        href: "/tools/?q=SECRETQUERY&preset=jpg&source=problem&problem_id=photo-under-1mb&unsafe=SECRET",
+        href: "/tools/?q=SECRETQUERY&preset=jpg&source=problem&problem_id=photo-under-1mb&shortcut_id=compress-1mb&unsafe=SECRET",
         file_name: "SECRET-FILENAME.jpg",
         business_number: "SECRET-BIZ-999-88-77777",
         event: "SECRET-EVENT-OVERRIDE",
@@ -1582,6 +1651,7 @@ async function assertAnalyticsSanitizer(browser) {
       href.searchParams.get("problem_id") === "photo-under-1mb",
       "analytics sanitizer should keep safe href problem_id"
     );
+    assert(href.searchParams.get("shortcut_id") === "compress-1mb", "analytics sanitizer should keep safe href shortcut_id");
     assert(!href.searchParams.has("q"), "analytics sanitizer should drop raw search query href params");
     assert(!href.searchParams.has("unsafe"), "analytics sanitizer should drop unknown href params");
     assert(

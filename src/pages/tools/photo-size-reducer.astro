@@ -309,6 +309,7 @@ const structuredData = [
       const searchParams = new URLSearchParams(window.location.search);
       const requestedPreset = searchParams.get("preset");
       const requestedSource = searchParams.get("source");
+      const requestedShortcutId = searchParams.get("shortcut_id");
       const initialPreset =
         requestedPreset && Object.prototype.hasOwnProperty.call(compressionPresets, requestedPreset)
           ? requestedPreset
@@ -316,6 +317,7 @@ const structuredData = [
       const arrivalSource = /^[a-z0-9-]{1,80}$/i.test(requestedSource || "")
         ? requestedSource
         : "submission-prep";
+      const shortcutId = /^[a-z0-9-]{1,80}$/i.test(requestedShortcutId || "") ? requestedShortcutId : "";
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -714,7 +716,8 @@ const structuredData = [
         track("image_compressor_preset_arrival", {
           preset: presetSelect.value,
           target_size: selectedPreset().targetBytes || null,
-          source: arrivalSource
+          source: arrivalSource,
+          ...(shortcutId ? { shortcut_id: shortcutId } : {})
         });
       }
     })();
