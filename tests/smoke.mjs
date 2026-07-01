@@ -629,6 +629,17 @@ async function run() {
         }
       }
 
+      if (route.path.startsWith("/categories/")) {
+        const categoryMainText = await page.locator("main").textContent();
+        assert(
+          !categoryMainText?.includes("다음 PDF 도구 후보") &&
+            !categoryMainText?.includes("다음 이미지 도구 후보") &&
+            !categoryMainText?.includes("업무 문서 도구를 먼저 키우는 이유") &&
+            !categoryMainText?.includes("PDF 합치기나 압축"),
+          `${route.path} should show usable tools only, not roadmap or strategy copy`
+        );
+      }
+
       if (route.submissionPrep) {
         const pdfPathStepCount = await page.locator("[data-pdf-path] a").count();
         assert(pdfPathStepCount >= 5, `${route.path} should render the highlighted PDF submission path`);

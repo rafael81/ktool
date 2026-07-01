@@ -10,7 +10,6 @@ const submissionPrepPath = "/tools/submission-file-prep/";
 const relatedTools = [...getToolsByCategory("pdf"), ...getToolsByCategory("business")].filter((tool) =>
   ["jpg-to-pdf", "stamp-background", "business-nameplate"].includes(tool.id)
 );
-const plannedImageTools = ["이미지 Base64 변환", "QR 코드 읽기", "사진 배경 제거", "이미지 워터마크"];
 const structuredData = [
   collectionPageSchema({
     name: category.title,
@@ -164,24 +163,5 @@ const structuredData = [
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="section-heading">
-        <h2>다음 이미지 도구 후보</h2>
-        <p>이미지 변환 도구는 브라우저 지원, 파일 제한, 개인정보 기준을 확인한 뒤 추가합니다.</p>
-      </div>
-      <div class="tool-grid">
-        {
-          plannedImageTools.map((title) => (
-            <article class="tool-card">
-              <span class="meta">
-                <span class="meta-tag muted">후보</span>
-              </span>
-              <strong>{title}</strong>
-              <p>문서 제출 흐름과 맞는지, 브라우저에서 안정적으로 처리할 수 있는지 확인한 뒤 공개합니다.</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
   </main>
 </BaseLayout>

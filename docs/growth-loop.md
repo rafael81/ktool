@@ -226,6 +226,7 @@ Completed:
 58. Add empty-search recovery links on the homepage and `/tools/` catalog so failed searches can jump to high-intent tools or the problem hub without a dead end.
 59. Make the first-screen upload areas larger and more action-led on `사진 용량 줄이기`, `JPG PDF 변환`, and `HEIC JPG 변환` so search visitors can start the core file task before reading secondary settings.
 60. Make post-processing save actions harder to miss across image cleanup tools and `JPG PDF 변환` so users know to save generated files before continuing or submitting.
+61. Remove roadmap-style candidate sections from category pages so visitors see only usable tools and direct submission workflows.
 
 Next after crawl data appears:
 

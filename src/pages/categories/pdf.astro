@@ -10,7 +10,6 @@ const submissionPrepPath = "/tools/submission-file-prep/";
 const relatedTools = [...getToolsByCategory("image"), ...getToolsByCategory("business")].filter((tool) =>
   ["image-compressor", "stamp-background", "business-nameplate", "transaction-statement"].includes(tool.id)
 );
-const plannedPdfTools = ["PDF 합치기", "PDF 나누기", "PDF 압축", "PDF JPG 변환", "PDF 회전"];
 const structuredData = [
   collectionPageSchema({
     name: category.title,
@@ -164,27 +163,5 @@ const structuredData = [
       </div>
     </section>
 
-    <section class="content-section">
-      <div class="section-heading">
-        <h2>다음 PDF 도구 후보</h2>
-        <p>범용 PDF 경쟁이 강한 도구는 사용 데이터와 브라우저 처리 안정성을 확인한 뒤 추가합니다.</p>
-      </div>
-      <div class="tool-grid">
-        {
-          plannedPdfTools.map((title) => (
-            <article class="tool-card">
-              <span class="meta">
-                <span class="meta-tag muted">후보</span>
-              </span>
-              <strong>{title}</strong>
-              <p>
-                한국 업무 문서 제출 흐름에 맞는 파일 제한, 진행 상태, 오류 복구 기준을 먼저
-                정한 뒤 공개합니다.
-              </p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
   </main>
 </BaseLayout>
