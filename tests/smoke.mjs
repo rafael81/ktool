@@ -12,7 +12,7 @@ const routes = [
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   {
     path: "/workflows/photo-scan-submission/",
-    h1: "사진·스캔 제출 패키지",
+    h1: "사진·스캔 PDF 제출 패키지",
     faq: true,
     workflowPackage: "photo-scan-submission"
   },
@@ -651,6 +651,37 @@ async function run() {
             workflowText.includes("이 흐름에 필요한 도구"),
           `${route.path} should render problem, sequence, and tool sections`
         );
+        if (route.workflowPackage === "photo-scan-submission") {
+          const workflowTitle = await page.title();
+          const workflowDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          assert(
+            workflowTitle === "사진·스캔 PDF 제출 패키지 - K문서툴" &&
+              workflowDescription?.includes("사진 PDF 변환") &&
+              workflowDescription.includes("스캔본 PDF 만들기") &&
+              workflowDescription.includes("HEIC JPG 변환") &&
+              workflowDescription.includes("브라우저에서 처리"),
+            `${route.path} should expose focused photo scan PDF submission intent in title and meta description`
+          );
+          assert(
+            workflowText.includes("사진·스캔본 PDF 만들기") &&
+              workflowText.includes("사진 1MB 이하로 줄이기") &&
+              workflowText.includes("iPhone HEIC를 JPG로 변환") &&
+              workflowText.includes("제출용 PDF 만들기"),
+            `${route.path} should make the photo PDF, compression, and HEIC conversion flow visible`
+          );
+          const workflowJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const workflowCollectionSchema = workflowJsonLdItems.find((item) => item["@type"] === "CollectionPage");
+          assert(
+            workflowCollectionSchema?.url === `${productionUrl}${route.path}` &&
+              workflowCollectionSchema.keywords?.includes("사진 PDF 변환") &&
+              workflowCollectionSchema.keywords.includes("스캔본 PDF 만들기") &&
+              workflowCollectionSchema.keywords.includes("사진 1MB 이하로 줄이기") &&
+              workflowCollectionSchema.keywords.includes("HEIC JPG 변환"),
+            `${route.path} should expose CollectionPage keywords for photo scan PDF submission search intent`
+          );
+        }
         if (route.workflowPackage === "freelance-billing") {
           const workflowTitle = await page.title();
           const workflowDescription = await page.locator('meta[name="description"]').getAttribute("content");
@@ -735,6 +766,15 @@ async function run() {
               primaryActionProblem === "withholding" &&
               primaryActionTargetTool === "withholding-tax",
             `${route.path} should start freelance visitors at the 3.3% withholding calculator`
+          );
+        }
+        if (route.workflowPackage === "photo-scan-submission") {
+          assert(
+            primaryActionText?.includes("사진·스캔본 PDF 만들기") &&
+              primaryActionHref === "/tools/jpg-to-pdf-converter/" &&
+              primaryActionProblem === "multi-image-pdf" &&
+              primaryActionTargetTool === "jpg-to-pdf",
+            `${route.path} should start photo-scan visitors at the JPG PDF converter`
           );
         }
         if (route.workflowPackage === "business-document-submission") {

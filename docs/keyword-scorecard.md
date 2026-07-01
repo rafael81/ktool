@@ -49,6 +49,7 @@ The loop then added a dedicated `청구서 양식 PDF 저장하기` problem land
 The loop then added a dedicated `영수증 양식 PDF 저장하기` problem landing so receipt and simple-receipt form intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local receipt generator.
 The loop then tightened the `프리랜서 3.3% 정산·청구 패키지` so freelancer withholding visitors see a first-screen 실수령액 calculation CTA, adjacent 청구서 PDF and 영수증 PDF paths, and CollectionPage keywords for freelance billing search intent.
 The loop then tightened the `사업자 명판·거래문서 PDF 패키지` so business-document visitors see a first-screen 명판 PNG CTA, adjacent 거래명세서 PDF, 견적서 PDF, and 청구서 PDF paths, and CollectionPage keywords for business document search intent.
+The loop then tightened the `사진·스캔 PDF 제출 패키지` so photo-submission visitors see a first-screen JPG PDF CTA, adjacent 사진 PDF, 스캔본 PDF, 1MB 압축, and HEIC JPG paths, and CollectionPage keywords for photo scan submission search intent.
 
 ## Decision
 

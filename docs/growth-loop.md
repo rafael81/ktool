@@ -263,6 +263,7 @@ Completed:
 95. Add a dedicated `영수증 양식 PDF 저장하기` problem page so receipt and simple-receipt form intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the receipt generator.
 96. Tighten the `프리랜서 3.3% 정산·청구 패키지` around freelance withholding and billing intent: first-screen 3.3% 실수령액 CTA, 청구서 PDF/영수증 PDF wording, and CollectionPage keywords for freelancer search queries.
 97. Tighten the `사업자 명판·거래문서 PDF 패키지` around business-document submission intent: first-screen 명판 PNG CTA, 거래명세서/견적서/청구서 PDF wording, and CollectionPage keywords for business document search queries.
+98. Tighten the `사진·스캔 PDF 제출 패키지` around photo/PDF submission intent: first-screen JPG PDF CTA, 사진 PDF/스캔본 PDF/1MB 압축/HEIC JPG wording, and CollectionPage keywords for submission search queries.
 
 Next after crawl data appears:
 

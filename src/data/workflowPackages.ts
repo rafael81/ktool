@@ -42,21 +42,38 @@ export type WorkflowPackage = {
 export const workflowPackages: WorkflowPackage[] = [
   {
     id: "photo-scan-submission",
-    title: "사진·스캔 제출 패키지",
-    shortTitle: "사진·스캔",
+    title: "사진·스캔 PDF 제출 패키지",
+    shortTitle: "사진 PDF 제출",
     path: "/workflows/photo-scan-submission/",
-    eyebrow: "사진 제출 흐름",
+    eyebrow: "사진 PDF 제출 흐름",
     description:
-      "iPhone 사진, 스캔본, 증빙 이미지를 제출처 조건에 맞게 형식, 용량, 크기, 방향, PDF 묶기 순서로 정리합니다.",
-    primaryQuery: "사진 스캔본 제출 준비",
-    secondaryQueries: ["사진 용량 줄이기", "HEIC JPG 변환", "JPG PDF 변환", "이미지 리사이즈"],
+      "사진 PDF 변환, 스캔본 PDF 만들기, 1MB 사진 용량 줄이기, HEIC JPG 변환, 이미지 리사이즈를 제출 순서로 정리합니다.",
+    primaryQuery: "사진 스캔 PDF 제출",
+    secondaryQueries: ["사진 PDF 변환", "스캔본 PDF 만들기", "사진 1MB 이하로 줄이기", "HEIC JPG 변환", "이미지 리사이즈"],
     trustNote:
       "이미지 파일은 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
     problems: [
       {
+        id: "multi-image-pdf",
+        label: "사진 PDF",
+        title: "사진·스캔본 PDF 만들기",
+        description: "여러 장의 JPG, PNG, WebP 이미지를 한 개의 제출용 PDF로 묶습니다.",
+        path: "/tools/jpg-to-pdf-converter/",
+        targetToolId: "jpg-to-pdf"
+      },
+      {
+        id: "file-too-large",
+        label: "1MB 압축",
+        title: "사진 1MB 이하로 줄이기",
+        description: "업로드 제한이 보이면 1MB 제출 기준으로 먼저 압축합니다.",
+        path: "/tools/photo-size-reducer/?preset=1mb",
+        targetToolId: "image-compressor",
+        targetPreset: "1mb"
+      },
+      {
         id: "iphone-heic",
-        label: "iPhone HEIC",
-        title: "HEIC 사진이 안 열림",
+        label: "HEIC JPG",
+        title: "iPhone HEIC를 JPG로 변환",
         description: "iPhone 사진이 회사, 관공서, 학교 시스템에서 열리지 않을 때 JPG로 바꿉니다.",
         path: "/tools/heic-jpg-converter/?preset=jpg",
         targetToolId: "heic-to-jpg",
@@ -64,26 +81,17 @@ export const workflowPackages: WorkflowPackage[] = [
       },
       {
         id: "format-rejected",
-        label: "형식 오류",
-        title: "WebP·PNG가 막힘",
+        label: "WebP JPG",
+        title: "WebP·PNG를 JPG로 변환",
         description: "제출처가 특정 이미지 형식만 받을 때 호환성 높은 JPG로 바꿉니다.",
         path: "/tools/image-converter/?preset=jpg",
         targetToolId: "image-converter",
         targetPreset: "jpg"
       },
       {
-        id: "file-too-large",
-        label: "용량 초과",
-        title: "1MB 이하로 줄이기",
-        description: "업로드 제한이 보이면 1MB 제출 기준으로 먼저 압축합니다.",
-        path: "/tools/photo-size-reducer/?preset=1mb",
-        targetToolId: "image-compressor",
-        targetPreset: "1mb"
-      },
-      {
         id: "sideways-photo",
-        label: "방향 오류",
-        title: "오른쪽 90도 회전",
+        label: "방향 보정",
+        title: "스캔 사진 90도 회전",
         description: "스캔본이나 휴대폰 사진이 옆으로 누워 있을 때 방향을 바로잡습니다.",
         path: "/tools/image-rotator/?preset=right",
         targetToolId: "image-rotator",
@@ -91,8 +99,8 @@ export const workflowPackages: WorkflowPackage[] = [
       },
       {
         id: "wide-margin",
-        label: "여백 많음",
-        title: "문서 영역만 자르기",
+        label: "여백 자르기",
+        title: "문서 사진 여백 자르기",
         description: "책상, 바닥, 빈 여백이 함께 찍힌 사진에서 제출할 영역만 남깁니다.",
         path: "/tools/image-cropper/?preset=document",
         targetToolId: "image-cropper",
@@ -100,27 +108,19 @@ export const workflowPackages: WorkflowPackage[] = [
       },
       {
         id: "pixel-limit",
-        label: "크기 제한",
-        title: "긴 변 1200px",
+        label: "픽셀 제한",
+        title: "긴 변 1200px로 리사이즈",
         description: "픽셀 제한이 있거나 사진이 너무 크면 긴 변 기준으로 줄입니다.",
         path: "/tools/image-resizer/?preset=long-1200",
         targetToolId: "image-resizer",
         targetPreset: "long-1200"
-      },
-      {
-        id: "multi-image-pdf",
-        label: "여러 장 PDF",
-        title: "이미지를 PDF로 묶기",
-        description: "정리한 증빙 사진이나 스캔 이미지를 한 개의 제출용 PDF로 저장합니다.",
-        path: "/tools/jpg-to-pdf-converter/",
-        targetToolId: "jpg-to-pdf"
       }
     ],
     steps: [
       {
         label: "1",
-        title: "형식 맞추기",
-        description: "HEIC, WebP처럼 막히는 형식을 JPG로 바꿉니다.",
+        title: "형식 오류 해결",
+        description: "HEIC, WebP처럼 제출처에서 막히는 형식을 JPG로 바꿉니다.",
         toolId: "heic-to-jpg",
         path: "/tools/heic-jpg-converter/?preset=jpg"
       },
@@ -133,15 +133,15 @@ export const workflowPackages: WorkflowPackage[] = [
       },
       {
         label: "3",
-        title: "크기와 용량 줄이기",
-        description: "픽셀 제한과 용량 제한에 맞춘 뒤 제출용 PDF로 묶습니다.",
+        title: "용량과 크기 맞추기",
+        description: "1MB 같은 용량 제한과 긴 변 1200px 같은 픽셀 제한에 맞춥니다.",
         toolId: "image-compressor",
         path: "/tools/photo-size-reducer/?preset=1mb"
       },
       {
         label: "4",
-        title: "PDF로 저장",
-        description: "여러 장이면 JPG PDF 변환으로 한 파일을 만듭니다.",
+        title: "제출용 PDF 만들기",
+        description: "여러 장이면 JPG PDF 변환으로 한 개의 제출용 PDF를 만듭니다.",
         toolId: "jpg-to-pdf",
         path: "/tools/jpg-to-pdf-converter/"
       }
@@ -156,10 +156,10 @@ export const workflowPackages: WorkflowPackage[] = [
       "jpg-to-pdf"
     ],
     faqs: [
-      ["사진 여러 장을 한 PDF로 만들 수 있나요?", "JPG PDF 변환에서 JPG, PNG, WebP 이미지를 한 개의 PDF로 묶을 수 있습니다."],
-      ["iPhone HEIC 사진도 제출용으로 바꿀 수 있나요?", "HEIC JPG 변환에서 JPG 출력 preset으로 바로 시작할 수 있습니다."],
-      ["이미지 파일이 서버로 업로드되나요?", "아니요. 이미지 도구는 브라우저에서 처리하고 원본 파일명도 분석 이벤트로 보내지 않습니다."],
-      ["용량 제한이 500KB나 3MB일 때도 가능한가요?", "사진 용량 줄이기에서 500KB, 1MB, 3MB 제출 preset을 선택할 수 있습니다."],
+      ["사진 여러 장을 한 PDF로 만들 수 있나요?", "JPG PDF 변환에서 JPG, PNG, WebP 이미지를 한 개의 제출용 PDF로 묶을 수 있습니다."],
+      ["iPhone HEIC 사진도 제출용으로 바꿀 수 있나요?", "HEIC JPG 변환에서 JPG 출력으로 바로 시작할 수 있습니다."],
+      ["이미지 파일이 서버로 업로드되나요?", "아니요. 이미지 도구는 브라우저에서 처리하며 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다."],
+      ["용량 제한이 500KB나 3MB일 때도 가능한가요?", "사진 용량 줄이기에서 500KB, 1MB, 3MB 제출 기준을 선택할 수 있습니다."],
       ["사진 방향이나 여백도 정리할 수 있나요?", "이미지 회전과 이미지 자르기로 방향과 문서 영역을 먼저 정리할 수 있습니다."]
     ]
   },
