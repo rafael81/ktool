@@ -18,11 +18,16 @@ Tool pages also include:
 - `tool_id`: stable tool id from `src/data/tools.ts`
 - `tool_title`: visible tool title
 
+Problem-intent pages also include:
+
+- `problem_id`: stable problem id from `src/data/problemPages.ts`
+- `problem_title`: visible problem title
+
 ## Events
 
 | Event | When it fires | Important extra fields |
 | --- | --- | --- |
-| `page_view` | Page analytics boot completes | `tool_id`, `tool_title` on tool pages |
+| `page_view` | Page analytics boot completes | `tool_id`, `tool_title` on tool pages; `problem_id`, `problem_title` on problem pages |
 | `tool_start` | First input/change inside a tool | `tool_id`, `tool_title` |
 | `tool_nav_click` | Header tool nav click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_nav_click` | Header catalog link click | `label`, `href` |
@@ -40,6 +45,12 @@ Tool pages also include:
 | `catalog_filter_change` | Tool catalog category filter changes | `catalog_category`, `visible_count`, `search_query_length` |
 | `catalog_search_change` | Tool catalog search input changes | `catalog_category`, `visible_count`, `search_query_length` |
 | `catalog_tool_click` | Tool catalog tool row click | `tool_id`, `tool_title`, `label`, `href` |
+| `problem_entry_click` | Tool catalog problem-intent row click | `label`, `href` |
+| `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `problem_primary_tool_click` | Problem page first CTA click | `problem_id`, `problem_title`, `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `problem_tool_click` | Problem page recommended tool row click | `problem_id`, `problem_title`, `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `problem_submission_prep_click` | Problem page link to submission-prep hub | `problem_id`, `problem_title`, `label`, `href` |
+| `problem_related_click` | Problem page adjacent problem click | `problem_id`, `problem_title`, `target_problem_id`, `target_problem_title`, `label`, `href` |
 | `category_workflow_quick_link_click` | Category page submission-prep quick-link click | `label`, `href` |
 | `category_workflow_click` | Category page workflow card click | `label`, `href` |
 | `category_prep_shortcut_click` | Category page problem-situation shortcut click | `label`, `href`, `shortcut_id`, `tool_id`, `tool_title`, optional `target_preset` |
@@ -159,7 +170,7 @@ Tool pages also include:
 | `heic_convert_reset` | HEIC converter is reset | none |
 | `heic_convert_validation_error` | HEIC converter blocks invalid input or conversion failure | `reason`, optional `file_count`, optional `total_size` |
 
-Never send image filenames, raw image bytes, OCR text, document text, raw catalog search queries, business numbers, addresses, or customer names in analytics events.
+Never send image filenames, raw image bytes, OCR text, document text, raw home/catalog search queries, business numbers, addresses, or customer names in analytics events.
 
 ## File tool funnel
 

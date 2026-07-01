@@ -372,17 +372,49 @@ async function run() {
       if (route.problemPage) {
         const problemRootCount = await page.locator("[data-problem-page]").count();
         assert(problemRootCount === 1, `${route.path} should tag the problem page root`);
+        const problemId = await page.locator("[data-problem-page]").getAttribute("data-problem-id");
+        const problemTitle = await page.locator("[data-problem-page]").getAttribute("data-problem-title");
+        assert(problemId && problemTitle, `${route.path} should expose stable problem analytics metadata`);
+        const pageViewEvent = await page.evaluate(() => {
+          return window.dataLayer?.find((event) => event.event === "page_view");
+        });
+        assert(
+          pageViewEvent?.problem_id === problemId && pageViewEvent.problem_title === problemTitle,
+          `${route.path} page_view should include problem analytics context`
+        );
         const primaryLink = page.locator("[data-problem-primary-link]");
         const primaryLinkCount = await primaryLink.count();
         assert(primaryLinkCount === 1, `${route.path} should expose one primary problem CTA`);
         const primaryHref = await primaryLink.getAttribute("href");
         assert(primaryHref?.startsWith("/tools/"), `${route.path} primary CTA should send users to a tool`);
+        await page.evaluate(() => {
+          document.querySelector("[data-problem-primary-link]")?.addEventListener(
+            "click",
+            (event) => event.preventDefault(),
+            { once: true }
+          );
+        });
+        await primaryLink.click();
+        const primaryClickEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "problem_primary_tool_click");
+        });
+        assert(
+          primaryClickEvent?.problem_id === problemId &&
+            primaryClickEvent.problem_title === problemTitle &&
+            primaryClickEvent.tool_id &&
+            primaryClickEvent.tool_title,
+          `${route.path} primary CTA analytics should include problem and target tool context`
+        );
         const actionLinkCount = await page.locator('[data-problem-action] a[data-analytics-event="problem_tool_click"]').count();
         assert(actionLinkCount === 1, `${route.path} should track the recommended tool click`);
         const stepRows = await page.locator("[data-problem-steps] .workflow-row").count();
         assert(stepRows >= 4, `${route.path} should render a short handling sequence`);
         const relatedRows = await page.locator("[data-related-problems] .workflow-row").count();
         assert(relatedRows === 3, `${route.path} should link to three adjacent problem pages`);
+        const relatedTargetProblemCount = await page
+          .locator("[data-related-problems] a[data-analytics-target-problem-id][data-analytics-target-problem-title]")
+          .count();
+        assert(relatedTargetProblemCount === 3, `${route.path} should tag adjacent problem links with target problem metadata`);
         const faqRows = await page.locator("[data-problem-faq] details").count();
         assert(faqRows >= 5, `${route.path} should render problem FAQs`);
       }

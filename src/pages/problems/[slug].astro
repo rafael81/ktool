@@ -49,7 +49,12 @@ const structuredData = [
   canonicalPath={problemPage.path}
   structuredData={structuredData}
 >
-  <main class="page-shell problem-page" data-problem-page={problemPage.id}>
+  <main
+    class="page-shell problem-page"
+    data-problem-page={problemPage.id}
+    data-problem-id={problemPage.id}
+    data-problem-title={problemPage.title}
+  >
     <section class="tool-intro" aria-labelledby="problem-title">
       <h1 id="problem-title">{problemPage.title}</h1>
       <p>{problemPage.description}</p>
@@ -134,6 +139,8 @@ const structuredData = [
               class="workflow-row"
               href={relatedProblem.path}
               data-analytics-event="problem_related_click"
+              data-analytics-target-problem-id={relatedProblem.id}
+              data-analytics-target-problem-title={relatedProblem.title}
               data-analytics-label={relatedProblem.title}
             >
               <span class="workflow-row-kicker">{relatedProblem.shortTitle}</span>
