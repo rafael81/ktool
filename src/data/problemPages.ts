@@ -5,6 +5,7 @@ export type ProblemPageId =
   | "transaction-statement-pdf"
   | "estimate-pdf"
   | "invoice-pdf"
+  | "receipt-pdf"
   | "file-format-error"
   | "heic-jpg-submit"
   | "photo-under-1mb"
@@ -234,6 +235,56 @@ export const problemPages: ProblemPage[] = [
       ]
     ],
     relatedProblemIds: ["transaction-statement-pdf", "estimate-pdf", "business-nameplate-stamp"]
+  },
+  {
+    id: "receipt-pdf",
+    slug: "receipt-pdf",
+    path: "/problems/receipt-pdf/",
+    title: "영수증 양식 PDF 저장하기",
+    shortTitle: "영수증 PDF",
+    description: "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증을 바로 작성하고 PDF로 저장합니다. 파일은 서버로 전송되지 않습니다.",
+    metaDescription:
+      "영수증 양식을 무료로 작성하고 PDF로 저장하세요. 거래일, 공급자, 구매자, 품목, 부가세, 합계 한글 금액을 설치 없이 브라우저에서 처리하고 입력값은 서버로 전송되지 않습니다.",
+    primaryQuery: "영수증 양식 PDF",
+    secondaryQueries: ["영수증 양식 무료", "간이영수증 양식", "영수증 PDF 저장"],
+    intentQueries: [
+      "영수증 바로 작성",
+      "영수증 무료 양식",
+      "간이영수증 무료 양식",
+      "영수증 인쇄",
+      "영수증 부가세 계산",
+      "영수증 합계 한글",
+      "영수증 PDF 만들기",
+      "거래 내역 영수증"
+    ],
+    targetToolId: "receipt",
+    targetPath: "/tools/receipt-generator/",
+    targetLabel: "영수증 작성",
+    actionNote: "거래일, 공급자, 구매자, 품목, 금액을 입력해 영수증 PDF 만들기를 바로 시작합니다.",
+    steps: ["거래일과 공급자 입력", "구매자와 품목 입력", "부가세와 합계 확인", "인쇄 또는 PDF 저장"],
+    faqs: [
+      [
+        "영수증 양식을 다운로드해야 하나요?",
+        "아니요. 브라우저에서 바로 입력하고 미리보기를 확인한 뒤 인쇄 화면에서 PDF로 저장할 수 있습니다."
+      ],
+      [
+        "간이영수증처럼 사용할 수 있나요?",
+        "간단한 거래 내역 확인용 양식으로 작성할 수 있습니다. 법적·세무 증빙이 필요한 경우 공식 발행 수단을 확인하세요."
+      ],
+      [
+        "부가세 포함 금액도 계산되나요?",
+        "네. 부가세 별도, 포함, 없음 중에서 선택해 공급가액, 세액, 합계를 확인할 수 있습니다."
+      ],
+      [
+        "입력한 구매자 정보가 저장되나요?",
+        "아니요. 공급자, 구매자, 품목 정보는 브라우저 안에서 문서 미리보기와 인쇄에만 사용하고 서버로 보내지 않습니다."
+      ],
+      [
+        "세금계산서나 현금영수증을 대신하나요?",
+        "아니요. 이 영수증은 거래 내역을 정리하는 일반 양식이며, 세금계산서, 현금영수증, 카드 매출전표 발행을 대신하지 않습니다."
+      ]
+    ],
+    relatedProblemIds: ["invoice-pdf", "transaction-statement-pdf", "business-nameplate-stamp"]
   },
   {
     id: "file-format-error",

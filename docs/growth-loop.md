@@ -260,6 +260,7 @@ Completed:
 92. Add a dedicated `거래명세서 양식 PDF 저장하기` problem page so form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the transaction statement generator.
 93. Add a dedicated `견적서 양식 PDF 저장하기` problem page so estimate form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the estimate generator.
 94. Add a dedicated `청구서 양식 PDF 저장하기` problem page so invoice form-download and payment-request intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the invoice generator.
+95. Add a dedicated `영수증 양식 PDF 저장하기` problem page so receipt and simple-receipt form intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the receipt generator.
 
 Next after crawl data appears:
 

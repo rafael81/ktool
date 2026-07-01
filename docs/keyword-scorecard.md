@@ -31,6 +31,7 @@ Implemented and deployed:
 - 거래명세서 양식 PDF 문제 랜딩
 - 견적서 양식 PDF 문제 랜딩
 - 청구서 양식 PDF 문제 랜딩
+- 영수증 양식 PDF 문제 랜딩
 
 Generic PDF merge, split, and compression tools remain deferred. The first PDF wedge is JPG PDF 변환 because it connects directly to Korean document submission workflows and can run browser-local with clear file limits.
 The first image wedge is 사진 용량 줄이기 because DataLab demand is strong, the workflow is adjacent to document submission, and browser-local compression keeps the privacy promise intact.
@@ -45,6 +46,7 @@ After the first Google impression appeared on the business-nameplate surface, th
 The loop then added a dedicated `거래명세서 양식 PDF 저장하기` problem landing so form-download and PDF-save intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local transaction statement generator.
 The loop then added a dedicated `견적서 양식 PDF 저장하기` problem landing so estimate form-download and PDF-save intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local estimate generator.
 The loop then added a dedicated `청구서 양식 PDF 저장하기` problem landing so invoice form-download and payment-request intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local invoice generator.
+The loop then added a dedicated `영수증 양식 PDF 저장하기` problem landing so receipt and simple-receipt form intent can be matched from homepage/catalog search, indexed with FAQ/HowTo structure, and routed directly into the browser-local receipt generator.
 
 ## Decision
 
