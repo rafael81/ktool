@@ -101,6 +101,20 @@ async function run() {
       const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
       assert(canonical === `${productionUrl}${route.path}`, `${route.path} canonical got "${canonical}"`);
 
+      if (route.path !== "/") {
+        const jsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const breadcrumb = jsonLdItems.find((item) => item["@type"] === "BreadcrumbList");
+        assert(breadcrumb, `${route.path} should include BreadcrumbList JSON-LD`);
+        const crumbs = breadcrumb.itemListElement || [];
+        assert(crumbs[0]?.name === "K문서툴", `${route.path} breadcrumb should start at the homepage`);
+        assert(
+          crumbs.at(-1)?.item === `${productionUrl}${route.path}`,
+          `${route.path} breadcrumb should end at the canonical URL`
+        );
+      }
+
       if (route.robots) {
         const robots = await page.locator('meta[name="robots"]').getAttribute("content");
         assert(robots === route.robots, `${route.path} robots should be ${route.robots}`);
@@ -849,12 +863,32 @@ async function run() {
       await page.close();
     }
 
+    await assertSitemapMetadata();
     await assertAnalyticsPrivacy(browser);
     await assertFileAnalyticsPrivacy(browser);
   } finally {
     await browser?.close();
     server.kill("SIGTERM");
   }
+}
+
+async function assertSitemapMetadata() {
+  const response = await fetch(`${baseUrl}/sitemap-0.xml`);
+  assert(response.ok, "sitemap-0.xml should load during preview");
+  const xml = await response.text();
+  for (const path of [
+    "/",
+    "/tools/",
+    "/tools/jpg-to-pdf-converter/",
+    "/tools/photo-size-reducer/",
+    "/tools/business-nameplate-maker/",
+    "/tools/transaction-statement-generator/"
+  ]) {
+    assert(xml.includes(`<loc>${productionUrl}${path}</loc>`), `${path} should be listed in sitemap-0.xml`);
+  }
+  assert(xml.includes("<lastmod>"), "sitemap should include lastmod metadata");
+  assert(xml.includes("<changefreq>daily</changefreq>"), "sitemap should mark core discovery pages as daily");
+  assert(xml.includes("<priority>1.0</priority>"), "sitemap should mark the homepage as highest priority");
 }
 
 async function assertFileAnalyticsPrivacy(browser) {

@@ -45,12 +45,62 @@ const canonical = new URL(
   normalizedCanonicalPath,
   Astro.site ?? "https://k-document-tool.pages.dev"
 ).toString();
+const currentCategory = currentTool
+  ? toolCategories.find((category) => category.id === currentTool.category)
+  : toolCategories.find((category) => normalizePath(category.path) === normalizedCanonicalPath);
+const siteRoot = Astro.site ?? "https://k-document-tool.pages.dev";
+function absoluteSiteUrl(path: string) {
+  return new URL(normalizePath(path), siteRoot).toString();
+}
+const breadcrumbEntries = [
+  { name: "K문서툴", path: "/" },
+  ...(normalizedCanonicalPath === "/tools/" ? [{ name: "전체 도구", path: "/tools/" }] : []),
+  ...(normalizedCanonicalPath.startsWith("/tools/") &&
+  normalizedCanonicalPath !== "/tools/" &&
+  !currentTool
+    ? [
+        { name: "전체 도구", path: "/tools/" },
+        { name: title.split(" - ")[0], path: normalizedCanonicalPath }
+      ]
+    : []),
+  ...(currentCategory && !currentTool
+    ? [{ name: currentCategory.title, path: currentCategory.path }]
+    : []),
+  ...(currentTool
+    ? [
+        { name: "전체 도구", path: "/tools/" },
+        ...(currentCategory ? [{ name: currentCategory.title, path: currentCategory.path }] : []),
+        { name: currentTool.title, path: currentTool.path }
+      ]
+    : []),
+  ...(currentWorkflowPackage
+    ? [
+        { name: "제출용 파일 준비", path: "/tools/submission-file-prep/" },
+        { name: currentWorkflowPackage.title, path: currentWorkflowPackage.path }
+      ]
+    : [])
+].filter((entry, index, entries) => {
+  return entries.findIndex((item) => normalizePath(item.path) === normalizePath(entry.path)) === index;
+});
+const breadcrumbSchema =
+  breadcrumbEntries.length > 1
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbEntries.map((entry, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: entry.name,
+          item: absoluteSiteUrl(entry.path)
+        }))
+      }
+    : undefined;
 const structuredDataItems = Array.isArray(structuredData)
   ? structuredData
   : structuredData
     ? [structuredData]
     : [];
-const jsonLdItems = structuredDataItems.map((item) =>
+const jsonLdItems = [...structuredDataItems, ...(breadcrumbSchema ? [breadcrumbSchema] : [])].map((item) =>
   JSON.stringify(item).replaceAll("<", "\\u003c")
 );
 const analyticsPage = {
