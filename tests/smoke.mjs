@@ -1119,6 +1119,19 @@ async function run() {
       }
 
       if (route.imageResizer) {
+        const resizeUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          resizeUploadState.height >= 220 &&
+            resizeUploadState.text.includes("크기를 줄일 이미지를 선택하세요") &&
+            resizeUploadState.text.includes("파일 선택") &&
+            resizeUploadState.text.includes("무료") &&
+            resizeUploadState.text.includes("설치 없음") &&
+            resizeUploadState.text.includes("서버 전송 없음"),
+          `${route.path} should expose a large direct image resize upload area`
+        );
         await page.goto(`${baseUrl}${route.path}?preset=square-800`, { waitUntil: "networkidle" });
         const resizePresetState = await page.evaluate(() => ({
           preset: document.querySelector("[data-resize-preset]")?.value,

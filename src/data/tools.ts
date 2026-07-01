@@ -515,9 +515,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "JPG, PNG, WebP 이미지를 브라우저에서 원하는 가로·세로 또는 긴 변 크기로 줄입니다.",
-    pageTitle: "이미지 리사이즈 - 사진 크기 줄이기 무료",
+    pageTitle: "이미지 리사이즈 - 사진 픽셀 크기 줄이기 무료",
     metaDescription:
-      "이미지 리사이즈를 브라우저에서 무료로 처리하세요. JPG, PNG, WebP 사진을 업로드 없이 긴 변 기준 또는 직접 크기로 줄여 저장합니다.",
+      "JPG, PNG, WebP 사진의 픽셀 크기를 무료로 줄이세요. 설치 없이 긴 변 1200px, 800×800, 직접 가로·세로 입력을 브라우저에서 처리합니다.",
     primaryQuery: "이미지 리사이즈",
     secondaryQueries: ["사진 크기 줄이기", "이미지 크기 줄이기", "JPG 사이즈 줄이기", "사진 해상도 줄이기"],
     userMoment: "사진이 제출처의 픽셀 크기 제한보다 크거나 문서 삽입용 이미지 크기를 맞춰야 할 때",
