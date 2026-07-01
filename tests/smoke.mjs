@@ -1115,6 +1115,7 @@ async function run() {
 
     await assertSitemapMetadata();
     await assertIndexNowKey();
+    await assertSearchShortcut(browser);
     await assertAnalyticsSanitizer(browser);
     await assertAnalyticsPrivacy(browser);
     await assertFileAnalyticsPrivacy(browser);
@@ -1253,6 +1254,40 @@ async function assertAnalyticsPrivacy(browser) {
     assert(leakedRequests.length === 0, `Network request leaked raw document input: ${leakedRequests.join(", ")}`);
   } finally {
     await page.close();
+  }
+}
+
+async function assertSearchShortcut(browser) {
+  const homePage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  try {
+    await homePage.goto(baseUrl, { waitUntil: "networkidle" });
+    await homePage.keyboard.press("Control+K");
+    const focusedHomeSearch = await homePage.evaluate(() => {
+      return document.activeElement?.matches("[data-home-search-input]");
+    });
+    const shortcutEvent = await homePage.evaluate(() => {
+      return window.dataLayer?.findLast?.((event) => event.event === "header_search_click");
+    });
+    assert(focusedHomeSearch, "Ctrl+K should focus the homepage search input");
+    assert(
+      shortcutEvent?.trigger === "keyboard" && shortcutEvent.href === "/",
+      "Ctrl+K should track a sanitized keyboard search shortcut event"
+    );
+  } finally {
+    await homePage.close();
+  }
+
+  const catalogPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  try {
+    await catalogPage.goto(`${baseUrl}/tools/`, { waitUntil: "networkidle" });
+    await catalogPage.keyboard.press("Control+K");
+    await catalogPage.waitForURL(`${baseUrl}/#tool-search`);
+    const focusedHomeSearch = await catalogPage.evaluate(() => {
+      return document.activeElement?.matches("[data-home-search-input]");
+    });
+    assert(focusedHomeSearch, "Ctrl+K from another page should open and focus homepage search");
+  } finally {
+    await catalogPage.close();
   }
 }
 

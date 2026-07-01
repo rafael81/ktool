@@ -282,6 +282,28 @@ const analyticsPage = {
           );
         }
 
+        function isTextEntryTarget(target) {
+          if (!(target instanceof Element)) return false;
+          const tagName = target.tagName.toLowerCase();
+          return (
+            tagName === "input" ||
+            tagName === "textarea" ||
+            tagName === "select" ||
+            target.isContentEditable
+          );
+        }
+
+        function focusHomeSearch() {
+          const input = document.querySelector("[data-home-search-input]");
+          if (input instanceof HTMLInputElement) {
+            document.querySelector("#tool-search")?.scrollIntoView({ block: "start" });
+            input.focus();
+            input.select();
+            return true;
+          }
+          return false;
+        }
+
         function showProblemArrivalBanner(problem) {
           const banner = document.querySelector("[data-problem-arrival]");
           if (!banner || !problem) return;
@@ -394,6 +416,31 @@ const analyticsPage = {
             },
             true
           );
+
+          document.querySelector(".site-search-link")?.addEventListener("click", (event) => {
+            if (!focusHomeSearch()) return;
+            event.preventDefault();
+            window.history.pushState(null, "", "/#tool-search");
+          });
+
+          document.addEventListener("keydown", (event) => {
+            if (event.defaultPrevented || isTextEntryTarget(event.target)) return;
+            const opensSearch = event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey);
+            if (!opensSearch) return;
+            event.preventDefault();
+            window.kdocTrack("header_search_click", {
+              label: "검색",
+              href: "/#tool-search",
+              trigger: "keyboard"
+            });
+            if (!focusHomeSearch()) {
+              window.location.assign("/#tool-search");
+            }
+          });
+
+          if (window.location.hash === "#tool-search") {
+            window.requestAnimationFrame(() => focusHomeSearch());
+          }
         }
 
         if (document.readyState === "loading") {

@@ -35,7 +35,7 @@ Problem-intent pages also include:
 | `problem_hub_nav_click` | Header or catalog problem-hub link click | `label`, `href` |
 | `package_nav_click` | Header, home, or catalog workflow package link click | `label`, `href`, `package_id` |
 | `category_nav_click` | Header category link click | `label`, `href` |
-| `header_search_click` | Header search shortcut click | `label`, `href` |
+| `header_search_click` | Header search shortcut click or keyboard shortcut | `label`, `href`, optional `trigger` |
 | `home_search_change` | Home search input or category filter changes | `search_category`, `visible_count`, `search_query_length` |
 | `home_search_tool_click` | Home search tool result click | `tool_id`, `tool_title`, `label`, `href` |
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |

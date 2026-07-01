@@ -222,6 +222,7 @@ Completed:
 54. Add `npm run analytics:check` so analytics event names cannot drift from `docs/analytics-events.md` as new routes and CTA events are added.
 55. Lazy-load `pdf-lib` on `JPG PDF 변환` so the initial route script stays small until the user actually creates a PDF.
 56. Add `npm run perf:budget` to keep initial file-tool scripts under a route-level budget after build.
+57. Make the visible `⌘K`/Ctrl+K search shortcut real so users can jump to homepage tool search from anywhere.
 
 Next after crawl data appears:
 
