@@ -197,6 +197,7 @@ Completed:
 49. Add WebPage structured data to problem pages with problem-intent keywords so visible blocked-state wording and JSON-LD metadata stay aligned.
 50. Add `problem_title` to problem-to-tool arrival analytics so downstream tool starts and downloads can be read without joining against the problem registry.
 51. Raise sitemap freshness hints for problem and workflow entry pages so crawler signals match the current search-intent architecture.
+52. Replace visible "처리 원칙" wording on tool-side trust panels with direct user-facing privacy labels like "서버 전송 없음" and "입력값 저장 안 함".
 
 Next after crawl data appears:
 
