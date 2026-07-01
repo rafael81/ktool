@@ -1369,6 +1369,38 @@ const analyticsPage = {
     background: var(--accent-dark);
   }
 
+  .next-action-strip,
+  .download-action-strip {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #b9d6ff;
+    border-radius: 8px;
+    background: #eef5ff;
+    color: var(--accent-dark);
+    padding: 10px 12px;
+  }
+
+  .next-action-strip strong,
+  .download-action-strip strong {
+    color: var(--accent-dark);
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  .next-action-strip span,
+  .download-action-strip span {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .next-action-strip[hidden],
+  .download-action-strip[hidden] {
+    display: none;
+  }
+
   .doc-page {
     width: min(100%, 794px);
     min-height: 560px;

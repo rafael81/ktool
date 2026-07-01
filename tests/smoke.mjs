@@ -776,6 +776,12 @@ async function run() {
           preflightAfterGenerate?.includes("저장 준비 완료"),
           `${route.path} should show the PDF is ready in the preflight checklist`
         );
+        const pdfDownloadHint = await page.locator("[data-pdf-download-hint]").textContent();
+        const pdfDownloadHintHidden = await page.locator("[data-pdf-download-hint]").getAttribute("hidden");
+        assert(
+          pdfDownloadHintHidden === null && pdfDownloadHint?.includes("PDF 저장을 눌러"),
+          `${route.path} should make the final PDF save action obvious after generation`
+        );
         const fileCount = await page.locator(".file-row").count();
         assert(fileCount === 2, `${route.path} should render two sample image rows`);
         await page.locator('[data-remove-file="0"]').click();
@@ -887,6 +893,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("압축 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=compressed-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after compression`
         );
@@ -934,6 +941,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("리사이즈 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=resized-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after resizing`
         );
@@ -991,6 +999,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("잘라낸 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=cropped-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after cropping`
         );
@@ -1039,6 +1048,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("회전 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=rotated-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after rotation`
         );
@@ -1088,6 +1098,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("변환 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=format-converted-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after format conversion`
         );
@@ -1147,6 +1158,7 @@ async function run() {
         assert(
           nextPdfText?.includes("다음 단계: PDF로 묶기") &&
             nextPdfText.includes("변환 이미지를 저장") &&
+            nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=heic-converted-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after HEIC conversion`
         );
