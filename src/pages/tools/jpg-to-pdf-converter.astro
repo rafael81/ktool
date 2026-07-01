@@ -262,6 +262,12 @@ const structuredData = [
 
       const arrivalSource = new URLSearchParams(window.location.search).get("from");
       const arrivalSources = {
+        "quick-start": {
+          title: "여러 장 이미지 PDF로 묶기",
+          copy: "JPG, PNG, WebP 이미지를 여기서 바로 선택해 한 개의 제출용 PDF로 묶습니다.",
+          step: "PDF로 묶을 이미지를 모두 선택합니다.",
+          event: "jpg_pdf_quick_start_arrival"
+        },
         "compressed-images": {
           title: "압축 이미지로 PDF 만들기",
           copy: "사진 용량 줄이기에서 저장한 JPG/PNG/WebP 이미지를 여기서 다시 선택해 한 PDF로 묶습니다.",
@@ -1028,6 +1034,7 @@ const structuredData = [
   }
 
   .compressed-intake-card[data-state="highlight"] {
+    order: -1;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.13);
   }

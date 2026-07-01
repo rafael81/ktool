@@ -112,6 +112,7 @@ Problem-intent pages also include:
 | `stamp_background_validation_error` | Stamp background remover blocks invalid input | `reason`, optional `file_size` |
 | `jpg_pdf_file_select` | JPG PDF converter images are selected | `file_count`, `total_size`, `file_types` |
 | `jpg_pdf_sample_apply` | JPG PDF converter sample images are applied | `file_count` |
+| `jpg_pdf_quick_start_arrival` | JPG PDF converter is opened from a home or catalog quick-start CTA | `source` |
 | `jpg_pdf_compressed_arrival` | JPG PDF converter is opened from the photo-size reducer next-step CTA | `source` |
 | `jpg_pdf_rotated_arrival` | JPG PDF converter is opened from the image rotator next-step CTA | `source` |
 | `jpg_pdf_resized_arrival` | JPG PDF converter is opened from the image resizer next-step CTA | `source` |

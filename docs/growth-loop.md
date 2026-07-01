@@ -232,6 +232,7 @@ Completed:
 64. Add homepage first-screen quick-start links for JPG PDF, 1MB compression, HEIC JPG, and 거래명세서 so visitors can run high-intent tools without typing a search.
 65. Add `/tools/` first-screen quick-start links for JPG PDF, 1MB compression, HEIC JPG, and 거래명세서 so catalog visitors can run common tools without filtering or typing.
 66. Show first-screen preset arrival cues on `사진 용량 줄이기` and `HEIC JPG 변환` so quick-start visitors can see the selected target before choosing files.
+67. Route home and catalog JPG PDF quick starts through `from=quick-start` so visitors see a tailored first-screen PDF bundling cue before selecting images.
 
 Next after crawl data appears:
 

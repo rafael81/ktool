@@ -241,7 +241,7 @@ async function run() {
             .locator("[data-home-quick-start]")
             .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
           [
-            "/tools/jpg-to-pdf-converter/",
+            "/tools/jpg-to-pdf-converter/?from=quick-start",
             "/tools/photo-size-reducer/?preset=1mb",
             "/tools/heic-jpg-converter/?preset=jpg",
             "/tools/transaction-statement-generator/"
@@ -385,7 +385,7 @@ async function run() {
           .locator("[data-catalog-quick-start]")
           .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
         [
-          "/tools/jpg-to-pdf-converter/",
+          "/tools/jpg-to-pdf-converter/?from=quick-start",
           "/tools/photo-size-reducer/?preset=1mb",
           "/tools/heic-jpg-converter/?preset=jpg",
           "/tools/transaction-statement-generator/"
@@ -894,6 +894,21 @@ async function run() {
         const reducedFileCount = await page.locator(".file-row").count();
         const reducedStatus = await page.locator("[data-output-status]").textContent();
         assert(reducedFileCount === 1 && reducedStatus.includes("1장"), `${route.path} should remove one selected image`);
+
+        await page.goto(`${baseUrl}${route.path}?from=quick-start`, { waitUntil: "networkidle" });
+        const quickStartIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
+        const quickStartArrivalText = await page.locator("[data-compressed-intake]").textContent();
+        const quickStartLayout = await page.evaluate(() => ({
+          intakeTop: document.querySelector("[data-compressed-intake]")?.getBoundingClientRect().top || 0,
+          uploadTop: document.querySelector("[data-upload-zone]")?.getBoundingClientRect().top || 0
+        }));
+        assert(
+          quickStartIntakeState === "highlight" &&
+            quickStartArrivalText?.includes("여러 장 이미지 PDF로 묶기") &&
+            quickStartArrivalText.includes("제출용 PDF") &&
+            quickStartLayout.intakeTop < quickStartLayout.uploadTop,
+          `${route.path} should tailor the arrival cue for quick-start visitors`
+        );
 
         await page.goto(`${baseUrl}${route.path}?from=compressed-images`, { waitUntil: "networkidle" });
         const compressedIntakeState = await page.locator("[data-compressed-intake]").getAttribute("data-state");
