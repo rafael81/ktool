@@ -11,7 +11,14 @@ const structuredData = [
     name: tool.title,
     description: tool.metaDescription,
     path: tool.path,
-    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "사업자 명판 PNG", "회사 명판 이미지"]
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "사업자 명판 PNG",
+      "회사 명판 이미지",
+      "사업자 명판 도장 합성",
+      "투명 명판 PNG"
+    ]
   }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
@@ -28,10 +35,12 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>상호, 대표자, 사업자등록번호, 주소를 입력하고 명판 PNG로 저장하세요.</p>
-        <div class="tool-trust-badges" aria-label="주요 장점">
+        <p>상호와 사업자번호를 입력하고 도장 이미지를 합쳐 투명 PNG로 저장하세요.</p>
+        <div class="tool-trust-badges" data-nameplate-trust-badges aria-label="주요 장점">
           <span>무료</span>
           <span>설치 없음</span>
+          <span>도장 합성</span>
+          <span>투명 PNG</span>
           <span>서버 전송 없음</span>
         </div>
         <div class="tool-intro-actions">

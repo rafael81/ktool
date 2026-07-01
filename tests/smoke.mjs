@@ -150,6 +150,31 @@ async function run() {
       }
 
       if (route.nameplateTool) {
+        const nameplateTitle = await page.title();
+        const nameplateDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        const nameplateTrustText = await page.locator("[data-nameplate-trust-badges]").textContent();
+        assert(
+          nameplateTitle === "사업자 명판 만들기 무료 - 도장 합성 PNG 저장" &&
+            nameplateDescription?.includes("도장 이미지를 합쳐") &&
+            nameplateDescription.includes("투명 배경") &&
+            nameplateDescription.includes("서버로 전송되지 않습니다") &&
+            nameplateTrustText?.includes("무료") &&
+            nameplateTrustText.includes("설치 없음") &&
+            nameplateTrustText.includes("도장 합성") &&
+            nameplateTrustText.includes("투명 PNG") &&
+            nameplateTrustText.includes("서버 전송 없음"),
+          `${route.path} should expose the free/no-install/stamp-composition/transparent-PNG promise on the first screen`
+        );
+        const nameplateJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const nameplateWebPageSchema = nameplateJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          nameplateWebPageSchema?.url === `${productionUrl}${route.path}` &&
+            nameplateWebPageSchema.keywords?.includes("사업자 명판 도장 합성") &&
+            nameplateWebPageSchema.keywords.includes("투명 명판 PNG"),
+          `${route.path} should expose a WebPage schema for business-nameplate stamp-composition intent`
+        );
         const nameplateDownloadCount = await page.locator("[data-nameplate-download]").count();
         assert(nameplateDownloadCount === 1, `${route.path} should expose one primary PNG save action`);
         const firstActionText = await page.locator(".nameplate-actions .btn").first().innerText();
