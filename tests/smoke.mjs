@@ -988,6 +988,34 @@ async function run() {
         );
       }
 
+      if (route.path === "/tools/amount-korean-converter/") {
+        const amountTitle = await page.title();
+        const amountDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        const amountTrustText = await page.locator("[data-amount-trust-badges]").textContent();
+        assert(
+          amountTitle === "금액 한글 변환기 - 무료 한글 금액 표기 복사" &&
+            amountDescription?.includes("무료로 변환") &&
+            amountDescription.includes("설치 없이") &&
+            amountDescription.includes("결과를 복사") &&
+            amountTrustText?.includes("무료") &&
+            amountTrustText.includes("설치 없음") &&
+            amountTrustText.includes("입력값 저장 안 함") &&
+            amountTrustText.includes("결과 복사"),
+          `${route.path} should expose the free/no-install/private/copy promise on the first screen`
+        );
+        const amountJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const amountWebPageSchema = amountJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          amountWebPageSchema?.url === `${productionUrl}${route.path}` &&
+            amountWebPageSchema.keywords?.includes("금액 한글 무료 변환") &&
+            amountWebPageSchema.keywords.includes("숫자 금액 한글 변환") &&
+            amountWebPageSchema.keywords.includes("한글 금액 표기 복사"),
+          `${route.path} should expose a WebPage schema for 금액 한글 search intent`
+        );
+      }
+
       if (route.stampTool) {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => {

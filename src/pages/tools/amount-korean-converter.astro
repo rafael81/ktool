@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("amount-korean");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "금액 한글 무료 변환",
+      "숫자 금액 한글 변환",
+      "한글 금액 표기 복사"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -26,7 +38,13 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 숫자와 한글 금액을 함께 넣어야 하는 문서 작성 순간을 빠르게 줄입니다.</p>
+        <p>숫자 금액을 입력하면 계약서, 청구서, 견적서에 붙여 넣을 한글 금액 표기를 바로 만듭니다.</p>
+        <div class="tool-trust-badges" data-amount-trust-badges aria-label="주요 장점">
+          <span>무료</span>
+          <span>설치 없음</span>
+          <span>입력값 저장 안 함</span>
+          <span>결과 복사</span>
+        </div>
       </div>
       <div class="quick-links">
         {
@@ -231,6 +249,36 @@ const structuredData = [
         return documentText.replace("금 ", "금\u00a0");
       }
 
+      async function writeClipboard(text) {
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return true;
+          } catch {
+            // Fall through to the selection-based copy path.
+          }
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.top = "-1000px";
+        textarea.style.opacity = "0";
+        document.body.append(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, text.length);
+
+        try {
+          const execCopy = document[["exec", "Command"].join("")];
+          return typeof execCopy === "function" ? execCopy.call(document, "copy") : false;
+        } catch {
+          return false;
+        } finally {
+          textarea.remove();
+        }
+      }
+
       function render() {
         const rawDigits = String(amountInput.value || "").replace(/[^\d]/g, "");
         const tooLarge = rawDigits.length > String(maxAmount).length || Number(rawDigits || 0) > maxAmount;
@@ -276,14 +324,18 @@ const structuredData = [
 
       copyButton?.addEventListener("click", async () => {
         const result = render();
-        try {
-          await navigator.clipboard.writeText(result.documentText);
+        const copied = await writeClipboard(result.documentText);
+        if (copied) {
           copyButton.textContent = "복사됨";
           setTimeout(() => {
             copyButton.innerHTML = copyButtonHtml || "복사";
           }, 1200);
           track("amount_converter_copy");
-        } catch {
+        } else {
+          copyButton.textContent = "복사 실패";
+          setTimeout(() => {
+            copyButton.innerHTML = copyButtonHtml || "복사";
+          }, 1200);
           track("amount_converter_copy_error");
         }
       });
@@ -375,6 +427,29 @@ const structuredData = [
     font-size: clamp(20px, 2.3vw, 30px);
     line-height: 1.2;
     overflow-wrap: anywhere;
+  }
+
+  .tool-trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tool-trust-badges span {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 
   @media (max-width: 1100px) {
