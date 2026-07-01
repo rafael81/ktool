@@ -11,7 +11,7 @@ const structuredData = [
     name: tool.title,
     description: tool.metaDescription,
     path: tool.path,
-    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "여러 장 이미지 PDF", "스캔 사진 PDF"]
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "사진 여러 장 PDF", "여러 장 이미지 PDF", "스캔 사진 PDF"]
   }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
@@ -277,13 +277,13 @@ const structuredData = [
       const requestedShortcutId = searchParams.get("shortcut_id");
       const arrivalSources = {
         "quick-start": {
-          title: "여러 장 이미지 PDF로 묶기",
+          title: "사진 여러 장 PDF로 묶기",
           copy: "JPG, PNG, WebP 이미지를 여기서 바로 선택해 한 개의 제출용 PDF로 묶습니다.",
           step: "PDF로 묶을 이미지를 모두 선택합니다.",
           event: "jpg_pdf_quick_start_arrival"
         },
         "prep-shortcut": {
-          title: "여러 장 이미지 PDF로 묶기",
+          title: "사진 여러 장 PDF로 묶기",
           copy: "제출할 사진이나 스캔 이미지를 여기서 선택해 한 개의 PDF로 저장합니다.",
           step: "이미지를 모두 선택한 뒤 순서와 저장 설정을 확인합니다.",
           event: "jpg_pdf_prep_shortcut_arrival"

@@ -65,7 +65,7 @@ const routes = [
   { path: "/problems/image-pixel-limit/", h1: "사진 크기 제한 맞추기", faq: true, problemPage: true },
   { path: "/problems/sideways-scan/", h1: "사진 방향 바로잡기", faq: true, problemPage: true },
   { path: "/problems/document-photo-crop/", h1: "문서 사진 여백 자르기", faq: true, problemPage: true },
-  { path: "/problems/images-to-one-pdf/", h1: "여러 장 이미지 PDF로 묶기", faq: true, problemPage: true },
+  { path: "/problems/images-to-one-pdf/", h1: "사진 여러 장 PDF로 묶기", faq: true, problemPage: true },
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/categories/image/", h1: "이미지 도구" },
@@ -379,7 +379,7 @@ async function run() {
             ["문서 여백 제거", "문서 사진 여백 자르기"],
             ["지원하지 않는 파일 형식", "파일 형식 오류 해결"],
             ["아이폰 사진 안열림", "HEIC JPG 제출 준비"],
-            ["한 파일로 제출", "여러 장 이미지 PDF로 묶기"],
+            ["한 파일로 제출", "사진 여러 장 PDF로 묶기"],
             ["명판 도장 합성", "사업자 명판 도장 이미지 만들기"],
             ["거래명세서 양식 무료", "거래명세서 양식 PDF 저장하기"],
             ["견적서 양식 무료", "견적서 양식 PDF 저장하기"],
@@ -824,7 +824,7 @@ async function run() {
         assert(
           problemHubText?.includes("파일 형식 오류 해결") &&
             problemHubText.includes("사진 1MB 이하로 줄이기") &&
-            problemHubText.includes("여러 장 이미지 PDF로 묶기") &&
+            problemHubText.includes("사진 여러 장 PDF로 묶기") &&
             problemHubText.includes("사업자 명판 도장 이미지 만들기") &&
             problemHubText.includes("거래명세서 양식 PDF 저장하기") &&
             problemHubText.includes("견적서 양식 PDF 저장하기") &&
@@ -887,6 +887,38 @@ async function run() {
             primaryTargetUrl.searchParams.get("problem_id") === problemId,
           `${route.path} primary CTA should carry a whitelisted problem source into the target tool`
         );
+        if (route.path === "/problems/images-to-one-pdf/") {
+          const imagePdfTitle = await page.title();
+          const imagePdfDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            imagePdfTitle === "사진 여러 장 PDF로 묶기 - K문서툴" &&
+              imagePdfDescription?.includes("사진 여러 장 PDF 변환") &&
+              imagePdfDescription.includes("스캔 이미지 PDF 만들기") &&
+              imagePdfDescription.includes("JPG PDF 변환") &&
+              imagePdfDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused photo-to-PDF title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("사진 여러 장 PDF") &&
+              webPageSchema.keywords.includes("사진 PDF 변환") &&
+              webPageSchema.keywords.includes("스캔 이미지 PDF"),
+            `${route.path} should expose photo PDF search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/jpg-to-pdf-converter/") &&
+              primaryText?.includes("JPG PDF 변환 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("드래그로 순서를 바꿉니다"),
+            `${route.path} should make the first-screen JPG PDF action and privacy promise explicit`
+          );
+        }
         await page.evaluate(() => {
           document.querySelector("[data-problem-primary-link]")?.addEventListener(
             "click",
@@ -1470,7 +1502,7 @@ async function run() {
         });
         assert(
           quickStartIntakeState === "highlight" &&
-            quickStartArrivalText?.includes("여러 장 이미지 PDF로 묶기") &&
+            quickStartArrivalText?.includes("사진 여러 장 PDF로 묶기") &&
             quickStartArrivalText.includes("제출용 PDF") &&
             quickStartLayout.intakeTop < quickStartLayout.uploadTop &&
             quickStartArrivalEvent?.source === "home-quick-start",

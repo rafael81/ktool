@@ -265,6 +265,7 @@ Completed:
 97. Tighten the `사업자 명판·거래문서 PDF 패키지` around business-document submission intent: first-screen 명판 PNG CTA, 거래명세서/견적서/청구서 PDF wording, and CollectionPage keywords for business document search queries.
 98. Tighten the `사진·스캔 PDF 제출 패키지` around photo/PDF submission intent: first-screen JPG PDF CTA, 사진 PDF/스캔본 PDF/1MB 압축/HEIC JPG wording, and CollectionPage keywords for submission search queries.
 99. Retighten the `제출용 파일 준비` hub around the same photo/PDF submission intent: first quick link JPG PDF, then 1MB compression and HEIC JPG, with matching title/meta, CollectionPage keywords, and PDF-path decision hints.
+100. Retighten the `사진 여러 장 PDF로 묶기` problem landing around photo/PDF submission intent: title/meta/schema keywords, first-screen JPG PDF CTA, and visible free/no-install/no-server-transfer badges.
 
 Next after crawl data appears:
 

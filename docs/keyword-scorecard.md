@@ -51,6 +51,7 @@ The loop then tightened the `프리랜서 3.3% 정산·청구 패키지` so free
 The loop then tightened the `사업자 명판·거래문서 PDF 패키지` so business-document visitors see a first-screen 명판 PNG CTA, adjacent 거래명세서 PDF, 견적서 PDF, and 청구서 PDF paths, and CollectionPage keywords for business document search intent.
 The loop then tightened the `사진·스캔 PDF 제출 패키지` so photo-submission visitors see a first-screen JPG PDF CTA, adjacent 사진 PDF, 스캔본 PDF, 1MB 압축, and HEIC JPG paths, and CollectionPage keywords for photo scan submission search intent.
 The loop then retightened the `제출용 파일 준비` hub so users coming from photo/PDF submission intent see JPG PDF first, then 1MB compression and HEIC JPG, with aligned title/meta, CollectionPage keywords, and decision hints.
+The loop then retightened the `사진 여러 장 PDF로 묶기` problem landing so search visitors see a direct JPG PDF conversion CTA, photo/PDF submission keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 
 ## Decision
 

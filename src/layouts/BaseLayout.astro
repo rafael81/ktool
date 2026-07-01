@@ -1233,6 +1233,24 @@ const analyticsPage = {
     padding: 10px 12px;
   }
 
+  .problem-promise-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .problem-promise-list span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.2;
+    padding: 6px 9px;
+  }
+
   .workspace {
     display: grid;
     grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
@@ -3304,6 +3322,10 @@ const analyticsPage = {
     }
 
     .quick-links {
+      justify-content: flex-start;
+    }
+
+    .problem-promise-list {
       justify-content: flex-start;
     }
 

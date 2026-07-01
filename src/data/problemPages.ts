@@ -29,6 +29,7 @@ export type ProblemPage = {
   targetPath: string;
   targetLabel: string;
   targetPreset?: string;
+  heroBadges?: string[];
   actionNote: string;
   steps: string[];
   faqs: [question: string, answer: string][];
@@ -507,18 +508,19 @@ export const problemPages: ProblemPage[] = [
     id: "images-to-one-pdf",
     slug: "images-to-one-pdf",
     path: "/problems/images-to-one-pdf/",
-    title: "여러 장 이미지 PDF로 묶기",
-    shortTitle: "이미지 PDF",
-    description: "정리한 증빙 사진이나 스캔 이미지를 한 개의 제출용 PDF로 저장합니다.",
+    title: "사진 여러 장 PDF로 묶기",
+    shortTitle: "사진 PDF",
+    description: "증빙 사진이나 스캔 이미지를 순서대로 정리해 한 개의 제출용 PDF로 저장합니다.",
     metaDescription:
-      "여러 장의 JPG, PNG, WebP 이미지를 한 개의 PDF로 묶으세요. 브라우저에서 무료로 처리하고 파일은 서버로 전송되지 않습니다.",
-    primaryQuery: "여러 장 이미지 PDF",
-    secondaryQueries: ["JPG PDF 변환", "사진 PDF 만들기", "이미지 PDF 변환"],
+      "사진 여러 장 PDF 변환, 스캔 이미지 PDF 만들기, JPG PDF 변환을 무료로 처리하세요. 브라우저에서 묶고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "사진 여러 장 PDF",
+    secondaryQueries: ["JPG PDF 변환", "사진 PDF 변환", "스캔 이미지 PDF"],
     intentQueries: [
       "사진 여러장 pdf",
       "이미지 여러장 pdf",
       "jpg 여러장 pdf",
       "스캔 이미지 pdf",
+      "스캔본 pdf 만들기",
       "제출용 pdf 만들기",
       "증빙사진 pdf",
       "사진 합쳐서 pdf",
@@ -526,11 +528,12 @@ export const problemPages: ProblemPage[] = [
     ],
     targetToolId: "jpg-to-pdf",
     targetPath: "/tools/jpg-to-pdf-converter/",
-    targetLabel: "PDF로 묶기",
-    actionNote: "정리한 이미지를 목록 순서대로 한 개의 PDF 페이지로 만듭니다.",
-    steps: ["이미지 여러 장 선택", "페이지 순서 확인", "A4 방향·여백 선택", "PDF 저장"],
+    targetLabel: "JPG PDF 변환 시작",
+    heroBadges: ["무료", "설치 없음", "서버 전송 없음"],
+    actionNote: "사진을 선택한 순서대로 PDF 페이지로 묶고, 필요하면 드래그로 순서를 바꿉니다.",
+    steps: ["사진 여러 장 선택", "페이지 순서 확인", "A4 방향·여백 선택", "PDF 저장"],
     faqs: [
-      ["여러 장을 한 PDF로 만들 수 있나요?", "네. JPG, PNG, WebP 이미지를 선택한 순서대로 한 개의 PDF로 묶을 수 있습니다."],
+      ["여러 장을 한 PDF로 만들 수 있나요?", "네. JPG, PNG, WebP 사진을 선택한 순서대로 한 개의 PDF로 묶을 수 있습니다."],
       ["이미지 순서를 바꿀 수 있나요?", "네. 목록에서 위아래 버튼이나 끌어서 놓기로 PDF 페이지 순서를 조정할 수 있습니다."],
       ["A4 크기로 저장할 수 있나요?", "A4 세로와 A4 가로를 선택할 수 있고 이미지 비율을 유지해 페이지 안에 맞춥니다."],
       ["파일이 서버로 올라가나요?", "아니요. 이미지는 브라우저에서 읽고 PDF도 브라우저 안에서 만듭니다."],
