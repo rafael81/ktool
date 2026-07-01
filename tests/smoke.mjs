@@ -189,10 +189,19 @@ async function run() {
           await page.locator("[data-home-search-input]").fill("HEIC");
           await page.waitForTimeout(450);
           const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
-          const heicHomeText = await page.locator("[data-home-search-item]:not([hidden])").textContent();
+          const heicHomeText = (await page.locator("[data-home-search-item]:not([hidden])").allTextContents()).join(" ");
           assert(
-            heicHomeRows === 1 && heicHomeText?.includes("HEIC JPG 변환"),
-            `${route.path} should search tools directly from the homepage`
+            heicHomeRows >= 2 &&
+              heicHomeText?.includes("HEIC JPG 변환") &&
+              heicHomeText.includes("HEIC JPG 제출 준비"),
+            `${route.path} should search tools and problem pages directly from the homepage`
+          );
+          await page.locator("[data-home-search-input]").fill("1MB");
+          await page.waitForTimeout(450);
+          const oneMbHomeText = (await page.locator("[data-home-search-item]:not([hidden])").allTextContents()).join(" ");
+          assert(
+            oneMbHomeText?.includes("사진 1MB 이하로 줄이기"),
+            `${route.path} should surface problem-intent pages from homepage search`
           );
           await page.locator("[data-home-search-input]").fill("없는도구");
           await page.waitForTimeout(450);

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { toolCategories, tools, type ToolCategoryId, type ToolId } from "@/data/tools";
+import { problemPages } from "@/data/problemPages";
 import { toolItemListSchema, websiteSchema } from "@/data/seo";
 import {
   Archive,
@@ -129,7 +130,8 @@ function iconForTool(toolId: ToolId) {
             type="search"
             autocomplete="off"
             inputmode="search"
-            placeholder="PDF, HEIC, 거래명세서"
+            placeholder="PDF, HEIC, 1MB, 거래명세서"
+            aria-label="도구와 문제 검색"
             data-home-search-input
           />
           <kbd>Enter</kbd>
@@ -192,6 +194,52 @@ function iconForTool(toolId: ToolId) {
                     <span>{tool.shortTitle}</span>
                   </span>
                   <em aria-hidden="true">실행</em>
+                </a>
+              );
+            })
+          }
+          {
+            problemPages.map((problemPage) => {
+              const targetTool = tools.find((tool) => tool.id === problemPage.targetToolId);
+              if (!targetTool) return null;
+              const ProblemIcon = iconForTool(targetTool.id);
+
+              return (
+                <a
+                  class="hero-search-row"
+                  href={problemPage.path}
+                  hidden
+                  data-home-search-item
+                  data-home-search-category={targetTool.category}
+                  data-default-visible="false"
+                  data-analytics-event="home_search_problem_click"
+                  data-analytics-tool-id={targetTool.id}
+                  data-analytics-tool-title={targetTool.title}
+                  data-analytics-target-preset={problemPage.targetPreset}
+                  data-analytics-label={problemPage.title}
+                  data-home-search-text={[
+                    problemPage.title,
+                    problemPage.shortTitle,
+                    problemPage.primaryQuery,
+                    ...problemPage.secondaryQueries,
+                    problemPage.description,
+                    problemPage.actionNote,
+                    targetTool.title,
+                    targetTool.shortTitle,
+                    categoryById.get(targetTool.category)?.title ?? ""
+                  ].join(" ")}
+                >
+                  <span class="home-row-meta">
+                    <span class="home-icon-tile">
+                      <ProblemIcon class="home-icon" aria-hidden="true" />
+                    </span>
+                    <span>문제 해결</span>
+                  </span>
+                  <span class="home-row-copy">
+                    <strong>{problemPage.title}</strong>
+                    <span>{problemPage.shortTitle}</span>
+                  </span>
+                  <em aria-hidden="true">보기</em>
                 </a>
               );
             })
