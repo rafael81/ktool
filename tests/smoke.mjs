@@ -876,6 +876,30 @@ async function run() {
               estimateWebPageSchema.keywords.includes("견적서 PDF 저장"),
             `${route.path} should expose a WebPage schema for 견적서 search intent`
           );
+        } else if (route.path === "/tools/invoice-generator/") {
+          const invoiceTitle = await page.title();
+          const invoiceDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const invoiceTrustText = await page.locator("[data-invoice-trust-badges]").textContent();
+          assert(
+            invoiceTitle === "청구서 자동작성 - 무료 양식 PDF 저장" &&
+              invoiceDescription?.includes("설치 없이") &&
+              invoiceDescription.includes("PDF로 저장") &&
+              invoiceTrustText?.includes("무료") &&
+              invoiceTrustText.includes("설치 없음") &&
+              invoiceTrustText.includes("입력값 저장 안 함") &&
+              invoiceTrustText.includes("PDF 저장"),
+            `${route.path} should expose the free/no-install/private/PDF promise on the first screen`
+          );
+          const invoiceJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const invoiceWebPageSchema = invoiceJsonLdItems.find((item) => item["@type"] === "WebPage");
+          assert(
+            invoiceWebPageSchema?.url === `${productionUrl}${route.path}` &&
+              invoiceWebPageSchema.keywords?.includes("청구서 무료 양식") &&
+              invoiceWebPageSchema.keywords.includes("청구서 PDF 저장"),
+            `${route.path} should expose a WebPage schema for 청구서 search intent`
+          );
         }
         if (route.path === "/tools/transaction-statement-generator/") {
           await page.goto(`${baseUrl}${route.path}?source=home-quick-start`, { waitUntil: "networkidle" });
