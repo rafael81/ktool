@@ -259,6 +259,7 @@ Completed:
 91. Add a dedicated `사업자 명판 도장 이미지 만들기` problem page so the first indexed nameplate intent has a searchable problem landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the nameplate PNG tool.
 92. Add a dedicated `거래명세서 양식 PDF 저장하기` problem page so form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the transaction statement generator.
 93. Add a dedicated `견적서 양식 PDF 저장하기` problem page so estimate form-download and PDF-save intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the estimate generator.
+94. Add a dedicated `청구서 양식 PDF 저장하기` problem page so invoice form-download and payment-request intent has a searchable landing, FAQ/HowTo structure, and a direct privacy-preserving CTA into the invoice generator.
 
 Next after crawl data appears:
 

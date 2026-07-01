@@ -4,6 +4,7 @@ export type ProblemPageId =
   | "business-nameplate-stamp"
   | "transaction-statement-pdf"
   | "estimate-pdf"
+  | "invoice-pdf"
   | "file-format-error"
   | "heic-jpg-submit"
   | "photo-under-1mb"
@@ -183,6 +184,56 @@ export const problemPages: ProblemPage[] = [
       ]
     ],
     relatedProblemIds: ["transaction-statement-pdf", "business-nameplate-stamp", "images-to-one-pdf"]
+  },
+  {
+    id: "invoice-pdf",
+    slug: "invoice-pdf",
+    path: "/problems/invoice-pdf/",
+    title: "청구서 양식 PDF 저장하기",
+    shortTitle: "청구서 PDF",
+    description: "공급자, 고객, 청구 품목, 입금기한을 입력해 청구서를 바로 작성하고 PDF로 저장합니다. 파일은 서버로 전송되지 않습니다.",
+    metaDescription:
+      "청구서 양식을 무료로 작성하고 PDF로 저장하세요. 공급자, 고객, 청구 품목, 입금기한, 부가세, 합계 한글 금액을 설치 없이 브라우저에서 처리하고 입력값은 서버로 전송되지 않습니다.",
+    primaryQuery: "청구서 양식 PDF",
+    secondaryQueries: ["청구서 양식 무료", "무료 청구서 양식", "청구서 PDF 저장"],
+    intentQueries: [
+      "청구서 바로 작성",
+      "무료 청구서 양식",
+      "청구서 인쇄",
+      "입금기한 표시",
+      "청구서 부가세 계산",
+      "청구서 합계 한글",
+      "청구서 PDF 만들기",
+      "입금 요청서 양식"
+    ],
+    targetToolId: "invoice",
+    targetPath: "/tools/invoice-generator/",
+    targetLabel: "청구서 작성",
+    actionNote: "공급자, 고객, 청구 품목, 입금기한을 입력해 청구서 PDF 만들기를 바로 시작합니다.",
+    steps: ["공급자와 고객 입력", "청구 품목·수량·단가 입력", "입금기한과 합계 확인", "인쇄 또는 PDF 저장"],
+    faqs: [
+      [
+        "청구서 양식을 다운로드해야 하나요?",
+        "아니요. 브라우저에서 바로 입력하고 미리보기를 확인한 뒤 인쇄 화면에서 PDF로 저장할 수 있습니다."
+      ],
+      [
+        "입금기한을 넣을 수 있나요?",
+        "네. 입금기한 필드를 입력하면 청구서 미리보기 상단에 함께 표시됩니다."
+      ],
+      [
+        "계좌번호나 결제 조건을 넣을 수 있나요?",
+        "네. 비고에 계좌번호, 결제 조건, 담당자 연락처 같은 안내를 적을 수 있습니다."
+      ],
+      [
+        "입력한 고객 정보가 저장되나요?",
+        "아니요. 공급자, 고객, 품목 정보는 브라우저 안에서 문서 미리보기와 인쇄에만 사용하고 서버로 보내지 않습니다."
+      ],
+      [
+        "청구서가 세금계산서를 대신하나요?",
+        "아니요. 청구서는 대금 지급을 요청하는 일반 문서이며, 세금계산서나 전자세금계산서 발행을 대신하지 않습니다."
+      ]
+    ],
+    relatedProblemIds: ["transaction-statement-pdf", "estimate-pdf", "business-nameplate-stamp"]
   },
   {
     id: "file-format-error",
