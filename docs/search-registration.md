@@ -70,6 +70,16 @@ After site ownership verification:
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
 If Naver gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`, rebuild, and redeploy.
 
+## IndexNow
+
+IndexNow is enabled for Naver/Bing-style discovery signals.
+
+- Key file: `https://k-document-tool.pages.dev/7f9e3a1c0d8b4f6a9c2e5d0a1b3c4e6f.txt`
+- Submit command after a production build: `npm run seo:indexnow`
+- Dry run: `npm run seo:indexnow -- --dry-run`
+
+Use this after adding or materially updating indexable URLs. It notifies participating search engines that pages changed, but it does not guarantee indexing or ranking.
+
 ## Later custom domain
 
 When a custom domain is ready, update these files before deploying:
@@ -77,5 +87,6 @@ When a custom domain is ready, update these files before deploying:
 - `astro.config.mjs`
 - `public/robots.txt`
 - `src/data/seo.ts`
+- `public/7f9e3a1c0d8b4f6a9c2e5d0a1b3c4e6f.txt` if changing the IndexNow key or host
 
 Then rebuild and resubmit the new sitemap in Google Search Console and Naver Search Advisor.

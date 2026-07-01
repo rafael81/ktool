@@ -864,12 +864,21 @@ async function run() {
     }
 
     await assertSitemapMetadata();
+    await assertIndexNowKey();
     await assertAnalyticsPrivacy(browser);
     await assertFileAnalyticsPrivacy(browser);
   } finally {
     await browser?.close();
     server.kill("SIGTERM");
   }
+}
+
+async function assertIndexNowKey() {
+  const key = "7f9e3a1c0d8b4f6a9c2e5d0a1b3c4e6f";
+  const response = await fetch(`${baseUrl}/${key}.txt`);
+  assert(response.ok, "IndexNow key file should load during preview");
+  const text = await response.text();
+  assert(text.trim() === key, "IndexNow key file should contain the configured key");
 }
 
 async function assertSitemapMetadata() {
