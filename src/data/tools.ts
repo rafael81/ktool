@@ -475,9 +475,9 @@ export const tools: ToolInfo[] = [
     category: "image",
     description:
       "JPG, PNG, WebP 사진과 이미지를 브라우저에서 압축해 제출 가능한 용량으로 줄입니다.",
-    pageTitle: "사진 용량 줄이기 - 이미지 압축 무료",
+    pageTitle: "사진 용량 줄이기 - 1MB 이미지 압축 무료",
     metaDescription:
-      "JPG, PNG, WebP 사진 용량을 브라우저에서 줄이세요. 업로드 없이 품질과 최대 크기를 조절해 제출용 이미지로 압축합니다.",
+      "JPG, PNG, WebP 사진 용량을 1MB, 500KB, 3MB 기준으로 무료 압축하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
     primaryQuery: "사진 용량 줄이기",
     secondaryQueries: ["이미지 압축", "JPG 용량 줄이기", "PNG 용량 줄이기", "사진 파일 크기 줄이기"],
     userMoment: "사진 파일이 이메일, 관공서, 학교, 회사 시스템 업로드 제한보다 클 때",

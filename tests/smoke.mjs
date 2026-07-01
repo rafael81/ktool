@@ -1044,7 +1044,11 @@ async function run() {
         assert(
           compressorUploadState.height >= 220 &&
             compressorUploadState.text.includes("사진을 선택하세요") &&
-            compressorUploadState.text.includes("파일 선택"),
+            compressorUploadState.text.includes("파일 선택") &&
+            compressorUploadState.text.includes("무료") &&
+            compressorUploadState.text.includes("설치 없음") &&
+            compressorUploadState.text.includes("서버 전송 없음") &&
+            compressorUploadState.text.includes("최대 20장"),
           `${route.path} should expose a large direct photo upload area`
         );
         const compressionCheck = await page.locator("[data-compression-check]").textContent();
