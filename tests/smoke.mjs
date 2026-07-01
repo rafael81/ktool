@@ -61,6 +61,10 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 async function waitForPreview(server) {
   const started = Date.now();
   while (Date.now() - started < 20_000) {
@@ -1148,6 +1152,18 @@ async function assertSitemapMetadata() {
   assert(xml.includes("<lastmod>"), "sitemap should include lastmod metadata");
   assert(xml.includes("<changefreq>daily</changefreq>"), "sitemap should mark core discovery pages as daily");
   assert(xml.includes("<priority>1.0</priority>"), "sitemap should mark the homepage as highest priority");
+  assertSitemapUrlMetadata(xml, "/problems/", "weekly", "0.9");
+  assertSitemapUrlMetadata(xml, "/problems/photo-under-1mb/", "weekly", "0.8");
+  assertSitemapUrlMetadata(xml, "/workflows/photo-scan-submission/", "weekly", "0.8");
+}
+
+function assertSitemapUrlMetadata(xml, path, changefreq, priority) {
+  const loc = `${productionUrl}${path}`;
+  const blockPattern = new RegExp(`<url>\\s*<loc>${escapeRegExp(loc)}</loc>[\\s\\S]*?</url>`);
+  const block = xml.match(blockPattern)?.[0] || "";
+  assert(block, `${path} should have a sitemap URL block`);
+  assert(block.includes(`<changefreq>${changefreq}</changefreq>`), `${path} sitemap changefreq should be ${changefreq}`);
+  assert(block.includes(`<priority>${priority}</priority>`), `${path} sitemap priority should be ${priority}`);
 }
 
 async function assertFileAnalyticsPrivacy(browser) {

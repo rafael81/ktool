@@ -17,6 +17,12 @@ export default defineConfig({
         if (path === "/tools/") {
           return { ...item, changefreq: ChangeFreqEnum.DAILY, priority: 0.95 };
         }
+        if (path === "/problems/") {
+          return { ...item, changefreq: ChangeFreqEnum.WEEKLY, priority: 0.9 };
+        }
+        if (path.startsWith("/problems/") || path.startsWith("/workflows/")) {
+          return { ...item, changefreq: ChangeFreqEnum.WEEKLY, priority: 0.8 };
+        }
         if (path.startsWith("/tools/")) {
           const priority =
             path === "/tools/jpg-to-pdf-converter/" ||

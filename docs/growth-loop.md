@@ -196,6 +196,7 @@ Completed:
 48. Add query-linked `/tools/?q=...` catalog search so problem-intent search states can be shared, tested, and revisited directly.
 49. Add WebPage structured data to problem pages with problem-intent keywords so visible blocked-state wording and JSON-LD metadata stay aligned.
 50. Add `problem_title` to problem-to-tool arrival analytics so downstream tool starts and downloads can be read without joining against the problem registry.
+51. Raise sitemap freshness hints for problem and workflow entry pages so crawler signals match the current search-intent architecture.
 
 Next after crawl data appears:
 
