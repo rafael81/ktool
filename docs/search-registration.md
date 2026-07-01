@@ -82,6 +82,14 @@ After site ownership verification:
 If Naver gives an HTML verification file, place it in `public/`, rebuild, and redeploy.
 If Naver gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`, rebuild, and redeploy.
 
+### Collection Request Log
+
+- `2026-07-02 02:52 KST`: requested collection for the three workflow package URLs:
+  - `https://k-document-tool.pages.dev/workflows/photo-scan-submission/`
+  - `https://k-document-tool.pages.dev/workflows/business-document-submission/`
+  - `https://k-document-tool.pages.dev/workflows/freelance-billing/`
+- At the same check, Google Search Console still showed `0` clicks and `1` impression over the available 28-day performance view. Visible impression pages were `/` and `/tools/business-nameplate-maker/`.
+
 ## IndexNow
 
 IndexNow is enabled for Naver/Bing-style discovery signals.
