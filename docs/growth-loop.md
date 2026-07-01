@@ -224,6 +224,7 @@ Completed:
 56. Add `npm run perf:budget` to keep initial file-tool scripts under a route-level budget after build.
 57. Make the visible `⌘K`/Ctrl+K search shortcut real so users can jump to homepage tool search from anywhere.
 58. Add empty-search recovery links on the homepage and `/tools/` catalog so failed searches can jump to high-intent tools or the problem hub without a dead end.
+59. Make the first-screen upload areas larger and more action-led on `사진 용량 줄이기`, `JPG PDF 변환`, and `HEIC JPG 변환` so search visitors can start the core file task before reading secondary settings.
 
 Next after crawl data appears:
 

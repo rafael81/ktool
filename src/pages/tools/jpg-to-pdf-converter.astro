@@ -47,6 +47,17 @@ const structuredData = [
 
     <section class="pdf-workspace" data-jpg-pdf-tool>
       <form class="panel pdf-panel pdf-upload-panel" aria-label="JPG PDF 변환 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>사진을 여기로 끌어다 놓으세요</strong>
+          <span data-file-label>여러 장 선택 가능 · 선택 순서가 PDF 순서</span>
+          <em>사진 선택</em>
+          <small>JPG·PNG·WEBP 지원. 브라우저에서만 처리됩니다.</small>
+        </label>
+
         <div class="pdf-option-bar">
           <label class="field">
             <span>페이지 크기</span>
@@ -66,17 +77,6 @@ const structuredData = [
             </select>
           </label>
         </div>
-
-        <label class="pdf-dropzone file-control" data-upload-zone>
-          <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
-          <span class="pdf-upload-icon" aria-hidden="true">
-            <FolderOpen aria-hidden="true" />
-          </span>
-          <strong>사진을 여기로 끌어다 놓으세요</strong>
-          <span data-file-label>여러 장 선택 가능 · 선택 순서가 PDF 순서</span>
-          <em>사진 선택</em>
-          <small>JPG·PNG·WEBP 지원. 브라우저에서만 처리됩니다.</small>
-        </label>
 
         <div class="compressed-intake-card" data-compressed-intake>
           <strong data-intake-title>정리한 이미지로 PDF 만들기</strong>

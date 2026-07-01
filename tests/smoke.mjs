@@ -722,6 +722,16 @@ async function run() {
       }
 
       if (route.pdfImageTool) {
+        const pdfUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          pdfUploadState.height >= 300 &&
+            pdfUploadState.text.includes("사진을 여기로 끌어다 놓으세요") &&
+            pdfUploadState.text.includes("사진 선택"),
+          `${route.path} should make the upload area the primary first-screen action`
+        );
         const compressedIntakeText = await page.locator("[data-compressed-intake]").textContent();
         assert(
           compressedIntakeText?.includes("정리한 이미지로 PDF 만들기") &&
@@ -829,6 +839,16 @@ async function run() {
       }
 
       if (route.imageCompressor) {
+        const compressorUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          compressorUploadState.height >= 220 &&
+            compressorUploadState.text.includes("사진을 선택하세요") &&
+            compressorUploadState.text.includes("파일 선택"),
+          `${route.path} should expose a large direct photo upload area`
+        );
         const compressionCheck = await page.locator("[data-compression-check]").textContent();
         assert(
           compressionCheck?.includes("1MB 이하") && compressionCheck.includes("JPG"),
@@ -1074,6 +1094,16 @@ async function run() {
       }
 
       if (route.heicConverter) {
+        const heicUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          heicUploadState.height >= 220 &&
+            heicUploadState.text.includes("HEIC 사진을 선택하세요") &&
+            heicUploadState.text.includes("파일 선택"),
+          `${route.path} should expose a large direct HEIC upload area`
+        );
         await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
         const heicPresetState = await page.evaluate(() => ({
           outputFormat: document.querySelector("[data-output-format]")?.value,
