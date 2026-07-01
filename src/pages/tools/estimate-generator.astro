@@ -2,11 +2,23 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import IconGlyph from "@/components/IconGlyph.astro";
 import { getRelatedTools, getTool } from "@/data/tools";
-import { faqPageSchema, softwareApplicationSchema } from "@/data/seo";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
 
 const tool = getTool("estimate");
 const relatedTools = getRelatedTools(tool);
 const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [
+      tool.primaryQuery,
+      ...tool.secondaryQueries,
+      "견적서 무료 양식",
+      "견적서 인쇄",
+      "견적서 PDF 저장"
+    ]
+  }),
   softwareApplicationSchema(tool, tool.featureList),
   faqPageSchema(tool.faqs)
 ];
@@ -32,7 +44,13 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 거래명세서와 같은 계산 구조를 재사용해 빠르게 견적 문서를 만듭니다.</p>
+        <p>고객명, 품목, 단가를 입력하면 견적서를 바로 만들고 인쇄하거나 PDF로 저장할 수 있습니다.</p>
+        <div class="tool-trust-badges" data-estimate-trust-badges aria-label="주요 장점">
+          <span>무료</span>
+          <span>설치 없음</span>
+          <span>입력값 저장 안 함</span>
+          <span>PDF 저장</span>
+        </div>
       </div>
       <div class="quick-links">
         {
@@ -232,4 +250,26 @@ const structuredData = [
     white-space: pre-wrap;
   }
 
+  .tool-trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tool-trust-badges span {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
 </style>

@@ -160,9 +160,9 @@ export const tools: ToolInfo[] = [
     category: "business",
     description:
       "고객명, 품목, 수량, 단가를 입력해 견적서를 무료로 작성하고 인쇄합니다.",
-    pageTitle: "견적서 자동작성 - 무료 견적서 양식",
+    pageTitle: "견적서 자동작성 - 무료 양식 PDF 저장",
     metaDescription:
-      "고객명, 품목, 수량, 단가를 입력해 견적서를 무료로 작성하세요. 브라우저에서 바로 미리보기와 인쇄를 할 수 있습니다.",
+      "고객명, 품목, 수량, 단가를 입력해 견적서를 무료로 작성하세요. 설치 없이 브라우저에서 인쇄하고 PDF로 저장합니다.",
     primaryQuery: "견적서 자동작성",
     secondaryQueries: ["견적서 양식 무료", "무료 견적서 양식", "견적서 PDF"],
     userMoment: "거래 전 예상 금액과 조건을 고객에게 빠르게 전달해야 하는 순간",

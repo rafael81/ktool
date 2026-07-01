@@ -852,6 +852,32 @@ async function run() {
               transactionWebPageSchema.keywords.includes("거래명세서 PDF 저장"),
             `${route.path} should expose a WebPage schema for 거래명세서 search intent`
           );
+        } else if (route.path === "/tools/estimate-generator/") {
+          const estimateTitle = await page.title();
+          const estimateDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const estimateTrustText = await page.locator("[data-estimate-trust-badges]").textContent();
+          assert(
+            estimateTitle === "견적서 자동작성 - 무료 양식 PDF 저장" &&
+              estimateDescription?.includes("설치 없이") &&
+              estimateDescription.includes("PDF로 저장") &&
+              estimateTrustText?.includes("무료") &&
+              estimateTrustText.includes("설치 없음") &&
+              estimateTrustText.includes("입력값 저장 안 함") &&
+              estimateTrustText.includes("PDF 저장"),
+            `${route.path} should expose the free/no-install/private/PDF promise on the first screen`
+          );
+          const estimateJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+            nodes.map((node) => JSON.parse(node.textContent || "{}"))
+          );
+          const estimateWebPageSchema = estimateJsonLdItems.find((item) => item["@type"] === "WebPage");
+          assert(
+            estimateWebPageSchema?.url === `${productionUrl}${route.path}` &&
+              estimateWebPageSchema.keywords?.includes("견적서 무료 양식") &&
+              estimateWebPageSchema.keywords.includes("견적서 PDF 저장"),
+            `${route.path} should expose a WebPage schema for 견적서 search intent`
+          );
+        }
+        if (route.path === "/tools/transaction-statement-generator/") {
           await page.goto(`${baseUrl}${route.path}?source=home-quick-start`, { waitUntil: "networkidle" });
           const documentQuickStartArrivalEvent = await page.evaluate(() => {
             return window.dataLayer?.findLast?.((event) => event.event === "document_tool_quick_start_arrival");
