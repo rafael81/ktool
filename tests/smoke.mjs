@@ -1016,6 +1016,34 @@ async function run() {
         );
       }
 
+      if (route.path === "/tools/freelance-withholding-calculator/") {
+        const withholdingTitle = await page.title();
+        const withholdingDescription = await page.locator('meta[name="description"]').getAttribute("content");
+        const withholdingTrustText = await page.locator("[data-withholding-trust-badges]").textContent();
+        assert(
+          withholdingTitle === "3.3% 계산기 - 무료 프리랜서 실수령액 계산" &&
+            withholdingDescription?.includes("무료로 계산") &&
+            withholdingDescription.includes("설치 없이") &&
+            withholdingDescription.includes("결과를 복사") &&
+            withholdingTrustText?.includes("무료") &&
+            withholdingTrustText.includes("설치 없음") &&
+            withholdingTrustText.includes("입력값 저장 안 함") &&
+            withholdingTrustText.includes("결과 복사"),
+          `${route.path} should expose the free/no-install/private/copy promise on the first screen`
+        );
+        const withholdingJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+          nodes.map((node) => JSON.parse(node.textContent || "{}"))
+        );
+        const withholdingWebPageSchema = withholdingJsonLdItems.find((item) => item["@type"] === "WebPage");
+        assert(
+          withholdingWebPageSchema?.url === `${productionUrl}${route.path}` &&
+            withholdingWebPageSchema.keywords?.includes("3.3% 무료 계산기") &&
+            withholdingWebPageSchema.keywords.includes("프리랜서 3.3% 실수령액") &&
+            withholdingWebPageSchema.keywords.includes("사업소득세 3% 지방소득세 0.3%"),
+          `${route.path} should expose a WebPage schema for 3.3% search intent`
+        );
+      }
+
       if (route.stampTool) {
         await page.locator("[data-sample]").click();
         await page.waitForFunction(() => {
