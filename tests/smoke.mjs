@@ -534,6 +534,15 @@ async function run() {
         }
         const actionLinkCount = await page.locator('[data-problem-action] a[data-analytics-event="problem_tool_click"]').count();
         assert(actionLinkCount === 1, `${route.path} should track the recommended tool click`);
+        const intentTagCount = await page.locator("[data-problem-intents] .meta-tag").count();
+        assert(intentTagCount === 6, `${route.path} should expose six visible blocked-state intent phrases`);
+        const intentText = await page.locator("[data-problem-intents]").textContent();
+        if (route.path === "/problems/photo-under-1mb/") {
+          assert(intentText?.includes("업로드 용량 초과"), `${route.path} should expose the upload-size blocked state`);
+        }
+        if (route.path === "/problems/sideways-scan/") {
+          assert(intentText?.includes("사진이 옆으로"), `${route.path} should expose the sideways-photo blocked state`);
+        }
         const stepRows = await page.locator("[data-problem-steps] .workflow-row").count();
         assert(stepRows >= 4, `${route.path} should render a short handling sequence`);
         const relatedRows = await page.locator("[data-related-problems] .workflow-row").count();
