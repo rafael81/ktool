@@ -89,6 +89,7 @@ If Naver gives a meta verification tag, add it to `src/layouts/BaseLayout.astro`
   - `https://k-document-tool.pages.dev/workflows/business-document-submission/`
   - `https://k-document-tool.pages.dev/workflows/freelance-billing/`
 - At the same check, Google Search Console still showed `0` clicks and `1` impression over the available 28-day performance view. Visible impression pages were `/` and `/tools/business-nameplate-maker/`.
+- `2026-07-02 03:00 KST`: Chrome CDP login check showed Google Search Console `0` clicks, `1` impression, `0%` CTR, average position `2` over the 28-day performance view. Naver Search Advisor summary still showed no content exposure/click report data.
 
 ## IndexNow
 

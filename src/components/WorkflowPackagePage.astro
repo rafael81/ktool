@@ -15,6 +15,7 @@ function isTool(tool: ToolInfo | undefined): tool is ToolInfo {
 const packageTools = workflowPackage.toolIds
   .map((toolId) => tools.find((tool) => tool.id === toolId))
   .filter(isTool);
+const primaryProblem = workflowPackage.problems[0];
 const relatedPackages = [
   {
     title: "전체 도구",
@@ -55,6 +56,35 @@ const structuredData = [
         <span class="eyebrow">{workflowPackage.eyebrow}</span>
         <h1>{workflowPackage.title}</h1>
         <p>{workflowPackage.description}</p>
+        {
+          primaryProblem && (
+            <div class="workflow-primary-actions" aria-label="추천 시작점">
+              <a
+                class="btn primary"
+                href={primaryProblem.path}
+                data-workflow-primary-action
+                data-analytics-event="package_problem_click"
+                data-analytics-package-id={workflowPackage.id}
+                data-analytics-problem-id={primaryProblem.id}
+                data-analytics-target-tool-id={primaryProblem.targetToolId}
+                data-analytics-target-preset={primaryProblem.targetPreset}
+                data-analytics-label={`바로 시작: ${primaryProblem.title}`}
+              >
+                바로 시작: {primaryProblem.title}
+              </a>
+              <a
+                class="btn"
+                href="#workflow-steps"
+                data-workflow-steps-link
+                data-analytics-event="package_related_click"
+                data-analytics-package-id={workflowPackage.id}
+                data-analytics-label="추천 순서 보기"
+              >
+                추천 순서 보기
+              </a>
+            </div>
+          )
+        }
       </div>
       <div class="quick-links" aria-label="관련 흐름 바로가기">
         {
@@ -72,7 +102,7 @@ const structuredData = [
       </div>
     </section>
 
-    <section class="content-section">
+    <section class="content-section" id="workflow-problems">
       <div class="section-heading">
         <h2>막히는 상황 선택</h2>
         <p>오류 문구나 제출 조건을 먼저 고르면 필요한 도구와 preset으로 바로 이동합니다.</p>
@@ -101,7 +131,7 @@ const structuredData = [
       </div>
     </section>
 
-    <section class="content-section">
+    <section class="content-section" id="workflow-steps">
       <div class="section-heading">
         <h2>추천 순서</h2>
         <p>여러 도구를 써야 할 때 헷갈리지 않도록 제출 전 처리 순서로 정리했습니다.</p>
@@ -176,3 +206,28 @@ const structuredData = [
     </section>
   </main>
 </BaseLayout>
+
+<style>
+  .workflow-primary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .workflow-primary-actions .btn {
+    min-height: 42px;
+    white-space: normal;
+  }
+
+  @media (max-width: 560px) {
+    .workflow-primary-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .workflow-primary-actions .btn {
+      width: 100%;
+    }
+  }
+</style>

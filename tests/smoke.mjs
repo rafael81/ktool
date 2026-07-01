@@ -419,6 +419,28 @@ async function run() {
             workflowText.includes("이 흐름에 필요한 도구"),
           `${route.path} should render problem, sequence, and tool sections`
         );
+        const primaryActionCount = await page.locator("[data-workflow-primary-action]").count();
+        assert(primaryActionCount === 1, `${route.path} should expose one first-screen primary workflow action`);
+        const primaryActionText = await page.locator("[data-workflow-primary-action]").textContent();
+        const primaryActionHref = await page.locator("[data-workflow-primary-action]").getAttribute("href");
+        const primaryActionPackage = await page.locator("[data-workflow-primary-action]").getAttribute("data-analytics-package-id");
+        const primaryActionProblem = await page.locator("[data-workflow-primary-action]").getAttribute("data-analytics-problem-id");
+        const primaryActionTargetTool = await page.locator("[data-workflow-primary-action]").getAttribute("data-analytics-target-tool-id");
+        assert(
+          primaryActionText?.includes("바로 시작") &&
+            primaryActionHref?.startsWith("/tools/") &&
+            primaryActionPackage === route.workflowPackage &&
+            Boolean(primaryActionProblem) &&
+            Boolean(primaryActionTargetTool),
+          `${route.path} primary workflow action should jump to a tagged tool preset`
+        );
+        const stepsLinkHref = await page.locator("[data-workflow-steps-link]").getAttribute("href");
+        const stepsSectionCount = await page.locator("#workflow-steps").count();
+        const problemsSectionCount = await page.locator("#workflow-problems").count();
+        assert(
+          stepsLinkHref === "#workflow-steps" && stepsSectionCount === 1 && problemsSectionCount === 1,
+          `${route.path} should expose direct anchors for workflow problems and steps`
+        );
         const problemClickCount = await page.locator('[data-analytics-event="package_problem_click"]').count();
         assert(problemClickCount >= 6, `${route.path} should render package problem shortcuts`);
         const problemPackageIds = await page
