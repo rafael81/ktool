@@ -40,6 +40,7 @@ Problem-intent pages also include:
 | `home_search_tool_click` | Home search tool result click | `tool_id`, `tool_title`, `label`, `href` |
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `home_search_empty_click` | Home empty-search recovery link click | `label`, `href` |
+| `home_quick_start_click` | Home first-screen quick-start link click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `home_catalog_all_click` | Home category section link to the full catalog | `label`, `href` |
 | `home_all_tool_click` | Home category tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |

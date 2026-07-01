@@ -235,6 +235,26 @@ async function run() {
             .locator("[data-home-search-item]:not([hidden])")
             .count();
           assert(defaultHomeSearchRows === 0, `${route.path} should keep homepage search results collapsed by default`);
+          const homeQuickStartCount = await page.locator("[data-home-quick-start]").count();
+          assert(homeQuickStartCount === 4, `${route.path} should expose four first-screen quick-start links`);
+          const homeQuickStartHrefs = await page
+            .locator("[data-home-quick-start]")
+            .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+          [
+            "/tools/jpg-to-pdf-converter/",
+            "/tools/photo-size-reducer/?preset=1mb",
+            "/tools/heic-jpg-converter/?preset=jpg",
+            "/tools/transaction-statement-generator/"
+          ].forEach((href) => {
+            assert(homeQuickStartHrefs.includes(href), `${route.path} should include quick-start link ${href}`);
+          });
+          const homeQuickStartAnalyticsCount = await page
+            .locator('[data-home-quick-start][data-analytics-event="home_quick_start_click"][data-analytics-tool-id]')
+            .count();
+          assert(
+            homeQuickStartAnalyticsCount === 4,
+            `${route.path} should tag every quick-start link for analytics`
+          );
           await page.locator("[data-home-search-input]").fill("HEIC");
           await page.waitForTimeout(450);
           const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();

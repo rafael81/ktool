@@ -2343,6 +2343,70 @@ const analyticsPage = {
     white-space: nowrap;
   }
 
+  .home-quick-starts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-quick-start {
+    display: grid;
+    min-height: 58px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 10px;
+  }
+
+  .home-quick-start:hover,
+  .home-quick-start:focus-visible {
+    border-color: var(--accent);
+    background: #f8fafc;
+    outline: none;
+  }
+
+  .home-quick-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f9fafb;
+    color: var(--accent);
+  }
+
+  .home-quick-start span:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .home-quick-start strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 13.5px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-quick-start em {
+    overflow: hidden;
+    color: #667085;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 650;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .home-page .hero-search-results {
     display: grid;
     max-height: none;
@@ -3033,6 +3097,15 @@ const analyticsPage = {
       flex: 0 0 auto;
     }
 
+    .home-quick-starts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-quick-start {
+      min-height: 62px;
+      padding: 10px 9px;
+    }
+
     .home-page .hero-search-row {
       grid-template-columns: 1fr auto;
       gap: 10px;
@@ -3328,6 +3401,10 @@ const analyticsPage = {
 
     .home-tool-finder {
       margin-bottom: 42px;
+    }
+
+    .home-quick-starts {
+      gap: 7px;
     }
 
     .home-section-title {
