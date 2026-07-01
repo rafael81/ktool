@@ -12,6 +12,10 @@ Robots:
 
 - `https://k-document-tool.pages.dev/robots.txt`
 
+Public health check:
+
+- `npm run seo:health`
+
 ## Google Search Console
 
 Recommended property type for the current launch:

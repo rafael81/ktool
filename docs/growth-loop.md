@@ -1,7 +1,7 @@
 # K문서툴 Growth Loop
 
 Status: v0.2
-Updated: 2026-06-27 KST
+Updated: 2026-07-02 KST
 
 ## Weekly Decision Loop
 
@@ -15,6 +15,14 @@ Search Console / Naver / Cloudflare data
   -> implement, test, deploy
   -> request indexing where useful
 ```
+
+Run the public technical check before looking at login-only reports:
+
+```bash
+npm run seo:health
+```
+
+This verifies the live `robots.txt`, sitemap index, sitemap URLs, canonical tags, `noindex` meta, and page headings. It does not replace Google Search Console, Naver Search Advisor, or Cloudflare Web Analytics because those require account data.
 
 ## Signals To Check
 
@@ -34,6 +42,13 @@ Search Console / Naver / Cloudflare data
 - robots.txt status.
 - URL collection status for new pages.
 - Query/page signals if available.
+
+### Public SEO Health
+
+- `robots.txt` loads and points at the production sitemap index.
+- Sitemap index lists same-origin sitemap files.
+- Every sitemap URL returns HTML without redirecting to another canonical URL.
+- Every sitemap URL has a matching canonical tag, no `noindex`, and an `h1`.
 
 ### Cloudflare Web Analytics
 
@@ -173,6 +188,8 @@ Completed:
 40. Add three workflow package pages for photo/scan submission, business document submission, and freelance billing, then simplify header navigation so users start from a package or category instead of a long tool list.
 41. Replace the long `/tools/` card catalog with a searchable dense list and category filters so users can find a document tool by task, file type, or error wording without scrolling through template-like cards.
 42. Replace the `/tools/` problem-situation card grid with compact action rows so the catalog page keeps one utilitarian scanning rhythm from workflow packages through search.
+43. Add the `/problems/` problem-intent hub so common upload and submission blockers have one crawlable entry point with compact internal links.
+44. Add `npm run seo:health` as the public technical SEO check for live robots, sitemap, canonical, `noindex`, and heading regressions.
 
 Next after crawl data appears:
 

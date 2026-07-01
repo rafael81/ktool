@@ -31,6 +31,7 @@ Problem-intent pages also include:
 | `tool_start` | First input/change inside a tool | `tool_id`, `tool_title` |
 | `tool_nav_click` | Header tool nav click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_nav_click` | Header catalog link click | `label`, `href` |
+| `problem_hub_nav_click` | Header or catalog problem-hub link click | `label`, `href` |
 | `workflow_nav_click` | Header submission-prep workflow link click | `label`, `href` |
 | `package_nav_click` | Header, home, or catalog workflow package link click | `label`, `href`, `package_id` |
 | `category_nav_click` | Header category link click | `label`, `href` |
@@ -46,6 +47,10 @@ Problem-intent pages also include:
 | `catalog_search_change` | Tool catalog search input changes | `catalog_category`, `visible_count`, `search_query_length` |
 | `catalog_tool_click` | Tool catalog tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `problem_entry_click` | Tool catalog problem-intent row click | `label`, `href` |
+| `problem_hub_catalog_click` | Problem hub link to the full tool catalog | `label`, `href` |
+| `problem_hub_submission_prep_click` | Problem hub link to the submission-prep flow | `label`, `href` |
+| `problem_hub_category_click` | Problem hub quick category link click | `label`, `href` |
+| `problem_hub_click` | Problem hub problem-intent row click | `problem_id`, `target_problem_id`, `target_problem_title`, `target_tool_id`, `target_tool_title`, `label`, `href`, optional `target_preset` |
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `tool_problem_arrival` | Tool page opens from a problem page CTA | `tool_id`, `tool_title`, `source`, `problem_id`, optional `target_preset` |
 | `problem_arrival_back_click` | Problem-source tool page banner link back to the problem page | `tool_id`, `tool_title`, `target_problem_id`, `target_problem_title`, `label`, `href` |
