@@ -198,8 +198,6 @@ const structuredData = [
   <script is:inline src="/scripts/file-tool-utils.js"></script>
   <script>
     // @ts-nocheck
-    import { PDFDocument } from "pdf-lib";
-
     const root = document.querySelector("[data-jpg-pdf-tool]");
     if (root) {
       const fileTools = window.KdocFileTools;
@@ -247,6 +245,7 @@ const structuredData = [
       let outputBytes = 0;
       let nextItemId = 1;
       let dragSourceIndex = -1;
+      let pdfLibPromise = null;
 
       function track(eventName, params = {}) {
         window.kdocTrack?.(eventName, {
@@ -510,6 +509,11 @@ const structuredData = [
         return pageSizes[pageSizeSelect.value] || pageSizes["a4-portrait"];
       }
 
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
       async function generatePdf() {
         const files = toFiles();
         const validation = validateFiles(files);
@@ -525,6 +529,7 @@ const structuredData = [
         setMessage("PDF 만드는 중", `${formatter.format(files.length)}장 이미지를 정리하고 있습니다.`);
 
         try {
+          const { PDFDocument } = await loadPdfLib();
           const pdfDoc = await PDFDocument.create();
           const margin = marginSizes[marginSelect.value] ?? marginSizes.normal;
 

@@ -32,6 +32,14 @@ npm run analytics:check
 
 This verifies that every statically discoverable analytics event used in the source is documented in `docs/analytics-events.md`.
 
+Run the build performance budget after generating `dist/`:
+
+```bash
+npm run perf:budget
+```
+
+This checks that file-heavy tools keep their initial route scripts small and continue loading heavy converters only after the user starts the task.
+
 ## Signals To Check
 
 ### Google Search Console
@@ -212,6 +220,8 @@ Completed:
 52. Replace visible "처리 원칙" wording on tool-side trust panels with direct user-facing privacy labels like "서버 전송 없음" and "입력값 저장 안 함".
 53. Add a central analytics sanitizer so event payloads drop sensitive keys, clamp long strings, and remove raw search-query parameters from tracked href values.
 54. Add `npm run analytics:check` so analytics event names cannot drift from `docs/analytics-events.md` as new routes and CTA events are added.
+55. Lazy-load `pdf-lib` on `JPG PDF 변환` so the initial route script stays small until the user actually creates a PDF.
+56. Add `npm run perf:budget` to keep initial file-tool scripts under a route-level budget after build.
 
 Next after crawl data appears:
 
