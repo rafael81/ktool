@@ -228,6 +228,7 @@ Completed:
 60. Make post-processing save actions harder to miss across image cleanup tools and `JPG PDF 변환` so users know to save generated files before continuing or submitting.
 61. Remove roadmap-style candidate sections from category pages so visitors see only usable tools and direct submission workflows.
 62. Add first-screen primary actions to workflow package pages so search visitors can start the recommended tool path without scanning the whole page.
+63. Tighten the indexed `사업자 명판 만들기 무료` page with a shorter first-screen promise, primary PNG save action, and fixed-ratio preview that avoids internal scrolling.
 
 Next after crawl data appears:
 

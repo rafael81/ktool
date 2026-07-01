@@ -22,7 +22,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>{tool.description} 로그인 없이 브라우저에서 미리보고 PNG로 내려받을 수 있습니다.</p>
+        <p>상호, 대표자, 사업자등록번호, 주소를 입력하면 문서에 넣을 명판 PNG를 바로 만듭니다. 파일은 서버로 전송되지 않습니다.</p>
       </div>
       <div class="quick-links">
         {
@@ -42,7 +42,7 @@ const structuredData = [
     </section>
 
     <section
-      class="workspace"
+      class="workspace nameplate-workspace"
       data-nameplate-tool
       data-tool-id={tool.id}
       data-tool-title={tool.title}
@@ -92,7 +92,11 @@ const structuredData = [
             </select>
           </label>
         </div>
-        <div class="button-row">
+        <div class="button-row nameplate-actions">
+          <button class="btn primary" type="button" data-download data-nameplate-download>
+            <IconGlyph name="download" aria-hidden="true" />
+            PNG 저장
+          </button>
           <button class="btn" type="button" data-sample>
             <IconGlyph name="plus" aria-hidden="true" />
             샘플
@@ -101,15 +105,11 @@ const structuredData = [
             <IconGlyph name="refresh" aria-hidden="true" />
             초기화
           </button>
-          <button class="btn primary" type="button" data-download>
-            <IconGlyph name="download" aria-hidden="true" />
-            PNG 저장
-          </button>
         </div>
       </form>
 
-      <section class="preview-panel" aria-label="사업자 명판 미리보기">
-        <div class="nameplate-canvas" data-preview></div>
+      <section class="preview-panel nameplate-preview-panel" aria-label="사업자 명판 미리보기" data-nameplate-preview-panel>
+        <div class="nameplate-canvas" data-preview data-nameplate-preview-canvas></div>
       </section>
 
       <aside class="side-panel">
@@ -304,7 +304,9 @@ const structuredData = [
 <style>
   .nameplate-canvas {
     display: grid;
-    min-height: 560px;
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 680 / 320;
     place-items: center;
     overflow: hidden;
     background:
@@ -315,7 +317,18 @@ const structuredData = [
     background-position: 0 0, 0 10px, 10px -10px, -10px 0;
     background-size: 20px 20px;
     border-radius: 8px;
-    padding: 18px;
+    padding: clamp(10px, 2vw, 18px);
+  }
+
+  .nameplate-preview-panel {
+    display: grid;
+    min-height: 0;
+    align-content: center;
+    padding: clamp(12px, 2.4vw, 20px);
+  }
+
+  .nameplate-actions .btn.primary {
+    min-width: 132px;
   }
 
   :global(.nameplate-canvas svg) {
@@ -324,6 +337,18 @@ const structuredData = [
     box-sizing: border-box;
     max-width: 100%;
     height: auto;
+  }
+
+  @media (max-width: 760px) {
+    .nameplate-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .nameplate-actions .btn.primary {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
   }
 
   .file-control {

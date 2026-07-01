@@ -39,7 +39,7 @@ const routes = [
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/categories/image/", h1: "이미지 도구" },
-  { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true },
+  { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true, nameplateTool: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/invoice-generator/", h1: "청구서 자동작성", faq: true, documentPreview: true },
@@ -147,6 +147,39 @@ async function run() {
         assert(visibleSidePanels === 0, `${route.path} should not show explanatory side panels in the workspace`);
         const visibleProblemArrivalCount = await page.locator("[data-problem-arrival]:not([hidden])").count();
         assert(visibleProblemArrivalCount === 0, `${route.path} should hide the problem arrival banner on direct visits`);
+      }
+
+      if (route.nameplateTool) {
+        const nameplateDownloadCount = await page.locator("[data-nameplate-download]").count();
+        assert(nameplateDownloadCount === 1, `${route.path} should expose one primary PNG save action`);
+        const firstActionText = await page.locator(".nameplate-actions .btn").first().innerText();
+        assert(firstActionText.includes("PNG 저장"), `${route.path} should show PNG save as the first form action`);
+        const previewMetrics = await page.locator("[data-nameplate-preview-panel]").evaluate((panel) => {
+          const canvas = panel.querySelector("[data-nameplate-preview-canvas]");
+          const canvasRect = canvas?.getBoundingClientRect();
+          return {
+            panelHeight: panel.getBoundingClientRect().height,
+            panelScrollHeight: panel.scrollHeight,
+            panelScrollWidth: panel.scrollWidth,
+            panelClientWidth: panel.clientWidth,
+            canvasWidth: canvasRect?.width || 0,
+            canvasHeight: canvasRect?.height || 0,
+            canvasRatio: canvasRect ? canvasRect.width / canvasRect.height : 0
+          };
+        });
+        assert(
+          previewMetrics.canvasWidth > 0 &&
+            previewMetrics.canvasHeight > 0 &&
+            previewMetrics.canvasRatio > 1.9 &&
+            previewMetrics.canvasRatio < 2.3,
+          `${route.path} should render the nameplate preview at the document aspect ratio`
+        );
+        assert(
+          previewMetrics.panelHeight < 260 &&
+            previewMetrics.panelScrollHeight <= previewMetrics.panelHeight + 2 &&
+            previewMetrics.panelScrollWidth <= previewMetrics.panelClientWidth + 2,
+          `${route.path} should not create a tall or internally scrolling nameplate preview`
+        );
       }
 
       const headerSearchCount = await page.locator(".site-search-link").count();
