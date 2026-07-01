@@ -86,9 +86,10 @@ Problem-intent pages also include:
 | `tool_stamp_select` | Nameplate stamp image is selected | `file_type`, `file_size` |
 | `tool_validation_error` | Client-side validation blocks an action | `reason` |
 | `tool_download` | Nameplate PNG is generated and download starts | `file_format`, `background`, `has_stamp`, `changed_field_count`, `filled_field_count`, `sample_data`, `source` |
-| `tool_row_add` | A document item row is added | `row_count`, `document_title` |
-| `tool_row_remove` | A document item row is removed | `row_count`, `document_title` |
-| `tool_print` | Print/PDF action is requested | `row_count`, `vat_mode`, `document_title` |
+| `document_tool_quick_start_arrival` | A document generator opens from a home or catalog quick-start CTA | `tool_id`, `tool_title`, `document_title`, `source` |
+| `tool_row_add` | A document item row is added | `row_count`, `document_title`, `source` |
+| `tool_row_remove` | A document item row is removed | `row_count`, `document_title`, `source` |
+| `tool_print` | Print/PDF action is requested | `row_count`, `vat_mode`, `document_title`, `source` |
 | `calculator_mode_change` | VAT calculator mode changes | `calculator_mode` |
 | `calculator_sample_apply` | VAT calculator sample amount is applied | `calculator_mode` |
 | `calculator_reset` | VAT calculator is reset | `calculator_mode` |

@@ -86,7 +86,8 @@ function toolContext(root) {
   return {
     tool_id: root?.dataset.toolId || null,
     tool_title: root?.dataset.toolTitle || null,
-    document_title: root?.dataset.documentTitle || null
+    document_title: root?.dataset.documentTitle || null,
+    source: documentSource()
   };
 }
 
@@ -95,6 +96,15 @@ function track(root, eventName, params = {}) {
     ...toolContext(root),
     ...params
   });
+}
+
+function documentSource() {
+  const source = new URLSearchParams(window.location.search).get("source");
+  return /^[a-z0-9-]{1,80}$/i.test(source || "") ? source : "direct";
+}
+
+function isQuickStartSource(source) {
+  return source === "home-quick-start" || source === "catalog-quick-start";
 }
 
 function rowTemplate(root, index) {
@@ -328,4 +338,8 @@ for (const root of document.querySelectorAll("[data-document-tool]")) {
 
   bind();
   update();
+  const source = documentSource();
+  if (isQuickStartSource(source)) {
+    track(root, "document_tool_quick_start_arrival", { source });
+  }
 }

@@ -266,7 +266,7 @@ async function run() {
             "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
             "/tools/photo-size-reducer/?preset=1mb&source=home-quick-start",
             "/tools/heic-jpg-converter/?preset=jpg&source=home-quick-start",
-            "/tools/transaction-statement-generator/"
+            "/tools/transaction-statement-generator/?source=home-quick-start"
           ].forEach((href) => {
             assert(homeQuickStartHrefs.includes(href), `${route.path} should include quick-start link ${href}`);
           });
@@ -410,7 +410,7 @@ async function run() {
           "/tools/jpg-to-pdf-converter/?from=quick-start&source=catalog-quick-start",
           "/tools/photo-size-reducer/?preset=1mb&source=catalog-quick-start",
           "/tools/heic-jpg-converter/?preset=jpg&source=catalog-quick-start",
-          "/tools/transaction-statement-generator/"
+          "/tools/transaction-statement-generator/?source=catalog-quick-start"
         ].forEach((href) => {
           assert(catalogQuickStartHrefs.includes(href), `${route.path} should include catalog quick-start link ${href}`);
         });
@@ -828,6 +828,38 @@ async function run() {
       if (route.documentPreview) {
         const previewText = await page.locator("[data-document-preview]").textContent();
         assert(previewText?.includes("합계 한글"), `${route.path} should render Korean total amount in preview`);
+        if (route.path === "/tools/transaction-statement-generator/") {
+          await page.goto(`${baseUrl}${route.path}?source=home-quick-start`, { waitUntil: "networkidle" });
+          const documentQuickStartArrivalEvent = await page.evaluate(() => {
+            return window.dataLayer?.findLast?.((event) => event.event === "document_tool_quick_start_arrival");
+          });
+          assert(
+            documentQuickStartArrivalEvent?.tool_id === "transaction-statement" &&
+              documentQuickStartArrivalEvent.document_title === "거래명세서" &&
+              documentQuickStartArrivalEvent.source === "home-quick-start",
+            `${route.path} should track document quick-start arrivals with source`
+          );
+          await page.evaluate(() => {
+            window.print = () => {
+              window.__kdocPrintCalled = true;
+            };
+          });
+          await page.locator("[data-print]").click();
+          const printEvent = await page.evaluate(() => {
+            return {
+              event: window.dataLayer?.findLast?.((item) => item.event === "tool_print"),
+              printCalled: window.__kdocPrintCalled === true
+            };
+          });
+          assert(
+            printEvent.printCalled &&
+              printEvent.event?.tool_id === "transaction-statement" &&
+              printEvent.event.document_title === "거래명세서" &&
+              printEvent.event.source === "home-quick-start" &&
+              printEvent.event.row_count >= 1,
+            `${route.path} should preserve quick-start source through print/PDF analytics`
+          );
+        }
       }
 
       if (route.stampTool) {
