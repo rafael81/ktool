@@ -1,0 +1,169 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getProblemPage, problemPages, type ProblemPage } from "@/data/problemPages";
+import { getTool } from "@/data/tools";
+import { faqPageSchema, websiteSchema } from "@/data/seo";
+
+export function getStaticPaths() {
+  return problemPages.map((problemPage) => ({
+    params: { slug: problemPage.slug },
+    props: { problemPage }
+  }));
+}
+
+type Props = {
+  problemPage: ProblemPage;
+};
+
+const { problemPage } = Astro.props;
+const targetTool = getTool(problemPage.targetToolId);
+const relatedProblems = problemPage.relatedProblemIds.map(getProblemPage);
+const stepNotes = [
+  "파일은 서버로 보내지 않고 브라우저에서 엽니다.",
+  problemPage.actionNote,
+  "원본은 그대로 두고 새 파일을 저장합니다.",
+  "제출 전에 결과 파일을 한 번 확인합니다."
+];
+const structuredData = [
+  websiteSchema(),
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: problemPage.title,
+    description: problemPage.description,
+    inLanguage: "ko-KR",
+    totalTime: "PT2M",
+    step: problemPage.steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step
+    }))
+  },
+  faqPageSchema(problemPage.faqs)
+];
+---
+
+<BaseLayout
+  title={`${problemPage.title} - K문서툴`}
+  description={problemPage.metaDescription}
+  canonicalPath={problemPage.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell problem-page" data-problem-page={problemPage.id}>
+    <section class="tool-intro" aria-labelledby="problem-title">
+      <h1 id="problem-title">{problemPage.title}</h1>
+      <p>{problemPage.description}</p>
+      <div class="quick-links" aria-label="바로가기">
+        <a
+          class="btn primary"
+          href={problemPage.targetPath}
+          data-problem-primary-link
+          data-analytics-event="problem_primary_tool_click"
+          data-analytics-tool-id={targetTool.id}
+          data-analytics-tool-title={targetTool.title}
+          data-analytics-target-preset={problemPage.targetPreset}
+          data-analytics-label={problemPage.targetLabel}
+        >
+          {problemPage.targetLabel}
+        </a>
+        <a
+          href="/tools/submission-file-prep/"
+          data-analytics-event="problem_submission_prep_click"
+          data-analytics-label="제출용 파일 준비"
+        >
+          제출 준비 전체 보기
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section" data-problem-action>
+      <div class="section-heading">
+        <h2>바로 처리</h2>
+        <p>{problemPage.actionNote}</p>
+      </div>
+      <div class="shortcut-list">
+        <a
+          class="shortcut-row"
+          href={problemPage.targetPath}
+          data-analytics-event="problem_tool_click"
+          data-analytics-tool-id={targetTool.id}
+          data-analytics-tool-title={targetTool.title}
+          data-analytics-target-preset={problemPage.targetPreset}
+          data-analytics-label={problemPage.targetLabel}
+        >
+          <span class="shortcut-row-label">추천 도구</span>
+          <span class="shortcut-row-copy">
+            <strong>{targetTool.title}</strong>
+            <span>{targetTool.description}</span>
+          </span>
+          <span class="shortcut-row-tool">실행</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-section" data-problem-steps>
+      <div class="section-heading">
+        <h2>처리 순서</h2>
+      </div>
+      <div class="workflow-list">
+        {
+          problemPage.steps.map((step, index) => (
+            <div class="workflow-row">
+              <span class="workflow-row-kicker">{index + 1}</span>
+              <span class="workflow-row-copy">
+                <strong>{step}</strong>
+                <span>{stepNotes[index] ?? "필요한 작업만 이어서 처리합니다."}</span>
+              </span>
+              <span class="workflow-row-meta">
+                <span>{problemPage.shortTitle}</span>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" data-related-problems>
+      <div class="section-heading">
+        <h2>같이 막히는 문제</h2>
+      </div>
+      <div class="workflow-list">
+        {
+          relatedProblems.map((relatedProblem) => (
+            <a
+              class="workflow-row"
+              href={relatedProblem.path}
+              data-analytics-event="problem_related_click"
+              data-analytics-label={relatedProblem.title}
+            >
+              <span class="workflow-row-kicker">{relatedProblem.shortTitle}</span>
+              <span class="workflow-row-copy">
+                <strong>{relatedProblem.title}</strong>
+                <span>{relatedProblem.description}</span>
+              </span>
+              <span class="workflow-row-meta">
+                {relatedProblem.secondaryQueries.slice(0, 2).map((query) => <span>{query}</span>)}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" data-problem-faq>
+      <div class="section-heading">
+        <h2>자주 묻는 질문</h2>
+      </div>
+      <div class="faq-list">
+        {
+          problemPage.faqs.map(([question, answer]) => (
+            <details>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import { toolCategories, tools, type ToolCategoryId } from "@/data/tools";
 import { workflowPackages, type WorkflowPackageId } from "@/data/workflowPackages";
+import { problemPages } from "@/data/problemPages";
 import { Search } from "@lucide/astro";
 
 type Props = {
@@ -21,6 +22,9 @@ const normalizedCanonicalPath = normalizePath(canonicalPath);
 const currentTool = tools.find((tool) => normalizePath(tool.path) === normalizedCanonicalPath);
 const currentWorkflowPackage = workflowPackages.find(
   (workflowPackage) => normalizePath(workflowPackage.path) === normalizedCanonicalPath
+);
+const currentProblemPage = problemPages.find(
+  (problemPage) => normalizePath(problemPage.path) === normalizedCanonicalPath
 );
 const workflowCategoryMap: Record<WorkflowPackageId, ToolCategoryId> = {
   "photo-scan-submission": "image",
@@ -77,6 +81,12 @@ const breadcrumbEntries = [
     ? [
         { name: "제출용 파일 준비", path: "/tools/submission-file-prep/" },
         { name: currentWorkflowPackage.title, path: currentWorkflowPackage.path }
+      ]
+    : []),
+  ...(currentProblemPage
+    ? [
+        { name: "전체 도구", path: "/tools/" },
+        { name: currentProblemPage.title, path: currentProblemPage.path }
       ]
     : [])
 ].filter((entry, index, entries) => {
@@ -250,8 +260,8 @@ const analyticsPage = {
         <nav class="top-nav" aria-label="주요 도구">
           <a
             href="/tools/"
-            class:list={{ "is-active": isActivePath("/tools/") }}
-            aria-current={isActivePath("/tools/") ? "page" : undefined}
+            class:list={{ "is-active": isActivePath("/tools/") || Boolean(currentProblemPage) }}
+            aria-current={isActivePath("/tools/") || currentProblemPage ? "page" : undefined}
             data-analytics-event="catalog_nav_click"
             data-analytics-label="전체 도구"
           >

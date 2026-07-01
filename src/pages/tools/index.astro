@@ -4,6 +4,7 @@ import { toolCategories, tools } from "@/data/tools";
 import { collectionPageSchema, toolItemListSchema, websiteSchema } from "@/data/seo";
 import { prepShortcuts } from "@/data/prepShortcuts";
 import { workflowPackages } from "@/data/workflowPackages";
+import { problemPages } from "@/data/problemPages";
 
 const structuredData = [
   websiteSchema(),
@@ -165,6 +166,35 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
                 <span>{shortcut.description}</span>
               </span>
               <span class="shortcut-row-tool">{shortcut.targetToolTitle}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="content-section" data-problem-entry-list>
+      <div class="section-heading">
+        <h2>문제별 해결</h2>
+      </div>
+      <div class="workflow-list">
+        {
+          problemPages.map((problemPage) => (
+            <a
+              class="workflow-row"
+              href={problemPage.path}
+              data-analytics-event="problem_entry_click"
+              data-analytics-label={problemPage.title}
+            >
+              <span class="workflow-row-kicker">{problemPage.shortTitle}</span>
+              <span class="workflow-row-copy">
+                <strong>{problemPage.title}</strong>
+                <span>{problemPage.description}</span>
+              </span>
+              <span class="workflow-row-meta">
+                {problemPage.secondaryQueries.slice(0, 2).map((query) => (
+                  <span>{query}</span>
+                ))}
+              </span>
             </a>
           ))
         }

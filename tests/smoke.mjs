@@ -28,6 +28,13 @@ const routes = [
     faq: true,
     workflowPackage: "freelance-billing"
   },
+  { path: "/problems/file-format-error/", h1: "파일 형식 오류 해결", faq: true, problemPage: true },
+  { path: "/problems/heic-jpg-submit/", h1: "HEIC JPG 제출 준비", faq: true, problemPage: true },
+  { path: "/problems/photo-under-1mb/", h1: "사진 1MB 이하로 줄이기", faq: true, problemPage: true },
+  { path: "/problems/image-pixel-limit/", h1: "사진 크기 제한 맞추기", faq: true, problemPage: true },
+  { path: "/problems/sideways-scan/", h1: "사진 방향 바로잡기", faq: true, problemPage: true },
+  { path: "/problems/document-photo-crop/", h1: "문서 사진 여백 자르기", faq: true, problemPage: true },
+  { path: "/problems/images-to-one-pdf/", h1: "여러 장 이미지 PDF로 묶기", faq: true, problemPage: true },
   { path: "/categories/business/", h1: "업무 문서 도구" },
   { path: "/categories/pdf/", h1: "PDF 도구" },
   { path: "/categories/image/", h1: "이미지 도구" },
@@ -254,6 +261,12 @@ async function run() {
       if (route.path === "/tools/") {
         const catalogShortcutRows = await page.locator("[data-prep-shortcuts] .shortcut-row").count();
         assert(catalogShortcutRows === 7, `${route.path} should render prep shortcuts as compact rows`);
+        const problemEntryRows = await page.locator("[data-problem-entry-list] .workflow-row").count();
+        assert(problemEntryRows === 7, `${route.path} should link to seven problem intent pages`);
+        const problemEntryHref = await page
+          .locator('[data-problem-entry-list] a[href="/problems/photo-under-1mb/"]')
+          .count();
+        assert(problemEntryHref === 1, `${route.path} should link to the 1MB photo problem page`);
         const catalogRootCount = await page.locator("[data-tool-catalog]").count();
         assert(catalogRootCount === 1, `${route.path} should render one searchable tool catalog`);
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();
@@ -329,6 +342,24 @@ async function run() {
           packageToolIds.every((packageId) => packageId === route.workflowPackage),
           `${route.path} should tag every package tool click with the package id`
         );
+      }
+
+      if (route.problemPage) {
+        const problemRootCount = await page.locator("[data-problem-page]").count();
+        assert(problemRootCount === 1, `${route.path} should tag the problem page root`);
+        const primaryLink = page.locator("[data-problem-primary-link]");
+        const primaryLinkCount = await primaryLink.count();
+        assert(primaryLinkCount === 1, `${route.path} should expose one primary problem CTA`);
+        const primaryHref = await primaryLink.getAttribute("href");
+        assert(primaryHref?.startsWith("/tools/"), `${route.path} primary CTA should send users to a tool`);
+        const actionLinkCount = await page.locator('[data-problem-action] a[data-analytics-event="problem_tool_click"]').count();
+        assert(actionLinkCount === 1, `${route.path} should track the recommended tool click`);
+        const stepRows = await page.locator("[data-problem-steps] .workflow-row").count();
+        assert(stepRows >= 4, `${route.path} should render a short handling sequence`);
+        const relatedRows = await page.locator("[data-related-problems] .workflow-row").count();
+        assert(relatedRows === 3, `${route.path} should link to three adjacent problem pages`);
+        const faqRows = await page.locator("[data-problem-faq] details").count();
+        assert(faqRows >= 5, `${route.path} should render problem FAQs`);
       }
 
       if (route.path === "/categories/image/" || route.path === "/categories/pdf/") {
@@ -888,6 +919,9 @@ async function assertSitemapMetadata() {
   for (const path of [
     "/",
     "/tools/",
+    "/problems/file-format-error/",
+    "/problems/photo-under-1mb/",
+    "/problems/images-to-one-pdf/",
     "/tools/jpg-to-pdf-converter/",
     "/tools/photo-size-reducer/",
     "/tools/business-nameplate-maker/",
