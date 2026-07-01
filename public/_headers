@@ -15,7 +15,7 @@
   Cache-Control: public, max-age=3600
 
 /sitemap-index.xml
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=60, must-revalidate
 
 /sitemap-0.xml
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=60, must-revalidate
