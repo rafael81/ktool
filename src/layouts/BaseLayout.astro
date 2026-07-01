@@ -237,7 +237,8 @@ const analyticsPage = {
             const params = {
               ...toolContext(pageTool),
               source: "problem",
-              problem_id: problemId
+              problem_id: problemId,
+              problem_title: problem.title
             };
             const preset = safePreset(searchParams.get("preset"));
             if (preset) params.target_preset = preset;

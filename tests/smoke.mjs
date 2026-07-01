@@ -519,6 +519,7 @@ async function run() {
           assert(
             arrivalEvent?.source === "problem" &&
               arrivalEvent.problem_id === problemId &&
+              arrivalEvent.problem_title === problemTitle &&
               arrivalEvent.tool_id &&
               arrivalEvent.tool_title,
             `${route.path} target tool page should emit a problem-source arrival event`
