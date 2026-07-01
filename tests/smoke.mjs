@@ -35,6 +35,12 @@ const routes = [
     faq: true,
     problemPage: true
   },
+  {
+    path: "/problems/transaction-statement-pdf/",
+    h1: "거래명세서 양식 PDF 저장하기",
+    faq: true,
+    problemPage: true
+  },
   { path: "/problems/file-format-error/", h1: "파일 형식 오류 해결", faq: true, problemPage: true },
   { path: "/problems/heic-jpg-submit/", h1: "HEIC JPG 제출 준비", faq: true, problemPage: true },
   { path: "/problems/photo-under-1mb/", h1: "사진 1MB 이하로 줄이기", faq: true, problemPage: true },
@@ -356,7 +362,8 @@ async function run() {
             ["지원하지 않는 파일 형식", "파일 형식 오류 해결"],
             ["아이폰 사진 안열림", "HEIC JPG 제출 준비"],
             ["한 파일로 제출", "여러 장 이미지 PDF로 묶기"],
-            ["명판 도장 합성", "사업자 명판 도장 이미지 만들기"]
+            ["명판 도장 합성", "사업자 명판 도장 이미지 만들기"],
+            ["거래명세서 양식 무료", "거래명세서 양식 PDF 저장하기"]
           ];
           for (const [query, expectedTitle] of problemIntentSearches) {
             await page.locator("[data-home-search-input]").fill(query);
@@ -472,11 +479,15 @@ async function run() {
         const catalogShortcutRows = await page.locator("[data-prep-shortcuts] .shortcut-row").count();
         assert(catalogShortcutRows === 7, `${route.path} should render prep shortcuts as compact rows`);
         const problemEntryRows = await page.locator("[data-problem-entry-list] .workflow-row").count();
-        assert(problemEntryRows === 8, `${route.path} should link to eight problem intent pages`);
+        assert(problemEntryRows === 9, `${route.path} should link to nine problem intent pages`);
         const nameplateProblemEntryHref = await page
           .locator('[data-problem-entry-list] a[href="/problems/business-nameplate-stamp/"]')
           .count();
         assert(nameplateProblemEntryHref === 1, `${route.path} should link to the business nameplate problem page`);
+        const transactionProblemEntryHref = await page
+          .locator('[data-problem-entry-list] a[href="/problems/transaction-statement-pdf/"]')
+          .count();
+        assert(transactionProblemEntryHref === 1, `${route.path} should link to the transaction statement problem page`);
         const problemEntryHref = await page
           .locator('[data-problem-entry-list] a[href="/problems/photo-under-1mb/"]')
           .count();
@@ -513,7 +524,7 @@ async function run() {
         const catalogToolRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="tool"]').count();
         const catalogProblemRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="problem"]').count();
         assert(catalogToolRowCount >= 16, `${route.path} should render all tool rows in the catalog`);
-        assert(catalogProblemRowCount === 8, `${route.path} should render eight search-only problem rows in the catalog`);
+        assert(catalogProblemRowCount === 9, `${route.path} should render nine search-only problem rows in the catalog`);
         const initialVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
         assert(
           initialVisibleRows === catalogToolRowCount && catalogRowCount === catalogToolRowCount + catalogProblemRowCount,
@@ -538,7 +549,8 @@ async function run() {
           ["업로드 용량 초과", "사진 1MB 이하로 줄이기"],
           ["사진이 옆으로", "사진 방향 바로잡기"],
           ["지원하지 않는 파일 형식", "파일 형식 오류 해결"],
-          ["견적서 명판 넣기", "사업자 명판 도장 이미지 만들기"]
+          ["견적서 명판 넣기", "사업자 명판 도장 이미지 만들기"],
+          ["거래명세서 PDF 저장", "거래명세서 양식 PDF 저장하기"]
         ];
         for (const [query, expectedTitle] of catalogIntentSearches) {
           await page.locator("[data-tool-search]").fill(query);
@@ -651,13 +663,14 @@ async function run() {
         const problemHubRootCount = await page.locator("[data-problem-hub]").count();
         assert(problemHubRootCount === 1, `${route.path} should render one problem hub section`);
         const problemRows = await page.locator("[data-problem-hub] .workflow-row").count();
-        assert(problemRows === 8, `${route.path} should link to eight problem intent pages`);
+        assert(problemRows === 9, `${route.path} should link to nine problem intent pages`);
         const problemHubText = await page.locator("[data-problem-hub]").textContent();
         assert(
           problemHubText?.includes("파일 형식 오류 해결") &&
             problemHubText.includes("사진 1MB 이하로 줄이기") &&
             problemHubText.includes("여러 장 이미지 PDF로 묶기") &&
-            problemHubText.includes("사업자 명판 도장 이미지 만들기"),
+            problemHubText.includes("사업자 명판 도장 이미지 만들기") &&
+            problemHubText.includes("거래명세서 양식 PDF 저장하기"),
           `${route.path} should expose the main problem intents`
         );
         const photoProblemHref = await page
@@ -669,13 +682,13 @@ async function run() {
             '[data-problem-hub] a[data-analytics-event="problem_hub_click"][data-analytics-target-problem-id][data-analytics-target-tool-id]'
           )
           .count();
-        assert(taggedProblemRows === 8, `${route.path} should tag every problem row with problem and tool metadata`);
+        assert(taggedProblemRows === 9, `${route.path} should tag every problem row with problem and tool metadata`);
         const jsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
           nodes.map((node) => JSON.parse(node.textContent || "{}"))
         );
         const collectionPage = jsonLdItems.find((item) => item["@type"] === "CollectionPage");
         assert(
-          collectionPage?.mainEntity?.itemListElement?.length === 8,
+          collectionPage?.mainEntity?.itemListElement?.length === 9,
           `${route.path} should expose a CollectionPage ItemList for problem pages`
         );
       }

@@ -2,6 +2,7 @@ import type { ToolId } from "@/data/tools";
 
 export type ProblemPageId =
   | "business-nameplate-stamp"
+  | "transaction-statement-pdf"
   | "file-format-error"
   | "heic-jpg-submit"
   | "photo-under-1mb"
@@ -81,6 +82,56 @@ export const problemPages: ProblemPage[] = [
       ]
     ],
     relatedProblemIds: ["file-format-error", "document-photo-crop", "images-to-one-pdf"]
+  },
+  {
+    id: "transaction-statement-pdf",
+    slug: "transaction-statement-pdf",
+    path: "/problems/transaction-statement-pdf/",
+    title: "거래명세서 양식 PDF 저장하기",
+    shortTitle: "거래명세서 PDF",
+    description: "공급자, 거래처, 품목을 입력해 거래명세서를 바로 작성하고 PDF로 저장합니다.",
+    metaDescription:
+      "거래명세서 양식을 무료로 작성하고 PDF로 저장하세요. 공급자, 거래처, 품목, 부가세, 합계 한글 금액을 설치 없이 브라우저에서 처리하고 입력값은 서버로 전송되지 않습니다.",
+    primaryQuery: "거래명세서 양식 PDF",
+    secondaryQueries: ["거래명세서 양식 무료", "거래명세서 자동작성", "거래명세서 PDF 저장"],
+    intentQueries: [
+      "거래명세서 바로 작성",
+      "거래명세표 양식",
+      "거래명세서 무료 양식",
+      "거래명세서 인쇄",
+      "공급자 거래처 품목 입력",
+      "거래명세서 부가세 계산",
+      "거래명세서 합계 한글",
+      "거래명세서 PDF 만들기"
+    ],
+    targetToolId: "transaction-statement",
+    targetPath: "/tools/transaction-statement-generator/",
+    targetLabel: "거래명세서 작성",
+    actionNote: "공급자, 거래처, 품목, 수량, 단가를 입력해 인쇄 가능한 거래명세서를 만듭니다.",
+    steps: ["공급자와 거래처 입력", "품목·수량·단가 입력", "부가세와 합계 확인", "인쇄 또는 PDF 저장"],
+    faqs: [
+      [
+        "거래명세서 양식을 다운로드해야 하나요?",
+        "아니요. 브라우저에서 바로 입력하고 미리보기를 확인한 뒤 인쇄 화면에서 PDF로 저장할 수 있습니다."
+      ],
+      [
+        "부가세 포함 금액도 계산되나요?",
+        "네. 부가세 별도, 포함, 없음 중에서 선택해 공급가액, 세액, 합계를 확인할 수 있습니다."
+      ],
+      [
+        "합계 금액을 한글로 표시할 수 있나요?",
+        "네. 합계 금액은 문서 하단에 한글 금액으로 함께 표시됩니다."
+      ],
+      [
+        "입력한 거래처 정보가 저장되나요?",
+        "아니요. 공급자, 거래처, 품목 정보는 브라우저 안에서 문서 미리보기와 인쇄에만 사용하고 서버로 보내지 않습니다."
+      ],
+      [
+        "세금계산서를 대신할 수 있나요?",
+        "아니요. 거래명세서는 거래 내역 정리용 문서이며, 세금계산서나 전자세금계산서 발행을 대신하지 않습니다."
+      ]
+    ],
+    relatedProblemIds: ["business-nameplate-stamp", "images-to-one-pdf", "file-format-error"]
   },
   {
     id: "file-format-error",
