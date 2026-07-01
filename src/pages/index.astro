@@ -30,6 +30,12 @@ const featuredToolSet = new Set<ToolId>(featuredToolIds);
 const featuredTools = featuredToolIds
   .map((id) => tools.find((tool) => tool.id === id))
   .filter((tool): tool is (typeof tools)[number] => Boolean(tool));
+const emptySearchLinks = [
+  { label: "사진 용량 줄이기", path: "/tools/photo-size-reducer/" },
+  { label: "JPG PDF 변환", path: "/tools/jpg-to-pdf-converter/" },
+  { label: "HEIC JPG 변환", path: "/tools/heic-jpg-converter/" },
+  { label: "문제 해결", path: "/problems/" }
+];
 const toolsByCategory = new Map(
   toolCategories.map((category) => [
     category.id,
@@ -249,6 +255,19 @@ function iconForTool(toolId: ToolId) {
         <p class="hero-search-empty" data-home-search-empty hidden>
           결과 없음
         </p>
+        <div class="search-empty-actions" data-home-search-suggestions hidden>
+          {
+            emptySearchLinks.map((link) => (
+              <a
+                href={link.path}
+                data-analytics-event="home_search_empty_click"
+                data-analytics-label={link.label}
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
       </form>
     </section>
 
@@ -327,6 +346,7 @@ function iconForTool(toolId: ToolId) {
     const filterButtons = Array.from(root.querySelectorAll("[data-home-category-filter]"));
     const countNode = root.querySelector("[data-home-search-count]");
     const emptyNode = root.querySelector("[data-home-search-empty]");
+    const suggestionNode = root.querySelector("[data-home-search-suggestions]");
     let activeCategory = "all";
     let searchTimer = 0;
 
@@ -365,6 +385,7 @@ function iconForTool(toolId: ToolId) {
         countNode.textContent = defaultMode ? "검색어 입력" : `${visibleCount}개 결과`;
       }
       if (emptyNode) emptyNode.hidden = defaultMode || visibleCount !== 0;
+      if (suggestionNode) suggestionNode.hidden = defaultMode || visibleCount !== 0;
       if (shouldTrack) track(visibleCount);
     }
 

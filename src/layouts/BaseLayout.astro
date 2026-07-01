@@ -957,6 +957,40 @@ const analyticsPage = {
     display: none;
   }
 
+  .search-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .search-empty-actions[hidden] {
+    display: none;
+  }
+
+  .search-empty-actions a {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  .search-empty-actions a:hover,
+  .search-empty-actions a:focus-visible {
+    border-color: var(--accent);
+    background: #eff8f6;
+    color: var(--accent-dark);
+    outline: none;
+  }
+
   .home-tool-chip:hover span,
   .home-tool-chip:focus-visible span {
     color: var(--accent-dark);
@@ -1843,6 +1877,12 @@ const analyticsPage = {
 
   .catalog-empty[hidden] {
     display: none;
+  }
+
+  .catalog-empty + .search-empty-actions {
+    border-bottom: 1px solid var(--line);
+    margin-top: -8px;
+    padding-bottom: 18px;
   }
 
   .tool-card {

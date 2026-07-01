@@ -247,7 +247,13 @@ async function run() {
           await page.waitForTimeout(450);
           const emptyHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
           const homeEmptyHidden = await page.locator("[data-home-search-empty]").getAttribute("hidden");
+          const homeSuggestionHidden = await page.locator("[data-home-search-suggestions]").getAttribute("hidden");
+          const homeSuggestionLinks = await page.locator("[data-home-search-suggestions] a").count();
           assert(emptyHomeRows === 0 && homeEmptyHidden === null, `${route.path} should show an empty homepage search state`);
+          assert(
+            homeSuggestionHidden === null && homeSuggestionLinks === 4,
+            `${route.path} should show four recovery links for empty homepage search`
+          );
           const homeEvents = [];
           await page.exposeFunction("captureHomeSearchEvent", (payload) => {
             homeEvents.push(payload);
@@ -374,7 +380,13 @@ async function run() {
         await page.waitForTimeout(450);
         const emptyVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
         const emptyHidden = await page.locator("[data-tool-empty]").getAttribute("hidden");
+        const emptySuggestionHidden = await page.locator("[data-tool-empty-suggestions]").getAttribute("hidden");
+        const emptySuggestionLinks = await page.locator("[data-tool-empty-suggestions] a").count();
         assert(emptyVisibleRows === 0 && emptyHidden === null, `${route.path} should show an empty catalog state`);
+        assert(
+          emptySuggestionHidden === null && emptySuggestionLinks === 4,
+          `${route.path} should show four recovery links for empty catalog search`
+        );
         const events = [];
         await page.exposeFunction("captureCatalogEvent", (payload) => {
           events.push(payload);

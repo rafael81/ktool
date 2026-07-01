@@ -22,6 +22,12 @@ const submissionPrep = {
   description:
     "사진 형식, 용량, 크기, PDF 묶기, 업무 문서 작성까지 제출 직전 흐름으로 필요한 도구를 고릅니다."
 };
+const emptySearchLinks = [
+  { label: "제출 준비", path: "/tools/submission-file-prep/" },
+  { label: "사진 용량 줄이기", path: "/tools/photo-size-reducer/" },
+  { label: "JPG PDF 변환", path: "/tools/jpg-to-pdf-converter/" },
+  { label: "문제 해결", path: "/problems/" }
+];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
 ---
 
@@ -197,6 +203,19 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
       <p class="catalog-empty" data-tool-empty hidden>
         조건에 맞는 도구가 없습니다.
       </p>
+      <div class="search-empty-actions" data-tool-empty-suggestions hidden>
+        {
+          emptySearchLinks.map((link) => (
+            <a
+              href={link.path}
+              data-analytics-event="catalog_search_empty_click"
+              data-analytics-label={link.label}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
     </section>
 
     <section class="content-section" data-prep-shortcuts>
@@ -299,6 +318,7 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
     const items = Array.from(root.querySelectorAll("[data-tool-search-item]"));
     const countNode = root.querySelector("[data-tool-result-count]");
     const emptyNode = root.querySelector("[data-tool-empty]");
+    const suggestionNode = root.querySelector("[data-tool-empty-suggestions]");
     let activeCategory = "all";
     let searchTimer = 0;
 
@@ -330,6 +350,7 @@ const categoryById = new Map(toolCategories.map((category) => [category.id, cate
 
       if (countNode) countNode.textContent = query ? `${visibleCount}개 결과` : `${visibleCount}개 도구`;
       if (emptyNode) emptyNode.hidden = visibleCount !== 0;
+      if (suggestionNode) suggestionNode.hidden = visibleCount !== 0;
       if (eventName) track(eventName, visibleCount);
     }
 

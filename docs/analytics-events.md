@@ -39,6 +39,7 @@ Problem-intent pages also include:
 | `home_search_change` | Home search input or category filter changes | `search_category`, `visible_count`, `search_query_length` |
 | `home_search_tool_click` | Home search tool result click | `tool_id`, `tool_title`, `label`, `href` |
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `home_search_empty_click` | Home empty-search recovery link click | `label`, `href` |
 | `home_catalog_all_click` | Home category section link to the full catalog | `label`, `href` |
 | `home_all_tool_click` | Home category tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
@@ -46,6 +47,7 @@ Problem-intent pages also include:
 | `catalog_category_click` | Tool catalog category link click | `label`, `href` |
 | `catalog_filter_change` | Tool catalog category filter changes | `catalog_category`, `visible_count`, `search_query_length` |
 | `catalog_search_change` | Tool catalog search input changes | `catalog_category`, `visible_count`, `search_query_length` |
+| `catalog_search_empty_click` | Tool catalog empty-search recovery link click | `label`, `href` |
 | `catalog_tool_click` | Tool catalog tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_problem_search_click` | Tool catalog search-only problem result click | `problem_id`, `target_problem_id`, `target_problem_title`, `target_tool_id`, `target_tool_title`, `label`, `href`, optional `target_preset` |
 | `problem_entry_click` | Tool catalog problem-intent row click | `label`, `href` |
