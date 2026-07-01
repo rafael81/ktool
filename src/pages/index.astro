@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { toolCategories, tools, type ToolCategoryId, type ToolId } from "@/data/tools";
 import { problemPages } from "@/data/problemPages";
-import { toolItemListSchema, websiteSchema } from "@/data/seo";
+import { toolItemListSchema, webPageSchema, websiteSchema } from "@/data/seo";
 import {
   Archive,
   Calculator,
@@ -17,7 +17,25 @@ import {
   type IconProps
 } from "@lucide/astro";
 
-const structuredData = [websiteSchema(), toolItemListSchema(tools)];
+const homeTitle = "K문서툴 - 무료 PDF 이미지 문서 도구";
+const homeDescription =
+  "설치 없이 쓰는 무료 PDF·이미지·업무 문서 도구입니다. JPG PDF, 사진 1MB 줄이기, HEIC JPG, 사업자 명판까지 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.";
+const structuredData = [
+  websiteSchema(),
+  webPageSchema({
+    name: "K문서툴",
+    description: homeDescription,
+    path: "/",
+    keywords: [
+      "무료 문서 도구",
+      "무료 PDF 도구",
+      "무료 이미지 변환",
+      "사업자 명판 만들기",
+      "파일 서버 전송 없음"
+    ]
+  }),
+  toolItemListSchema(tools)
+];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
 const toolCountLabel = `${tools.length}종`;
 const featuredToolIds: ToolId[] = [
@@ -62,6 +80,12 @@ const homeQuickStarts: {
     detail: "문서 작성",
     path: "/tools/transaction-statement-generator/?source=home-quick-start",
     toolId: "transaction-statement"
+  },
+  {
+    label: "명판 PNG",
+    detail: "도장 합성",
+    path: "/tools/business-nameplate-maker/?source=home-quick-start",
+    toolId: "business-nameplate"
   }
 ];
 const emptySearchLinks = [
@@ -106,8 +130,8 @@ function iconForTool(toolId: ToolId) {
 ---
 
 <BaseLayout
-  title="K문서툴 - 무료 업무 문서 도구"
-  description="설치 없이 쓰는 무료 문서 도구입니다. 사진 변환·편집, PDF, 개인정보 보호, 계산기까지 브라우저에서 바로 사용하고 파일은 서버로 전송되지 않습니다."
+  title={homeTitle}
+  description={homeDescription}
   structuredData={structuredData}
 >
   <main class="page-shell home-page" data-page-type="home">
@@ -170,7 +194,7 @@ function iconForTool(toolId: ToolId) {
             type="search"
             autocomplete="off"
             inputmode="search"
-            placeholder="PDF, HEIC, 1MB, 거래명세서"
+            placeholder="PDF, HEIC, 1MB, 명판"
             aria-label="도구와 문제 검색"
             data-home-search-input
           />

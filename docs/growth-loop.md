@@ -254,6 +254,7 @@ Completed:
 86. Tighten the high-intent `3.3% 계산기` page around the organic promise: free freelancer withholding calculation, first-screen no-install/private-input/result-copy badges, WebPage structured data, and copy fallback feedback.
 87. Tighten the high-intent `도장 배경 제거` page around the organic promise: free transparent PNG creation, first-screen no-install/no-server-transfer/PNG-save badges, and WebPage structured data.
 88. Retighten the indexed `사업자 명판 만들기 무료` page after the first Google impression: expose stamp composition, transparent PNG output, server-transfer reassurance, and matching WebPage keywords in the first-screen promise.
+89. Retighten the homepage after the first Google impression: focus the title/meta on free PDF/image/document tools, add homepage WebPage keywords, and put the indexed `명판 PNG` path into first-screen quick starts.
 
 Next after crawl data appears:
 

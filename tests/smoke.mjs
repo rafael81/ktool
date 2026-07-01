@@ -261,19 +261,42 @@ async function run() {
           assert(packageLinkCount >= 3, `${route.path} should expose workflow package links`);
         }
         if (route.path === "/") {
+          const homeTitle = await page.title();
+          const homeDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          assert(
+            homeTitle === "K문서툴 - 무료 PDF 이미지 문서 도구" &&
+              homeDescription?.includes("무료 PDF·이미지·업무 문서 도구") &&
+              homeDescription.includes("사업자 명판") &&
+              homeDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose a focused free PDF/image/document homepage promise`
+          );
           const homeJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
             nodes.map((node) => JSON.parse(node.textContent || "{}"))
           );
           const websiteSchema = homeJsonLdItems.find((item) => item["@type"] === "WebSite");
+          const homeWebPageSchema = homeJsonLdItems.find((item) => item["@type"] === "WebPage");
           const searchActionTarget = websiteSchema?.potentialAction?.target?.urlTemplate || "";
           assert(
             searchActionTarget === `${productionUrl}/?q={search_term_string}`,
             `${route.path} should expose a WebSite SearchAction for homepage search`
           );
+          assert(
+            homeWebPageSchema?.url === `${productionUrl}/` &&
+              homeWebPageSchema.keywords?.includes("무료 PDF 도구") &&
+              homeWebPageSchema.keywords.includes("무료 이미지 변환") &&
+              homeWebPageSchema.keywords.includes("사업자 명판 만들기") &&
+              homeWebPageSchema.keywords.includes("파일 서버 전송 없음"),
+            `${route.path} should expose a WebPage schema for homepage organic intent`
+          );
           const workbenchCount = await page.locator(".home-hero .workbench").count();
           assert(workbenchCount === 0, `${route.path} should not render the decorative workbench`);
           const homeSearchRootCount = await page.locator("[data-home-tool-search]").count();
           assert(homeSearchRootCount === 1, `${route.path} should render one homepage tool search`);
+          const homeSearchPlaceholder = await page.locator("[data-home-search-input]").getAttribute("placeholder");
+          assert(
+            homeSearchPlaceholder?.includes("명판"),
+            `${route.path} should hint the indexed nameplate path in homepage search`
+          );
           const allToolCount = await page.locator("[data-home-all-tool]").count();
           assert(allToolCount === 16, `${route.path} should render all tools as direct links`);
           const removedLongSections = await page.locator(".workflow-list, .featured-tool-row, .category-ledger").count();
@@ -283,7 +306,7 @@ async function run() {
             .count();
           assert(defaultHomeSearchRows === 0, `${route.path} should keep homepage search results collapsed by default`);
           const homeQuickStartCount = await page.locator("[data-home-quick-start]").count();
-          assert(homeQuickStartCount === 4, `${route.path} should expose four first-screen quick-start links`);
+          assert(homeQuickStartCount === 5, `${route.path} should expose five first-screen quick-start links`);
           const homeQuickStartHrefs = await page
             .locator("[data-home-quick-start]")
             .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
@@ -291,7 +314,8 @@ async function run() {
             "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
             "/tools/photo-size-reducer/?preset=1mb&source=home-quick-start",
             "/tools/heic-jpg-converter/?preset=jpg&source=home-quick-start",
-            "/tools/transaction-statement-generator/?source=home-quick-start"
+            "/tools/transaction-statement-generator/?source=home-quick-start",
+            "/tools/business-nameplate-maker/?source=home-quick-start"
           ].forEach((href) => {
             assert(homeQuickStartHrefs.includes(href), `${route.path} should include quick-start link ${href}`);
           });
@@ -299,7 +323,7 @@ async function run() {
             .locator('[data-home-quick-start][data-analytics-event="home_quick_start_click"][data-analytics-tool-id]')
             .count();
           assert(
-            homeQuickStartAnalyticsCount === 4,
+            homeQuickStartAnalyticsCount === 5,
             `${route.path} should tag every quick-start link for analytics`
           );
           await page.locator("[data-home-search-input]").fill("HEIC");
