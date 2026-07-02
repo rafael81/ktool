@@ -356,6 +356,39 @@ async function run() {
             homeQuickStartAnalyticsCount === 5,
             `${route.path} should tag every quick-start link for analytics`
           );
+          const homeProblemStartCount = await page.locator("[data-home-problem-start]").count();
+          assert(homeProblemStartCount === 4, `${route.path} should expose four first-screen problem links`);
+          const homeProblemStartHrefs = await page
+            .locator("[data-home-problem-start]")
+            .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+          [
+            "/problems/images-to-one-pdf/",
+            "/problems/photo-under-1mb/",
+            "/problems/heic-jpg-submit/",
+            "/problems/business-nameplate-stamp/"
+          ].forEach((href) => {
+            assert(homeProblemStartHrefs.includes(href), `${route.path} should include problem-start link ${href}`);
+          });
+          const homeProblemStartAnalyticsCount = await page
+            .locator(
+              '[data-home-problem-start][data-analytics-event="home_problem_start_click"][data-analytics-problem-id][data-analytics-target-problem-id][data-analytics-target-tool-id]'
+            )
+            .count();
+          assert(
+            homeProblemStartAnalyticsCount === 4,
+            `${route.path} should tag every problem-start link with problem and target tool metadata`
+          );
+          const homeProblemAllLink = await page.locator('[data-home-problem-starts] a[href="/problems/"][data-analytics-event="home_problem_all_click"]').count();
+          assert(homeProblemAllLink === 1, `${route.path} should link from first-screen problem starts to the problem hub`);
+          const homeProblemStartText = await page.locator("[data-home-problem-starts]").textContent();
+          assert(
+            homeProblemStartText?.includes("막혔나요?") &&
+              homeProblemStartText.includes("사진 PDF") &&
+              homeProblemStartText.includes("1MB 압축") &&
+              homeProblemStartText.includes("HEIC JPG") &&
+              homeProblemStartText.includes("명판 도장"),
+            `${route.path} should keep first-screen problem starts short and concrete`
+          );
           await page.locator("[data-home-search-input]").fill("HEIC");
           await page.waitForTimeout(450);
           const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();

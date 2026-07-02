@@ -59,6 +59,7 @@ The loop then retightened the `사진 크기 제한 맞추기` problem landing s
 The loop then retightened the `문서 사진 여백 자르기` problem landing so document-crop visitors see a direct crop CTA, photo margin removal and scan-crop keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `사진 방향 바로잡기` problem landing so sideways-scan visitors see a direct right-90-degree rotation CTA, scan/JPG rotation keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `제출용 파일 준비` hub again so those mature problem pages become the first-screen routing layer: users choose PDF bundling, 1MB compression, HEIC, format, pixel, crop, or rotation blockers before reading any longer workflow guidance.
+The loop then added compact homepage problem starts so users who do not know a tool name can enter through PDF bundling, 1MB compression, HEIC submission, or nameplate stamp blockers immediately below search, while keeping the homepage free of long explanatory sections.
 
 ## Decision
 

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { toolCategories, tools, type ToolCategoryId, type ToolId } from "@/data/tools";
-import { problemPages } from "@/data/problemPages";
+import { getProblemPage, problemPages, type ProblemPageId } from "@/data/problemPages";
 import { toolItemListSchema, webPageSchema, websiteSchema } from "@/data/seo";
 import {
   Archive,
@@ -88,6 +88,21 @@ const homeQuickStarts: {
     toolId: "business-nameplate"
   }
 ];
+const homeProblemStartIds = [
+  "images-to-one-pdf",
+  "photo-under-1mb",
+  "heic-jpg-submit",
+  "business-nameplate-stamp"
+] satisfies ProblemPageId[];
+const homeProblemStarts = homeProblemStartIds.map((id) => {
+  const problemPage = getProblemPage(id);
+  const targetTool = tools.find((tool) => tool.id === problemPage.targetToolId);
+  if (!targetTool) throw new Error(`Unknown problem target tool: ${problemPage.targetToolId}`);
+  return {
+    ...problemPage,
+    targetTool
+  };
+});
 const emptySearchLinks = [
   { label: "사진 용량 줄이기", path: "/tools/photo-size-reducer/" },
   { label: "JPG PDF 변환", path: "/tools/jpg-to-pdf-converter/" },
@@ -216,6 +231,41 @@ function iconForTool(toolId: ToolId) {
             <span data-home-search-count>인기 도구 {featuredTools.length}개</span>
           </div>
         </div>
+
+        <section class="home-problem-starts" data-home-problem-starts aria-label="자주 막히는 문제">
+          <div class="home-problem-starts-heading">
+            <span>막혔나요?</span>
+            <a
+              href="/problems/"
+              data-analytics-event="home_problem_all_click"
+              data-analytics-label="문제 전체"
+            >
+              전체
+            </a>
+          </div>
+          <div class="home-problem-start-grid">
+            {
+              homeProblemStarts.map((problemPage) => (
+                <a
+                  class="home-problem-start"
+                  href={problemPage.path}
+                  data-home-problem-start
+                  data-analytics-event="home_problem_start_click"
+                  data-analytics-problem-id={problemPage.id}
+                  data-analytics-target-problem-id={problemPage.id}
+                  data-analytics-target-problem-title={problemPage.title}
+                  data-analytics-target-tool-id={problemPage.targetTool.id}
+                  data-analytics-target-tool-title={problemPage.targetTool.title}
+                  data-analytics-target-preset={problemPage.targetPreset}
+                  data-analytics-label={problemPage.title}
+                >
+                  <strong>{problemPage.shortTitle}</strong>
+                  <span>{problemPage.targetLabel}</span>
+                </a>
+              ))
+            }
+          </div>
+        </section>
 
         <div class="home-quick-starts" aria-label="빠른 시작">
           {

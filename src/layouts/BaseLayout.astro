@@ -2513,6 +2513,79 @@ const analyticsPage = {
     white-space: nowrap;
   }
 
+  .home-problem-starts {
+    display: grid;
+    gap: 9px;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+
+  .home-problem-starts-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .home-problem-starts-heading span {
+    color: #344054;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .home-problem-starts-heading a {
+    color: #667085;
+    font-size: 12.5px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .home-problem-start-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .home-problem-start {
+    display: grid;
+    min-height: 68px;
+    align-content: center;
+    gap: 4px;
+    border: 1px solid #dbe7f3;
+    border-radius: 10px;
+    background: #f8fbfc;
+    color: var(--ink);
+    padding: 10px;
+  }
+
+  .home-problem-start:hover,
+  .home-problem-start:focus-visible {
+    border-color: var(--accent);
+    background: #fff;
+    outline: none;
+  }
+
+  .home-problem-start strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 850;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-problem-start span {
+    overflow: hidden;
+    color: #667085;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .home-page .hero-search-results {
     display: grid;
     max-height: none;
@@ -3211,6 +3284,10 @@ const analyticsPage = {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .home-problem-start-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .home-quick-start {
       min-height: 62px;
       padding: 10px 9px;
@@ -3519,6 +3596,10 @@ const analyticsPage = {
 
     .home-quick-starts {
       gap: 7px;
+    }
+
+    .home-problem-start-grid {
+      grid-template-columns: 1fr;
     }
 
     .catalog-quick-starts {

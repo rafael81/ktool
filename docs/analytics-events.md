@@ -41,6 +41,8 @@ Problem-intent pages also include:
 | `home_search_problem_click` | Home search problem-intent result click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
 | `home_search_empty_click` | Home empty-search recovery link click | `label`, `href` |
 | `home_quick_start_click` | Home first-screen quick-start link click | `tool_id`, `tool_title`, `label`, `href`, optional `target_preset` |
+| `home_problem_start_click` | Home first-screen problem card click | `problem_id`, `target_problem_id`, `target_problem_title`, `target_tool_id`, `target_tool_title`, optional `target_preset`, `label`, `href` |
+| `home_problem_all_click` | Home problem section link to all problem pages | `label`, `href` |
 | `home_catalog_all_click` | Home category section link to the full catalog | `label`, `href` |
 | `home_all_tool_click` | Home category tool row click | `tool_id`, `tool_title`, `label`, `href` |
 | `catalog_workflow_quick_link_click` | Tool catalog submission-prep quick-link click | `label`, `href` |
