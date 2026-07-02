@@ -1058,6 +1058,41 @@ async function run() {
             `${route.path} should make the first-screen document crop action and privacy promise explicit`
           );
         }
+        if (route.path === "/problems/sideways-scan/") {
+          const rotateTitle = await page.title();
+          const rotateDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            rotateTitle === "사진 방향 바로잡기 - K문서툴" &&
+              rotateDescription?.includes("사진이 옆으로") &&
+              rotateDescription.includes("스캔본 회전") &&
+              rotateDescription.includes("JPG 90도 회전") &&
+              rotateDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused sideways-scan title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("사진 방향 돌리기") &&
+              webPageSchema.keywords.includes("사진이 옆으로") &&
+              webPageSchema.keywords.includes("스캔본 회전") &&
+              webPageSchema.keywords.includes("JPG 90도 회전"),
+            `${route.path} should expose sideways-scan search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/image-rotator/") &&
+              primaryTargetUrl.searchParams.get("preset") === "right" &&
+              primaryText?.includes("오른쪽 90도 회전 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("오른쪽 90도") &&
+              actionText.includes("방향"),
+            `${route.path} should make the first-screen 90-degree rotation action and privacy promise explicit`
+          );
+        }
         if (route.path === "/problems/photo-under-1mb/") {
           const photoCompressTitle = await page.title();
           const photoCompressDescription = await page.locator('meta[name="description"]').getAttribute("content");
