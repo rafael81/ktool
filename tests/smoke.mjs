@@ -1283,6 +1283,49 @@ async function run() {
             prepQuickLinks[2]?.href === "/tools/heic-jpg-converter/",
           `${route.path} should start quick links with JPG PDF, photo compression, and HEIC conversion`
         );
+        const prepProblemLinks = await page.locator('[data-prep-problems] a[data-analytics-event="prep_problem_click"]').evaluateAll((links) =>
+          links.map((link) => ({
+            href: link.getAttribute("href"),
+            problemId: link.getAttribute("data-analytics-problem-id"),
+            targetProblemId: link.getAttribute("data-analytics-target-problem-id"),
+            targetToolId: link.getAttribute("data-analytics-target-tool-id"),
+            text: link.textContent?.replace(/\s+/g, " ").trim()
+          }))
+        );
+        const expectedPrepProblems = [
+          { href: "/problems/images-to-one-pdf/", id: "images-to-one-pdf", toolId: "jpg-to-pdf" },
+          { href: "/problems/photo-under-1mb/", id: "photo-under-1mb", toolId: "image-compressor" },
+          { href: "/problems/heic-jpg-submit/", id: "heic-jpg-submit", toolId: "heic-to-jpg" },
+          { href: "/problems/file-format-error/", id: "file-format-error", toolId: "image-converter" },
+          { href: "/problems/image-pixel-limit/", id: "image-pixel-limit", toolId: "image-resizer" },
+          { href: "/problems/document-photo-crop/", id: "document-photo-crop", toolId: "image-cropper" },
+          { href: "/problems/sideways-scan/", id: "sideways-scan", toolId: "image-rotator" }
+        ];
+        assert(
+          prepProblemLinks.length === expectedPrepProblems.length &&
+            expectedPrepProblems.every((expected, index) => {
+              const actual = prepProblemLinks[index];
+              return (
+                actual?.href === expected.href &&
+                actual.problemId === expected.id &&
+                actual.targetProblemId === expected.id &&
+                actual.targetToolId === expected.toolId
+              );
+            }),
+          `${route.path} should show first-screen problem routing cards with stable analytics metadata`
+        );
+        const prepProblemText = await page.locator("[data-prep-problems]").textContent();
+        assert(
+          prepProblemText?.includes("문제를 누르면 바로 시작합니다") &&
+            prepProblemText.includes("무료") &&
+            prepProblemText.includes("설치 없음") &&
+            prepProblemText.includes("서버 전송 없음") &&
+            prepProblemText.includes("사진 여러 장 PDF로 묶기") &&
+            prepProblemText.includes("사진 1MB 이하로 줄이기") &&
+            prepProblemText.includes("HEIC JPG 제출 준비") &&
+            prepProblemText.includes("문서 사진 여백 자르기"),
+          `${route.path} should keep the first problem-routing section short and submission-focused`
+        );
         const prepJsonLdItems = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
           nodes.map((node) => JSON.parse(node.textContent || "{}"))
         );
@@ -1291,6 +1334,10 @@ async function run() {
           prepCollectionSchema?.keywords?.includes("사진 PDF 변환") &&
             prepCollectionSchema.keywords.includes("스캔본 PDF 만들기") &&
             prepCollectionSchema.keywords.includes("사진 1MB 이하로 줄이기") &&
+            prepCollectionSchema.keywords.includes("파일 형식 오류") &&
+            prepCollectionSchema.keywords.includes("사진 크기 제한") &&
+            prepCollectionSchema.keywords.includes("문서 사진 여백") &&
+            prepCollectionSchema.keywords.includes("사진 방향 바로잡기") &&
             prepCollectionSchema.mainEntity?.itemListElement?.[0]?.url ===
               `${productionUrl}/tools/jpg-to-pdf-converter/`,
           `${route.path} should expose submission-prep CollectionPage keywords and start the ItemList with JPG PDF`

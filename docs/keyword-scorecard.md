@@ -58,6 +58,7 @@ The loop then retightened the `파일 형식 오류 해결` problem landing so u
 The loop then retightened the `사진 크기 제한 맞추기` problem landing so pixel-limit visitors see a direct 1200px resize CTA, image pixel reduction keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `문서 사진 여백 자르기` problem landing so document-crop visitors see a direct crop CTA, photo margin removal and scan-crop keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `사진 방향 바로잡기` problem landing so sideways-scan visitors see a direct right-90-degree rotation CTA, scan/JPG rotation keywords, and the free/no-install/no-server-transfer promise before the handling steps.
+The loop then retightened the `제출용 파일 준비` hub again so those mature problem pages become the first-screen routing layer: users choose PDF bundling, 1MB compression, HEIC, format, pixel, crop, or rotation blockers before reading any longer workflow guidance.
 
 ## Decision
 

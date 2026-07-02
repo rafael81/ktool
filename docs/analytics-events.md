@@ -74,6 +74,7 @@ Problem-intent pages also include:
 | `package_tool_click` | Workflow package step or tool card click | `tool_id`, `tool_title`, `label`, `href`, `package_id` |
 | `tool_quick_link_click` | Tool quick-link click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_quick_tool_click` | Submission-prep page quick tool link click | `tool_id`, `tool_title`, `label`, `href` |
+| `prep_problem_click` | Submission-prep problem card click | `problem_id`, `target_problem_id`, `target_problem_title`, `target_tool_id`, `target_tool_title`, optional `target_preset`, `label`, `href` |
 | `prep_pdf_path_click` | Submission-prep highlighted PDF workflow step or CTA click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_pdf_decision_click` | Submission-prep PDF workflow decision hint click | `tool_id`, `tool_title`, `label`, `href` |
 | `prep_format_path_click` | Submission-prep format-error workflow step click | `tool_id`, `tool_title`, `label`, `href` |

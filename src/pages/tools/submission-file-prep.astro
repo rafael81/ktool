@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getTool } from "@/data/tools";
+import { getProblemPage, type ProblemPageId } from "@/data/problemPages";
 import { collectionPageSchema, faqPageSchema } from "@/data/seo";
 
 const pagePath = "/tools/submission-file-prep/";
@@ -29,6 +30,24 @@ const documentTools = [
 ];
 
 const stampTools = [getTool("stamp-background"), getTool("business-nameplate")];
+
+const problemRouteIds = [
+  "images-to-one-pdf",
+  "photo-under-1mb",
+  "heic-jpg-submit",
+  "file-format-error",
+  "image-pixel-limit",
+  "document-photo-crop",
+  "sideways-scan"
+] satisfies ProblemPageId[];
+
+const problemRoutes = problemRouteIds.map((id) => {
+  const problemPage = getProblemPage(id);
+  return {
+    ...problemPage,
+    targetTool: getTool(problemPage.targetToolId)
+  };
+});
 
 const flowGroups = [
   {
@@ -299,7 +318,17 @@ const structuredData = [
     description: pageDescription,
     path: pagePath,
     tools: [...primaryTools, ...documentTools, ...stampTools],
-    keywords: ["사진 PDF 변환", "스캔본 PDF 만들기", "사진 1MB 이하로 줄이기", "HEIC JPG 변환", "제출용 파일 준비"]
+    keywords: [
+      "사진 PDF 변환",
+      "스캔본 PDF 만들기",
+      "사진 1MB 이하로 줄이기",
+      "HEIC JPG 변환",
+      "파일 형식 오류",
+      "사진 크기 제한",
+      "문서 사진 여백",
+      "사진 방향 바로잡기",
+      "제출용 파일 준비"
+    ]
   }),
   faqPageSchema(faqs)
 ];
@@ -316,8 +345,8 @@ const structuredData = [
       <div>
         <h1>제출용 파일 준비</h1>
         <p>
-          관공서, 학교, 회사, 거래처에 사진이나 스캔본을 올리기 직전 필요한 PDF 묶기,
-          1MB 용량 줄이기, HEIC JPG 변환, 이미지 회전, 자르기, 업무 문서 작성을 한 흐름으로 고릅니다.
+          사진 PDF, 1MB 압축, HEIC JPG 변환처럼 제출 직전 막힌 문제를 바로 처리합니다.
+          파일은 브라우저 안에서만 처리합니다.
         </p>
       </div>
       <div class="quick-links" aria-label="제출용 파일 준비 바로가기">
@@ -330,6 +359,34 @@ const structuredData = [
             data-analytics-label={tool.shortTitle}
           >
             {tool.shortTitle}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="problem-route-panel" data-prep-problems aria-label="제출 문제별 바로가기">
+      <div class="problem-route-heading">
+        <span>지금 막힌 문제</span>
+        <h2>문제를 누르면 바로 시작합니다</h2>
+        <p>무료 · 설치 없음 · 서버 전송 없음</p>
+      </div>
+      <div class="problem-route-grid">
+        {problemRoutes.map((problemPage) => (
+          <a
+            class="problem-route-card"
+            href={problemPage.path}
+            data-analytics-event="prep_problem_click"
+            data-analytics-problem-id={problemPage.id}
+            data-analytics-target-problem-id={problemPage.id}
+            data-analytics-target-problem-title={problemPage.title}
+            data-analytics-target-tool-id={problemPage.targetTool.id}
+            data-analytics-target-tool-title={problemPage.targetTool.title}
+            data-analytics-target-preset={problemPage.targetPreset}
+            data-analytics-label={problemPage.title}
+          >
+            <span>{problemPage.shortTitle}</span>
+            <strong>{problemPage.title}</strong>
+            <small>{problemPage.targetLabel}</small>
           </a>
         ))}
       </div>
@@ -551,6 +608,92 @@ const structuredData = [
 </BaseLayout>
 
 <style>
+  .problem-route-panel {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.6fr);
+    gap: 14px;
+    align-items: stretch;
+    border: 2px solid var(--line-dark);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    margin: 0 0 18px;
+    padding: 18px;
+  }
+
+  .problem-route-heading {
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .problem-route-heading span {
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .problem-route-heading h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .problem-route-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .problem-route-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .problem-route-card {
+    display: grid;
+    min-height: 112px;
+    align-content: space-between;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper);
+    padding: 12px;
+  }
+
+  .problem-route-card span {
+    width: max-content;
+    max-width: 100%;
+    border-radius: 4px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.3;
+    padding: 4px 6px;
+  }
+
+  .problem-route-card strong {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.35;
+    word-break: keep-all;
+  }
+
+  .problem-route-card small {
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
   .pdf-path {
     display: grid;
     grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.5fr) auto;
@@ -950,6 +1093,7 @@ const structuredData = [
   }
 
   @media (max-width: 1040px) {
+    .problem-route-panel,
     .pdf-path,
     .format-path,
     .compression-path {
@@ -970,18 +1114,24 @@ const structuredData = [
       grid-template-columns: 1fr;
     }
 
+    .problem-route-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .compact-tool-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 760px) {
+    .problem-route-panel,
     .pdf-path,
     .format-path,
     .compression-path {
       padding: 16px;
     }
 
+    .problem-route-grid,
     .pdf-path-steps,
     .format-path-steps,
     .compression-path-steps {
