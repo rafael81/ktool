@@ -988,6 +988,41 @@ async function run() {
             `${route.path} should make the first-screen HEIC JPG action and privacy promise explicit`
           );
         }
+        if (route.path === "/problems/image-pixel-limit/") {
+          const pixelTitle = await page.title();
+          const pixelDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            pixelTitle === "사진 크기 제한 맞추기 - K문서툴" &&
+              pixelDescription?.includes("사진 크기 제한") &&
+              pixelDescription.includes("이미지 픽셀 줄이기") &&
+              pixelDescription.includes("1200px 리사이즈") &&
+              pixelDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused pixel-limit title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("사진 크기 제한") &&
+              webPageSchema.keywords.includes("이미지 픽셀 줄이기") &&
+              webPageSchema.keywords.includes("1200px 리사이즈") &&
+              webPageSchema.keywords.includes("픽셀 제한"),
+            `${route.path} should expose pixel-limit search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/image-resizer/") &&
+              primaryTargetUrl.searchParams.get("preset") === "long-1200" &&
+              primaryText?.includes("1200px 리사이즈 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("1200px") &&
+              actionText.includes("제출"),
+            `${route.path} should make the first-screen 1200px resize action and privacy promise explicit`
+          );
+        }
         if (route.path === "/problems/photo-under-1mb/") {
           const photoCompressTitle = await page.title();
           const photoCompressDescription = await page.locator('meta[name="description"]').getAttribute("content");

@@ -55,6 +55,7 @@ The loop then retightened the `사진 여러 장 PDF로 묶기` problem landing 
 The loop then retightened the `사진 1MB 이하로 줄이기` problem landing so upload-size-limit visitors see a direct 1MB compression CTA, 500KB/JPG compression keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `HEIC JPG 제출 준비` problem landing so iPhone upload-compatibility visitors see a direct JPG conversion CTA, HEIC/JPG submission keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 The loop then retightened the `파일 형식 오류 해결` problem landing so unsupported-upload-format visitors see a direct JPG conversion CTA, PNG/WebP JPG conversion keywords, and the free/no-install/no-server-transfer promise before the handling steps.
+The loop then retightened the `사진 크기 제한 맞추기` problem landing so pixel-limit visitors see a direct 1200px resize CTA, image pixel reduction keywords, and the free/no-install/no-server-transfer promise before the handling steps.
 
 ## Decision
 
