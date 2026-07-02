@@ -1023,6 +1023,41 @@ async function run() {
             `${route.path} should make the first-screen 1200px resize action and privacy promise explicit`
           );
         }
+        if (route.path === "/problems/document-photo-crop/") {
+          const cropTitle = await page.title();
+          const cropDescription = await page.locator('meta[name="description"]').getAttribute("content");
+          const primaryText = await primaryLink.textContent();
+          const promiseText = await page.locator("[data-problem-promise-list]").textContent();
+          const promiseCount = await page.locator("[data-problem-promise]").count();
+          const actionText = await page.locator("[data-problem-action]").textContent();
+          assert(
+            cropTitle === "문서 사진 여백 자르기 - K문서툴" &&
+              cropDescription?.includes("문서 사진 자르기") &&
+              cropDescription.includes("사진 여백 제거") &&
+              cropDescription.includes("스캔본 크롭") &&
+              cropDescription.includes("서버로 전송되지 않습니다"),
+            `${route.path} should expose focused document-crop title and meta description`
+          );
+          assert(
+            webPageSchema.keywords.includes("문서 사진 자르기") &&
+              webPageSchema.keywords.includes("사진 여백 제거") &&
+              webPageSchema.keywords.includes("스캔본 크롭") &&
+              webPageSchema.keywords.includes("문서 여백 제거"),
+            `${route.path} should expose document-crop search terms in WebPage keywords`
+          );
+          assert(
+            primaryHref?.startsWith("/tools/image-cropper/") &&
+              primaryTargetUrl.searchParams.get("preset") === "document" &&
+              primaryText?.includes("문서 영역 자르기 시작") &&
+              promiseCount === 3 &&
+              promiseText?.includes("무료") &&
+              promiseText.includes("설치 없음") &&
+              promiseText.includes("서버 전송 없음") &&
+              actionText?.includes("문서 영역") &&
+              actionText.includes("여백"),
+            `${route.path} should make the first-screen document crop action and privacy promise explicit`
+          );
+        }
         if (route.path === "/problems/photo-under-1mb/") {
           const photoCompressTitle = await page.title();
           const photoCompressDescription = await page.locator('meta[name="description"]').getAttribute("content");

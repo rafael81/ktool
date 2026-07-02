@@ -270,6 +270,7 @@ Completed:
 102. Retighten the `HEIC JPG 제출 준비` problem landing around iPhone upload-compatibility intent: title/meta/schema keywords for HEIC JPG conversion, iPhone photo JPG conversion, and HEIC submission errors, first-screen JPG conversion CTA, and visible free/no-install/no-server-transfer badges.
 103. Retighten the `파일 형식 오류 해결` problem landing around unsupported upload-format intent: title/meta/schema keywords for unsupported file formats, PNG JPG conversion, and WebP JPG conversion, first-screen JPG conversion CTA, and visible free/no-install/no-server-transfer badges.
 104. Retighten the `사진 크기 제한 맞추기` problem landing around pixel-limit intent: title/meta/schema keywords for photo size limits, image pixel reduction, and 1200px resizing, first-screen resize CTA, and visible free/no-install/no-server-transfer badges.
+105. Retighten the `문서 사진 여백 자르기` problem landing around document-crop intent: title/meta/schema keywords for document photo cropping, photo margin removal, and scan cropping, first-screen document crop CTA, and visible free/no-install/no-server-transfer badges.
 
 Next after crawl data appears:
 
