@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const title = "개인정보 처리 - K문서툴";
+const description = "K문서툴의 브라우저 파일 처리와 최소 사용 통계 수집 범위를 안내합니다.";
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/privacy/">
+  <main class="privacy-page">
+    <h1>개인정보 처리</h1>
+
+    <section class="privacy-section">
+      <h2>파일과 입력 내용</h2>
+      <p>
+        선택한 파일과 문서에 입력한 내용은 브라우저 안에서만 처리합니다. K문서툴 서버로 보내거나
+        저장하지 않습니다.
+      </p>
+    </section>
+
+    <section class="privacy-section">
+      <h2>사용 통계</h2>
+      <p>도구가 실제로 도움이 되는지 확인하기 위해 아래의 최소 정보만 일정 기간 저장합니다.</p>
+      <ul>
+        <li>도구 방문, 시작, 다운로드·복사·인쇄 시작 여부</li>
+        <li>검색 서비스 등 유입 경로의 분류</li>
+        <li>도구 ID, 페이지 경로, 빌드 버전</li>
+        <li>브라우저 탭에서만 유지되는 임시 세션 식별자와 세션 시작 시각</li>
+        <li>이벤트 발생 시각과 세션 저장 방식(sessionStorage 또는 메모리)</li>
+      </ul>
+      <p>파일명, 파일 내용, 문서 입력값, 원문 검색어는 수집하지 않습니다.</p>
+      <p>
+        통계는 분석에 필요한 기간만 보관하며 현재 운영 기준은 90일입니다. 새 이벤트 수집 또는 운영
+        점검 시 기준을 지난 기록을 정리합니다.
+      </p>
+    </section>
+
+    <section class="privacy-section">
+      <h2>수집 거부</h2>
+      <p>
+        브라우저에서 Global Privacy Control(GPC) 또는 Do Not Track(DNT)을 켜면 사용 통계를 전송하지
+        않습니다.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

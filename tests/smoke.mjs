@@ -9,6 +9,7 @@ const productionUrl = "https://k-document-tool.pages.dev";
 
 const routes = [
   { path: "/", h1: "K문서툴" },
+  { path: "/privacy/", h1: "개인정보 처리" },
   { path: "/tools/", h1: "전체 도구" },
   { path: "/tools/submission-file-prep/", h1: "제출용 파일 준비", faq: true, submissionPrep: true },
   {
@@ -106,6 +107,24 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+const priorityFunnelTools = {
+  "/tools/business-nameplate-maker/": { toolId: "business-nameplate", resultType: "download" },
+  "/tools/stamp-background-remover/": { toolId: "stamp-background", resultType: "download" },
+  "/tools/amount-korean-converter/": { toolId: "amount-korean", resultType: "copy" },
+  "/tools/vat-calculator/": { toolId: "vat-calculator", resultType: "copy" },
+  "/tools/image-converter/": { toolId: "image-converter", resultType: "download" }
+};
+
+async function waitForFunnelRequest(requests, predicate, timeout = 5_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const match = requests.find(predicate);
+    if (match) return match;
+    await delay(25);
+  }
+  return null;
+}
+
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -146,6 +165,21 @@ async function run() {
 
     for (const route of routes) {
       const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      const funnelRequests = [];
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: { writeText: async () => {} }
+        });
+      });
+      await page.route("**/api/funnel-event", async (intercepted) => {
+        try {
+          funnelRequests.push(intercepted.request().postDataJSON());
+        } catch {
+          funnelRequests.push({ invalid_json: true });
+        }
+        await intercepted.fulfill({ status: 204 });
+      });
       const response = await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
       assert(response?.ok(), `${route.path} did not load successfully`);
 
@@ -276,6 +310,8 @@ async function run() {
 
       const headerSearchCount = await page.locator(".site-search-link").count();
       assert(headerSearchCount === 1, `${route.path} should expose one compact header search entry`);
+      const privacyLinkCount = await page.locator('.site-footer a[href="/privacy/"]').count();
+      assert(privacyLinkCount === 1, `${route.path} should expose one compact privacy link`);
       const visibleNavTargets = await page.locator("header nav a").evaluateAll((links) =>
         links
           .map((link) => ({
@@ -1619,6 +1655,9 @@ async function run() {
             vatWebPageSchema.keywords.includes("합계금액 공급가액 역산"),
           `${route.path} should expose a WebPage schema for 부가세 search intent`
         );
+        await page.locator("[data-vat-amount]").fill("123456");
+        await page.locator("[data-copy-result]").click();
+        await page.waitForFunction(() => window.dataLayer?.some((event) => event.event === "calculator_copy"));
       }
 
       if (route.path === "/tools/amount-korean-converter/") {
@@ -1647,6 +1686,9 @@ async function run() {
             amountWebPageSchema.keywords.includes("한글 금액 표기 복사"),
           `${route.path} should expose a WebPage schema for 금액 한글 search intent`
         );
+        await page.locator("[data-amount-input]").fill("1234567");
+        await page.locator("[data-copy-result]").click();
+        await page.waitForFunction(() => window.dataLayer?.some((event) => event.event === "amount_converter_copy"));
       }
 
       if (route.path === "/tools/freelance-withholding-calculator/") {
@@ -1719,6 +1761,10 @@ async function run() {
           return false;
         });
         assert(hasTransparentPixels, `${route.path} should create transparent PNG pixels from the sample image`);
+        await page.locator("[data-download]").click();
+        await page.waitForFunction(() =>
+          window.dataLayer?.some((event) => event.event === "stamp_background_download")
+        );
       }
 
       if (route.pdfImageTool) {
@@ -3317,6 +3363,10 @@ async function run() {
             firstResult.magic.join(",") === "255,216,255",
           `${route.path} should convert the WebP sample to a JPG blob`
         );
+        await page.locator("[data-download-image]").first().click();
+        await page.waitForFunction(() =>
+          window.dataLayer?.some((event) => event.event === "image_convert_download")
+        );
         const nextPdfText = await page.locator("[data-next-pdf]").textContent();
         const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
         assert(
@@ -3680,6 +3730,41 @@ async function run() {
         );
       }
 
+      const funnelExpectation = priorityFunnelTools[route.path];
+      if (funnelExpectation) {
+        const usefulResult = await waitForFunnelRequest(
+          funnelRequests,
+          (event) =>
+            event.tool_id === funnelExpectation.toolId &&
+            event.event_name === "useful_result" &&
+            event.result_type === funnelExpectation.resultType
+        );
+        assert(usefulResult, `${route.path} should deliver its normalized useful-result milestone`);
+        const toolEvents = funnelRequests.filter((event) => event.tool_id === funnelExpectation.toolId);
+        assert(
+          toolEvents.some((event) => event.event_name === "tool_view") &&
+            toolEvents.some((event) => event.event_name === "tool_start"),
+          `${route.path} should deliver view and start milestones before its useful result`
+        );
+        const allowedKeys = new Set([
+          "event_id",
+          "session_id",
+          "event_name",
+          "result_type",
+          "tool_id",
+          "page_path",
+          "source",
+          "storage_mode",
+          "session_age_ms",
+          "build_id",
+          "synthetic"
+        ]);
+        assert(
+          toolEvents.every((event) => Object.keys(event).every((key) => allowedKeys.has(key))),
+          `${route.path} funnel payload should contain only the minimal contract fields`
+        );
+      }
+
       await page.close();
     }
 
@@ -3688,10 +3773,114 @@ async function run() {
     await assertSearchShortcut(browser);
     await assertAnalyticsSanitizer(browser);
     await assertAnalyticsPrivacy(browser);
+    await assertAnalyticsOptOut(browser);
+    await assertFunnelSessionRotation(browser);
     await assertFileAnalyticsPrivacy(browser);
   } finally {
     await browser?.close();
     server.kill("SIGTERM");
+  }
+}
+
+async function proxyPreviewForOrigin(page, origin, funnelRequests) {
+  await page.route(`${origin}/**`, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (url.pathname === "/api/funnel-event") {
+      funnelRequests.push(request.postDataJSON());
+      await route.fulfill({ status: 204 });
+      return;
+    }
+
+    const response = await fetch(`${baseUrl}${url.pathname}${url.search}`);
+    await route.fulfill({
+      status: response.status,
+      headers: Object.fromEntries(response.headers),
+      body: Buffer.from(await response.arrayBuffer())
+    });
+  });
+}
+
+async function assertAnalyticsOptOut(browser) {
+  for (const signal of ["gpc", "dnt"]) {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const origin = `http://${signal}.privacy.test:${port}`;
+    const funnelRequests = [];
+    const beaconRequests = [];
+    try {
+      await page.addInitScript((activeSignal) => {
+        if (activeSignal === "gpc") {
+          Object.defineProperty(navigator, "globalPrivacyControl", {
+            configurable: true,
+            value: true
+          });
+        } else {
+          Object.defineProperty(navigator, "doNotTrack", { configurable: true, value: "1" });
+          Object.defineProperty(window, "doNotTrack", { configurable: true, value: "1" });
+        }
+      }, signal);
+      await proxyPreviewForOrigin(page, origin, funnelRequests);
+      await page.route("https://static.cloudflareinsights.com/**", async (route) => {
+        beaconRequests.push(route.request().url());
+        await route.abort();
+      });
+
+      await page.goto(`${origin}/tools/vat-calculator/`, { waitUntil: "networkidle" });
+      await page.locator("[data-vat-amount]").fill("220000");
+      await delay(100);
+
+      assert(funnelRequests.length === 0, `${signal.toUpperCase()} should block first-party funnel requests`);
+      assert(beaconRequests.length === 0, `${signal.toUpperCase()} should block Cloudflare Web Analytics requests`);
+      assert(
+        (await page.locator('script[src*="cloudflareinsights.com"]').count()) === 0,
+        `${signal.toUpperCase()} should not insert the Cloudflare beacon script`
+      );
+    } finally {
+      await page.close();
+    }
+  }
+}
+
+async function assertFunnelSessionRotation(browser) {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const funnelRequests = [];
+  try {
+    await page.route("**/api/funnel-event", async (route) => {
+      funnelRequests.push(route.request().postDataJSON());
+      await route.fulfill({ status: 204 });
+    });
+    await page.goto(`${baseUrl}/tools/vat-calculator/`, { waitUntil: "networkidle" });
+    await page.locator("[data-vat-amount]").fill("110000");
+    const firstStart = await waitForFunnelRequest(
+      funnelRequests,
+      (event) => event.tool_id === "vat-calculator" && event.event_name === "tool_start"
+    );
+    assert(firstStart, "initial calculator interaction should start the first funnel session");
+
+    await page.evaluate(() => {
+      const rotatedNow = Date.now() + 31 * 60 * 1_000;
+      Date.now = () => rotatedNow;
+    });
+    await page.locator("[data-vat-amount]").fill("220000");
+    const rotatedStart = await waitForFunnelRequest(
+      funnelRequests,
+      (event) =>
+        event.tool_id === "vat-calculator" &&
+        event.event_name === "tool_start" &&
+        event.session_id !== firstStart.session_id
+    );
+    assert(rotatedStart, "interaction after idle expiry should start a new funnel session");
+    assert(
+      funnelRequests.some(
+        (event) =>
+          event.tool_id === "vat-calculator" &&
+          event.event_name === "tool_view" &&
+          event.session_id === rotatedStart.session_id
+      ),
+      "a rotated session should replay tool_view before tool_start"
+    );
+  } finally {
+    await page.close();
   }
 }
 
@@ -3709,6 +3898,7 @@ async function assertSitemapMetadata() {
   const xml = await response.text();
   for (const path of [
     "/",
+    "/privacy/",
     "/tools/",
     "/problems/",
     "/problems/file-format-error/",

@@ -324,11 +324,36 @@ validation_error
 
 File tool payloads may include only aggregate file counts, total bytes, MIME buckets, output settings, and output sizes. They must not include filenames, image bytes, OCR text, document content, addresses, or business identifiers.
 
-## Provider hook example
+## First-party funnel
 
-```js
-window.addEventListener("kdoc:analytics", (event) => {
-  // Example: send event.detail to GA4, Plausible, or a first-party endpoint.
-  console.log(event.detail);
-});
+`/scripts/funnel-analytics.js` listens to `kdoc:analytics` and persists only three normalized stages:
+
+```text
+page_view on a registered tool -> tool_view
+tool_start                    -> tool_start
+explicit download/copy/print -> useful_result
 ```
+
+The explicit result allowlist lives in `shared/funnel-contract.mjs`. The delivery payload contains only UUIDs,
+the registered tool ID and path, a categorized source, storage mode, session age, and build ID. Titles, raw
+referrers, search terms, filenames, file metadata, and form values are not sent.
+
+Sessions use `sessionStorage`, expire after 30 minutes of inactivity or four hours, and fall back to page memory
+when storage is unavailable. GPC and DNT disable network delivery.
+
+The endpoint is anonymous: same-origin header checks are source validation, not authentication. A shared D1
+budget accepts at most 600 valid events per hour, and operators must compare unexpected funnel volume with
+Cloudflare Web Analytics.
+
+Run the operator-only report with:
+
+```bash
+npm run analytics:funnel -- --days 7
+npm run analytics:migrate:local
+npm run analytics:migrate:preview
+npm run analytics:migrate:production
+```
+
+Use `--local` for the local D1 state and `--preview` for the preview D1 database. `--all-sources
+--include-synthetic` is reserved for deployment
+validation; the default report contains non-synthetic Naver, Google, and other search sessions only.

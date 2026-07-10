@@ -3,6 +3,13 @@ import { toolCategories, tools, type ToolCategoryId } from "@/data/tools";
 import { workflowPackages, type WorkflowPackageId } from "@/data/workflowPackages";
 import { problemPages } from "@/data/problemPages";
 import { Search } from "@lucide/astro";
+import { execFileSync } from "node:child_process";
+import {
+  RESULT_EVENT_TYPES,
+  SESSION_IDLE_MS,
+  SESSION_MAX_MS,
+  TOOL_PATH_BY_ID
+} from "../../shared/funnel-contract.mjs";
 
 type Props = {
   title: string;
@@ -59,6 +66,7 @@ function absoluteSiteUrl(path: string) {
 }
 const breadcrumbEntries = [
   { name: "K문서툴", path: "/" },
+  ...(normalizedCanonicalPath === "/privacy/" ? [{ name: "개인정보 처리", path: "/privacy/" }] : []),
   ...(normalizedCanonicalPath === "/tools/" ? [{ name: "전체 도구", path: "/tools/" }] : []),
   ...(isProblemHub ? [{ name: "문제별 해결", path: "/problems/" }] : []),
   ...(normalizedCanonicalPath.startsWith("/tools/") &&
@@ -118,11 +126,29 @@ const jsonLdItems = [...structuredDataItems, ...(breadcrumbSchema ? [breadcrumbS
 const analyticsPage = {
   path: normalizedCanonicalPath,
   title,
+  sessionIdleMs: SESSION_IDLE_MS,
   problems: problemPages.map((problemPage) => ({
     id: problemPage.id,
     title: problemPage.title,
     path: problemPage.path
   }))
+};
+function resolveBuildId() {
+  const environmentId = import.meta.env.PUBLIC_BUILD_ID || process.env.CF_PAGES_COMMIT_SHA;
+  if (environmentId && /^[0-9a-f]{7,40}$/i.test(environmentId)) return environmentId.slice(0, 12);
+  try {
+    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { encoding: "utf8" }).trim();
+  } catch {
+    return "local";
+  }
+}
+const funnelConfig = {
+  endpoint: "/api/funnel-event",
+  buildId: resolveBuildId(),
+  toolPaths: TOOL_PATH_BY_ID,
+  resultEvents: RESULT_EVENT_TYPES,
+  sessionIdleMs: SESSION_IDLE_MS,
+  sessionMaxMs: SESSION_MAX_MS
 };
 ---
 
@@ -144,6 +170,11 @@ const analyticsPage = {
       (() => {
         const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
         if (localHosts.has(window.location.hostname)) return;
+        if (
+          navigator.globalPrivacyControl === true ||
+          navigator.doNotTrack === "1" ||
+          window.doNotTrack === "1"
+        ) return;
         const beacon = document.createElement("script");
         beacon.defer = true;
         beacon.src = "https://static.cloudflareinsights.com/beacon.min.js";
@@ -151,6 +182,10 @@ const analyticsPage = {
         document.head.appendChild(beacon);
       })();
     </script>
+    <script is:inline define:vars={{ funnelConfig }}>
+      window.__KDOC_FUNNEL_CONFIG__ = funnelConfig;
+    </script>
+    <script is:inline src="/scripts/funnel-analytics.js"></script>
     {
       jsonLdItems.map((jsonLd) => (
         <script is:inline type="application/ld+json" set:html={jsonLd}></script>
@@ -354,15 +389,17 @@ const analyticsPage = {
             showProblemArrivalBanner(problem);
           }
 
-          const startedTools = new Set();
+          const startedTools = new Map();
           const markToolStart = (event) => {
             const target = event.target;
             if (!(target instanceof Element)) return;
             const root = target.closest("[data-tool-id]");
             if (!root) return;
             const toolId = root.dataset.toolId;
-            if (!toolId || startedTools.has(toolId)) return;
-            startedTools.add(toolId);
+            const now = Date.now();
+            const lastStartedAt = startedTools.get(toolId);
+            if (!toolId || (lastStartedAt && now - lastStartedAt < page.sessionIdleMs)) return;
+            startedTools.set(toolId, now);
             window.kdocTrack("tool_start", toolContext(root));
           };
 
@@ -541,6 +578,12 @@ const analyticsPage = {
       )
     }
     <slot />
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <span>파일과 입력 내용은 브라우저 안에서 처리합니다.</span>
+        <a href="/privacy/">개인정보 처리</a>
+      </div>
+    </footer>
   </body>
 </html>
 
@@ -5029,6 +5072,7 @@ const analyticsPage = {
 
   @media print {
     .site-header,
+    .site-footer,
     .tool-intro,
     .panel,
     .side-panel,
@@ -5057,6 +5101,86 @@ const analyticsPage = {
       min-height: auto;
       border: 0;
       box-shadow: none;
+    }
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .site-footer-inner {
+    display: flex;
+    width: min(1180px, calc(100% - 40px));
+    min-height: 64px;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .site-footer a {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .privacy-page {
+    width: min(760px, calc(100% - 40px));
+    min-height: calc(100vh - 130px);
+    margin: 0 auto;
+    padding: 72px 0 96px;
+  }
+
+  .privacy-page h1 {
+    margin: 0 0 36px;
+    color: var(--ink);
+    font-size: 44px;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  .privacy-section {
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .privacy-section h2 {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+
+  .privacy-section p,
+  .privacy-section li {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .privacy-section ul {
+    margin: 12px 0 0;
+    padding-left: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .site-footer-inner {
+      width: min(100% - 28px, 1180px);
+      padding: 16px 0;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .privacy-page {
+      width: min(100% - 28px, 760px);
+      padding: 48px 0 72px;
+    }
+
+    .privacy-page h1 {
+      font-size: 34px;
     }
   }
 </style>
