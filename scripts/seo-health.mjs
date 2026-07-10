@@ -47,6 +47,16 @@ function extractLocs(xml) {
   return [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map((match) => match[1].trim());
 }
 
+function extractPageEntries(xml) {
+  return [...xml.matchAll(/<url>\s*([\s\S]*?)\s*<\/url>/g)].map((match) => {
+    const body = match[1];
+    return {
+      loc: body.match(/<loc>\s*([^<]+?)\s*<\/loc>/)?.[1]?.trim() || "",
+      lastmod: body.match(/<lastmod>\s*([^<]+?)\s*<\/lastmod>/)?.[1]?.trim() || ""
+    };
+  });
+}
+
 function extractCanonical(html) {
   const linkTags = html.match(/<link\b[^>]*>/gi) || [];
   const canonicalTag = linkTags.find((tag) => /\brel=["'][^"']*\bcanonical\b[^"']*["']/i.test(tag));
@@ -113,25 +123,43 @@ async function checkSitemaps() {
   const index = await fetchText(indexUrl);
   if (!index.ok) {
     fail("sitemap-index.xml did not load", { url: indexUrl, status: index.status });
-    return [];
+    return { urls: [], lastmods: [] };
   }
 
   const sitemapUrls = extractLocs(index.text).filter(sameOrigin);
   if (sitemapUrls.length === 0) {
     fail("sitemap-index.xml does not list any same-origin sitemap files", { url: indexUrl });
-    return [];
+    return { urls: [], lastmods: [] };
   }
 
   const urls = [];
+  const lastmods = [];
   for (const sitemapUrl of sitemapUrls) {
     const sitemap = await fetchText(sitemapUrl);
     if (!sitemap.ok) {
       fail("listed sitemap did not load", { url: sitemapUrl, status: sitemap.status });
       continue;
     }
-    const pageUrls = extractLocs(sitemap.text).filter(sameOrigin);
+    const entries = extractPageEntries(sitemap.text).filter((entry) => sameOrigin(entry.loc));
+    const pageUrls = entries.map((entry) => entry.loc);
     if (pageUrls.length === 0) {
       fail("listed sitemap does not contain same-origin URLs", { url: sitemapUrl });
+    }
+    for (const entry of entries) {
+      if (!entry.lastmod) {
+        fail("sitemap URL is missing lastmod", { url: entry.loc });
+        continue;
+      }
+      const timestamp = Date.parse(entry.lastmod);
+      if (!Number.isFinite(timestamp)) {
+        fail("sitemap URL has invalid lastmod", { url: entry.loc, lastmod: entry.lastmod });
+        continue;
+      }
+      if (timestamp > Date.now() + 24 * 60 * 60 * 1000) {
+        fail("sitemap URL has future lastmod", { url: entry.loc, lastmod: entry.lastmod });
+        continue;
+      }
+      lastmods.push(new Date(timestamp).toISOString());
     }
     urls.push(...pageUrls);
   }
@@ -143,7 +171,7 @@ async function checkSitemaps() {
       unique: uniqueUrls.length
     });
   }
-  return uniqueUrls;
+  return { urls: uniqueUrls, lastmods };
 }
 
 async function checkPage(url) {
@@ -199,7 +227,8 @@ async function checkPage(url) {
 }
 
 const robots = await checkRobots();
-const sitemapUrls = await checkSitemaps();
+const sitemap = await checkSitemaps();
+const sitemapUrls = sitemap.urls;
 const pageResults = [];
 for (const url of sitemapUrls) {
   pageResults.push(await checkPage(url));
@@ -213,6 +242,11 @@ const report = {
     status: robots?.status ?? null
   },
   sitemapUrlCount: sitemapUrls.length,
+  sitemapLastmod: {
+    count: sitemap.lastmods.length,
+    oldest: [...sitemap.lastmods].sort()[0] || null,
+    newest: [...sitemap.lastmods].sort().at(-1) || null
+  },
   checkedPageCount: pageResults.length,
   failures,
   warnings
@@ -223,6 +257,7 @@ if (jsonOutput) {
 } else {
   console.log(`SEO health for ${origin}`);
   console.log(`Checked ${pageResults.length} sitemap URLs.`);
+  console.log(`Valid sitemap lastmod values: ${sitemap.lastmods.length}.`);
   console.log(`Failures: ${failures.length}`);
   console.log(`Warnings: ${warnings.length}`);
   if (failures.length > 0) {

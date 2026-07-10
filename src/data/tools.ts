@@ -826,7 +826,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["pdf-to-image", "pdf-merge", "photo-date-stamp"]
+    relatedToolIds: ["image-compressor", "image-resizer", "pdf-merge"]
   },
   {
     id: "photo-date-stamp",
@@ -905,7 +905,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["photo-date-stamp", "photo-merge", "image-resizer"]
+    relatedToolIds: ["jpg-to-pdf", "image-resizer", "image-converter"]
   },
   {
     id: "photo-merge",
