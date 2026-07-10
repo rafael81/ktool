@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+import { PDFDocument } from "pdf-lib";
 import { chromium } from "playwright";
 
 const port = Number(process.env.SMOKE_PORT || 4322);
@@ -78,12 +79,26 @@ const routes = [
   { path: "/tools/amount-korean-converter/", h1: "금액 한글 변환기", faq: true },
   { path: "/tools/freelance-withholding-calculator/", h1: "3.3% 계산기", faq: true },
   { path: "/tools/stamp-background-remover/", h1: "도장 배경 제거", faq: true, stampTool: true },
+  { path: "/tools/pdf-editor/", h1: "PDF 간편 편집(서명)", faq: true, pdfEditTool: true },
+  { path: "/tools/pdf-split-in-half/", h1: "PDF 페이지 반으로 나누기", faq: true, pdfHalfTool: true },
+  { path: "/tools/pdf-two-up/", h1: "PDF 페이지 2장씩 1장으로 합치기", faq: true, pdfTwoUpTool: true },
+  { path: "/tools/pdf-crop/", h1: "PDF 여백 자르기", faq: true, pdfCropTool: true },
+  { path: "/tools/pdf-text-extractor/", h1: "PDF 텍스트 추출", faq: true, pdfTextTool: true },
+  { path: "/tools/pdf-split/", h1: "PDF 나누기", faq: true, pdfSplitTool: true },
+  { path: "/tools/pdf-delete-pages/", h1: "PDF 페이지 삭제", faq: true, pdfDeleteTool: true },
+  { path: "/tools/pdf-merge/", h1: "PDF 합치기", faq: true, pdfMergeTool: true },
+  { path: "/tools/pdf-to-image-converter/", h1: "PDF JPG 변환", faq: true, pdfImageConverter: true },
   { path: "/tools/jpg-to-pdf-converter/", h1: "JPG PDF 변환", faq: true, pdfImageTool: true },
+  { path: "/tools/photo-date-stamper/", h1: "사진 날짜 표시", faq: true, photoDateStamp: true },
+  { path: "/tools/photo-merge/", h1: "사진 합치기", faq: true, photoMerge: true },
   { path: "/tools/photo-size-reducer/", h1: "사진 용량 줄이기", faq: true, imageCompressor: true },
   { path: "/tools/image-resizer/", h1: "이미지 리사이즈", faq: true, imageResizer: true },
   { path: "/tools/image-cropper/", h1: "이미지 자르기", faq: true, imageCropper: true },
   { path: "/tools/image-rotator/", h1: "이미지 회전", faq: true, imageRotator: true },
   { path: "/tools/image-converter/", h1: "WebP JPG 변환", faq: true, imageConverter: true },
+  { path: "/tools/svg-crop/", h1: "SVG 여백 제거", faq: true, svgCropTool: true },
+  { path: "/tools/image-base64-converter/", h1: "이미지 Base64 변환기", faq: true, imageBase64Tool: true },
+  { path: "/tools/video-to-gif-converter/", h1: "동영상 GIF 변환", faq: true, videoGifTool: true },
   { path: "/tools/heic-jpg-converter/", h1: "HEIC JPG 변환", faq: true, heicConverter: true }
 ];
 
@@ -328,7 +343,7 @@ async function run() {
             `${route.path} should hint the indexed nameplate path in homepage search`
           );
           const allToolCount = await page.locator("[data-home-all-tool]").count();
-          assert(allToolCount === 16, `${route.path} should render all tools as direct links`);
+          assert(allToolCount === 30, `${route.path} should render all tools as direct links`);
           const removedLongSections = await page.locator(".workflow-list, .featured-tool-row, .category-ledger").count();
           assert(removedLongSections === 0, `${route.path} should not render long explanatory home sections`);
           const defaultHomeSearchRows = await page
@@ -589,7 +604,7 @@ async function run() {
         const catalogRowCount = await page.locator("[data-tool-search-item]").count();
         const catalogToolRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="tool"]').count();
         const catalogProblemRowCount = await page.locator('[data-tool-search-item][data-tool-search-kind="problem"]').count();
-        assert(catalogToolRowCount >= 16, `${route.path} should render all tool rows in the catalog`);
+        assert(catalogToolRowCount >= 30, `${route.path} should render all tool rows in the catalog`);
         assert(catalogProblemRowCount === 12, `${route.path} should render twelve search-only problem rows in the catalog`);
         const initialVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
         assert(
@@ -599,7 +614,7 @@ async function run() {
         await page.locator('[data-tool-filter="image"]').click();
         const imageVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
         const imageResultText = await page.locator("[data-tool-result-count]").textContent();
-        assert(imageVisibleRows === 6 && imageResultText?.includes("6개"), `${route.path} should filter to six image tools`);
+        assert(imageVisibleRows === 11 && imageResultText?.includes("11개"), `${route.path} should filter to eleven image tools`);
         await page.locator("[data-tool-search]").fill("HEIC");
         await page.waitForTimeout(450);
         const heicVisibleRows = await page.locator("[data-tool-search-item]:not([hidden])").count();
@@ -1861,6 +1876,1045 @@ async function run() {
         );
       }
 
+      if (route.pdfMergeTool) {
+        const mergeUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          mergeUploadState.height >= 300 &&
+            mergeUploadState.text.includes("PDF를 여기로 끌어다 놓으세요") &&
+            mergeUploadState.text.includes("PDF 선택") &&
+            mergeUploadState.text.includes("무료") &&
+            mergeUploadState.text.includes("설치 없음") &&
+            mergeUploadState.text.includes("서버 전송 없음") &&
+            mergeUploadState.text.includes("최대 20개"),
+          `${route.path} should make the PDF upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".file-row").length === 2);
+        const preflightAfterSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterSample?.includes("2개 선택됨") &&
+            preflightAfterSample.includes("목록 순서대로 PDF가 병합됩니다"),
+          `${route.path} should update the PDF merge checklist after sample selection`
+        );
+        const sizesBefore = await page.locator(".file-row p").allTextContents();
+        await page.locator(".file-row").first().scrollIntoViewIfNeeded();
+        await page.locator(".file-row").nth(1).scrollIntoViewIfNeeded();
+        await page.locator(".file-row").first().dragTo(page.locator(".file-row").nth(1));
+        const sizesAfterDrag = await page.locator(".file-row p").allTextContents();
+        assert(
+          sizesBefore.length === 2 &&
+            sizesBefore[0] === sizesAfterDrag[1] &&
+            sizesBefore[1] === sizesAfterDrag[0],
+          `${route.path} should drag reorder selected PDFs before merge`
+        );
+        await page.locator('[data-move-file="1"][data-direction="up"]').click();
+        const sizesAfterButton = await page.locator(".file-row p").allTextContents();
+        assert(
+          sizesAfterButton[0] === sizesBefore[0] && sizesAfterButton[1] === sizesBefore[1],
+          `${route.path} should button reorder selected PDFs before merge`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const mergeOutput = await page.locator("[data-output-meta]").textContent();
+        assert(mergeOutput?.includes("3쪽"), `${route.path} should merge the 1-page and 2-page samples into 3 pages`);
+        const pdfMagic = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return Array.from(bytes.slice(0, 5));
+        });
+        assert(
+          pdfMagic.join(",") === "37,80,68,70,45",
+          `${route.path} should create a valid PDF blob`
+        );
+        const preflightAfterGenerate = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterGenerate?.includes("저장 준비 완료"),
+          `${route.path} should show the merged PDF is ready in the preflight checklist`
+        );
+        const mergeEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_merge_generate");
+        });
+        assert(
+          mergeEvent?.tool_id === "pdf-merge" &&
+            mergeEvent.file_count === 2 &&
+            mergeEvent.page_count === 3 &&
+            mergeEvent.output_size > 0 &&
+            !JSON.stringify(mergeEvent).includes("application-form") &&
+            !JSON.stringify(mergeEvent).includes("receipt-proof"),
+          `${route.path} should track PDF merge quality without raw file names`
+        );
+        await page.locator('[data-remove-file="0"]').click();
+        const reducedFileCount = await page.locator(".file-row").count();
+        const reducedStatus = await page.locator("[data-output-status]").textContent();
+        assert(reducedFileCount === 1 && reducedStatus.includes("1개"), `${route.path} should remove one selected PDF`);
+      }
+
+      if (route.pdfEditTool) {
+        const editUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          editUploadState.height >= 280 &&
+            editUploadState.text.includes("편집할 PDF를 선택하세요") &&
+            editUploadState.text.includes("PDF 선택") &&
+            editUploadState.text.includes("무료") &&
+            editUploadState.text.includes("설치 없음") &&
+            editUploadState.text.includes("서버 전송 없음") &&
+            editUploadState.text.includes("최대 80MB"),
+          `${route.path} should expose a large direct PDF edit upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelector("[data-pdf-stage] canvas"));
+        const sampleStatus = await page.locator("[data-output-status]").textContent();
+        assert(sampleStatus?.includes("PDF 준비됨"), `${route.path} should load the sample PDF into the preview`);
+        const canvas = page.locator("[data-pdf-stage] canvas");
+        await page.locator("[data-text-input]").fill("승인 완료");
+        await canvas.click({ position: { x: 260, y: 210 } });
+        await page.locator('[data-tool-mode="check"]').click();
+        await canvas.click({ position: { x: 230, y: 312 } });
+        await page.locator('[data-tool-mode="cross"]').click();
+        await canvas.click({ position: { x: 330, y: 312 } });
+        await page.locator('[data-tool-mode="circle"]').click();
+        await canvas.click({ position: { x: 420, y: 312 } });
+        await page.locator("[data-signature-sample]").click();
+        await page.locator('[data-tool-mode="signature"]').click();
+        await canvas.click({ position: { x: 275, y: 375 } });
+        await page.locator("[data-stamp-sample]").click();
+        await page.locator('[data-tool-mode="image"]').click();
+        await canvas.click({ position: { x: 430, y: 375 } });
+        const annotationRows = await page.locator("[data-annotation-row]").count();
+        assert(annotationRows === 6, `${route.path} should list six added PDF annotations`);
+        await page.locator("[data-next-page]").click();
+        await page.waitForFunction(() => document.querySelector("[data-page-label]")?.textContent?.includes("2쪽"));
+        await page.locator("[data-rotate-right]").click();
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const editPdfResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            pageCount: Number(link.dataset.pageCount || 0),
+            annotationCount: Number(link.dataset.annotationCount || 0),
+            rotatedPageCount: Number(link.dataset.rotatedPageCount || 0),
+            magic: Array.from(bytes.slice(0, 5)),
+            base64: btoa(binary)
+          };
+        });
+        assert(
+          editPdfResult.magic.join(",") === "37,80,68,70,45" &&
+            editPdfResult.outputSize > 0 &&
+            editPdfResult.pageCount === 2 &&
+            editPdfResult.annotationCount === 6 &&
+            editPdfResult.rotatedPageCount === 1,
+          `${route.path} should create a valid edited PDF blob with annotations and rotation metadata`
+        );
+        const editedPdfBytes = Buffer.from(editPdfResult.base64, "base64");
+        const editedPdf = await PDFDocument.load(editedPdfBytes);
+        assert(
+          editedPdf.getPageCount() === 2 && editedPdf.getPages()[1].getRotation().angle === 90,
+          `${route.path} should save the sample PDF with page count preserved and selected page rotated`
+        );
+        const editEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_edit_generate");
+        });
+        const editEventText = JSON.stringify(editEvent);
+        assert(
+          editEvent?.tool_id === "pdf-edit" &&
+            editEvent.file_count === 1 &&
+            editEvent.page_count === 2 &&
+            editEvent.annotation_count === 6 &&
+            editEvent.rotated_page_count === 1 &&
+            editEvent.output_size > 0 &&
+            editEvent.edit_tools.includes("text") &&
+            editEvent.edit_tools.includes("signature") &&
+            editEvent.edit_tools.includes("image") &&
+            !editEventText.includes("승인 완료") &&
+            !editEventText.includes("pdf-edit-sample"),
+          `${route.path} should track PDF editing quality without raw text or file names`
+        );
+      }
+
+      if (route.pdfDeleteTool) {
+        const deleteUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          deleteUploadState.height >= 300 &&
+            deleteUploadState.text.includes("PDF를 여기로 끌어다 놓으세요") &&
+            deleteUploadState.text.includes("PDF 선택") &&
+            deleteUploadState.text.includes("무료") &&
+            deleteUploadState.text.includes("설치 없음") &&
+            deleteUploadState.text.includes("서버 전송 없음") &&
+            deleteUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the PDF upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".page-tile").length === 4);
+        const preflightAfterSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterSample?.includes("4쪽 PDF") &&
+            preflightAfterSample.includes("삭제할 페이지를 선택해 주세요"),
+          `${route.path} should read the sample PDF page count before deletion`
+        );
+        await page.locator('[data-page-toggle="1"]').click();
+        await page.locator('[data-page-toggle="3"]').click();
+        const selectedPages = await page.locator(".page-tile.is-selected").count();
+        const preflightAfterToggle = await page.locator("[data-preflight]").textContent();
+        const generateDisabled = await page.locator("[data-generate]").isDisabled();
+        assert(
+          selectedPages === 2 &&
+            preflightAfterToggle?.includes("2쪽 삭제") &&
+            preflightAfterToggle.includes("2쪽 유지") &&
+            generateDisabled === false,
+          `${route.path} should select pages for deletion and enable generation`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const deleteOutput = await page.locator("[data-output-meta]").textContent();
+        assert(deleteOutput?.includes("2쪽"), `${route.path} should keep two pages after deleting two of four sample pages`);
+        const pdfMagic = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return Array.from(bytes.slice(0, 5));
+        });
+        assert(
+          pdfMagic.join(",") === "37,80,68,70,45",
+          `${route.path} should create a valid cleaned PDF blob`
+        );
+        const deleteEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_delete_generate");
+        });
+        assert(
+          deleteEvent?.tool_id === "pdf-delete-pages" &&
+            deleteEvent.file_count === 1 &&
+            deleteEvent.page_count === 4 &&
+            deleteEvent.deleted_page_count === 2 &&
+            deleteEvent.kept_page_count === 2 &&
+            deleteEvent.output_size > 0 &&
+            !JSON.stringify(deleteEvent).includes("page-delete-sample"),
+          `${route.path} should track PDF page deletion quality without raw file names`
+        );
+      }
+
+      if (route.pdfHalfTool) {
+        const halfUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          halfUploadState.height >= 300 &&
+            halfUploadState.text.includes("책 스캔 PDF를 선택하세요") &&
+            halfUploadState.text.includes("PDF 선택") &&
+            halfUploadState.text.includes("무료") &&
+            halfUploadState.text.includes("설치 없음") &&
+            halfUploadState.text.includes("서버 전송 없음") &&
+            halfUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the book-scan PDF upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-page-count-badge]")?.textContent?.includes("2쪽");
+        });
+        const preflightAfterHalfSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterHalfSample?.includes("2쪽 PDF → 4쪽") &&
+            preflightAfterHalfSample.includes("좌 → 우"),
+          `${route.path} should read the sample spread PDF and show the left-to-right split plan`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const halfPdfResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            sourcePageCount: Number(link.dataset.sourcePageCount || 0),
+            outputPageCount: Number(link.dataset.outputPageCount || 0),
+            magic: Array.from(bytes.slice(0, 5)),
+            base64: btoa(binary)
+          };
+        });
+        assert(
+          halfPdfResult.magic.join(",") === "37,80,68,70,45" &&
+            halfPdfResult.outputSize > 0 &&
+            halfPdfResult.sourcePageCount === 2 &&
+            halfPdfResult.outputPageCount === 4,
+          `${route.path} should create a valid split-in-half PDF blob`
+        );
+        const halfPdfBytes = Buffer.from(halfPdfResult.base64, "base64");
+        const halfPdf = await PDFDocument.load(halfPdfBytes);
+        const halfPages = halfPdf.getPages();
+        assert(
+          halfPdf.getPageCount() === 4 &&
+            Math.round(halfPages[0].getWidth()) === 421 &&
+            Math.round(halfPages[0].getHeight()) === 595 &&
+            halfPages.every((pdfPage) => Math.round(pdfPage.getWidth()) === 421 && Math.round(pdfPage.getHeight()) === 595),
+          `${route.path} should save each half-spread as a half-width PDF page`
+        );
+        const halfEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_half_generate");
+        });
+        assert(
+          halfEvent?.tool_id === "pdf-split-half" &&
+            halfEvent.file_count === 1 &&
+            halfEvent.page_count === 2 &&
+            halfEvent.output_page_count === 4 &&
+            halfEvent.output_size > 0 &&
+            halfEvent.order === "left-right" &&
+            !JSON.stringify(halfEvent).includes("pdf-half-sample"),
+          `${route.path} should track PDF half splitting quality without raw file names`
+        );
+        await page.locator('input[data-order-input][value="right-left"]').check();
+        const rightLeftPlan = await page.locator("[data-preflight]").textContent();
+        assert(rightLeftPlan?.includes("우 → 좌"), `${route.path} should allow right-to-left split order`);
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("PDF 준비 완료");
+        });
+        const rightLeftEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_half_generate");
+        });
+        assert(
+          rightLeftEvent?.order === "right-left" && rightLeftEvent.output_page_count === 4,
+          `${route.path} should regenerate the split PDF in right-to-left order`
+        );
+      }
+
+      if (route.pdfTwoUpTool) {
+        const twoUpUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          twoUpUploadState.height >= 300 &&
+            twoUpUploadState.text.includes("2-up으로 합칠 PDF를 선택하세요") &&
+            twoUpUploadState.text.includes("PDF 선택") &&
+            twoUpUploadState.text.includes("무료") &&
+            twoUpUploadState.text.includes("설치 없음") &&
+            twoUpUploadState.text.includes("서버 전송 없음") &&
+            twoUpUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the PDF 2-up upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-page-count-badge]")?.textContent?.includes("3쪽");
+        });
+        const preflightAfterTwoUpSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterTwoUpSample?.includes("3쪽 PDF → 2장") &&
+            preflightAfterTwoUpSample.includes("좌 → 우") &&
+            preflightAfterTwoUpSample.includes("빈 페이지"),
+          `${route.path} should read the sample PDF and show the default 2-up plan with a blank page`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const twoUpPdfResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            sourcePageCount: Number(link.dataset.sourcePageCount || 0),
+            outputPageCount: Number(link.dataset.outputPageCount || 0),
+            blankPageCount: Number(link.dataset.blankPageCount || 0),
+            magic: Array.from(bytes.slice(0, 5)),
+            base64: btoa(binary)
+          };
+        });
+        assert(
+          twoUpPdfResult.magic.join(",") === "37,80,68,70,45" &&
+            twoUpPdfResult.outputSize > 0 &&
+            twoUpPdfResult.sourcePageCount === 3 &&
+            twoUpPdfResult.outputPageCount === 2 &&
+            twoUpPdfResult.blankPageCount === 1,
+          `${route.path} should create a valid two-pages-per-sheet PDF blob`
+        );
+        const twoUpPdfBytes = Buffer.from(twoUpPdfResult.base64, "base64");
+        const twoUpPdf = await PDFDocument.load(twoUpPdfBytes);
+        const twoUpPages = twoUpPdf.getPages();
+        assert(
+          twoUpPdf.getPageCount() === 2 &&
+            Math.round(twoUpPages[0].getWidth()) === 842 &&
+            Math.round(twoUpPages[0].getHeight()) === 595 &&
+            twoUpPages.every((pdfPage) => Math.round(pdfPage.getWidth()) === 842 && Math.round(pdfPage.getHeight()) === 595),
+          `${route.path} should save paired portrait pages as landscape 2-up PDF pages`
+        );
+        const twoUpEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_two_up_generate");
+        });
+        assert(
+          twoUpEvent?.tool_id === "pdf-two-up" &&
+            twoUpEvent.file_count === 1 &&
+            twoUpEvent.page_count === 3 &&
+            twoUpEvent.output_page_count === 2 &&
+            twoUpEvent.blank_page_count === 1 &&
+            twoUpEvent.output_size > 0 &&
+            twoUpEvent.order === "left-right" &&
+            twoUpEvent.add_blank_page === true &&
+            !JSON.stringify(twoUpEvent).includes("pdf-two-up-sample"),
+          `${route.path} should track PDF 2-up generation quality without raw file names`
+        );
+        await page.locator('input[data-order-input][value="right-left"]').check();
+        const rightLeftTwoUpPlan = await page.locator("[data-preflight]").textContent();
+        assert(rightLeftTwoUpPlan?.includes("우 → 좌"), `${route.path} should allow right-to-left 2-up order`);
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("PDF 준비 완료");
+        });
+        const rightLeftTwoUpEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_two_up_generate");
+        });
+        assert(
+          rightLeftTwoUpEvent?.order === "right-left" &&
+            rightLeftTwoUpEvent.output_page_count === 2 &&
+            rightLeftTwoUpEvent.blank_page_count === 1,
+          `${route.path} should regenerate the 2-up PDF in right-to-left order`
+        );
+        await page.locator("[data-blank-input]").uncheck();
+        const noBlankTwoUpPlan = await page.locator("[data-preflight]").textContent();
+        assert(
+          noBlankTwoUpPlan?.includes("마지막 단독 페이지 유지"),
+          `${route.path} should allow keeping the final odd page as a single page`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("PDF 준비 완료");
+        });
+        const noBlankTwoUpResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputPageCount: Number(link.dataset.outputPageCount || 0),
+            blankPageCount: Number(link.dataset.blankPageCount || 0),
+            base64: btoa(binary)
+          };
+        });
+        const noBlankTwoUpPdf = await PDFDocument.load(Buffer.from(noBlankTwoUpResult.base64, "base64"));
+        const noBlankTwoUpPages = noBlankTwoUpPdf.getPages();
+        const noBlankTwoUpEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_two_up_generate");
+        });
+        assert(
+          noBlankTwoUpResult.outputPageCount === 2 &&
+            noBlankTwoUpResult.blankPageCount === 0 &&
+            noBlankTwoUpPdf.getPageCount() === 2 &&
+            Math.round(noBlankTwoUpPages[1].getWidth()) === 421 &&
+            Math.round(noBlankTwoUpPages[1].getHeight()) === 595 &&
+            noBlankTwoUpEvent?.blank_page_count === 0 &&
+            noBlankTwoUpEvent.add_blank_page === false,
+          `${route.path} should keep the odd final page as a single portrait page when blank pages are disabled`
+        );
+      }
+
+      if (route.pdfCropTool) {
+        const cropUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          cropUploadState.height >= 300 &&
+            cropUploadState.text.includes("여백을 자를 PDF를 선택하세요") &&
+            cropUploadState.text.includes("PDF 선택") &&
+            cropUploadState.text.includes("무료") &&
+            cropUploadState.text.includes("설치 없음") &&
+            cropUploadState.text.includes("서버 전송 없음") &&
+            cropUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the PDF crop upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-page-count-badge]")?.textContent?.includes("2쪽");
+        });
+        const preflightAfterCropSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          preflightAfterCropSample?.includes("2쪽 PDF") &&
+            preflightAfterCropSample.includes("전체 페이지") &&
+            preflightAfterCropSample.includes("36pt"),
+          `${route.path} should read the sample PDF and show the default crop plan`
+        );
+        await page.locator("[data-auto-detect]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-output-status]")?.textContent?.includes("자동 감지 완료");
+        });
+        const autoMargins = await page.evaluate(() => ({
+          left: Number(document.querySelector("[data-margin-left]")?.value || 0),
+          right: Number(document.querySelector("[data-margin-right]")?.value || 0),
+          top: Number(document.querySelector("[data-margin-top]")?.value || 0),
+          bottom: Number(document.querySelector("[data-margin-bottom]")?.value || 0),
+          helper: document.querySelector("[data-margin-helper]")?.textContent || ""
+        }));
+        assert(
+          autoMargins.left >= 25 &&
+            autoMargins.right >= 25 &&
+            autoMargins.top >= 35 &&
+            autoMargins.bottom >= 35 &&
+            autoMargins.helper.includes("자동 감지값"),
+          `${route.path} should auto-detect useful nonzero margins from the sample PDF`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("PDF 준비 완료") && link?.href.startsWith("blob:");
+        });
+        const autoCropPdfResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            sourcePageCount: Number(link.dataset.sourcePageCount || 0),
+            outputPageCount: Number(link.dataset.outputPageCount || 0),
+            magic: Array.from(bytes.slice(0, 5)),
+            base64: btoa(binary)
+          };
+        });
+        assert(
+          autoCropPdfResult.magic.join(",") === "37,80,68,70,45" &&
+            autoCropPdfResult.outputSize > 0 &&
+            autoCropPdfResult.sourcePageCount === 2 &&
+            autoCropPdfResult.outputPageCount === 2,
+          `${route.path} should create a valid auto-cropped PDF blob`
+        );
+        const autoCropPdf = await PDFDocument.load(Buffer.from(autoCropPdfResult.base64, "base64"));
+        const autoCropFirstPage = autoCropPdf.getPages()[0];
+        const expectedAutoWidth = 595.28 - autoMargins.left - autoMargins.right;
+        const expectedAutoHeight = 841.89 - autoMargins.top - autoMargins.bottom;
+        assert(
+          autoCropPdf.getPageCount() === 2 &&
+            Math.abs(Math.round(autoCropFirstPage.getWidth()) - Math.round(expectedAutoWidth)) <= 2 &&
+            Math.abs(Math.round(autoCropFirstPage.getHeight()) - Math.round(expectedAutoHeight)) <= 2,
+          `${route.path} should size the auto-cropped PDF page from detected margins`
+        );
+        const autoCropEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_crop_generate");
+        });
+        assert(
+          autoCropEvent?.tool_id === "pdf-crop" &&
+            autoCropEvent.file_count === 1 &&
+            autoCropEvent.page_count === 2 &&
+            autoCropEvent.output_page_count === 2 &&
+            autoCropEvent.output_size > 0 &&
+            autoCropEvent.crop_mode === "auto" &&
+            autoCropEvent.margin_left === autoMargins.left &&
+            !JSON.stringify(autoCropEvent).includes("pdf-crop-sample"),
+          `${route.path} should track auto PDF crop generation without raw file names`
+        );
+        await page.locator('[data-margin-preset="54"]').click();
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("PDF 준비 완료");
+        });
+        const presetCropPdfResult = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          let binary = "";
+          for (const byte of bytes) binary += String.fromCharCode(byte);
+          return {
+            outputPageCount: Number(link.dataset.outputPageCount || 0),
+            base64: btoa(binary)
+          };
+        });
+        const presetCropPdf = await PDFDocument.load(Buffer.from(presetCropPdfResult.base64, "base64"));
+        const presetCropPage = presetCropPdf.getPages()[0];
+        const presetCropEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_crop_generate");
+        });
+        assert(
+          presetCropPdfResult.outputPageCount === 2 &&
+            Math.round(presetCropPage.getWidth()) === 487 &&
+            Math.round(presetCropPage.getHeight()) === 734 &&
+            presetCropEvent?.crop_mode === "preset" &&
+            presetCropEvent.margin_left === 54 &&
+            presetCropEvent.margin_right === 54 &&
+            presetCropEvent.margin_top === 54 &&
+            presetCropEvent.margin_bottom === 54,
+          `${route.path} should apply a deterministic 54pt crop preset to every page`
+        );
+      }
+
+      if (route.pdfTextTool) {
+        const textUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          textUploadState.height >= 300 &&
+            textUploadState.text.includes("텍스트를 추출할 PDF를 선택하세요") &&
+            textUploadState.text.includes("PDF 선택") &&
+            textUploadState.text.includes("무료") &&
+            textUploadState.text.includes("설치 없음") &&
+            textUploadState.text.includes("서버 전송 없음") &&
+            textUploadState.text.includes("최대 80MB") &&
+            textUploadState.text.includes("OCR"),
+          `${route.path} should make the PDF text extraction upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-output-status]")?.textContent?.includes("텍스트 추출 완료");
+        });
+        const extractedText = await page.locator("[data-text-output]").inputValue();
+        assert(
+          extractedText.includes("--- 1쪽 ---") &&
+            extractedText.includes("K Document Tool PDF Text Sample") &&
+            extractedText.includes("Invoice number: KDOC-2026-0704") &&
+            extractedText.includes("--- 2쪽 ---") &&
+            extractedText.includes("Second page checklist"),
+          `${route.path} should automatically extract page-separated sample PDF text`
+        );
+        const textPreflight = await page.locator("[data-preflight]").textContent();
+        const pageTextCardCount = await page.locator(".page-text-card").count();
+        const copyDisabled = await page.locator("[data-copy]").isDisabled();
+        assert(
+          textPreflight?.includes("2쪽 PDF") &&
+            textPreflight.includes("2쪽에서") &&
+            textPreflight.includes("자 추출") &&
+            pageTextCardCount === 2 &&
+            copyDisabled === false,
+          `${route.path} should expose extracted page count, character count, and copy action`
+        );
+        const txtDownload = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const text = await response.text();
+          return {
+            text,
+            outputSize: Number(link.dataset.outputSize || 0),
+            characterCount: Number(link.dataset.characterCount || 0),
+            pageCount: Number(link.dataset.pageCount || 0)
+          };
+        });
+        assert(
+          txtDownload.outputSize > 0 &&
+            txtDownload.characterCount > 120 &&
+            txtDownload.pageCount === 2 &&
+            txtDownload.text.includes("K Document Tool PDF Text Sample") &&
+            txtDownload.text.includes("Second page checklist"),
+          `${route.path} should create a downloadable TXT blob from extracted PDF text`
+        );
+        const textExtractEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_text_extract");
+        });
+        assert(
+          textExtractEvent?.tool_id === "pdf-text-extract" &&
+            textExtractEvent.trigger === "auto" &&
+            textExtractEvent.file_count === 1 &&
+            textExtractEvent.page_count === 2 &&
+            textExtractEvent.pages_with_text === 2 &&
+            textExtractEvent.character_count > 120 &&
+            textExtractEvent.output_size > 0 &&
+            textExtractEvent.include_page_headers === true &&
+            !JSON.stringify(textExtractEvent).includes("pdf-text-sample") &&
+            !JSON.stringify(textExtractEvent).includes("K Document Tool PDF Text Sample"),
+          `${route.path} should track text extraction quality without raw file names or extracted text`
+        );
+        await page.locator("[data-page-header-input]").uncheck();
+        const textWithoutHeaders = await page.locator("[data-text-output]").inputValue();
+        assert(
+          !textWithoutHeaders.includes("--- 1쪽 ---") &&
+            textWithoutHeaders.includes("K Document Tool PDF Text Sample"),
+          `${route.path} should allow exporting PDF text without page headers`
+        );
+        const headerToggleEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_text_header_toggle");
+        });
+        assert(
+          headerToggleEvent?.include_page_headers === false &&
+            headerToggleEvent.page_count === 2 &&
+            headerToggleEvent.character_count > 120,
+          `${route.path} should track page header toggle without text content`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-output-status]")?.textContent?.includes("텍스트 추출 완료");
+        });
+        const manualTextExtractEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_text_extract");
+        });
+        assert(
+          manualTextExtractEvent?.trigger === "button" &&
+            manualTextExtractEvent.include_page_headers === false &&
+            manualTextExtractEvent.pages_with_text === 2,
+          `${route.path} should re-extract text on manual request with the current header option`
+        );
+      }
+
+      if (route.pdfSplitTool) {
+        const splitUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          splitUploadState.height >= 300 &&
+            splitUploadState.text.includes("PDF를 여기로 끌어다 놓으세요") &&
+            splitUploadState.text.includes("PDF 선택") &&
+            splitUploadState.text.includes("무료") &&
+            splitUploadState.text.includes("설치 없음") &&
+            splitUploadState.text.includes("서버 전송 없음") &&
+            splitUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the PDF upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-page-count-badge]")?.textContent?.includes("5쪽");
+        });
+        const rangeInputValue = await page.locator("[data-range-input]").inputValue();
+        assert(
+          rangeInputValue === "1-3,4-5",
+          `${route.path} should propose a safe half split after reading the sample PDF`
+        );
+        await page.locator("[data-range-input]").fill("1-2,3-5");
+        await page.waitForFunction(() => document.querySelectorAll(".range-chip").length === 2);
+        const preflightAfterRange = await page.locator("[data-preflight]").textContent();
+        const splitGenerateDisabled = await page.locator("[data-generate]").isDisabled();
+        assert(
+          preflightAfterRange?.includes("2개 파일") &&
+            preflightAfterRange.includes("총 5쪽") &&
+            splitGenerateDisabled === false,
+          `${route.path} should validate custom PDF split ranges`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("PDF 준비 완료") && document.querySelectorAll("[data-split-download]").length === 2;
+        });
+        const splitOutput = await page.locator("[data-output-meta]").textContent();
+        assert(splitOutput?.includes("총 5쪽"), `${route.path} should report total split page count`);
+        const splitMagic = await page.locator("[data-split-download]").evaluateAll(async (links) => {
+          const results = [];
+          for (const link of links) {
+            const response = await fetch(link.href);
+            const bytes = new Uint8Array(await response.arrayBuffer());
+            results.push(Array.from(bytes.slice(0, 5)).join(","));
+          }
+          return results;
+        });
+        assert(
+          splitMagic.length === 2 && splitMagic.every((magic) => magic === "37,80,68,70,45"),
+          `${route.path} should create valid split PDF blobs`
+        );
+        const splitEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_split_generate");
+        });
+        assert(
+          splitEvent?.tool_id === "pdf-split" &&
+            splitEvent.file_count === 1 &&
+            splitEvent.page_count === 5 &&
+            splitEvent.range_count === 2 &&
+            splitEvent.output_page_count === 5 &&
+            splitEvent.output_size > 0 &&
+            !JSON.stringify(splitEvent).includes("pdf-split-sample"),
+          `${route.path} should track PDF split quality without raw file names`
+        );
+      }
+
+      if (route.pdfImageConverter) {
+        const imageUploadState = await page.locator("[data-upload-zone]").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          imageUploadState.height >= 300 &&
+            imageUploadState.text.includes("PDF를 여기로 끌어다 놓으세요") &&
+            imageUploadState.text.includes("PDF 선택") &&
+            imageUploadState.text.includes("무료") &&
+            imageUploadState.text.includes("설치 없음") &&
+            imageUploadState.text.includes("서버 전송 없음") &&
+            imageUploadState.text.includes("최대 80MB"),
+          `${route.path} should make the PDF upload area the primary first-screen action`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          return document.querySelector("[data-page-count-badge]")?.textContent?.includes("3쪽");
+        });
+        const imagePreflightAfterSample = await page.locator("[data-preflight]").textContent();
+        assert(
+          imagePreflightAfterSample?.includes("3쪽 PDF") &&
+            imagePreflightAfterSample.includes("JPG"),
+          `${route.path} should read the sample PDF page count before image conversion`
+        );
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("이미지 준비 완료") && document.querySelectorAll("[data-image-download]").length === 3;
+        });
+        const jpgMagic = await page.locator("[data-image-download]").first().evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return Array.from(bytes.slice(0, 3));
+        });
+        assert(
+          jpgMagic.join(",") === "255,216,255",
+          `${route.path} should render the sample PDF page to a JPEG blob`
+        );
+        const jpgEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_image_generate");
+        });
+        assert(
+          jpgEvent?.tool_id === "pdf-to-image" &&
+            jpgEvent.file_count === 1 &&
+            jpgEvent.page_count === 3 &&
+            jpgEvent.output_count === 3 &&
+            jpgEvent.output_size > 0 &&
+            jpgEvent.output_format === "jpg" &&
+            !JSON.stringify(jpgEvent).includes("pdf-image-sample"),
+          `${route.path} should track PDF to JPG quality without raw file names`
+        );
+        await page.locator("[data-output-format]").selectOption("image/png");
+        await page.locator("[data-generate]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const firstLink = document.querySelector("[data-image-download]");
+          return status.includes("이미지 준비 완료") && firstLink?.getAttribute("download")?.endsWith(".png");
+        });
+        const pngMagic = await page.locator("[data-image-download]").first().evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return Array.from(bytes.slice(0, 4));
+        });
+        assert(
+          pngMagic.join(",") === "137,80,78,71",
+          `${route.path} should render the sample PDF page to a PNG blob`
+        );
+        const pngEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "pdf_image_generate");
+        });
+        assert(
+          pngEvent?.tool_id === "pdf-to-image" &&
+            pngEvent.output_format === "png" &&
+            pngEvent.output_count === 3 &&
+            pngEvent.output_size > 0,
+          `${route.path} should track PDF to PNG conversion quality`
+        );
+      }
+
+      if (route.photoDateStamp) {
+        const uploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          uploadState.height >= 220 &&
+            uploadState.text.includes("날짜를 표시할 사진을 선택하세요") &&
+            uploadState.text.includes("파일 선택") &&
+            uploadState.text.includes("무료") &&
+            uploadState.text.includes("설치 없음") &&
+            uploadState.text.includes("서버 전송 없음") &&
+            uploadState.text.includes("EXIF 촬영일"),
+          `${route.path} should expose a large direct photo date upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() =>
+          document.querySelector("[data-date-detect-title]")?.textContent?.includes("EXIF 촬영일 인식됨")
+        );
+        const detectedDateValue = await page.locator("[data-date-input]").inputValue();
+        assert(
+          detectedDateValue.startsWith("2025-04-12T10:30"),
+          `${route.path} should read the sample EXIF capture date into the date input`
+        );
+        await page.locator("[data-stamp]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("날짜 표시 완료") && link?.href.startsWith("blob:");
+        });
+        const jpgStampResult = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const blob = await response.blob();
+          const bytes = new Uint8Array(await blob.arrayBuffer());
+          const bitmap = await createImageBitmap(blob);
+          const canvas = document.createElement("canvas");
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const context = canvas.getContext("2d");
+          context.drawImage(bitmap, 0, 0);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+          let orangePixels = 0;
+          for (let index = 0; index < pixels.length; index += 4) {
+            const red = pixels[index];
+            const green = pixels[index + 1];
+            const blue = pixels[index + 2];
+            const alpha = pixels[index + 3];
+            if (red > 180 && green > 55 && green < 190 && blue < 110 && alpha > 200) orangePixels += 1;
+          }
+          bitmap.close?.();
+          return {
+            outputFormat: link.dataset.stampedOutputFormat,
+            width: Number(link.dataset.outputWidth || 0),
+            height: Number(link.dataset.outputHeight || 0),
+            outputSize: Number(link.dataset.outputSize || 0),
+            magic: Array.from(bytes.slice(0, 3)),
+            orangePixels
+          };
+        });
+        assert(
+          jpgStampResult.outputFormat === "image/jpeg" &&
+            jpgStampResult.width > 0 &&
+            jpgStampResult.height > 0 &&
+            jpgStampResult.outputSize > 0 &&
+            jpgStampResult.magic.join(",") === "255,216,255" &&
+            jpgStampResult.orangePixels > 50,
+          `${route.path} should stamp an orange date overlay into a JPG blob`
+        );
+        const dateStampEvent = await page.evaluate(() => {
+          return window.dataLayer
+            ?.slice()
+            .reverse()
+            .find((event) => event.event === "photo_date_generate");
+        });
+        assert(
+          dateStampEvent?.tool_id === "photo-date-stamp" &&
+            dateStampEvent.has_exif_date === true &&
+            dateStampEvent.date_source === "exif" &&
+            dateStampEvent.output_format === "jpg" &&
+            dateStampEvent.output_size > 0 &&
+            !JSON.stringify(dateStampEvent).includes("2025-04-12") &&
+            !JSON.stringify(dateStampEvent).includes("2025:04:12") &&
+            !JSON.stringify(dateStampEvent).includes("photo-date-sample"),
+          `${route.path} should track photo date stamping quality without raw dates or file names`
+        );
+        await page.locator("[data-output-format]").selectOption("image/png");
+        await page.locator("[data-stamp]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("날짜 표시 완료") && link?.getAttribute("download")?.endsWith(".png");
+        });
+        const pngStampResult = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputFormat: link.dataset.stampedOutputFormat,
+            magic: Array.from(bytes.slice(0, 4))
+          };
+        });
+        assert(
+          pngStampResult.outputFormat === "image/png" && pngStampResult.magic.join(",") === "137,80,78,71",
+          `${route.path} should stamp photos into a PNG blob when requested`
+        );
+      }
+
+      if (route.photoMerge) {
+        const mergeUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          mergeUploadState.height >= 220 &&
+            mergeUploadState.text.includes("합칠 사진을 선택하세요") &&
+            mergeUploadState.text.includes("파일 선택") &&
+            mergeUploadState.text.includes("무료") &&
+            mergeUploadState.text.includes("설치 없음") &&
+            mergeUploadState.text.includes("서버 전송 없음") &&
+            mergeUploadState.text.includes("최대 20장"),
+          `${route.path} should expose a large direct photo merge upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => document.querySelectorAll(".merge-row").length === 3);
+        const sampleText = await page.locator("[data-output-status]").textContent();
+        assert(sampleText?.includes("3장 선택됨"), `${route.path} should load three sample photos`);
+        await page.locator('[data-layout-mode]').selectOption("horizontal");
+        await page.locator('[data-caption-input="1"]').fill("상세 사진");
+        await page.locator("[data-merge]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("합치기 완료") && link?.href.startsWith("blob:");
+        });
+        const horizontalResult = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputFormat: link.dataset.mergedOutputFormat,
+            width: Number(link.dataset.outputWidth || 0),
+            height: Number(link.dataset.outputHeight || 0),
+            afterSize: Number(link.dataset.outputSize || 0),
+            magic: Array.from(bytes.slice(0, 3))
+          };
+        });
+        assert(
+          horizontalResult.outputFormat === "image/jpeg" &&
+            horizontalResult.width > horizontalResult.height &&
+            horizontalResult.afterSize > 0 &&
+            horizontalResult.magic.join(",") === "255,216,255",
+          `${route.path} should merge sample photos horizontally into a JPG blob`
+        );
+        const jpgMergeEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "photo_merge_generate");
+        });
+        assert(
+          jpgMergeEvent?.tool_id === "photo-merge" &&
+            jpgMergeEvent.file_count === 3 &&
+            jpgMergeEvent.layout_mode === "horizontal" &&
+            jpgMergeEvent.output_format === "jpg" &&
+            jpgMergeEvent.output_size > 0 &&
+            !JSON.stringify(jpgMergeEvent).includes("상세 사진") &&
+            !JSON.stringify(jpgMergeEvent).includes("photo-merge-sample"),
+          `${route.path} should track photo merge quality without raw captions or file names`
+        );
+        await page.locator('[data-output-format]').selectOption("image/png");
+        await page.locator('[data-layout-mode]').selectOption("vertical");
+        await page.locator("[data-merge]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("합치기 완료") && link?.getAttribute("download")?.endsWith(".png");
+        });
+        const pngResult = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputFormat: link.dataset.mergedOutputFormat,
+            width: Number(link.dataset.outputWidth || 0),
+            height: Number(link.dataset.outputHeight || 0),
+            magic: Array.from(bytes.slice(0, 4))
+          };
+        });
+        assert(
+          pngResult.outputFormat === "image/png" &&
+            pngResult.height > pngResult.width &&
+            pngResult.magic.join(",") === "137,80,78,71",
+          `${route.path} should merge sample photos vertically into a PNG blob`
+        );
+      }
+
       if (route.imageCompressor) {
         const compressorUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
           const rect = zone.getBoundingClientRect();
@@ -2174,7 +3228,10 @@ async function run() {
         });
         assert(
           convertUploadState.height >= 220 &&
-            convertUploadState.text.includes("JPG로 바꿀 이미지를 선택하세요") &&
+            convertUploadState.text.includes("JPG·PNG·WebP로 바꿀 이미지를 선택하세요") &&
+            convertUploadState.text.includes("GIF") &&
+            convertUploadState.text.includes("AVIF") &&
+            convertUploadState.text.includes("SVG") &&
             convertUploadState.text.includes("파일 선택") &&
             convertUploadState.text.includes("무료") &&
             convertUploadState.text.includes("설치 없음") &&
@@ -2202,6 +3259,37 @@ async function run() {
             convertShortcutArrivalEvent.shortcut_id === "format-jpg" &&
             convertShortcutArrivalEvent.preset === "jpg",
           `${route.path} should preserve prep shortcut id on image-converter preset arrival analytics`
+        );
+        await page.goto(`${baseUrl}${route.path}?preset=png`, { waitUntil: "networkidle" });
+        await page.locator("[data-image-input]").setInputFiles({
+          name: "vector-logo.svg",
+          mimeType: "image/svg+xml",
+          buffer: Buffer.from(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40" viewBox="0 0 80 40"><rect width="80" height="40" fill="#2563eb"/><circle cx="22" cy="20" r="10" fill="#fff"/></svg>'
+          )
+        });
+        await page.locator("[data-convert]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("변환 완료") && link?.href.startsWith("blob:");
+        });
+        const svgConvertResult = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            sourceType: link.dataset.sourceType,
+            outputFormat: link.dataset.outputFormat,
+            afterSize: Number(link.dataset.afterSize || 0),
+            magic: Array.from(bytes.slice(0, 8))
+          };
+        });
+        assert(
+          svgConvertResult.sourceType === "image/svg+xml" &&
+            svgConvertResult.outputFormat === "image/png" &&
+            svgConvertResult.afterSize > 0 &&
+            svgConvertResult.magic.join(",") === "137,80,78,71,13,10,26,10",
+          `${route.path} should convert SVG input to a PNG blob through the expanded image converter`
         );
         await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
         await page.locator("[data-sample]").click();
@@ -2237,6 +3325,268 @@ async function run() {
             nextPdfText.includes("저장 버튼을 먼저") &&
             nextPdfHref === "/tools/jpg-to-pdf-converter/?from=format-converted-images",
           `${route.path} should offer a next-step CTA to the JPG PDF converter after format conversion`
+        );
+      }
+
+      if (route.svgCropTool) {
+        const svgUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          svgUploadState.height >= 300 &&
+            svgUploadState.text.includes("SVG 파일을 선택하거나 마크업을 붙여넣으세요") &&
+            svgUploadState.text.includes("SVG 선택") &&
+            svgUploadState.text.includes("무료") &&
+            svgUploadState.text.includes("설치 없음") &&
+            svgUploadState.text.includes("서버 전송 없음") &&
+            svgUploadState.text.includes("최대 2MB"),
+          `${route.path} should expose a large direct SVG trim upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          const link = document.querySelector("[data-download]");
+          return status.includes("여백 제거 완료") && link?.href.startsWith("blob:");
+        });
+        const sampleMarkup = await page.locator("[data-output-markup]").inputValue();
+        assert(
+          sampleMarkup.includes('viewBox="60 52 80 96"') &&
+            sampleMarkup.includes('width="80"') &&
+            sampleMarkup.includes('height="96"'),
+          `${route.path} should trim the sample SVG viewBox to the visible icon bounds with padding`
+        );
+        const sampleDownload = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const text = await response.text();
+          return {
+            text,
+            outputSize: Number(link.dataset.outputSize || 0),
+            originalViewBox: link.dataset.originalViewBox,
+            newViewBox: link.dataset.newViewBox
+          };
+        });
+        assert(
+          sampleDownload.outputSize > 0 &&
+            sampleDownload.originalViewBox === "0 0 200 200" &&
+            sampleDownload.newViewBox === "60 52 80 96" &&
+            sampleDownload.text.includes('viewBox="60 52 80 96"'),
+          `${route.path} should create a downloadable trimmed SVG blob with viewBox metadata`
+        );
+        const sampleTrimEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "svg_crop_trim");
+        });
+        assert(
+          sampleTrimEvent?.tool_id === "svg-crop" &&
+            sampleTrimEvent.trigger === "sample" &&
+            sampleTrimEvent.method === "sample" &&
+            sampleTrimEvent.original_width === 200 &&
+            sampleTrimEvent.original_height === 200 &&
+            sampleTrimEvent.crop_x === 60 &&
+            sampleTrimEvent.crop_y === 52 &&
+            sampleTrimEvent.crop_width === 80 &&
+            sampleTrimEvent.crop_height === 96 &&
+            sampleTrimEvent.padding === 2 &&
+            sampleTrimEvent.output_size > 0 &&
+            !JSON.stringify(sampleTrimEvent).includes("svg-crop-sample") &&
+            !JSON.stringify(sampleTrimEvent).includes("<svg"),
+          `${route.path} should track SVG trim quality without raw file names or SVG markup`
+        );
+        await page.locator("[data-markup-input]").fill(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect x="30" y="40" width="40" height="30" fill="#111"/></svg>'
+        );
+        await page.locator("[data-padding-input]").fill("0");
+        await page.locator("[data-trim-markup]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-output-status]")?.textContent || "";
+          return status.includes("여백 제거 완료");
+        });
+        const markupTrimmed = await page.locator("[data-output-markup]").inputValue();
+        const markupTrimEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((event) => event.event === "svg_crop_trim");
+        });
+        assert(
+          markupTrimmed.includes('viewBox="30 40 40 30"') &&
+            markupTrimEvent?.trigger === "markup_button" &&
+            markupTrimEvent.method === "markup" &&
+            markupTrimEvent.file_count === 0 &&
+            markupTrimEvent.file_types === "markup" &&
+            markupTrimEvent.crop_width === 40 &&
+            markupTrimEvent.crop_height === 30 &&
+            !JSON.stringify(markupTrimEvent).includes("<rect"),
+          `${route.path} should trim pasted SVG markup without leaking markup into analytics`
+        );
+      }
+
+      if (route.imageBase64Tool) {
+        const base64UploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          base64UploadState.height >= 300 &&
+            base64UploadState.text.includes("이미지를 선택하면 Base64로 변환됩니다") &&
+            base64UploadState.text.includes("파일 선택") &&
+            base64UploadState.text.includes("무료") &&
+            base64UploadState.text.includes("설치 없음") &&
+            base64UploadState.text.includes("서버 전송 없음") &&
+            base64UploadState.text.includes("최대 10MB"),
+          `${route.path} should expose a large direct image Base64 upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-encode-status]")?.textContent || "";
+          const output = document.querySelector("[data-uri-output]")?.value || "";
+          return status.includes("변환 완료") && output.startsWith("data:image/png;base64,");
+        });
+        const encodedState = await page.evaluate(() => ({
+          dataUri: document.querySelector("[data-uri-output]")?.value || "",
+          format: document.querySelector("[data-encode-format]")?.textContent || "",
+          resolution: document.querySelector("[data-encode-resolution]")?.textContent || "",
+          length: document.querySelector("[data-encode-length]")?.textContent || "",
+          copyUriDisabled: document.querySelector("[data-copy-uri]")?.disabled,
+          copyHtmlDisabled: document.querySelector("[data-copy-html]")?.disabled,
+          event: window.dataLayer?.findLast?.((item) => item.event === "image_base64_encode")
+        }));
+        assert(
+          encodedState.dataUri.startsWith("data:image/png;base64,") &&
+            encodedState.format === "PNG" &&
+            encodedState.resolution === "160 × 96" &&
+            encodedState.length.includes("자") &&
+            encodedState.copyUriDisabled === false &&
+            encodedState.copyHtmlDisabled === false,
+          `${route.path} should encode a sample image to a copy-ready PNG data URI`
+        );
+        assert(
+          encodedState.event?.tool_id === "image-base64" &&
+            encodedState.event.method === "sample" &&
+            encodedState.event.mime_type === "image/png" &&
+            encodedState.event.input_size > 0 &&
+            encodedState.event.output_length === encodedState.dataUri.length &&
+            encodedState.event.base64_length > 0 &&
+            encodedState.event.image_width === 160 &&
+            encodedState.event.image_height === 96 &&
+            !JSON.stringify(encodedState.event).includes("data:image"),
+          `${route.path} should track Base64 encoding quality without raw data URI`
+        );
+        await page.locator("[data-decode-input]").fill(encodedState.dataUri);
+        await page.locator("[data-decode]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-decode-status]")?.textContent || "";
+          const link = document.querySelector("[data-download-image]");
+          return status.includes("이미지 복원 완료") && link?.href.startsWith("blob:");
+        });
+        const decodedDataUriState = await page.locator("[data-download-image]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            outputFormat: link.dataset.outputFormat,
+            magic: Array.from(bytes.slice(0, 8))
+          };
+        });
+        assert(
+          decodedDataUriState.outputSize > 0 &&
+            decodedDataUriState.outputFormat === "image/png" &&
+            decodedDataUriState.magic.join(",") === "137,80,78,71,13,10,26,10",
+          `${route.path} should restore a data URI to a downloadable PNG blob`
+        );
+        const decodedDataUriEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((item) => item.event === "image_base64_decode");
+        });
+        assert(
+          decodedDataUriEvent?.input_type === "data URI" &&
+            decodedDataUriEvent.mime_type === "image/png" &&
+            decodedDataUriEvent.byte_length === decodedDataUriState.outputSize &&
+            decodedDataUriEvent.image_width === 160 &&
+            decodedDataUriEvent.image_height === 96 &&
+            !JSON.stringify(decodedDataUriEvent).includes("data:image"),
+          `${route.path} should track data URI restore without raw Base64`
+        );
+        const base64Only = encodedState.dataUri.split(",")[1];
+        await page.locator("[data-decode-input]").fill(base64Only);
+        await page.locator("[data-decode]").click();
+        await page.waitForFunction(() => {
+          const status = document.querySelector("[data-decode-status]")?.textContent || "";
+          return status.includes("이미지 복원 완료");
+        });
+        const decodedBase64Event = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((item) => item.event === "image_base64_decode");
+        });
+        assert(
+          decodedBase64Event?.input_type === "Base64" &&
+            decodedBase64Event.mime_type === "image/png" &&
+            decodedBase64Event.byte_length === decodedDataUriState.outputSize &&
+            !JSON.stringify(decodedBase64Event).includes(base64Only.slice(0, 32)),
+          `${route.path} should restore plain Base64 input without leaking the Base64 body`
+        );
+      }
+
+      if (route.videoGifTool) {
+        const videoUploadState = await page.locator(".upload-dropzone").evaluate((zone) => {
+          const rect = zone.getBoundingClientRect();
+          return { height: rect.height, text: zone.textContent || "" };
+        });
+        assert(
+          videoUploadState.height >= 300 &&
+            videoUploadState.text.includes("동영상을 선택하면 GIF로 변환할 수 있습니다") &&
+            videoUploadState.text.includes("파일 선택") &&
+            videoUploadState.text.includes("무료") &&
+            videoUploadState.text.includes("설치 없음") &&
+            videoUploadState.text.includes("서버 전송 없음") &&
+            videoUploadState.text.includes("최대 100MB"),
+          `${route.path} should expose a large direct video GIF upload area`
+        );
+        await page.locator("[data-sample]").click();
+        await page.waitForFunction(
+          () => {
+            const status = document.querySelector("[data-output-status]")?.textContent || "";
+            const link = document.querySelector("[data-download]");
+            return status.includes("GIF 변환 완료") && link?.href.startsWith("blob:");
+          },
+          { timeout: 25000 }
+        );
+        const gifState = await page.locator("[data-download]").evaluate(async (link) => {
+          const response = await fetch(link.href);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          return {
+            outputSize: Number(link.dataset.outputSize || 0),
+            frameCount: Number(link.dataset.frameCount || 0),
+            magic: Array.from(bytes.slice(0, 6)),
+            resultText: document.querySelector("[data-result-meta]")?.textContent || "",
+            sourceResolution: document.querySelector("[data-source-resolution]")?.textContent || "",
+            frameText: document.querySelector("[data-frame-count]")?.textContent || ""
+          };
+        });
+        assert(
+          gifState.outputSize > 0 &&
+            gifState.frameCount >= 6 &&
+            String.fromCharCode(...gifState.magic).startsWith("GIF8") &&
+            gifState.resultText.includes("240×135") &&
+            gifState.sourceResolution === "320 × 180" &&
+            gifState.frameText.includes("8장"),
+          `${route.path} should convert a generated sample video into a downloadable GIF blob`
+        );
+        const gifGenerateEvent = await page.evaluate(() => {
+          return window.dataLayer?.findLast?.((item) => item.event === "video_gif_generate");
+        });
+        assert(
+          gifGenerateEvent?.tool_id === "video-to-gif" &&
+            gifGenerateEvent.trigger === "sample" &&
+            gifGenerateEvent.file_count === 1 &&
+            gifGenerateEvent.file_types.includes("video/webm") &&
+            gifGenerateEvent.output_width === 240 &&
+            gifGenerateEvent.output_height === 135 &&
+            gifGenerateEvent.fps === 6 &&
+            gifGenerateEvent.quality === 55 &&
+            gifGenerateEvent.speed === 1.5 &&
+            gifGenerateEvent.repeat === true &&
+            gifGenerateEvent.loop_pause === 120 &&
+            gifGenerateEvent.frame_count >= 6 &&
+            gifGenerateEvent.output_size === gifState.outputSize &&
+            !JSON.stringify(gifGenerateEvent).includes("video-gif-sample") &&
+            !JSON.stringify(gifGenerateEvent).includes("blob:"),
+          `${route.path} should track GIF conversion quality without raw file names or blob URLs`
         );
       }
 
@@ -2303,17 +3653,21 @@ async function run() {
         const firstResult = await page.locator("[data-download-image]").first().evaluate(async (link) => {
           const response = await fetch(link.href);
           const bytes = new Uint8Array(await response.arrayBuffer());
+          const previewImage = document.querySelector(".heic-row img");
           return {
             outputFormat: link.dataset.outputFormat,
             afterSize: Number(link.dataset.afterSize || 0),
-            magic: Array.from(bytes.slice(0, 3))
+            magic: Array.from(bytes.slice(0, 3)),
+            previewSrc: previewImage?.getAttribute("src") || "",
+            previewAlt: previewImage?.getAttribute("alt") || ""
           };
         });
         assert(
           firstResult.outputFormat === "image/jpeg" &&
             firstResult.afterSize > 0 &&
-            firstResult.magic.join(",") === "255,216,255",
-          `${route.path} should convert the HEIC sample to a JPG blob`
+            firstResult.magic.join(",") === "255,216,255" &&
+            firstResult.previewSrc.startsWith("blob:"),
+          `${route.path} should convert the HEIC sample to a JPG blob and show a viewer-style preview`
         );
         const nextPdfText = await page.locator("[data-next-pdf]").textContent();
         const nextPdfHref = await page.locator("[data-next-pdf-link]").getAttribute("href");
@@ -2360,8 +3714,19 @@ async function assertSitemapMetadata() {
     "/problems/file-format-error/",
     "/problems/photo-under-1mb/",
     "/problems/images-to-one-pdf/",
+    "/tools/pdf-editor/",
+    "/tools/pdf-split-in-half/",
+    "/tools/pdf-two-up/",
+    "/tools/pdf-crop/",
+    "/tools/pdf-text-extractor/",
+    "/tools/pdf-to-image-converter/",
     "/tools/jpg-to-pdf-converter/",
+    "/tools/photo-date-stamper/",
+    "/tools/photo-merge/",
     "/tools/photo-size-reducer/",
+    "/tools/svg-crop/",
+    "/tools/image-base64-converter/",
+    "/tools/video-to-gif-converter/",
     "/tools/business-nameplate-maker/",
     "/tools/transaction-statement-generator/"
   ]) {
@@ -2391,6 +3756,8 @@ async function assertFileAnalyticsPrivacy(browser) {
     { path: "/tools/image-cropper/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/image-rotator/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/image-converter/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
+    { path: "/tools/photo-date-stamper/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
+    { path: "/tools/photo-merge/", input: "[data-image-input]", name: `${secret}.png`, mimeType: "image/png" },
     { path: "/tools/heic-jpg-converter/", input: "[data-heic-input]", name: `${secret}.heic`, mimeType: "image/heic" }
   ];
   const onePixelPng = Buffer.from(

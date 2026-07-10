@@ -1,0 +1,953 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { ClipboardCopy, Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("image-base64");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "data URI", "base64 image"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>이미지를 data URI로 바꾸고, Base64 문자열을 다시 이미지 파일로 복원하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="base64-workspace" data-image-base64-tool>
+      <section class="panel base64-panel" aria-label="이미지 Base64 인코딩">
+        <div class="panel-title">
+          <h2>이미지 → Base64</h2>
+          <span class="format-badge">data URI</span>
+        </div>
+
+        <label class="base64-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-image-input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,image/svg+xml,.jpg,.jpeg,.png,.webp,.gif,.bmp,.svg" />
+          <span class="base64-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>이미지를 선택하면 Base64로 변환됩니다</strong>
+          <span data-file-label>JPG · PNG · WebP · GIF · BMP · SVG</span>
+          <span class="base64-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>파일 선택</em>
+          <small>최대 10MB · HTML/CSS 임베드용</small>
+        </label>
+
+        <div class="base64-preview-card">
+          <div class="image-preview-frame" data-encode-preview>
+            <p class="empty-state">이미지를 선택해 주세요.</p>
+          </div>
+          <dl class="meta-grid">
+            <div><dt>포맷</dt><dd data-encode-format>—</dd></div>
+            <div><dt>해상도</dt><dd data-encode-resolution>—</dd></div>
+            <div><dt>파일 크기</dt><dd data-encode-size>—</dd></div>
+            <div><dt>Base64 길이</dt><dd data-encode-length>—</dd></div>
+          </dl>
+        </div>
+
+        <div class="button-row base64-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset-encode>
+            <RefreshCw aria-hidden="true" />
+            지우기
+          </button>
+        </div>
+
+        <div class="output-card">
+          <div class="panel-title">
+            <h2>변환 결과</h2>
+            <span data-encode-status>대기 중</span>
+          </div>
+          <textarea data-uri-output readonly spellcheck="false" placeholder="data:image/png;base64,..."></textarea>
+          <div class="copy-grid">
+            <button class="btn primary" type="button" data-copy-uri disabled>
+              <ClipboardCopy aria-hidden="true" />
+              data URI 복사
+            </button>
+            <button class="btn" type="button" data-copy-base64 disabled>
+              <ClipboardCopy aria-hidden="true" />
+              Base64만 복사
+            </button>
+            <button class="btn" type="button" data-copy-html disabled>
+              <ClipboardCopy aria-hidden="true" />
+              HTML 복사
+            </button>
+            <button class="btn" type="button" data-copy-css disabled>
+              <ClipboardCopy aria-hidden="true" />
+              CSS 복사
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel base64-panel" aria-label="Base64 이미지 디코딩">
+        <div class="panel-title">
+          <h2>Base64 → 이미지</h2>
+          <span class="format-badge">restore</span>
+        </div>
+
+        <textarea
+          class="decode-input"
+          data-decode-input
+          spellcheck="false"
+          placeholder="data:image/png;base64,... 또는 Base64 문자열"
+        ></textarea>
+
+        <div class="button-row base64-action-row">
+          <button class="btn primary" type="button" data-decode>
+            <FileOutput aria-hidden="true" />
+            이미지 복원
+          </button>
+          <button class="btn" type="button" data-reset-decode>
+            <RefreshCw aria-hidden="true" />
+            지우기
+          </button>
+        </div>
+
+        <div class="base64-preview-card">
+          <div class="image-preview-frame" data-decode-preview>
+            <p class="empty-state">Base64를 붙여넣어 주세요.</p>
+          </div>
+          <dl class="meta-grid">
+            <div><dt>포맷</dt><dd data-decode-format>—</dd></div>
+            <div><dt>해상도</dt><dd data-decode-resolution>—</dd></div>
+            <div><dt>파일 크기</dt><dd data-decode-size>—</dd></div>
+            <div><dt>입력 형식</dt><dd data-decode-kind>—</dd></div>
+          </dl>
+        </div>
+
+        <div class="decode-result-card">
+          <span>상태</span>
+          <strong data-decode-status>이미지 복원 대기 중</strong>
+          <p data-decode-meta>data URI 또는 Base64 본문을 붙여넣으세요.</p>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-base64-image.png"
+            aria-disabled="true"
+            data-download-image
+          >
+            <Download aria-hidden="true" />
+            이미지 다운로드
+          </a>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>이미지를 선택하면 data URI와 Base64 문자열을 만듭니다.</li>
+        <li>data URI, Base64 본문, HTML, CSS 중 필요한 형식으로 복사합니다.</li>
+        <li>Base64 문자열을 붙여넣으면 이미지로 복원해 다운로드할 수 있습니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-image-base64-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 10 * 1024 * 1024;
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp", "image/svg+xml"];
+      const allowedExtensions = /\.(jpe?g|png|webp|gif|bmp|svg)$/i;
+      const input = root.querySelector("[data-image-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const encodePreview = root.querySelector("[data-encode-preview]");
+      const encodeFormat = root.querySelector("[data-encode-format]");
+      const encodeResolution = root.querySelector("[data-encode-resolution]");
+      const encodeSize = root.querySelector("[data-encode-size]");
+      const encodeLength = root.querySelector("[data-encode-length]");
+      const encodeStatus = root.querySelector("[data-encode-status]");
+      const dataUriOutput = root.querySelector("[data-uri-output]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const resetEncodeButton = root.querySelector("[data-reset-encode]");
+      const copyUriButton = root.querySelector("[data-copy-uri]");
+      const copyBase64Button = root.querySelector("[data-copy-base64]");
+      const copyHtmlButton = root.querySelector("[data-copy-html]");
+      const copyCssButton = root.querySelector("[data-copy-css]");
+      const decodeInput = root.querySelector("[data-decode-input]");
+      const decodeButton = root.querySelector("[data-decode]");
+      const resetDecodeButton = root.querySelector("[data-reset-decode]");
+      const decodePreview = root.querySelector("[data-decode-preview]");
+      const decodeFormat = root.querySelector("[data-decode-format]");
+      const decodeResolution = root.querySelector("[data-decode-resolution]");
+      const decodeSize = root.querySelector("[data-decode-size]");
+      const decodeKind = root.querySelector("[data-decode-kind]");
+      const decodeStatus = root.querySelector("[data-decode-status]");
+      const decodeMeta = root.querySelector("[data-decode-meta]");
+      const downloadImage = root.querySelector("[data-download-image]");
+      let encoded = null;
+      let decoded = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "image-base64",
+          tool_title: "이미지 Base64 변환기",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function formatMime(mime) {
+        const map = {
+          "image/jpeg": "JPG",
+          "image/png": "PNG",
+          "image/webp": "WebP",
+          "image/gif": "GIF",
+          "image/bmp": "BMP",
+          "image/svg+xml": "SVG"
+        };
+        return map[mime] || mime || "unknown";
+      }
+
+      function extensionFromMime(mime) {
+        if (mime === "image/jpeg") return "jpg";
+        if (mime === "image/png") return "png";
+        if (mime === "image/webp") return "webp";
+        if (mime === "image/gif") return "gif";
+        if (mime === "image/bmp") return "bmp";
+        if (mime === "image/svg+xml") return "svg";
+        return "png";
+      }
+
+      function isSupportedFile(file) {
+        return allowedTypes.includes(file.type) || allowedExtensions.test(file.name || "");
+      }
+
+      function mimeFromFile(file) {
+        if (allowedTypes.includes(file.type)) return file.type;
+        const name = String(file.name || "").toLowerCase();
+        if (/\.(jpg|jpeg)$/.test(name)) return "image/jpeg";
+        if (/\.png$/.test(name)) return "image/png";
+        if (/\.webp$/.test(name)) return "image/webp";
+        if (/\.gif$/.test(name)) return "image/gif";
+        if (/\.bmp$/.test(name)) return "image/bmp";
+        if (/\.svg$/.test(name)) return "image/svg+xml";
+        return "";
+      }
+
+      function validationMessage(reason) {
+        if (reason === "empty") return "이미지를 선택하거나 Base64 문자열을 입력해 주세요.";
+        if (reason === "unsupported_file_type") return "JPG, PNG, WebP, GIF, BMP, SVG 이미지만 사용할 수 있습니다.";
+        if (reason === "file_too_large") return "이미지 한 장은 10MB 이하만 사용할 수 있습니다.";
+        if (reason === "invalid_base64") return "Base64 문자열을 다시 확인해 주세요.";
+        if (reason === "unsupported_decoded_type") return "복원된 데이터가 지원하는 이미지 형식이 아닙니다.";
+        return "입력값을 다시 확인해 주세요.";
+      }
+
+      function setEncodeBusy(isBusy) {
+        sampleButton.disabled = isBusy;
+        resetEncodeButton.disabled = isBusy;
+      }
+
+      function setDecodeBusy(isBusy) {
+        decodeButton.disabled = isBusy;
+        resetDecodeButton.disabled = isBusy;
+      }
+
+      function setCopyEnabled(enabled) {
+        copyUriButton.disabled = !enabled;
+        copyBase64Button.disabled = !enabled;
+        copyHtmlButton.disabled = !enabled;
+        copyCssButton.disabled = !enabled;
+      }
+
+      function setEncodeMeta({ mime = "—", width = 0, height = 0, size = 0, base64Length = 0 } = {}) {
+        encodeFormat.textContent = mime === "—" ? "—" : formatMime(mime);
+        encodeResolution.textContent = width && height ? `${width} × ${height}` : "—";
+        encodeSize.textContent = size ? formatBytes(size) : "—";
+        encodeLength.textContent = base64Length ? `${base64Length.toLocaleString()}자` : "—";
+      }
+
+      function setDecodeMeta({ mime = "—", width = 0, height = 0, size = 0, kind = "—" } = {}) {
+        decodeFormat.textContent = mime === "—" ? "—" : formatMime(mime);
+        decodeResolution.textContent = width && height ? `${width} × ${height}` : "—";
+        decodeSize.textContent = size ? formatBytes(size) : "—";
+        decodeKind.textContent = kind;
+      }
+
+      function clearEncoded() {
+        encoded = null;
+        dataUriOutput.value = "";
+        encodePreview.innerHTML = '<p class="empty-state">이미지를 선택해 주세요.</p>';
+        encodeStatus.textContent = "대기 중";
+        fileLabel.textContent = "JPG · PNG · WebP · GIF · BMP · SVG";
+        setEncodeMeta();
+        setCopyEnabled(false);
+      }
+
+      function clearDecoded() {
+        if (decoded?.url) URL.revokeObjectURL(decoded.url);
+        decoded = null;
+        decodePreview.innerHTML = '<p class="empty-state">Base64를 붙여넣어 주세요.</p>';
+        decodeStatus.textContent = "이미지 복원 대기 중";
+        decodeMeta.textContent = "data URI 또는 Base64 본문을 붙여넣으세요.";
+        downloadImage.href = "#";
+        downloadImage.classList.add("disabled");
+        downloadImage.setAttribute("aria-disabled", "true");
+        downloadImage.dataset.outputSize = "";
+        downloadImage.dataset.outputFormat = "";
+        setDecodeMeta();
+      }
+
+      function dataUriParts(dataUri) {
+        const match = String(dataUri || "").match(/^data:([^;,]+)(?:;charset=[^;,]+)?;base64,([\s\S]+)$/i);
+        if (!match) throw new Error("invalid_base64");
+        return {
+          mime: match[1].toLowerCase(),
+          base64: match[2].replace(/\s+/g, "")
+        };
+      }
+
+      function bytesFromBase64(value) {
+        const normalized = String(value || "")
+          .replace(/\s+/g, "")
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        if (!normalized) throw new Error("empty");
+        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+        let binary;
+        try {
+          binary = atob(padded);
+        } catch {
+          throw new Error("invalid_base64");
+        }
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) {
+          bytes[index] = binary.charCodeAt(index);
+        }
+        return bytes;
+      }
+
+      function inferMime(bytes) {
+        const head = Array.from(bytes.slice(0, 16));
+        if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+        if (head.slice(0, 8).join(",") === "137,80,78,71,13,10,26,10") return "image/png";
+        if (head[0] === 71 && head[1] === 73 && head[2] === 70 && head[3] === 56) return "image/gif";
+        if (head[0] === 66 && head[1] === 77) return "image/bmp";
+        const ascii = new TextDecoder("utf-8", { fatal: false }).decode(bytes.slice(0, Math.min(bytes.length, 256))).trimStart();
+        if (ascii.startsWith("<svg") || ascii.startsWith("<?xml")) return "image/svg+xml";
+        if (head[0] === 82 && head[1] === 73 && head[2] === 70 && head[3] === 70 && head[8] === 87 && head[9] === 69 && head[10] === 66 && head[11] === 80) {
+          return "image/webp";
+        }
+        return "";
+      }
+
+      function parseBase64Input(value) {
+        const input = String(value || "").trim();
+        if (!input) throw new Error("empty");
+        if (/^data:/i.test(input)) {
+          const parts = dataUriParts(input);
+          const bytes = bytesFromBase64(parts.base64);
+          const mime = parts.mime || inferMime(bytes);
+          if (!allowedTypes.includes(mime)) throw new Error("unsupported_decoded_type");
+          return { bytes, mime, base64: parts.base64, kind: "data URI" };
+        }
+        const bytes = bytesFromBase64(input);
+        const mime = inferMime(bytes);
+        if (!allowedTypes.includes(mime)) throw new Error("unsupported_decoded_type");
+        return { bytes, mime, base64: input.replace(/\s+/g, ""), kind: "Base64" };
+      }
+
+      function readFileAsDataUri(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("file_read_failed"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function imageDimensions(src) {
+        return new Promise((resolve) => {
+          const image = new Image();
+          image.onload = () => {
+            resolve({
+              width: image.naturalWidth || image.width || 0,
+              height: image.naturalHeight || image.height || 0
+            });
+          };
+          image.onerror = () => resolve({ width: 0, height: 0 });
+          image.src = src;
+        });
+      }
+
+      function previewImage(target, src, alt) {
+        target.innerHTML = "";
+        const image = document.createElement("img");
+        image.src = src;
+        image.alt = alt;
+        image.loading = "lazy";
+        target.appendChild(image);
+      }
+
+      function syncEncoded(data) {
+        encoded = data;
+        dataUriOutput.value = data.dataUri;
+        previewImage(encodePreview, data.dataUri, "Base64 변환 이미지 미리보기");
+        encodeStatus.textContent = "변환 완료";
+        fileLabel.textContent = `${formatMime(data.mime)} · ${formatBytes(data.size)}`;
+        setEncodeMeta(data);
+        setCopyEnabled(true);
+      }
+
+      async function encodeDataUri({ dataUri, mime, size, method, file = null }) {
+        const parts = dataUriParts(dataUri);
+        const dimensions = await imageDimensions(dataUri);
+        const payload = {
+          dataUri,
+          base64: parts.base64,
+          mime,
+          width: dimensions.width,
+          height: dimensions.height,
+          size,
+          base64Length: parts.base64.length,
+          method
+        };
+        syncEncoded(payload);
+        track("image_base64_encode", {
+          method,
+          mime_type: mime,
+          input_size: size,
+          output_length: dataUri.length,
+          base64_length: parts.base64.length,
+          image_width: dimensions.width,
+          image_height: dimensions.height,
+          ...(file ? fileTools.safeFileAnalyticsPayload([file]) : { file_count: method === "sample" ? 1 : 0, total_size: size, file_types: mime })
+        });
+      }
+
+      async function handleFiles(files, method = "picker") {
+        if (!files.length) return;
+        const file = files[0];
+        if (!isSupportedFile(file)) {
+          encodeStatus.textContent = validationMessage("unsupported_file_type");
+          track("image_base64_validation_error", { reason: "unsupported_file_type", ...fileTools.safeFileAnalyticsPayload([file]) });
+          return;
+        }
+        if (file.size > maxFileSize) {
+          encodeStatus.textContent = validationMessage("file_too_large");
+          track("image_base64_validation_error", { reason: "file_too_large", ...fileTools.safeFileAnalyticsPayload([file]) });
+          return;
+        }
+        setEncodeBusy(true);
+        encodeStatus.textContent = "변환 중";
+        try {
+          const rawDataUri = await readFileAsDataUri(file);
+          const parts = dataUriParts(rawDataUri);
+          const mime = allowedTypes.includes(parts.mime) ? parts.mime : mimeFromFile(file);
+          if (!allowedTypes.includes(mime)) throw new Error("unsupported_file_type");
+          const dataUri = parts.mime === mime ? rawDataUri : `data:${mime};base64,${parts.base64}`;
+          track("image_base64_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file])
+          });
+          await encodeDataUri({ dataUri, mime, size: file.size, method, file });
+        } catch (error) {
+          encodeStatus.textContent = validationMessage(error?.message || "encode_failed");
+          track("image_base64_validation_error", {
+            reason: error?.message || "encode_failed",
+            ...fileTools.safeFileAnalyticsPayload([file])
+          });
+        } finally {
+          setEncodeBusy(false);
+        }
+      }
+
+      function sampleDataUri() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 160;
+        canvas.height = 96;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#2563eb";
+        ctx.fillRect(18, 18, 124, 58);
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(56, 47, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#101828";
+        ctx.font = "700 18px system-ui, sans-serif";
+        ctx.fillText("K", 50, 54);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "700 13px system-ui, sans-serif";
+        ctx.fillText("Base64", 78, 52);
+        return canvas.toDataURL("image/png");
+      }
+
+      async function applySample() {
+        setEncodeBusy(true);
+        try {
+          const dataUri = sampleDataUri();
+          const bytes = bytesFromBase64(dataUriParts(dataUri).base64);
+          track("image_base64_sample_apply", { file_count: 1 });
+          await encodeDataUri({ dataUri, mime: "image/png", size: bytes.length, method: "sample" });
+        } finally {
+          setEncodeBusy(false);
+        }
+      }
+
+      function copyPayload(kind) {
+        if (!encoded) return "";
+        if (kind === "base64") return encoded.base64;
+        if (kind === "html") return `<img src="${encoded.dataUri}" alt="">`;
+        if (kind === "css") return `background-image: url("${encoded.dataUri}");`;
+        return encoded.dataUri;
+      }
+
+      async function copyOutput(kind) {
+        if (!encoded) return;
+        const value = copyPayload(kind);
+        try {
+          await navigator.clipboard.writeText(value);
+          encodeStatus.textContent = `${kind === "uri" ? "data URI" : kind} 복사 완료`;
+          track("image_base64_copy", {
+            copy_type: kind,
+            method: encoded.method,
+            mime_type: encoded.mime,
+            output_length: value.length,
+            base64_length: encoded.base64Length
+          });
+        } catch (error) {
+          dataUriOutput.focus();
+          dataUriOutput.select();
+          encodeStatus.textContent = "복사를 직접 완료해 주세요";
+          track("image_base64_copy_error", { reason: error?.message || "clipboard_failed", copy_type: kind });
+        }
+      }
+
+      async function decodeCurrent() {
+        clearDecoded();
+        setDecodeBusy(true);
+        decodeStatus.textContent = "복원 중";
+        try {
+          const parsed = parseBase64Input(decodeInput.value);
+          const blob = new Blob([parsed.bytes], { type: parsed.mime });
+          const url = URL.createObjectURL(blob);
+          const dimensions = await imageDimensions(url);
+          decoded = {
+            url,
+            mime: parsed.mime,
+            size: parsed.bytes.length,
+            width: dimensions.width,
+            height: dimensions.height,
+            kind: parsed.kind
+          };
+          previewImage(decodePreview, url, "Base64 복원 이미지 미리보기");
+          setDecodeMeta(decoded);
+          decodeStatus.textContent = "이미지 복원 완료";
+          decodeMeta.textContent = `${formatMime(parsed.mime)} · ${formatBytes(parsed.bytes.length)} 다운로드 준비 완료`;
+          downloadImage.href = url;
+          downloadImage.download = `k-document-base64-image.${extensionFromMime(parsed.mime)}`;
+          downloadImage.classList.remove("disabled");
+          downloadImage.removeAttribute("aria-disabled");
+          downloadImage.dataset.outputSize = String(parsed.bytes.length);
+          downloadImage.dataset.outputFormat = parsed.mime;
+          track("image_base64_decode", {
+            input_type: parsed.kind,
+            mime_type: parsed.mime,
+            byte_length: parsed.bytes.length,
+            image_width: dimensions.width,
+            image_height: dimensions.height,
+            input_length: String(decodeInput.value || "").length
+          });
+        } catch (error) {
+          const reason = error?.message || "decode_failed";
+          decodeStatus.textContent = validationMessage(reason);
+          decodeMeta.textContent = "data URI 또는 순수 Base64 본문을 다시 붙여넣어 주세요.";
+          track("image_base64_validation_error", {
+            reason,
+            input_length: String(decodeInput.value || "").length
+          });
+        } finally {
+          setDecodeBusy(false);
+        }
+      }
+
+      input.addEventListener("change", (event) => {
+        handleFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      sampleButton.addEventListener("click", applySample);
+      resetEncodeButton.addEventListener("click", () => {
+        input.value = "";
+        clearEncoded();
+        track("image_base64_reset", { target: "encode" });
+      });
+      copyUriButton.addEventListener("click", () => copyOutput("uri"));
+      copyBase64Button.addEventListener("click", () => copyOutput("base64"));
+      copyHtmlButton.addEventListener("click", () => copyOutput("html"));
+      copyCssButton.addEventListener("click", () => copyOutput("css"));
+      decodeButton.addEventListener("click", decodeCurrent);
+      decodeInput.addEventListener("input", () => {
+        if (!decodeInput.value.trim()) clearDecoded();
+      });
+      resetDecodeButton.addEventListener("click", () => {
+        decodeInput.value = "";
+        clearDecoded();
+        track("image_base64_reset", { target: "decode" });
+      });
+      downloadImage.addEventListener("click", (event) => {
+        if (!decoded?.url) {
+          event.preventDefault();
+          return;
+        }
+        track("image_base64_download", {
+          mime_type: decoded.mime,
+          output_size: decoded.size,
+          image_width: decoded.width,
+          image_height: decoded.height,
+          input_type: decoded.kind
+        });
+      });
+
+      clearEncoded();
+      clearDecoded();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .base64-workspace {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+
+  .base64-panel {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .base64-dropzone {
+    min-height: 305px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    border: 2px dashed #c9d3e3;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+  }
+
+  .base64-dropzone:hover,
+  .base64-dropzone.is-drag-over {
+    border-color: var(--accent);
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  .base64-dropzone input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .base64-upload-icon {
+    display: inline-grid;
+    width: 62px;
+    height: 62px;
+    place-items: center;
+    border: 1px solid #d9e2ef;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--accent);
+  }
+
+  .base64-upload-icon :global(svg) {
+    width: 31px;
+    height: 31px;
+  }
+
+  .base64-dropzone strong {
+    color: var(--ink);
+    font-size: clamp(1.22rem, 2.5vw, 1.68rem);
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .base64-dropzone > span:not(.base64-upload-icon):not(.base64-dropzone-badges) {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .base64-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .base64-dropzone-badges span {
+    border-radius: 999px;
+    background: #edf2f7;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .base64-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 750;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .base64-dropzone small {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .base64-preview-card,
+  .output-card,
+  .decode-result-card {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .image-preview-frame {
+    min-height: 210px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background:
+      linear-gradient(45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(-45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f3f6fa 75%),
+      linear-gradient(-45deg, transparent 75%, #f3f6fa 75%),
+      #ffffff;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-size: 20px 20px;
+    overflow: hidden;
+    padding: 16px;
+  }
+
+  .image-preview-frame img {
+    display: block;
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+  }
+
+  .meta-grid div {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #edf1f6;
+    border-radius: 9px;
+    background: #f8fafc;
+    padding: 10px;
+    min-width: 0;
+  }
+
+  .meta-grid dt {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 900;
+  }
+
+  .meta-grid dd {
+    color: var(--ink);
+    font-size: 0.92rem;
+    font-weight: 800;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .output-card textarea,
+  .decode-input {
+    width: 100%;
+    min-height: 190px;
+    resize: vertical;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #101828;
+    font: 500 0.9rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    padding: 14px;
+  }
+
+  .decode-input {
+    min-height: 236px;
+  }
+
+  .copy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .decode-result-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .decode-result-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  @media (max-width: 980px) {
+    .base64-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .base64-dropzone {
+      min-height: 285px;
+      padding: 24px 18px;
+    }
+
+    .copy-grid,
+    .meta-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,987 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { ClipboardCopy, Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("pdf-text-extract");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "PDF TXT 변환", "PDF 글자 복사"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>PDF 안의 선택 가능한 글자를 페이지별로 추출해 복사하거나 TXT로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-text-workspace" data-pdf-text-tool>
+      <form class="panel pdf-text-panel pdf-upload-panel" aria-label="PDF 텍스트 추출 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>텍스트를 추출할 PDF를 선택하세요</strong>
+          <span data-file-label>PDF 1개 선택 · 업로드 후 자동으로 추출</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 80MB · 스캔 이미지 PDF는 OCR이 필요할 수 있습니다</small>
+        </label>
+
+        <div class="text-options-card">
+          <div class="panel-title">
+            <h2>추출 설정</h2>
+            <span class="format-badge" data-page-count-badge>0쪽</span>
+          </div>
+          <label class="header-option">
+            <input data-page-header-input type="checkbox" checked />
+            <span>TXT에 페이지 구분선 포함</span>
+          </label>
+          <p data-text-helper>PDF 안에 실제 글자 데이터가 있는 경우에만 추출됩니다. 이미지로 스캔된 PDF는 OCR 도구가 필요합니다.</p>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>추출 전 확인</strong>
+          <ul>
+            <li data-preflight-item="file">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="pages">페이지 수는 선택 후 확인합니다.</li>
+            <li data-preflight-item="text">추출된 글자 수는 결과에서 확인합니다.</li>
+            <li data-preflight-item="output">텍스트 추출 후 복사와 TXT 저장이 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-generate-label>텍스트 추출</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 텍스트 추출 결과">
+        <div class="panel-title">
+          <h2>추출 결과</h2>
+          <span class="format-badge">TXT</span>
+        </div>
+
+        <div class="text-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 텍스트를 추출합니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="text-action-row">
+            <button class="btn" type="button" data-copy disabled>
+              <ClipboardCopy aria-hidden="true" />
+              전체 복사
+            </button>
+            <a
+              class="btn primary disabled"
+              href="#"
+              download="k-document-pdf-text.txt"
+              aria-disabled="true"
+              data-download
+            >
+              <Download aria-hidden="true" />
+              TXT 저장
+            </a>
+          </div>
+        </div>
+
+        <textarea
+          class="text-output"
+          data-text-output
+          readonly
+          spellcheck="false"
+          placeholder="PDF를 올리면 추출된 텍스트가 여기에 나타납니다."
+        ></textarea>
+
+        <div class="page-text-list" data-page-text-list>
+          <p class="empty-state">페이지별 텍스트가 아직 없습니다.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>텍스트를 추출할 PDF 파일을 선택합니다.</li>
+        <li>브라우저가 페이지별 텍스트를 자동으로 추출합니다.</li>
+        <li>전체 복사 또는 TXT 저장으로 텍스트를 가져갑니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+
+    const root = document.querySelector("[data-pdf-text-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 80 * 1024 * 1024;
+      const maxPages = 150;
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const pageCountBadge = root.querySelector("[data-page-count-badge]");
+      const includeHeadersInput = root.querySelector("[data-page-header-input]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const copyButton = root.querySelector("[data-copy]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadLink = root.querySelector("[data-download]");
+      const textOutput = root.querySelector("[data-text-output]");
+      const pageTextList = root.querySelector("[data-page-text-list]");
+      const preflightItems = {
+        file: root.querySelector('[data-preflight-item="file"]'),
+        pages: root.querySelector('[data-preflight-item="pages"]'),
+        text: root.querySelector('[data-preflight-item="text"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let pageCount = 0;
+      let extractedPages = [];
+      let extractedText = "";
+      let textBlobUrl = "";
+      let textBytes = 0;
+      let nextItemId = 1;
+      let pdfLibPromise = null;
+      let pdfJsPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-text-extract",
+          tool_title: "PDF 텍스트 추출",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function selectedFile() {
+        return fileItems[0]?.file || null;
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > 1) return { ok: false, reason: "too_many_files" };
+        const file = files[0];
+        if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+        if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 1개만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "PDF는 80MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        if (reason === "too_many_pages") return "PDF는 최대 150쪽까지 처리할 수 있습니다.";
+        return "PDF를 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function clearDownloadUrl() {
+        if (textBlobUrl) URL.revokeObjectURL(textBlobUrl);
+        textBlobUrl = "";
+        textBytes = 0;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.outputSize = "";
+        downloadLink.dataset.characterCount = "";
+        downloadLink.dataset.pageCount = "";
+      }
+
+      function clearOutput() {
+        clearDownloadUrl();
+        extractedPages = [];
+        extractedText = "";
+        textOutput.value = "";
+        copyButton.disabled = true;
+        pageTextList.innerHTML = '<p class="empty-state">페이지별 텍스트가 아직 없습니다.</p>';
+        updatePreflight();
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      async function loadPdfJs() {
+        if (!pdfJsPromise) {
+          pdfJsPromise = import("pdfjs-dist").then((pdfjs) => {
+            pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+            return pdfjs;
+          });
+        }
+        return pdfJsPromise;
+      }
+
+      async function loadPdfDocument(file) {
+        const pdfjs = await loadPdfJs();
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        return pdfjs.getDocument({
+          data: bytes,
+          stopAtErrors: true
+        }).promise;
+      }
+
+      function canExtract() {
+        return Boolean(selectedFile()) && pageCount > 0 && pageCount <= maxPages;
+      }
+
+      function syncGenerateButton() {
+        generateButton.disabled = !canExtract();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || !canExtract();
+        generateLabel.textContent = isBusy ? "추출 중" : "텍스트 추출";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+        includeHeadersInput.disabled = isBusy;
+      }
+
+      function stats() {
+        const characterCount = extractedPages.reduce((sum, page) => sum + page.text.length, 0);
+        const pagesWithText = extractedPages.filter((page) => page.text.trim()).length;
+        return { characterCount, pagesWithText };
+      }
+
+      function composeText() {
+        const includeHeaders = includeHeadersInput.checked;
+        return extractedPages
+          .map((page) => {
+            const body = page.text.trim();
+            if (!body) return includeHeaders ? `--- ${page.pageNumber}쪽 ---\n(추출된 텍스트 없음)` : "";
+            return includeHeaders ? `--- ${page.pageNumber}쪽 ---\n${body}` : body;
+          })
+          .filter(Boolean)
+          .join("\n\n")
+          .trim();
+      }
+
+      function updatePreflight() {
+        const file = selectedFile();
+        const { characterCount, pagesWithText } = stats();
+        if (!file) {
+          setPreflightItem("file", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("pages", "pending", "페이지 수는 선택 후 확인합니다.");
+          setPreflightItem("text", "pending", "추출된 글자 수는 결과에서 확인합니다.");
+          setPreflightItem("output", "pending", "텍스트 추출 후 복사와 TXT 저장이 열립니다.");
+          syncGenerateButton();
+          return;
+        }
+        setPreflightItem("file", "ready", `PDF 1개 선택됨, ${formatBytes(file.size)}`);
+        setPreflightItem("pages", "ready", `${formatter.format(pageCount)}쪽 PDF`);
+        setPreflightItem(
+          "text",
+          extractedPages.length ? (characterCount > 0 ? "ready" : "pending") : "pending",
+          extractedPages.length
+            ? `${formatter.format(pagesWithText)}쪽에서 ${formatter.format(characterCount)}자 추출`
+            : "아직 텍스트를 추출하지 않았습니다."
+        );
+        setPreflightItem(
+          "output",
+          textBlobUrl ? "ready" : "pending",
+          textBlobUrl
+            ? `TXT 저장 준비 완료, ${formatBytes(textBytes)}`
+            : "텍스트 추출 후 복사와 TXT 저장이 열립니다."
+        );
+        syncGenerateButton();
+      }
+
+      function updateTextOutput() {
+        clearDownloadUrl();
+        const { characterCount, pagesWithText } = stats();
+        extractedText = composeText();
+        textOutput.value = extractedText || "추출된 텍스트가 없습니다. 스캔 이미지 PDF라면 OCR 도구가 필요할 수 있습니다.";
+        copyButton.disabled = characterCount === 0;
+
+        if (characterCount > 0) {
+          const blob = new Blob([extractedText], { type: "text/plain;charset=utf-8" });
+          textBlobUrl = URL.createObjectURL(blob);
+          textBytes = blob.size;
+          downloadLink.href = textBlobUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          downloadLink.dataset.outputSize = String(textBytes);
+          downloadLink.dataset.characterCount = String(characterCount);
+          downloadLink.dataset.pageCount = String(pageCount);
+        }
+
+        if (!extractedPages.length) {
+          pageTextList.innerHTML = '<p class="empty-state">페이지별 텍스트가 아직 없습니다.</p>';
+        } else {
+          pageTextList.innerHTML = extractedPages
+            .map(
+              (page) => `
+                <article class="page-text-card">
+                  <strong>${page.pageNumber}쪽</strong>
+                  <span>${formatter.format(page.text.length)}자</span>
+                  <pre>${escapeHtml(page.text || "추출된 텍스트 없음")}</pre>
+                </article>
+              `
+            )
+            .join("");
+        }
+
+        setMessage(
+          characterCount > 0 ? "텍스트 추출 완료" : "추출된 텍스트 없음",
+          characterCount > 0
+            ? `${formatter.format(pagesWithText)}쪽 · ${formatter.format(characterCount)}자 · TXT ${formatBytes(textBytes)}`
+            : "스캔 이미지 PDF는 OCR 도구가 필요할 수 있습니다."
+        );
+        updatePreflight();
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function textFromItems(items) {
+        const normalized = items
+          .map((item) => ({
+            text: String(item.str || "").trim(),
+            x: Number(item.transform?.[4] || 0),
+            y: Number(item.transform?.[5] || 0)
+          }))
+          .filter((item) => item.text.length > 0);
+        if (!normalized.length) return "";
+        normalized.sort((a, b) => (Math.abs(b.y - a.y) > 4 ? b.y - a.y : a.x - b.x));
+        const lines = [];
+        for (const item of normalized) {
+          let line = lines.find((candidate) => Math.abs(candidate.y - item.y) <= 4);
+          if (!line) {
+            line = { y: item.y, items: [] };
+            lines.push(line);
+          }
+          line.items.push(item);
+        }
+        return lines
+          .sort((a, b) => b.y - a.y)
+          .map((line) =>
+            line.items
+              .sort((a, b) => a.x - b.x)
+              .map((item) => item.text)
+              .join(" ")
+              .replace(/\s+/g, " ")
+              .trim()
+          )
+          .filter(Boolean)
+          .join("\n")
+          .trim();
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function resetState() {
+        releaseItems();
+        clearOutput();
+        fileItems = [];
+        pageCount = 0;
+        pageCountBadge.textContent = "0쪽";
+        fileLabel.textContent = "PDF 1개 선택 · 업로드 후 자동으로 추출";
+        input.value = "";
+        setMessage("PDF를 선택하면 텍스트를 추출합니다.", "파일은 아직 준비되지 않았습니다.");
+        updatePreflight();
+      }
+
+      async function inspectPdf(file, method = "picker") {
+        setBusy(true);
+        setMessage("PDF 읽는 중", "페이지 수를 확인하고 있습니다.");
+
+        let pdfDocument = null;
+        try {
+          pdfDocument = await loadPdfDocument(file);
+          pageCount = pdfDocument.numPages;
+          if (pageCount > maxPages) throw new Error("too_many_pages");
+          pageCountBadge.textContent = `${formatter.format(pageCount)}쪽`;
+          fileLabel.textContent = `${formatter.format(pageCount)}쪽 PDF 선택`;
+          setMessage(`${formatter.format(pageCount)}쪽 PDF`, "텍스트를 자동으로 추출하고 있습니다.");
+          updatePreflight();
+          track("pdf_text_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount
+          });
+        } catch (error) {
+          const reason = error?.message === "too_many_pages" ? "too_many_pages" : error?.message || "pdf_read_failed";
+          resetState();
+          setMessage(
+            validationMessage(reason),
+            reason === "too_many_pages" ? "페이지 수를 줄인 PDF로 다시 시도해 주세요." : "암호가 있거나 손상된 PDF인지 확인해 주세요."
+          );
+          track("pdf_text_validation_error", { reason });
+        } finally {
+          try {
+            await pdfDocument?.destroy?.();
+          } catch {}
+          setBusy(false);
+        }
+
+        if (selectedFile() === file && pageCount > 0 && pageCount <= maxPages) {
+          await extractPdfText("auto");
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItems();
+        clearOutput();
+        pageCount = 0;
+        pageCountBadge.textContent = "읽는 중";
+        fileItems = fileTools.createFileItems([file], () => nextItemId++);
+        inspectPdf(file, method);
+      }
+
+      async function createSamplePdf() {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const pages = [
+          [
+            "K Document Tool PDF Text Sample",
+            "Invoice number: KDOC-2026-0704",
+            "Total amount: 128000 KRW",
+            "Extract this text in the browser only."
+          ],
+          [
+            "Second page checklist",
+            "1. Copy all extracted text",
+            "2. Download a TXT file",
+            "3. Keep private files on this device"
+          ]
+        ];
+        for (let index = 0; index < pages.length; index += 1) {
+          const page = pdfDoc.addPage([595.28, 841.89]);
+          page.drawRectangle({ x: 48, y: 48, width: 499, height: 746, borderColor: rgb(0.82, 0.87, 0.94), borderWidth: 2 });
+          page.drawText(`PDF TEXT PAGE ${index + 1}`, { x: 84, y: 710, size: 32, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          pages[index].forEach((line, lineIndex) => {
+            page.drawText(line, {
+              x: 84,
+              y: 642 - lineIndex * 38,
+              size: lineIndex === 0 ? 18 : 14,
+              font: lineIndex === 0 ? titleFont : bodyFont,
+              color: lineIndex === 0 ? rgb(0.08, 0.37, 0.94) : rgb(0.35, 0.41, 0.5)
+            });
+          });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], "pdf-text-sample.pdf", { type: "application/pdf" });
+      }
+
+      async function extractPdfText(trigger = "manual") {
+        const file = selectedFile();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("pdf_text_validation_error", { reason: "empty" });
+          return;
+        }
+        if (!canExtract()) {
+          setMessage(validationMessage(pageCount > maxPages ? "too_many_pages" : "empty"), "PDF를 다시 확인해 주세요.");
+          track("pdf_text_validation_error", { reason: pageCount > maxPages ? "too_many_pages" : "empty" });
+          return;
+        }
+
+        clearOutput();
+        setBusy(true);
+        setMessage("텍스트 추출 중", `${formatter.format(pageCount)}쪽을 읽고 있습니다.`);
+
+        let pdfDocument = null;
+        try {
+          pdfDocument = await loadPdfDocument(file);
+          const nextPages = [];
+          for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+            setMessage("텍스트 추출 중", `${formatter.format(pageNumber)} / ${formatter.format(pdfDocument.numPages)}쪽 처리 중`);
+            const page = await pdfDocument.getPage(pageNumber);
+            const textContent = await page.getTextContent({ disableCombineTextItems: false });
+            nextPages.push({
+              pageNumber,
+              text: textFromItems(textContent.items || [])
+            });
+            page.cleanup?.();
+          }
+          extractedPages = nextPages;
+          updateTextOutput();
+          const { characterCount, pagesWithText } = stats();
+          track("pdf_text_extract", {
+            trigger,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            pages_with_text: pagesWithText,
+            character_count: characterCount,
+            output_size: textBytes,
+            include_page_headers: includeHeadersInput.checked
+          });
+        } catch (error) {
+          clearOutput();
+          setMessage("텍스트를 추출하지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_text_validation_error", {
+            reason: error?.message || "pdf_text_extract_failed",
+            page_count: pageCount
+          });
+        } finally {
+          try {
+            await pdfDocument?.destroy?.();
+          } catch {}
+          setBusy(false);
+        }
+      }
+
+      async function copyText() {
+        if (!extractedText) return;
+        try {
+          await navigator.clipboard.writeText(extractedText);
+          setMessage("텍스트 복사 완료", `${formatter.format(extractedText.length)}자를 클립보드에 복사했습니다.`);
+          const { characterCount, pagesWithText } = stats();
+          track("pdf_text_copy", {
+            page_count: pageCount,
+            pages_with_text: pagesWithText,
+            character_count: characterCount,
+            include_page_headers: includeHeadersInput.checked
+          });
+        } catch (error) {
+          textOutput.focus();
+          textOutput.select();
+          setMessage("복사를 직접 완료해 주세요.", "텍스트 영역이 선택되었습니다. Ctrl/Cmd+C를 눌러 복사하세요.");
+          track("pdf_text_copy_error", { reason: error?.message || "clipboard_failed" });
+        }
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("pdf_text_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        setFile(files[0], method);
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      includeHeadersInput.addEventListener("change", () => {
+        if (extractedPages.length) updateTextOutput();
+        const { characterCount, pagesWithText } = stats();
+        track("pdf_text_header_toggle", {
+          page_count: pageCount,
+          pages_with_text: pagesWithText,
+          character_count: characterCount,
+          include_page_headers: includeHeadersInput.checked
+        });
+      });
+      generateButton.addEventListener("click", () => extractPdfText("button"));
+      copyButton.addEventListener("click", copyText);
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        try {
+          const file = await createSamplePdf();
+          track("pdf_text_sample_apply", { file_count: 1 });
+          setFile(file, "sample");
+        } catch (error) {
+          setMessage("샘플 PDF를 만들지 못했습니다.", "잠시 후 다시 시도해 주세요.");
+          track("pdf_text_validation_error", { reason: error?.message || "sample_create_failed" });
+        } finally {
+          setBusy(false);
+        }
+      });
+      resetButton.addEventListener("click", () => {
+        resetState();
+        track("pdf_text_reset");
+      });
+      downloadLink.addEventListener("click", (event) => {
+        if (!textBlobUrl) {
+          event.preventDefault();
+          return;
+        }
+        const { characterCount, pagesWithText } = stats();
+        track("pdf_text_download", {
+          page_count: pageCount,
+          pages_with_text: pagesWithText,
+          character_count: characterCount,
+          output_size: textBytes,
+          include_page_headers: includeHeadersInput.checked
+        });
+      });
+
+      updatePreflight();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .pdf-text-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .pdf-text-panel,
+  .pdf-preview-panel {
+    min-width: 0;
+  }
+
+  .pdf-upload-panel {
+    display: grid;
+    gap: 14px;
+  }
+
+  .pdf-dropzone {
+    min-height: 330px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    border: 2px dashed #c9d3e3;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+  }
+
+  .pdf-dropzone:hover,
+  .pdf-dropzone.is-drag-over {
+    border-color: var(--accent);
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  .pdf-dropzone input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pdf-upload-icon {
+    display: inline-grid;
+    width: 62px;
+    height: 62px;
+    place-items: center;
+    border: 1px solid #d9e2ef;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--accent);
+  }
+
+  .pdf-upload-icon :global(svg) {
+    width: 31px;
+    height: 31px;
+  }
+
+  .pdf-dropzone strong {
+    color: var(--ink);
+    font-size: clamp(1.25rem, 2.8vw, 1.85rem);
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone > span:not(.pdf-upload-icon):not(.pdf-dropzone-badges) {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .pdf-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .pdf-dropzone-badges span {
+    border-radius: 999px;
+    background: #edf2f7;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .pdf-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 750;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .pdf-dropzone small,
+  .text-options-card p {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .text-options-card,
+  .text-result-card {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .header-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 900;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .header-option input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .text-result-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .text-result-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .text-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .text-output {
+    width: 100%;
+    min-height: 290px;
+    resize: vertical;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #101828;
+    font: 500 0.94rem/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    padding: 16px;
+  }
+
+  .page-text-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  :global(.page-text-card) {
+    display: grid;
+    gap: 7px;
+    border: 1px solid #d9e6f5;
+    border-radius: 10px;
+    background: #f8fbff;
+    padding: 14px;
+  }
+
+  :global(.page-text-card strong) {
+    color: var(--ink);
+    font-size: 0.98rem;
+  }
+
+  :global(.page-text-card span) {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 850;
+  }
+
+  :global(.page-text-card pre) {
+    max-height: 160px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-radius: 8px;
+    background: #fff;
+    color: #344054;
+    font: 500 0.86rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    margin: 0;
+    padding: 12px;
+  }
+
+  @media (max-width: 920px) {
+    .pdf-text-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .pdf-dropzone {
+      min-height: 300px;
+      padding: 24px 18px;
+    }
+
+    .text-output {
+      min-height: 240px;
+    }
+  }
+</style>

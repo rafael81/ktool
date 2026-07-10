@@ -1,0 +1,1078 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("video-to-gif");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "GIF", "MP4", "MOV", "WebM"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>MP4·MOV·WebM의 짧은 구간을 GIF 움짤로 바꾸세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="video-gif-workspace" data-video-gif-tool>
+      <form class="panel video-gif-panel" aria-label="동영상 GIF 변환 입력">
+        <label class="video-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-video-input type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm" />
+          <span class="video-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>동영상을 선택하면 GIF로 변환할 수 있습니다</strong>
+          <span data-file-label>MP4 · MOV · WebM · 브라우저 안에서 처리</span>
+          <span class="video-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>파일 선택</em>
+          <small>최대 100MB · 짧은 구간 움짤용</small>
+        </label>
+
+        <div class="video-preview-card">
+          <video data-video-preview muted playsinline controls></video>
+          <dl class="video-meta-grid">
+            <div><dt>원본</dt><dd data-source-resolution>—</dd></div>
+            <div><dt>길이</dt><dd data-source-duration>—</dd></div>
+            <div><dt>크기</dt><dd data-source-size>—</dd></div>
+            <div><dt>예상 프레임</dt><dd data-frame-count>—</dd></div>
+          </dl>
+        </div>
+
+        <div class="settings-card">
+          <div class="panel-title">
+            <h2>변환 설정</h2>
+            <span class="format-badge">GIF</span>
+          </div>
+
+          <div class="settings-grid">
+            <label>
+              <span>시작(초)</span>
+              <input data-start-time inputmode="decimal" value="0" />
+            </label>
+            <label>
+              <span>끝(초)</span>
+              <input data-end-time inputmode="decimal" value="2" />
+            </label>
+            <label>
+              <span>너비(px)</span>
+              <input data-output-width inputmode="numeric" value="480" />
+            </label>
+            <label>
+              <span>높이(자동)</span>
+              <input data-output-height readonly value="270" />
+            </label>
+            <label>
+              <span>FPS</span>
+              <input data-fps inputmode="numeric" value="10" />
+            </label>
+            <label>
+              <span>화질(%)</span>
+              <input data-quality inputmode="numeric" value="70" />
+            </label>
+            <label>
+              <span>재생 속도</span>
+              <select data-speed>
+                <option value="0.5">0.5×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.5">1.5×</option>
+                <option value="2">2×</option>
+              </select>
+            </label>
+            <label>
+              <span>반복 멈춤(ms)</span>
+              <input data-loop-pause inputmode="numeric" value="0" />
+            </label>
+          </div>
+
+          <label class="toggle-row">
+            <input data-repeat type="checkbox" checked />
+            <span>무한 반복</span>
+          </label>
+        </div>
+
+        <div class="progress-card">
+          <strong data-output-status>동영상을 선택하면 GIF로 변환할 수 있습니다.</strong>
+          <p data-output-meta>영상은 서버로 전송되지 않습니다.</p>
+          <div class="progress-track" aria-hidden="true">
+            <span data-progress-bar></span>
+          </div>
+        </div>
+
+        <div class="button-row video-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-convert disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-convert-label>GIF 변환</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel gif-result-panel" aria-label="GIF 변환 결과">
+        <div class="panel-title">
+          <h2>결과</h2>
+          <span class="format-badge">image/gif</span>
+        </div>
+
+        <div class="gif-preview-frame" data-gif-preview>
+          <p class="empty-state">GIF 결과가 아직 없습니다.</p>
+        </div>
+
+        <div class="gif-result-card">
+          <span>다운로드</span>
+          <strong data-result-title>GIF가 준비되면 다운로드할 수 있습니다.</strong>
+          <p data-result-meta>구간, 크기, FPS를 낮추면 파일이 작아집니다.</p>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-video.gif"
+            aria-disabled="true"
+            data-download
+          >
+            <Download aria-hidden="true" />
+            GIF 다운로드
+          </a>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>MP4, MOV, WebM 영상을 선택합니다.</li>
+        <li>GIF로 만들 구간과 너비, FPS, 화질을 조절합니다.</li>
+        <li>GIF 변환을 누르고 결과 파일을 다운로드합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    import gifenc from "gifenc";
+
+    const root = document.querySelector("[data-video-gif-tool]");
+    if (root) {
+      const { GIFEncoder, quantize, applyPalette } = gifenc;
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 100 * 1024 * 1024;
+      const maxFrames = 120;
+      const allowedTypes = ["video/mp4", "video/quicktime", "video/webm", "video/x-m4v"];
+      const allowedExtensions = /\.(mp4|mov|m4v|webm)$/i;
+      const input = root.querySelector("[data-video-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const video = root.querySelector("[data-video-preview]");
+      const sourceResolution = root.querySelector("[data-source-resolution]");
+      const sourceDuration = root.querySelector("[data-source-duration]");
+      const sourceSize = root.querySelector("[data-source-size]");
+      const frameCountLabel = root.querySelector("[data-frame-count]");
+      const startInput = root.querySelector("[data-start-time]");
+      const endInput = root.querySelector("[data-end-time]");
+      const widthInput = root.querySelector("[data-output-width]");
+      const heightInput = root.querySelector("[data-output-height]");
+      const fpsInput = root.querySelector("[data-fps]");
+      const qualityInput = root.querySelector("[data-quality]");
+      const speedSelect = root.querySelector("[data-speed]");
+      const loopPauseInput = root.querySelector("[data-loop-pause]");
+      const repeatInput = root.querySelector("[data-repeat]");
+      const convertButton = root.querySelector("[data-convert]");
+      const convertLabel = root.querySelector("[data-convert-label]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const resetButton = root.querySelector("[data-reset]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const progressBar = root.querySelector("[data-progress-bar]");
+      const gifPreview = root.querySelector("[data-gif-preview]");
+      const resultTitle = root.querySelector("[data-result-title]");
+      const resultMeta = root.querySelector("[data-result-meta]");
+      const downloadLink = root.querySelector("[data-download]");
+      let selectedFile = null;
+      let sourceUrl = "";
+      let outputUrl = "";
+      let outputBlob = null;
+      let isBusy = false;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "video-to-gif",
+          tool_title: "동영상 GIF 변환",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function validationMessage(reason) {
+        if (reason === "unsupported_file_type") return "MP4, MOV, WebM 동영상만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "동영상은 100MB 이하만 사용할 수 있습니다.";
+        if (reason === "empty") return "동영상을 먼저 선택해 주세요.";
+        if (reason === "invalid_range") return "시작과 끝 시간을 다시 확인해 주세요.";
+        if (reason === "too_many_frames") return "프레임이 너무 많습니다. 구간을 줄이거나 FPS를 낮춰 주세요.";
+        if (reason === "sample_unavailable") return "이 브라우저에서는 샘플 영상을 만들 수 없습니다.";
+        return "동영상을 다시 확인해 주세요.";
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function numberFromInput(input, fallback) {
+        const parsed = Number(String(input.value || "").replace(/[^\d.]/g, ""));
+        return Number.isFinite(parsed) ? parsed : fallback;
+      }
+
+      function durationLabel(seconds) {
+        if (!Number.isFinite(seconds) || seconds <= 0) return "—";
+        const minute = Math.floor(seconds / 60);
+        const sec = Math.round((seconds % 60) * 10) / 10;
+        return minute ? `${minute}분 ${sec}초` : `${sec}초`;
+      }
+
+      function isSupportedFile(file) {
+        return allowedTypes.includes(file.type) || allowedExtensions.test(file.name || "");
+      }
+
+      function safePayload(file = selectedFile) {
+        return file ? fileTools.safeFileAnalyticsPayload([file]) : { file_count: 0, total_size: 0, file_types: "sample" };
+      }
+
+      function currentSettings() {
+        const duration = Number(video.duration || 0);
+        const sourceWidth = Number(video.videoWidth || 0);
+        const sourceHeight = Number(video.videoHeight || 0);
+        const start = clamp(numberFromInput(startInput, 0), 0, Math.max(0, duration));
+        const end = clamp(numberFromInput(endInput, Math.min(duration, start + 2)), 0, Math.max(0, duration));
+        const width = clamp(Math.round(numberFromInput(widthInput, Math.min(480, sourceWidth || 480))), 120, 1080);
+        const aspect = sourceWidth && sourceHeight ? sourceHeight / sourceWidth : 9 / 16;
+        const height = Math.max(1, Math.round(width * aspect));
+        const fps = clamp(Math.round(numberFromInput(fpsInput, 10)), 1, 24);
+        const quality = clamp(Math.round(numberFromInput(qualityInput, 70)), 10, 100);
+        const speed = clamp(Number(speedSelect.value || 1), 0.25, 4);
+        const loopPause = clamp(Math.round(numberFromInput(loopPauseInput, 0)), 0, 3000);
+        const span = Math.max(0, end - start);
+        const frames = span > 0 ? Math.max(1, Math.ceil(span * fps)) : 0;
+        return {
+          duration,
+          sourceWidth,
+          sourceHeight,
+          start,
+          end,
+          span,
+          width,
+          height,
+          fps,
+          quality,
+          speed,
+          loopPause,
+          frames,
+          repeat: repeatInput.checked
+        };
+      }
+
+      function syncSettings() {
+        const settings = currentSettings();
+        heightInput.value = String(settings.height);
+        frameCountLabel.textContent = settings.frames ? `${settings.frames}장` : "—";
+        convertButton.disabled = isBusy || !selectedFile || !settings.frames;
+        return settings;
+      }
+
+      function setProgress(value) {
+        progressBar.style.width = `${Math.max(0, Math.min(100, Math.round(value * 100)))}%`;
+      }
+
+      function setBusy(next) {
+        isBusy = next;
+        convertButton.disabled = next || !selectedFile;
+        sampleButton.disabled = next;
+        resetButton.disabled = next;
+        input.disabled = next;
+        [
+          startInput,
+          endInput,
+          widthInput,
+          fpsInput,
+          qualityInput,
+          speedSelect,
+          loopPauseInput,
+          repeatInput
+        ].forEach((control) => {
+          control.disabled = next;
+        });
+        convertLabel.textContent = next ? "처리 중" : "GIF 변환";
+      }
+
+      function clearOutput() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBlob = null;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.outputSize = "";
+        downloadLink.dataset.frameCount = "";
+        gifPreview.innerHTML = '<p class="empty-state">GIF 결과가 아직 없습니다.</p>';
+        resultTitle.textContent = "GIF가 준비되면 다운로드할 수 있습니다.";
+        resultMeta.textContent = "구간, 크기, FPS를 낮추면 파일이 작아집니다.";
+        setProgress(0);
+      }
+
+      function resetAll() {
+        clearOutput();
+        if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+        sourceUrl = "";
+        selectedFile = null;
+        input.value = "";
+        video.removeAttribute("src");
+        video.load();
+        fileLabel.textContent = "MP4 · MOV · WebM · 브라우저 안에서 처리";
+        sourceResolution.textContent = "—";
+        sourceDuration.textContent = "—";
+        sourceSize.textContent = "—";
+        frameCountLabel.textContent = "—";
+        startInput.value = "0";
+        endInput.value = "2";
+        widthInput.value = "480";
+        heightInput.value = "270";
+        fpsInput.value = "10";
+        qualityInput.value = "70";
+        speedSelect.value = "1";
+        loopPauseInput.value = "0";
+        repeatInput.checked = true;
+        outputStatus.textContent = "동영상을 선택하면 GIF로 변환할 수 있습니다.";
+        outputMeta.textContent = "영상은 서버로 전송되지 않습니다.";
+        syncSettings();
+      }
+
+      function waitForVideoMetadata() {
+        return new Promise((resolve, reject) => {
+          if (Number.isFinite(video.duration) && video.videoWidth) {
+            resolve();
+            return;
+          }
+          const cleanup = () => {
+            video.removeEventListener("loadedmetadata", onLoad);
+            video.removeEventListener("error", onError);
+          };
+          const onLoad = () => {
+            cleanup();
+            resolve();
+          };
+          const onError = () => {
+            cleanup();
+            reject(new Error("video_decode_failed"));
+          };
+          video.addEventListener("loadedmetadata", onLoad, { once: true });
+          video.addEventListener("error", onError, { once: true });
+        });
+      }
+
+      function seekVideo(time) {
+        return new Promise((resolve, reject) => {
+          const target = Math.max(0, Math.min(time, Math.max(0, Number(video.duration || 0) - 0.04)));
+          if (Math.abs(video.currentTime - target) < 0.02 && video.readyState >= 2) {
+            setTimeout(resolve, 30);
+            return;
+          }
+          const timer = window.setTimeout(() => {
+            cleanup();
+            reject(new Error("video_seek_timeout"));
+          }, 5000);
+          const cleanup = () => {
+            window.clearTimeout(timer);
+            video.removeEventListener("seeked", onSeeked);
+            video.removeEventListener("error", onError);
+          };
+          const onSeeked = () => {
+            cleanup();
+            resolve();
+          };
+          const onError = () => {
+            cleanup();
+            reject(new Error("video_decode_failed"));
+          };
+          video.addEventListener("seeked", onSeeked, { once: true });
+          video.addEventListener("error", onError, { once: true });
+          video.currentTime = target;
+        });
+      }
+
+      async function applyVideoFile(file, method = "picker") {
+        if (!isSupportedFile(file)) {
+          outputStatus.textContent = validationMessage("unsupported_file_type");
+          track("video_gif_validation_error", { reason: "unsupported_file_type", ...safePayload(file) });
+          return;
+        }
+        if (file.size > maxFileSize) {
+          outputStatus.textContent = validationMessage("file_too_large");
+          track("video_gif_validation_error", { reason: "file_too_large", ...safePayload(file) });
+          return;
+        }
+        clearOutput();
+        if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+        selectedFile = file;
+        sourceUrl = URL.createObjectURL(file);
+        video.src = sourceUrl;
+        outputStatus.textContent = "동영상 정보 읽는 중";
+        outputMeta.textContent = "브라우저에서 재생 가능한지 확인합니다.";
+        await waitForVideoMetadata();
+        const duration = Number(video.duration || 0);
+        const width = Number(video.videoWidth || 0);
+        const height = Number(video.videoHeight || 0);
+        const defaultWidth = Math.min(640, Math.max(240, width || 480));
+        startInput.value = "0";
+        endInput.value = String(Math.round(Math.min(duration || 2, 2) * 10) / 10);
+        widthInput.value = String(defaultWidth);
+        sourceResolution.textContent = width && height ? `${width} × ${height}` : "—";
+        sourceDuration.textContent = durationLabel(duration);
+        sourceSize.textContent = formatBytes(file.size);
+        fileLabel.textContent = `${file.type || "video"} · ${formatBytes(file.size)}`;
+        outputStatus.textContent = "동영상 준비 완료";
+        outputMeta.textContent = "구간과 품질을 조절한 뒤 GIF 변환을 누르세요.";
+        syncSettings();
+        track("video_gif_file_select", {
+          method,
+          ...safePayload(file),
+          duration: Math.round(duration * 1000) / 1000,
+          source_width: width,
+          source_height: height
+        });
+      }
+
+      async function createSampleVideoFile() {
+        if (!HTMLCanvasElement.prototype.captureStream || typeof MediaRecorder === "undefined") {
+          throw new Error("sample_unavailable");
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = 320;
+        canvas.height = 180;
+        const context = canvas.getContext("2d");
+        const stream = canvas.captureStream(12);
+        const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp8")
+          ? "video/webm;codecs=vp8"
+          : "video/webm";
+        const recorder = new MediaRecorder(stream, { mimeType });
+        const chunks = [];
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size) chunks.push(event.data);
+        });
+        const draw = (frame) => {
+          const t = frame / 18;
+          context.fillStyle = "#f8fafc";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.fillStyle = "#2563eb";
+          context.fillRect(0, 120, canvas.width, 60);
+          context.fillStyle = "#10b981";
+          context.beginPath();
+          context.arc(48 + t * 224, 72, 26, 0, Math.PI * 2);
+          context.fill();
+          context.fillStyle = "#101828";
+          context.font = "700 24px system-ui, sans-serif";
+          context.fillText("K GIF", 24, 42);
+          context.fillStyle = "#ffffff";
+          context.font = "700 18px system-ui, sans-serif";
+          context.fillText(`${Math.round(t * 100)}%`, 248, 153);
+        };
+        const stopPromise = new Promise((resolve, reject) => {
+          recorder.addEventListener("stop", () => {
+            stream.getTracks().forEach((track) => track.stop());
+            const blob = new Blob(chunks, { type: "video/webm" });
+            if (!blob.size) reject(new Error("sample_unavailable"));
+            else resolve(new File([blob], "video-gif-sample.webm", { type: "video/webm" }));
+          });
+          recorder.addEventListener("error", () => reject(new Error("sample_unavailable")));
+        });
+        recorder.start();
+        for (let frame = 0; frame <= 18; frame += 1) {
+          draw(frame);
+          await new Promise((resolve) => window.setTimeout(resolve, 1000 / 12));
+        }
+        recorder.stop();
+        return stopPromise;
+      }
+
+      function buildFrameTimes(settings) {
+        if (settings.end <= settings.start || settings.span <= 0) throw new Error("invalid_range");
+        if (settings.frames > maxFrames) throw new Error("too_many_frames");
+        const frameCount = Math.max(1, settings.frames);
+        return Array.from({ length: frameCount }, (_, index) =>
+          Math.min(settings.end, settings.start + index / settings.fps)
+        );
+      }
+
+      async function convertCurrentVideo(trigger = "button") {
+        if (!selectedFile) {
+          outputStatus.textContent = validationMessage("empty");
+          track("video_gif_validation_error", { reason: "empty" });
+          return;
+        }
+        clearOutput();
+        setBusy(true);
+        outputStatus.textContent = "GIF 변환 중";
+        outputMeta.textContent = "프레임을 캡처하고 색상을 줄이고 있습니다.";
+        try {
+          const settings = syncSettings();
+          const times = buildFrameTimes(settings);
+          const canvas = document.createElement("canvas");
+          canvas.width = settings.width;
+          canvas.height = settings.height;
+          const context = canvas.getContext("2d", { willReadFrequently: true });
+          if (!context) throw new Error("canvas_context_unavailable");
+          const delay = Math.max(20, Math.round(1000 / settings.fps / settings.speed));
+          const format = settings.quality >= 70 ? "rgb565" : "rgb444";
+          const colors = clamp(Math.round(24 + (settings.quality / 100) * 232), 32, 256);
+          const gif = GIFEncoder({ initialCapacity: settings.width * settings.height * Math.max(1, times.length / 2) });
+          let lastIndex = null;
+          let lastPalette = null;
+          for (let index = 0; index < times.length; index += 1) {
+            await seekVideo(times[index]);
+            context.drawImage(video, 0, 0, settings.width, settings.height);
+            const imageData = context.getImageData(0, 0, settings.width, settings.height);
+            const palette = quantize(imageData.data, colors, { format });
+            const indexed = applyPalette(imageData.data, palette, format);
+            gif.writeFrame(indexed, settings.width, settings.height, {
+              palette,
+              delay,
+              repeat: index === 0 ? (settings.repeat ? 0 : -1) : undefined
+            });
+            lastIndex = indexed;
+            lastPalette = palette;
+            setProgress((index + 1) / times.length);
+            outputMeta.textContent = `${index + 1}/${times.length} 프레임 처리 중`;
+          }
+          if (settings.repeat && settings.loopPause > 0 && lastIndex && lastPalette) {
+            gif.writeFrame(lastIndex, settings.width, settings.height, {
+              palette: lastPalette,
+              delay: settings.loopPause
+            });
+          }
+          gif.finish();
+          const bytes = gif.bytes();
+          outputBlob = new Blob([bytes], { type: "image/gif" });
+          outputUrl = URL.createObjectURL(outputBlob);
+          const image = document.createElement("img");
+          image.src = outputUrl;
+          image.alt = "변환된 GIF 미리보기";
+          gifPreview.innerHTML = "";
+          gifPreview.appendChild(image);
+          downloadLink.href = outputUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          downloadLink.dataset.outputSize = String(outputBlob.size);
+          downloadLink.dataset.frameCount = String(times.length);
+          resultTitle.textContent = "GIF 변환 완료";
+          resultMeta.textContent = `${settings.width}×${settings.height} · ${times.length}프레임 · ${formatBytes(outputBlob.size)}`;
+          outputStatus.textContent = "GIF 변환 완료";
+          outputMeta.textContent = "다운로드 버튼으로 저장하세요.";
+          track("video_gif_generate", {
+            trigger,
+            ...safePayload(),
+            duration: Math.round(settings.span * 1000) / 1000,
+            start_time: Math.round(settings.start * 1000) / 1000,
+            end_time: Math.round(settings.end * 1000) / 1000,
+            output_width: settings.width,
+            output_height: settings.height,
+            fps: settings.fps,
+            quality: settings.quality,
+            speed: settings.speed,
+            repeat: settings.repeat,
+            loop_pause: settings.loopPause,
+            frame_count: times.length,
+            output_size: outputBlob.size
+          });
+        } catch (error) {
+          const reason = error?.message || "gif_generate_failed";
+          outputStatus.textContent = validationMessage(reason);
+          outputMeta.textContent = "구간을 줄이거나 크기와 FPS를 낮춰 다시 시도하세요.";
+          track("video_gif_validation_error", {
+            reason,
+            ...safePayload()
+          });
+        } finally {
+          setBusy(false);
+          syncSettings();
+        }
+      }
+
+      input.addEventListener("change", (event) => {
+        const files = Array.from(event.target.files || []);
+        if (files[0]) applyVideoFile(files[0], "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          const files = Array.from(event.dataTransfer?.files || []);
+          if (files[0]) applyVideoFile(files[0], "drop");
+        });
+      }
+
+      [
+        startInput,
+        endInput,
+        widthInput,
+        fpsInput,
+        qualityInput,
+        speedSelect,
+        loopPauseInput,
+        repeatInput
+      ].forEach((control) => {
+        control.addEventListener("input", () => {
+          clearOutput();
+          const settings = syncSettings();
+          track("video_gif_option_change", {
+            output_width: settings.width,
+            output_height: settings.height,
+            fps: settings.fps,
+            quality: settings.quality,
+            speed: settings.speed,
+            repeat: settings.repeat,
+            loop_pause: settings.loopPause,
+            frame_count: settings.frames
+          });
+        });
+        control.addEventListener("change", syncSettings);
+      });
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        outputStatus.textContent = "샘플 영상 만드는 중";
+        try {
+          const sampleFile = await createSampleVideoFile();
+          track("video_gif_sample_apply", { file_count: 1 });
+          await applyVideoFile(sampleFile, "sample");
+          startInput.value = "0";
+          endInput.value = "1.2";
+          widthInput.value = "240";
+          fpsInput.value = "6";
+          qualityInput.value = "55";
+          speedSelect.value = "1.5";
+          loopPauseInput.value = "120";
+          syncSettings();
+          await convertCurrentVideo("sample");
+        } catch (error) {
+          const reason = error?.message || "sample_unavailable";
+          outputStatus.textContent = validationMessage(reason);
+          outputMeta.textContent = "직접 MP4, MOV, WebM 파일을 선택해 주세요.";
+          track("video_gif_validation_error", { reason });
+        } finally {
+          setBusy(false);
+          syncSettings();
+        }
+      });
+
+      resetButton.addEventListener("click", () => {
+        resetAll();
+        track("video_gif_reset");
+      });
+
+      convertButton.addEventListener("click", () => convertCurrentVideo("button"));
+
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputBlob || !outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        const settings = currentSettings();
+        track("video_gif_download", {
+          output_size: outputBlob.size,
+          output_width: settings.width,
+          output_height: settings.height,
+          fps: settings.fps,
+          quality: settings.quality,
+          frame_count: Number(downloadLink.dataset.frameCount || 0)
+        });
+      });
+
+      resetAll();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .video-gif-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.98fr) minmax(0, 1.02fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .video-gif-panel,
+  .gif-result-panel {
+    min-width: 0;
+  }
+
+  .video-gif-panel {
+    display: grid;
+    gap: 14px;
+  }
+
+  .video-dropzone {
+    min-height: 305px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    border: 2px dashed #c9d3e3;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+  }
+
+  .video-dropzone:hover,
+  .video-dropzone.is-drag-over {
+    border-color: var(--accent);
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  .video-dropzone input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .video-upload-icon {
+    display: inline-grid;
+    width: 62px;
+    height: 62px;
+    place-items: center;
+    border: 1px solid #d9e2ef;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--accent);
+  }
+
+  .video-upload-icon :global(svg) {
+    width: 31px;
+    height: 31px;
+  }
+
+  .video-dropzone strong {
+    color: var(--ink);
+    font-size: clamp(1.22rem, 2.5vw, 1.68rem);
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .video-dropzone > span:not(.video-upload-icon):not(.video-dropzone-badges) {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .video-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .video-dropzone-badges span {
+    border-radius: 999px;
+    background: #edf2f7;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .video-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 750;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .video-dropzone small {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .video-preview-card,
+  .settings-card,
+  .progress-card,
+  .gif-result-card {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .video-preview-card video {
+    width: 100%;
+    min-height: 210px;
+    max-height: 360px;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background: #0f172a;
+    object-fit: contain;
+  }
+
+  .video-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+  }
+
+  .video-meta-grid div {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #edf1f6;
+    border-radius: 9px;
+    background: #f8fafc;
+    padding: 10px;
+    min-width: 0;
+  }
+
+  .video-meta-grid dt,
+  .settings-grid label span,
+  .gif-result-card > span {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 900;
+  }
+
+  .video-meta-grid dd {
+    color: var(--ink);
+    font-size: 0.92rem;
+    font-weight: 800;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .settings-grid label {
+    display: grid;
+    gap: 6px;
+  }
+
+  .settings-grid input,
+  .settings-grid select {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #d5dde8;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    padding: 10px 12px;
+  }
+
+  .settings-grid input[readonly] {
+    background: #f8fafc;
+    color: var(--muted);
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+
+  .toggle-row input {
+    width: 18px;
+    height: 18px;
+  }
+
+  .progress-card p,
+  .gif-result-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .progress-track {
+    height: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #edf2f7;
+  }
+
+  .progress-track span {
+    display: block;
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width 0.16s ease;
+  }
+
+  .gif-preview-frame {
+    min-height: 360px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background:
+      linear-gradient(45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(-45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f3f6fa 75%),
+      linear-gradient(-45deg, transparent 75%, #f3f6fa 75%),
+      #ffffff;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-size: 20px 20px;
+    overflow: hidden;
+    padding: 16px;
+  }
+
+  .gif-preview-frame img {
+    display: block;
+    max-width: 100%;
+    max-height: 330px;
+    object-fit: contain;
+  }
+
+  @media (max-width: 980px) {
+    .video-gif-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .video-dropzone {
+      min-height: 285px;
+      padding: 24px 18px;
+    }
+
+    .settings-grid,
+    .video-meta-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gif-preview-frame {
+      min-height: 260px;
+    }
+  }
+</style>

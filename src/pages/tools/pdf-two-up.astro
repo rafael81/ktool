@@ -1,0 +1,881 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("pdf-two-up");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "PDF 2-up", "PDF N-up", "PDF 두 페이지 한 장"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>PDF 두 페이지를 좌우로 나란히 배치해 한 장짜리 2-up PDF로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-two-up-workspace" data-pdf-two-up-tool>
+      <form class="panel pdf-two-up-panel pdf-upload-panel" aria-label="PDF 2장씩 1장으로 합치기 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>2-up으로 합칠 PDF를 선택하세요</strong>
+          <span data-file-label>PDF 1개 선택 · 두 페이지를 한 장에 배치</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 80MB · 프레젠테이션/비교 자료/종이 절약용</small>
+        </label>
+
+        <div class="two-up-options-card">
+          <div class="panel-title">
+            <h2>옵션</h2>
+            <span class="format-badge" data-page-count-badge>0쪽</span>
+          </div>
+          <label class="blank-option">
+            <input data-blank-input type="checkbox" checked />
+            <span>마지막 1페이지 뒤에 빈 페이지 붙이기</span>
+          </label>
+          <div class="order-options" role="radiogroup" aria-label="합치기 방향">
+            <label>
+              <input type="radio" name="two-up-order" value="left-right" data-order-input checked />
+              <span>좌 → 우</span>
+            </label>
+            <label>
+              <input type="radio" name="two-up-order" value="right-left" data-order-input />
+              <span>우 → 좌</span>
+            </label>
+          </div>
+          <p data-option-helper>좌 → 우는 1쪽을 왼쪽, 2쪽을 오른쪽에 배치합니다.</p>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>합치기 전 확인</strong>
+          <ul>
+            <li data-preflight-item="file">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="pages">페이지 수는 선택 후 확인합니다.</li>
+            <li data-preflight-item="options">좌→우 방향, 홀수 마지막 페이지는 빈 페이지와 합칩니다.</li>
+            <li data-preflight-item="output">PDF 2-up 합치기 후 저장 버튼이 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-generate-label>PDF 2-up 합치기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 2-up 결과">
+        <div class="panel-title">
+          <h2>합치기 결과</h2>
+          <span class="format-badge">PDF</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 2-up으로 합칠 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="download-action-strip" data-pdf-download-hint hidden>
+            <strong>저장 준비 완료</strong>
+            <span>PDF 저장을 눌러 2-up 파일을 내려받으세요.</span>
+          </div>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-two-up.pdf"
+            aria-disabled="true"
+            data-download
+          >
+            <Download aria-hidden="true" />
+            PDF 저장
+          </a>
+        </div>
+
+        <div class="two-up-preview-list" data-two-up-preview>
+          <p class="empty-state">합쳐진 페이지가 아직 없습니다.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>2-up으로 만들 PDF 파일을 선택합니다.</li>
+        <li>좌→우 또는 우→좌 방향과 빈 페이지 옵션을 고릅니다.</li>
+        <li>두 페이지씩 한 장으로 합쳐진 PDF를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-pdf-two-up-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 80 * 1024 * 1024;
+      const maxPages = 150;
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const pageCountBadge = root.querySelector("[data-page-count-badge]");
+      const orderInputs = Array.from(root.querySelectorAll("[data-order-input]"));
+      const blankInput = root.querySelector("[data-blank-input]");
+      const optionHelper = root.querySelector("[data-option-helper]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadLink = root.querySelector("[data-download]");
+      const downloadHint = root.querySelector("[data-pdf-download-hint]");
+      const twoUpPreview = root.querySelector("[data-two-up-preview]");
+      const preflightItems = {
+        file: root.querySelector('[data-preflight-item="file"]'),
+        pages: root.querySelector('[data-preflight-item="pages"]'),
+        options: root.querySelector('[data-preflight-item="options"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let pageCount = 0;
+      let outputUrl = "";
+      let outputBytes = 0;
+      let outputPageCount = 0;
+      let blankPageCount = 0;
+      let nextItemId = 1;
+      let pdfLibPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-two-up",
+          tool_title: "PDF 페이지 2장씩 1장으로 합치기",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function selectedFile() {
+        return fileItems[0]?.file || null;
+      }
+
+      function selectedOrder() {
+        return orderInputs.find((item) => item.checked)?.value || "left-right";
+      }
+
+      function orderLabel() {
+        return selectedOrder() === "right-left" ? "우 → 좌" : "좌 → 우";
+      }
+
+      function shouldAddBlank() {
+        return Boolean(blankInput.checked);
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > 1) return { ok: false, reason: "too_many_files" };
+        const file = files[0];
+        if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+        if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 1개만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "PDF는 80MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        if (reason === "too_many_pages") return "PDF는 최대 150쪽까지 처리할 수 있습니다.";
+        return "PDF를 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function clearOutput() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        outputPageCount = 0;
+        blankPageCount = 0;
+        downloadHint.hidden = true;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.outputSize = "";
+        downloadLink.dataset.outputPageCount = "";
+        downloadLink.dataset.sourcePageCount = "";
+        downloadLink.dataset.blankPageCount = "";
+        twoUpPreview.innerHTML = '<p class="empty-state">합쳐진 페이지가 아직 없습니다.</p>';
+        updatePreflight();
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      function canGenerate() {
+        return Boolean(selectedFile()) && pageCount > 0;
+      }
+
+      function syncGenerateButton() {
+        generateButton.disabled = !canGenerate();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || !canGenerate();
+        generateLabel.textContent = isBusy ? "합치는 중" : "PDF 2-up 합치기";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+        blankInput.disabled = isBusy;
+        for (const input of orderInputs) input.disabled = isBusy;
+      }
+
+      function targetOutputPageCount() {
+        if (!pageCount) return 0;
+        return shouldAddBlank() ? Math.ceil(pageCount / 2) : Math.floor(pageCount / 2) + (pageCount % 2);
+      }
+
+      function updateOptionHelper() {
+        const blankText = shouldAddBlank() ? "홀수 마지막 페이지는 빈 페이지와 함께 배치합니다." : "홀수 마지막 페이지는 한 장짜리 페이지로 유지합니다.";
+        optionHelper.textContent =
+          selectedOrder() === "right-left"
+            ? `우 → 좌는 1쪽을 오른쪽, 2쪽을 왼쪽에 배치합니다. ${blankText}`
+            : `좌 → 우는 1쪽을 왼쪽, 2쪽을 오른쪽에 배치합니다. ${blankText}`;
+      }
+
+      function updatePreflight() {
+        const file = selectedFile();
+        if (!file) {
+          setPreflightItem("file", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("pages", "pending", "페이지 수는 선택 후 확인합니다.");
+          setPreflightItem("options", "pending", `${orderLabel()} 방향, ${shouldAddBlank() ? "빈 페이지 사용" : "빈 페이지 미사용"}`);
+          setPreflightItem("output", "pending", "PDF 2-up 합치기 후 저장 버튼이 열립니다.");
+          syncGenerateButton();
+          return;
+        }
+        setPreflightItem("file", "ready", `PDF 1개 선택됨, ${formatBytes(file.size)}`);
+        setPreflightItem("pages", "ready", `${formatter.format(pageCount)}쪽 PDF → ${formatter.format(targetOutputPageCount())}장으로 합치기`);
+        setPreflightItem("options", "ready", `${orderLabel()} 방향, ${shouldAddBlank() ? "마지막 빈 페이지 사용" : "마지막 단독 페이지 유지"}`);
+        setPreflightItem(
+          "output",
+          outputUrl ? "ready" : "pending",
+          outputUrl
+            ? `저장 준비 완료, ${formatter.format(outputPageCount)}장 · ${formatBytes(outputBytes)}`
+            : "PDF 2-up 합치기를 누르면 저장 버튼이 열립니다."
+        );
+        syncGenerateButton();
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function resetState() {
+        releaseItems();
+        clearOutput();
+        fileItems = [];
+        pageCount = 0;
+        pageCountBadge.textContent = "0쪽";
+        fileLabel.textContent = "PDF 1개 선택 · 두 페이지를 한 장에 배치";
+        input.value = "";
+        setMessage("PDF를 선택하면 2-up으로 합칠 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+        updateOptionHelper();
+        updatePreflight();
+      }
+
+      async function inspectPdf(file, method = "picker") {
+        setBusy(true);
+        setMessage("PDF 읽는 중", "페이지 수를 확인하고 있습니다.");
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          pageCount = sourcePdf.getPageCount();
+          if (pageCount > maxPages) throw new Error("too_many_pages");
+          pageCountBadge.textContent = `${formatter.format(pageCount)}쪽`;
+          fileLabel.textContent = `${formatter.format(pageCount)}쪽 PDF 선택`;
+          setMessage(`${formatter.format(pageCount)}쪽 PDF`, `${formatter.format(targetOutputPageCount())}장으로 합칠 수 있습니다.`);
+          updatePreflight();
+          track("pdf_two_up_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            output_page_count: targetOutputPageCount(),
+            order: selectedOrder(),
+            add_blank_page: shouldAddBlank()
+          });
+        } catch (error) {
+          resetState();
+          const reason = error?.message === "too_many_pages" ? "too_many_pages" : error?.message || "pdf_read_failed";
+          setMessage(validationMessage(reason), "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_two_up_validation_error", { reason });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItems();
+        clearOutput();
+        pageCount = 0;
+        fileItems = fileTools.createFileItems([file], () => nextItemId++);
+        pageCountBadge.textContent = "읽는 중";
+        inspectPdf(file, method);
+      }
+
+      async function createSamplePdf() {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const colors = [rgb(0.08, 0.37, 0.94), rgb(0.07, 0.48, 0.48), rgb(0.71, 0.27, 0.03)];
+        for (let index = 0; index < 3; index += 1) {
+          const page = pdfDoc.addPage([421, 595]);
+          page.drawRectangle({ x: 34, y: 34, width: 353, height: 527, borderColor: rgb(0.82, 0.86, 0.92), borderWidth: 2 });
+          page.drawRectangle({ x: 70, y: 460, width: 230, height: 30, color: colors[index] });
+          page.drawText(`PAGE ${index + 1}`, { x: 88, y: 315, size: 44, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText("2-up sample page", { x: 88, y: 274, size: 14, font: bodyFont, color: rgb(0.42, 0.48, 0.56) });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], "pdf-two-up-sample.pdf", { type: "application/pdf" });
+      }
+
+      function fitPage(page, cellWidth, cellHeight) {
+        const width = page.getWidth();
+        const height = page.getHeight();
+        const scale = Math.min(cellWidth / width, cellHeight / height);
+        return {
+          width: width * scale,
+          height: height * scale
+        };
+      }
+
+      async function drawSourcePage(outputPdf, targetPage, sourcePage, cellX, cellWidth, cellHeight) {
+        const embedded = await outputPdf.embedPage(sourcePage);
+        const fitted = fitPage(sourcePage, cellWidth, cellHeight);
+        targetPage.drawPage(embedded, {
+          x: cellX + (cellWidth - fitted.width) / 2,
+          y: (cellHeight - fitted.height) / 2,
+          width: fitted.width,
+          height: fitted.height
+        });
+      }
+
+      async function mergeTwoUp() {
+        const file = selectedFile();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("pdf_two_up_validation_error", { reason: "empty" });
+          return;
+        }
+
+        clearOutput();
+        setBusy(true);
+        setMessage("PDF 2-up 합치는 중", `${formatter.format(pageCount)}쪽을 ${formatter.format(targetOutputPageCount())}장으로 만들고 있습니다.`);
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          const outputPdf = await PDFDocument.create();
+          const pages = sourcePdf.getPages();
+          const order = selectedOrder();
+          const addBlank = shouldAddBlank();
+          let nextBlankPageCount = 0;
+
+          for (let index = 0; index < pages.length; index += 2) {
+            const first = pages[index];
+            const second = pages[index + 1] || null;
+            if (!second && !addBlank) {
+              const single = outputPdf.addPage([first.getWidth(), first.getHeight()]);
+              await drawSourcePage(outputPdf, single, first, 0, first.getWidth(), first.getHeight());
+              continue;
+            }
+
+            if (!second) nextBlankPageCount += 1;
+            const cellWidth = Math.max(first.getWidth(), second?.getWidth() || first.getWidth());
+            const cellHeight = Math.max(first.getHeight(), second?.getHeight() || first.getHeight());
+            const targetPage = outputPdf.addPage([cellWidth * 2, cellHeight]);
+            const leftSource = order === "right-left" ? second : first;
+            const rightSource = order === "right-left" ? first : second;
+            if (leftSource) await drawSourcePage(outputPdf, targetPage, leftSource, 0, cellWidth, cellHeight);
+            if (rightSource) await drawSourcePage(outputPdf, targetPage, rightSource, cellWidth, cellWidth, cellHeight);
+          }
+
+          const bytes = await outputPdf.save();
+          const blob = new Blob([bytes], { type: "application/pdf" });
+          outputUrl = URL.createObjectURL(blob);
+          outputBytes = blob.size;
+          outputPageCount = outputPdf.getPageCount();
+          blankPageCount = nextBlankPageCount;
+          downloadLink.href = outputUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          downloadLink.dataset.outputSize = String(outputBytes);
+          downloadLink.dataset.outputPageCount = String(outputPageCount);
+          downloadLink.dataset.sourcePageCount = String(pageCount);
+          downloadLink.dataset.blankPageCount = String(blankPageCount);
+          downloadHint.hidden = false;
+          twoUpPreview.innerHTML = `
+            <div class="two-up-summary-row">
+              <strong>${formatter.format(pageCount)}쪽 → ${formatter.format(outputPageCount)}장</strong>
+              <span>${orderLabel()} · ${blankPageCount ? `빈 페이지 ${blankPageCount}쪽 사용` : "빈 페이지 없음"}</span>
+            </div>
+          `;
+          setMessage("PDF 준비 완료", `${formatter.format(outputPageCount)}장 · ${formatBytes(outputBytes)}`);
+          updatePreflight();
+          track("pdf_two_up_generate", {
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            output_page_count: outputPageCount,
+            blank_page_count: blankPageCount,
+            output_size: outputBytes,
+            order,
+            add_blank_page: addBlank
+          });
+        } catch (error) {
+          clearOutput();
+          setMessage("PDF를 2-up으로 합치지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_two_up_validation_error", { reason: error?.message || "pdf_two_up_failed" });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("pdf_two_up_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        setFile(files[0], method);
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      function optionChangePayload() {
+        return {
+          order: selectedOrder(),
+          add_blank_page: shouldAddBlank(),
+          page_count: pageCount,
+          output_page_count: targetOutputPageCount()
+        };
+      }
+
+      function syncOptionsAfterChange() {
+        clearOutput();
+        updateOptionHelper();
+        updatePreflight();
+      }
+
+      orderInputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          syncOptionsAfterChange();
+          track("pdf_two_up_order_change", optionChangePayload());
+        });
+      });
+      blankInput.addEventListener("change", () => {
+        syncOptionsAfterChange();
+        track("pdf_two_up_blank_change", optionChangePayload());
+      });
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        try {
+          const file = await createSamplePdf();
+          track("pdf_two_up_sample_apply", { file_count: 1 });
+          setFile(file, "sample");
+        } catch (error) {
+          setMessage("샘플 PDF를 만들지 못했습니다.", "잠시 후 다시 시도해 주세요.");
+          track("pdf_two_up_validation_error", { reason: error?.message || "sample_create_failed" });
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      generateButton.addEventListener("click", mergeTwoUp);
+      resetButton.addEventListener("click", () => {
+        resetState();
+        track("pdf_two_up_reset");
+      });
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("pdf_two_up_download", {
+          page_count: pageCount,
+          output_page_count: outputPageCount,
+          blank_page_count: blankPageCount,
+          output_size: outputBytes,
+          order: selectedOrder(),
+          add_blank_page: shouldAddBlank()
+        });
+      });
+
+      updateOptionHelper();
+      updatePreflight();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .pdf-two-up-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .pdf-two-up-panel,
+  .pdf-preview-panel,
+  .two-up-options-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 18px;
+  }
+
+  .pdf-upload-panel {
+    display: grid;
+    gap: 16px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .pdf-dropzone.file-control {
+    position: relative;
+    display: grid !important;
+    min-height: 320px !important;
+    place-items: center !important;
+    align-content: center;
+    gap: 14px;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #101828 !important;
+    cursor: pointer;
+    padding: 40px 24px !important;
+    text-align: center;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .pdf-dropzone.file-control:hover,
+  .pdf-dropzone.file-control:focus-within,
+  .pdf-dropzone.file-control.is-drag-over {
+    border-color: var(--accent) !important;
+    background: #f3f7ff !important;
+    box-shadow: 0 0 0 5px rgba(21, 94, 239, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .pdf-upload-icon {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 1px solid #dfe5ef;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--accent);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .pdf-upload-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  .pdf-dropzone strong {
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone span[data-file-label] {
+    color: #667085 !important;
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone-badges,
+  .order-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pdf-dropzone-badges {
+    justify-content: center;
+    color: inherit !important;
+  }
+
+  .pdf-dropzone-badges span {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .pdf-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 700;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .pdf-dropzone small,
+  .two-up-options-card p {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .blank-option,
+  .order-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 900;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .blank-option {
+    margin: 12px 0;
+  }
+
+  .blank-option input,
+  .order-options input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 18px;
+  }
+
+  .pdf-result-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .download-action-strip {
+    display: grid;
+    gap: 2px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #eff6ff;
+    padding: 10px 12px;
+    color: #1d4ed8;
+  }
+
+  .two-up-preview-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .two-up-summary-row {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #d9e6f5;
+    border-radius: 10px;
+    background: #f8fbff;
+    padding: 14px;
+  }
+
+  .two-up-summary-row span {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 920px) {
+    .pdf-two-up-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

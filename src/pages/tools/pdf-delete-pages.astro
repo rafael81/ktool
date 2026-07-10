@@ -1,0 +1,991 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { Download, FolderOpen, Plus, RefreshCw, Trash2 } from "@lucide/astro";
+
+const tool = getTool("pdf-delete-pages");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "PDF 페이지 삭제 무료", "PDF 페이지 제거 서버 전송 없음"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell file-tool-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>PDF에서 빼고 싶은 페이지만 선택해 새 파일로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-delete-workspace" data-pdf-delete-tool>
+      <form class="panel pdf-delete-panel pdf-upload-panel" aria-label="PDF 페이지 삭제 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>PDF를 여기로 끌어다 놓으세요</strong>
+          <span data-file-label>PDF 1개 선택 · 삭제할 페이지를 고릅니다</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 80MB · 암호 없는 PDF 지원</small>
+        </label>
+
+        <div class="page-picker-card">
+          <div class="panel-title">
+            <h2>삭제할 페이지</h2>
+            <span class="format-badge" data-page-count-badge>0쪽</span>
+          </div>
+          <p data-page-helper>PDF를 선택하면 페이지 번호가 표시됩니다.</p>
+          <div class="page-list" data-page-list aria-live="polite">
+            <p class="empty-state">선택된 PDF가 없습니다.</p>
+          </div>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>삭제 전 마지막 확인</strong>
+          <ul>
+            <li data-preflight-item="file">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="pages">페이지 수는 선택 후 확인합니다.</li>
+            <li data-preflight-item="delete">삭제할 페이지를 선택해 주세요.</li>
+            <li data-preflight-item="output">페이지 삭제 후 저장 버튼이 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <Trash2 aria-hidden="true" />
+            <span data-generate-label>선택 페이지 삭제</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 페이지 삭제 상태">
+        <div class="panel-title">
+          <h2>삭제 결과</h2>
+          <span class="format-badge">PDF</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 페이지를 삭제할 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="download-action-strip" data-pdf-download-hint hidden>
+            <strong>저장 준비 완료</strong>
+            <span>PDF 저장을 눌러 정리된 파일을 내려받으세요.</span>
+          </div>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-pages-removed.pdf"
+            aria-disabled="true"
+            data-download
+          >
+            <Download aria-hidden="true" />
+            PDF 저장
+          </a>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>정리할 PDF 파일을 선택합니다.</li>
+        <li>삭제할 페이지 번호를 선택합니다. 최소 1쪽은 남아야 합니다.</li>
+        <li>삭제 전 마지막 확인을 보고 새 PDF를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-pdf-delete-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 80 * 1024 * 1024;
+
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const pageCountBadge = root.querySelector("[data-page-count-badge]");
+      const pageHelper = root.querySelector("[data-page-helper]");
+      const pageList = root.querySelector("[data-page-list]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const downloadLink = root.querySelector("[data-download]");
+      const pdfDownloadHint = root.querySelector("[data-pdf-download-hint]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const preflightItems = {
+        file: root.querySelector('[data-preflight-item="file"]'),
+        pages: root.querySelector('[data-preflight-item="pages"]'),
+        delete: root.querySelector('[data-preflight-item="delete"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let pageCount = 0;
+      let deletedPages = new Set();
+      let outputUrl = "";
+      let outputBytes = 0;
+      let outputPageCount = 0;
+      let nextItemId = 1;
+      let pdfLibPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-delete-pages",
+          tool_title: "PDF 페이지 삭제",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function selectedFile() {
+        return fileItems[0]?.file || null;
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > 1) return { ok: false, reason: "too_many_files" };
+        const file = files[0];
+        if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+        if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 1개만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "PDF는 80MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        if (reason === "delete_all_pages") return "최소 1쪽은 남겨야 합니다.";
+        if (reason === "no_page_selected") return "삭제할 페이지를 선택해 주세요.";
+        return "PDF를 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function clearOutputUrl() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        outputPageCount = 0;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        pdfDownloadHint.hidden = true;
+        updatePreflight();
+      }
+
+      function canGenerate() {
+        return Boolean(selectedFile()) && pageCount > 0 && deletedPages.size > 0 && deletedPages.size < pageCount;
+      }
+
+      function syncGenerateButton() {
+        generateButton.disabled = !canGenerate();
+      }
+
+      function updatePreflight() {
+        const file = selectedFile();
+        if (!file) {
+          setPreflightItem("file", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("pages", "pending", "페이지 수는 선택 후 확인합니다.");
+          setPreflightItem("delete", "pending", "삭제할 페이지를 선택해 주세요.");
+          setPreflightItem("output", "pending", "페이지 삭제 후 저장 버튼이 열립니다.");
+          syncGenerateButton();
+          return;
+        }
+
+        setPreflightItem("file", "ready", `PDF 1개 선택됨, ${formatBytes(file.size)}`);
+        setPreflightItem("pages", "ready", `${formatter.format(pageCount)}쪽 PDF`);
+        setPreflightItem(
+          "delete",
+          deletedPages.size > 0 ? "ready" : "pending",
+          deletedPages.size > 0
+            ? `${formatter.format(deletedPages.size)}쪽 삭제, ${formatter.format(pageCount - deletedPages.size)}쪽 유지`
+            : "삭제할 페이지를 선택해 주세요."
+        );
+        setPreflightItem(
+          "output",
+          outputUrl ? "ready" : "pending",
+          outputUrl
+            ? `저장 준비 완료, ${formatter.format(outputPageCount)}쪽 · ${formatBytes(outputBytes)}`
+            : "선택 페이지 삭제를 누르면 저장 버튼이 열립니다."
+        );
+        syncGenerateButton();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || !canGenerate();
+        generateLabel.textContent = isBusy ? "삭제 중" : "선택 페이지 삭제";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function resetState() {
+        releaseItems();
+        fileItems = [];
+        pageCount = 0;
+        deletedPages = new Set();
+        pageCountBadge.textContent = "0쪽";
+        pageHelper.textContent = "PDF를 선택하면 페이지 번호가 표시됩니다.";
+        fileLabel.textContent = "PDF 1개 선택 · 삭제할 페이지를 고릅니다";
+        pageList.innerHTML = '<p class="empty-state">선택된 PDF가 없습니다.</p>';
+        clearOutputUrl();
+        setMessage("PDF를 선택하면 페이지를 삭제할 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+        updatePreflight();
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      function renderPages() {
+        pageCountBadge.textContent = `${formatter.format(pageCount)}쪽`;
+        if (!selectedFile() || pageCount === 0) {
+          pageList.innerHTML = '<p class="empty-state">선택된 PDF가 없습니다.</p>';
+          return;
+        }
+
+        pageHelper.textContent =
+          pageCount === 1
+            ? "1쪽짜리 PDF는 삭제할 수 있는 페이지가 없습니다."
+            : "삭제할 페이지 번호를 선택하세요. 최소 1쪽은 남겨야 합니다.";
+        pageList.innerHTML = Array.from({ length: pageCount }, (_, index) => {
+          const pageNumber = index + 1;
+          const isDeleted = deletedPages.has(index);
+          return `
+            <button
+              type="button"
+              class="page-tile${isDeleted ? " is-selected" : ""}"
+              data-page-toggle="${index}"
+              aria-pressed="${isDeleted ? "true" : "false"}"
+              aria-label="${pageNumber}쪽 삭제 ${isDeleted ? "선택됨" : "선택 안 됨"}"
+            >
+              <span>${pageNumber}</span>
+              <strong>${isDeleted ? "삭제" : "유지"}</strong>
+            </button>
+          `;
+        }).join("");
+        updatePreflight();
+      }
+
+      async function inspectPdf(file, method = "picker") {
+        setBusy(true);
+        pageList.innerHTML = '<p class="empty-state">PDF 페이지를 읽고 있습니다.</p>';
+        setMessage("PDF 읽는 중", "페이지 수를 확인하고 있습니다.");
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          pageCount = sourcePdf.getPageCount();
+          fileLabel.textContent = `${formatter.format(pageCount)}쪽 PDF 선택`;
+          setMessage(
+            `${formatter.format(pageCount)}쪽 PDF`,
+            pageCount > 1 ? "삭제할 페이지를 선택하세요." : "1쪽 PDF는 삭제 후 저장할 수 없습니다."
+          );
+          renderPages();
+          track("pdf_delete_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount
+          });
+        } catch (error) {
+          resetState();
+          setMessage("PDF를 읽지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_delete_validation_error", {
+            reason: error?.message || "pdf_read_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItems();
+        clearOutputUrl();
+        deletedPages = new Set();
+        pageCount = 0;
+        fileItems = fileTools.createFileItems([file], () => nextItemId++);
+        pageCountBadge.textContent = "읽는 중";
+        inspectPdf(file, method);
+      }
+
+      async function createSamplePdf() {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const colors = [
+          rgb(0.08, 0.37, 0.94),
+          rgb(0.07, 0.48, 0.48),
+          rgb(0.71, 0.27, 0.03),
+          rgb(0.34, 0.24, 0.74)
+        ];
+        for (let index = 0; index < 4; index += 1) {
+          const page = pdfDoc.addPage([595.28, 841.89]);
+          page.drawRectangle({ x: 42, y: 42, width: 511, height: 758, borderColor: rgb(0.85, 0.89, 0.94), borderWidth: 2 });
+          page.drawRectangle({ x: 72, y: 708, width: 210, height: 18, color: colors[index] });
+          page.drawText(`Page ${index + 1}`, { x: 72, y: 646, size: 38, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText("K Document Tool sample PDF", {
+            x: 72,
+            y: 604,
+            size: 16,
+            font: bodyFont,
+            color: rgb(0.32, 0.38, 0.46)
+          });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], "page-delete-sample.pdf", { type: "application/pdf" });
+      }
+
+      async function generateCleanPdf() {
+        const file = selectedFile();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("pdf_delete_validation_error", { reason: "empty" });
+          return;
+        }
+        if (deletedPages.size === 0) {
+          setMessage(validationMessage("no_page_selected"), "삭제할 페이지를 선택해 주세요.");
+          track("pdf_delete_validation_error", { reason: "no_page_selected" });
+          return;
+        }
+        if (deletedPages.size >= pageCount) {
+          setMessage(validationMessage("delete_all_pages"), "삭제 선택을 줄여 주세요.");
+          track("pdf_delete_validation_error", { reason: "delete_all_pages" });
+          return;
+        }
+
+        clearOutputUrl();
+        setBusy(true);
+        setMessage("페이지 삭제 중", `${formatter.format(deletedPages.size)}쪽을 제외하고 새 PDF를 만들고 있습니다.`);
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          const nextPdf = await PDFDocument.create();
+          const keptIndices = sourcePdf.getPageIndices().filter((index) => !deletedPages.has(index));
+          const keptPages = await nextPdf.copyPages(sourcePdf, keptIndices);
+          for (const page of keptPages) {
+            nextPdf.addPage(page);
+          }
+
+          const pdfBytes = await nextPdf.save();
+          outputBytes = pdfBytes.byteLength;
+          outputPageCount = keptPages.length;
+          const blob = new Blob([pdfBytes], { type: "application/pdf" });
+          outputUrl = URL.createObjectURL(blob);
+          downloadLink.href = outputUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          pdfDownloadHint.hidden = false;
+          setMessage(
+            `PDF 준비 완료: ${formatter.format(deletedPages.size)}쪽 삭제`,
+            `${formatter.format(outputPageCount)}쪽 · 예상 파일 크기 ${formatBytes(outputBytes)}`
+          );
+          updatePreflight();
+          track("pdf_delete_generate", {
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            deleted_page_count: deletedPages.size,
+            kept_page_count: outputPageCount,
+            output_size: outputBytes
+          });
+        } catch (error) {
+          setMessage("PDF를 저장하지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_delete_validation_error", {
+            reason: error?.message || "pdf_delete_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("pdf_delete_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        const file = files[0];
+        setFile(file, method);
+      }
+
+      function togglePage(index) {
+        if (!selectedFile() || index < 0 || index >= pageCount) return;
+        clearOutputUrl();
+        const nextDeletedPages = new Set(deletedPages);
+        if (nextDeletedPages.has(index)) {
+          nextDeletedPages.delete(index);
+        } else {
+          if (nextDeletedPages.size >= pageCount - 1) {
+            setMessage(validationMessage("delete_all_pages"), "최소 1쪽은 남겨야 합니다.");
+            track("pdf_delete_validation_error", { reason: "delete_all_pages" });
+            return;
+          }
+          nextDeletedPages.add(index);
+        }
+        deletedPages = nextDeletedPages;
+        renderPages();
+        track("pdf_delete_page_toggle", {
+          page_count: pageCount,
+          deleted_page_count: deletedPages.size,
+          kept_page_count: pageCount - deletedPages.size
+        });
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.remove("is-drag-over");
+          });
+        });
+
+        dropzone.addEventListener("drop", (event) => {
+          const files = Array.from(event.dataTransfer?.files || []);
+          if (!files.length) return;
+          input.value = "";
+          handleSelectedFiles(files, "drop");
+        });
+      }
+
+      pageList.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const button = target?.closest("[data-page-toggle]");
+        if (!button) return;
+        togglePage(Number(button.dataset.pageToggle));
+      });
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        setMessage("샘플 PDF 준비 중", "브라우저 안에서 4쪽 테스트 PDF를 만들고 있습니다.");
+        const file = await createSamplePdf();
+        input.value = "";
+        setFile(file, "sample");
+        track("pdf_delete_sample_apply", { file_count: 1 });
+      });
+
+      resetButton.addEventListener("click", () => {
+        input.value = "";
+        resetState();
+        track("pdf_delete_reset");
+      });
+
+      generateButton.addEventListener("click", generateCleanPdf);
+
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("pdf_delete_download", {
+          file_count: 1,
+          output_size: outputBytes,
+          page_count: pageCount,
+          deleted_page_count: deletedPages.size,
+          kept_page_count: outputPageCount
+        });
+      });
+
+      window.addEventListener("pagehide", () => {
+        releaseItems();
+        clearOutputUrl();
+      });
+
+      resetState();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .file-tool-shell {
+    width: min(900px, 100%);
+  }
+
+  .pdf-delete-workspace {
+    display: grid;
+    gap: 18px;
+    width: min(820px, 100%);
+    align-items: start;
+    margin: 0 auto;
+  }
+
+  .pdf-delete-panel,
+  .pdf-preview-panel,
+  .page-picker-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 18px;
+  }
+
+  .pdf-upload-panel {
+    display: grid;
+    gap: 16px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .pdf-dropzone.file-control {
+    position: relative;
+    display: grid !important;
+    min-height: 320px !important;
+    place-items: center !important;
+    align-content: center;
+    gap: 14px;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #101828 !important;
+    cursor: pointer;
+    padding: 40px 24px !important;
+    text-align: center;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .pdf-dropzone.file-control:hover,
+  .pdf-dropzone.file-control:focus-within,
+  .pdf-dropzone.file-control.is-drag-over {
+    border-color: var(--accent) !important;
+    background: #f3f7ff !important;
+    box-shadow: 0 0 0 5px rgba(21, 94, 239, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .pdf-upload-icon {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 1px solid #dfe5ef;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--accent);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .pdf-upload-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  .pdf-dropzone strong {
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone span[data-file-label] {
+    color: #667085 !important;
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    color: inherit !important;
+  }
+
+  .pdf-dropzone-badges span {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .pdf-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 700;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .pdf-dropzone small,
+  .page-picker-card p {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .page-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .page-tile {
+    display: grid;
+    min-height: 94px;
+    gap: 8px;
+    align-content: center;
+    justify-items: center;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .page-tile:hover,
+  .page-tile:focus-visible {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.14);
+    outline: none;
+  }
+
+  .page-tile.is-selected {
+    border-color: #b42318;
+    background: #fff4f2;
+    color: #b42318;
+  }
+
+  .page-tile span {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 9px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .page-tile.is-selected span {
+    background: #fee4e2;
+    color: #b42318;
+  }
+
+  .page-tile strong {
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .pdf-result-card > span {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .pdf-result-card strong {
+    color: var(--ink);
+    font-size: 18.5px;
+    line-height: 1.45;
+  }
+
+  .pdf-result-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .pdf-result-card .btn {
+    width: max-content;
+  }
+
+  .pdf-action-row {
+    justify-content: center;
+    margin-top: 0;
+  }
+
+  .pdf-action-row .btn {
+    min-height: 50px;
+    border-radius: 10px;
+    padding: 12px 18px;
+  }
+
+  .pdf-action-row .btn.primary {
+    min-width: 190px;
+  }
+
+  .preflight-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    padding: 14px;
+  }
+
+  .preflight-card strong {
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .preflight-card ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .preflight-card li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .preflight-card li::before {
+    content: "";
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .preflight-card li[data-status="ready"] {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  .preflight-card li[data-status="ready"]::before {
+    content: "✓";
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .btn.disabled,
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  @media (max-width: 760px) {
+    .pdf-dropzone.file-control {
+      min-height: 300px !important;
+      padding: 32px 16px !important;
+    }
+
+    .pdf-upload-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+    }
+
+    .pdf-upload-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .pdf-action-row .btn,
+    .pdf-result-card .btn {
+      width: 100%;
+    }
+  }
+</style>

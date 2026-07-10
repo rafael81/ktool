@@ -8,12 +8,26 @@ export type ToolId =
   | "amount-korean"
   | "withholding-tax"
   | "stamp-background"
+  | "pdf-edit"
+  | "pdf-split-half"
+  | "pdf-two-up"
+  | "pdf-crop"
+  | "pdf-text-extract"
+  | "pdf-split"
+  | "pdf-delete-pages"
+  | "pdf-merge"
+  | "pdf-to-image"
   | "jpg-to-pdf"
+  | "photo-date-stamp"
+  | "photo-merge"
   | "image-compressor"
   | "image-resizer"
   | "image-cropper"
   | "image-rotator"
   | "image-converter"
+  | "svg-crop"
+  | "image-base64"
+  | "video-to-gif"
   | "heic-to-jpg";
 
 export type ToolCategoryId = "business" | "pdf" | "image";
@@ -61,7 +75,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "PDF",
     path: "/categories/pdf/",
     description:
-      "JPG, PNG, WebP 이미지를 PDF로 묶는 파일 도구를 한국 업무 문서 제출 흐름에 맞춰 브라우저에서 처리합니다.",
+      "PDF 합치기, 나누기, 페이지 삭제, PDF를 JPG·PNG 이미지로 변환, JPG·PNG·WebP 이미지를 PDF로 묶는 파일 도구를 한국 업무 문서 제출 흐름에 맞춰 브라우저에서 처리합니다.",
     status: "active"
   },
   {
@@ -70,7 +84,7 @@ export const toolCategories: ToolCategory[] = [
     shortTitle: "이미지",
     path: "/categories/image/",
     description:
-      "사진과 이미지 파일을 제출하기 좋은 크기, 용량, 형식으로 브라우저에서 정리합니다.",
+      "사진과 이미지 파일을 한 장으로 합치거나 제출하기 좋은 크기, 용량, 형식으로 브라우저에서 정리합니다.",
     status: "active"
   }
 ];
@@ -424,6 +438,353 @@ export const tools: ToolInfo[] = [
     relatedToolIds: ["business-nameplate", "invoice"]
   },
   {
+    id: "pdf-split",
+    title: "PDF 나누기",
+    shortTitle: "PDF 나누기",
+    path: "/tools/pdf-split/",
+    category: "pdf",
+    description:
+      "PDF를 페이지별 또는 원하는 페이지 범위별로 나눠 여러 PDF 파일로 저장합니다.",
+    pageTitle: "PDF 나누기 - 무료 PDF 분할 브라우저 처리",
+    metaDescription:
+      "PDF를 페이지별 또는 원하는 범위별로 무료 분할하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다. 1-2,3-5처럼 범위를 입력해 여러 PDF로 저장합니다.",
+    primaryQuery: "PDF 나누기",
+    secondaryQueries: ["PDF 분할", "PDF 페이지별 분할", "PDF 범위 나누기", "무료 PDF 나누기"],
+    userMoment: "한 PDF에서 신청서, 증빙, 안내문을 따로 제출하거나 페이지 범위별 파일로 나눠야 하는 순간",
+    featureList: [
+      "PDF 페이지 범위별 분할",
+      "페이지별 PDF 나누기",
+      "분할 범위 미리 확인",
+      "여러 PDF 다운로드 링크 생성",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 파일 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 나눠진 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["페이지 범위는 어떻게 입력하나요?", "1-2,3-5처럼 쉼표로 범위를 구분합니다. 4처럼 한 페이지만 지정할 수도 있습니다."],
+      ["페이지별로 전부 나눌 수 있나요?", "네. 페이지별 나누기 버튼을 누르면 1,2,3처럼 각 페이지가 별도 PDF가 되도록 범위를 자동 입력합니다."],
+      ["암호가 걸린 PDF도 나눌 수 있나요?", "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 나눠진 새 PDF 파일들을 저장합니다."],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 PDF 파일을 나누는 보조 도구입니다. 제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요."
+      ]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-split-half", "pdf-two-up", "pdf-crop"]
+  },
+  {
+    id: "pdf-split-half",
+    title: "PDF 페이지 반으로 나누기",
+    shortTitle: "반 나누기",
+    path: "/tools/pdf-split-in-half/",
+    category: "pdf",
+    description:
+      "가로로 스캔된 책 PDF 한 페이지를 좌우 두 페이지로 나눠 개별 페이지 PDF로 저장합니다.",
+    pageTitle: "PDF 페이지 반으로 나누기 - 책 스캔 좌우 분할 무료",
+    metaDescription:
+      "한 장에 두 페이지가 담긴 책 스캔 PDF를 좌우로 무료 분할하세요. 좌→우 또는 우→좌 순서를 고르고 설치 없이 브라우저에서 처리합니다.",
+    primaryQuery: "PDF 페이지 반으로 나누기",
+    secondaryQueries: ["책 스캔 나누기", "PDF 좌우 분할", "A3 PDF A4 분할", "스캔 PDF 반으로 자르기"],
+    userMoment: "책이나 A3 문서를 펼쳐 스캔해 한 PDF 페이지에 두 쪽이 들어간 파일을 제출용 개별 페이지로 정리해야 하는 순간",
+    featureList: [
+      "PDF 페이지 좌우 반 분할",
+      "좌→우 또는 우→좌 순서 선택",
+      "한 페이지를 두 페이지로 변환",
+      "책 스캔 PDF 정리",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 PDF 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 분할된 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["책을 스캔했더니 2페이지가 한 장에 나오는데 나눌 수 있나요?", "네. 가로로 긴 PDF 페이지를 정중앙에서 좌우로 나눠 각각 별도 페이지로 만듭니다."],
+      ["A3 한 장에 A4 두 페이지가 있는 PDF도 가능한가요?", "네. A3처럼 가로로 긴 스캔 문서를 왼쪽 절반과 오른쪽 절반으로 나눌 수 있습니다."],
+      ["페이지 순서를 바꿀 수 있나요?", "좌→우 또는 우→좌 순서를 선택할 수 있습니다. 오른쪽 페이지가 먼저 와야 하는 책 스캔도 처리할 수 있습니다."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 반으로 나뉜 새 PDF 파일만 저장합니다."],
+      [
+        "암호가 걸린 PDF도 가능한가요?",
+        "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."
+      ]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-two-up", "pdf-crop", "pdf-split"]
+  },
+  {
+    id: "pdf-two-up",
+    title: "PDF 페이지 2장씩 1장으로 합치기",
+    shortTitle: "PDF 2-up",
+    path: "/tools/pdf-two-up/",
+    category: "pdf",
+    description:
+      "PDF 두 페이지를 좌우로 나란히 배치해 한 장짜리 2-up PDF로 저장합니다.",
+    pageTitle: "PDF 페이지 2장씩 1장으로 합치기 - 무료 PDF 2-up",
+    metaDescription:
+      "PDF 2페이지를 1페이지로 무료 합치세요. 좌→우/우→좌 방향과 빈 페이지 옵션을 고르고 설치 없이 브라우저에서 처리합니다.",
+    primaryQuery: "PDF 페이지 2장씩 1장으로 합치기",
+    secondaryQueries: ["PDF 2-up", "PDF 두 페이지 한 장", "PDF N-up", "PDF 2페이지 1페이지", "PDF 모아찍기"],
+    userMoment: "프레젠테이션, 비교 자료, 출력용 PDF를 종이 절약 형태로 정리해야 하는 순간",
+    featureList: [
+      "PDF 두 페이지를 한 장에 배치",
+      "좌→우 또는 우→좌 방향 선택",
+      "홀수 마지막 페이지 빈 페이지 옵션",
+      "원본 비율 유지",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 PDF 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 2-up PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["2-up이 뭔가요?", "PDF 두 페이지를 한 장의 좌우 영역에 나란히 배치하는 방식입니다. 모아찍기, N-up과 비슷한 용도입니다."],
+      ["페이지가 작아지는 건 정상인가요?", "네. 두 페이지를 한 장에 넣기 때문에 각 페이지는 원본 비율을 유지한 채 축소됩니다."],
+      ["페이지 방향을 바꿀 수 있나요?", "좌→우 또는 우→좌 방향을 선택할 수 있습니다. 오른쪽 페이지가 먼저 보여야 하는 자료도 처리할 수 있습니다."],
+      ["페이지 수가 홀수면 어떻게 되나요?", "마지막 페이지 뒤에 빈 페이지를 붙이거나, 마지막 페이지만 단독 페이지로 유지할 수 있습니다."],
+      ["암호가 걸린 PDF도 가능한가요?", "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 2-up으로 정리된 새 PDF 파일만 저장합니다."]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-crop", "pdf-text-extract", "pdf-split-half"]
+  },
+  {
+    id: "pdf-crop",
+    title: "PDF 여백 자르기",
+    shortTitle: "PDF 자르기",
+    path: "/tools/pdf-crop/",
+    category: "pdf",
+    description:
+      "스캔 PDF의 불필요한 바깥 여백을 자동 감지하거나 직접 입력해 본문 영역만 남긴 새 PDF로 저장합니다.",
+    pageTitle: "PDF 여백 자르기 - 무료 PDF 크롭 브라우저 처리",
+    metaDescription:
+      "PDF 여백을 무료로 자르세요. 자동 감지 또는 수동 여백 조정으로 스캔 문서의 바깥 여백과 검은 테두리를 정리하고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "PDF 여백 자르기",
+    secondaryQueries: ["PDF 자르기", "PDF 크롭", "PDF 여백 제거", "스캔 PDF 여백 제거", "PDF 테두리 자르기"],
+    userMoment: "스캔한 PDF의 큰 흰 여백, 검은 테두리, 불필요한 가장자리를 제출 전에 정리해야 하는 순간",
+    featureList: [
+      "PDF 페이지 여백 자르기",
+      "첫 페이지 기준 자동 여백 감지",
+      "상하좌우 여백 직접 조정",
+      "전체 페이지에 동일 크롭 적용",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 PDF 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 잘라낸 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["자동 감지는 어떻게 하나요?", "첫 페이지를 브라우저 캔버스에 렌더링한 뒤 흰 여백을 찾아 추천 여백값을 입력합니다. 필요하면 숫자로 다시 조정할 수 있습니다."],
+      ["모든 페이지에 같은 자르기를 적용하나요?", "네. 설정한 상하좌우 여백을 전체 페이지에 동일하게 적용합니다. 페이지 크기가 크게 다른 PDF는 결과를 저장 전 확인해 주세요."],
+      ["검은 테두리도 제거할 수 있나요?", "스캔 가장자리의 검은 테두리나 불필요한 배경이 바깥쪽에 있다면 여백값을 늘려 제거할 수 있습니다."],
+      ["파일 크기도 줄어드나요?", "표시되는 페이지 크기는 줄어들지만 내부 PDF 데이터가 모두 다시 압축되는 것은 아니어서 파일 크기 변화는 작을 수 있습니다."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 여백이 잘린 새 PDF 파일만 저장합니다."],
+      [
+        "암호가 걸린 PDF도 가능한가요?",
+        "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."
+      ]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-text-extract", "pdf-to-image", "pdf-split"]
+  },
+  {
+    id: "pdf-text-extract",
+    title: "PDF 텍스트 추출",
+    shortTitle: "텍스트 추출",
+    path: "/tools/pdf-text-extractor/",
+    category: "pdf",
+    description:
+      "PDF 안의 선택 가능한 글자를 페이지별로 추출해 복사하거나 TXT 파일로 저장합니다.",
+    pageTitle: "PDF 텍스트 추출 - 무료 PDF 글자 복사 TXT 저장",
+    metaDescription:
+      "PDF에서 텍스트를 무료로 추출하세요. 페이지별 텍스트 분리, 전체 복사, TXT 다운로드를 지원하고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "PDF 텍스트 추출",
+    secondaryQueries: ["PDF 글자 추출", "PDF 텍스트 복사", "PDF TXT 변환", "PDF에서 글자 추출", "PDF 내용 추출"],
+    userMoment: "계약서, 안내문, 제출 PDF에서 문구를 다시 복사해 메일, 신청서, 문서에 붙여 넣어야 하는 순간",
+    featureList: [
+      "PDF 페이지별 텍스트 추출",
+      "전체 텍스트 복사",
+      "TXT 파일 다운로드",
+      "페이지 구분선 포함 옵션",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 PDF 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 텍스트도 브라우저 안에서 추출합니다. 원본 파일, 파일명, 추출 텍스트 원문은 서버로 보내지 않습니다."
+      ],
+      ["스캔한 이미지 PDF도 텍스트가 나오나요?", "아니요. 이 도구는 PDF 안에 실제 글자 데이터가 있는 경우에만 추출합니다. 사진처럼 스캔된 PDF는 OCR 도구가 필요합니다."],
+      ["페이지별로 구분해서 볼 수 있나요?", "네. 페이지마다 추출된 텍스트를 나눠 보여주고, TXT 저장 시 페이지 구분선을 포함할 수 있습니다."],
+      ["한글 PDF도 추출할 수 있나요?", "PDF 안에 한글 글자 데이터와 문자 매핑이 있으면 추출할 수 있습니다. 일부 오래된 PDF나 이미지 PDF는 글자가 깨지거나 나오지 않을 수 있습니다."],
+      ["표나 단락 모양도 그대로 유지되나요?", "텍스트 추출은 글자 순서를 최대한 보존하지만, 복잡한 표·다단 문서의 레이아웃은 원본과 다를 수 있습니다."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 추출한 텍스트만 복사하거나 TXT로 저장합니다."]
+    ],
+    trustNote: "PDF와 추출 텍스트는 브라우저에서만 처리하며, 원본 파일명이나 텍스트 원문을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-edit", "pdf-to-image", "pdf-crop"]
+  },
+  {
+    id: "pdf-delete-pages",
+    title: "PDF 페이지 삭제",
+    shortTitle: "페이지 삭제",
+    path: "/tools/pdf-delete-pages/",
+    category: "pdf",
+    description:
+      "PDF에서 불필요한 페이지만 선택해 삭제하고 새 PDF로 저장합니다.",
+    pageTitle: "PDF 페이지 삭제 - 무료 PDF 페이지 제거 브라우저 처리",
+    metaDescription:
+      "PDF에서 불필요한 페이지만 무료로 삭제하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다. 삭제할 페이지를 선택해 새 PDF로 저장합니다.",
+    primaryQuery: "PDF 페이지 삭제",
+    secondaryQueries: ["PDF 페이지 제거", "PDF 특정 페이지 삭제", "PDF 일부 페이지 삭제", "무료 PDF 페이지 삭제"],
+    userMoment: "스캔본이나 제출 PDF에서 빈 페이지, 중복 페이지, 불필요한 안내 페이지를 빼야 하는 순간",
+    featureList: [
+      "PDF 페이지 선택 삭제",
+      "삭제할 페이지 번호 확인",
+      "남길 페이지 수 확인",
+      "브라우저 안에서 파일 처리",
+      "샘플 PDF로 즉시 테스트",
+      "서버 전송 없는 PDF 저장"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 새 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["여러 페이지를 한 번에 삭제할 수 있나요?", "네. 삭제할 페이지를 여러 개 선택한 뒤 한 번에 새 PDF로 저장할 수 있습니다."],
+      ["모든 페이지를 삭제할 수 있나요?", "아니요. PDF 파일은 최소 1쪽 이상 남아야 하므로 모든 페이지 삭제는 막습니다."],
+      ["암호가 걸린 PDF도 페이지를 삭제할 수 있나요?", "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 페이지가 삭제된 새 PDF 파일을 저장합니다."],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 PDF 페이지를 정리하는 보조 도구입니다. 제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요."
+      ]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-crop", "pdf-text-extract", "pdf-split"]
+  },
+  {
+    id: "pdf-merge",
+    title: "PDF 합치기",
+    shortTitle: "PDF 합치기",
+    path: "/tools/pdf-merge/",
+    category: "pdf",
+    description:
+      "여러 PDF 파일을 한 개의 PDF로 합쳐 제출용 파일로 저장합니다.",
+    pageTitle: "PDF 합치기 - 무료 PDF 병합 브라우저 처리",
+    metaDescription:
+      "여러 PDF 파일을 무료로 하나로 합치세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다. 순서 변경 후 PDF로 저장할 수 있습니다.",
+    primaryQuery: "PDF 합치기",
+    secondaryQueries: ["PDF 병합", "PDF 파일 합치기", "PDF 하나로 합치기", "무료 PDF 합치기"],
+    userMoment: "분리된 증빙, 스캔본, 신청서 PDF를 한 파일로 제출해야 하는 순간",
+    featureList: [
+      "여러 PDF 파일 병합",
+      "PDF 순서 조정",
+      "제출 전 마지막 확인",
+      "브라우저 안에서 파일 처리",
+      "샘플 PDF로 즉시 테스트",
+      "서버 전송 없는 PDF 저장"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 읽고 합친 PDF도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["여러 PDF를 한 번에 합칠 수 있나요?", "네. 최대 20개, 총 120MB까지 선택해 목록 순서대로 한 PDF로 합칠 수 있습니다."],
+      ["PDF 순서를 바꿀 수 있나요?", "네. 선택 후 목록을 끌거나 위/아래 버튼으로 병합 순서를 조정할 수 있습니다."],
+      ["암호가 걸린 PDF도 합칠 수 있나요?", "암호가 있거나 편집이 제한된 PDF는 브라우저에서 읽지 못할 수 있습니다. 먼저 잠금을 해제한 파일로 다시 시도하세요."],
+      ["원본 PDF가 바뀌나요?", "아니요. 원본 파일은 그대로 두고 합쳐진 새 PDF 파일을 저장합니다."],
+      [
+        "법적 효력이 있나요?",
+        "이 도구는 PDF 파일을 합치는 보조 도구입니다. 제출처의 원본성, 서명, 증빙 요건은 별도로 확인하세요."
+      ]
+    ],
+    trustNote: "PDF는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-crop", "pdf-two-up", "pdf-split-half"]
+  },
+  {
+    id: "pdf-edit",
+    title: "PDF 간편 편집(서명)",
+    shortTitle: "PDF 편집",
+    path: "/tools/pdf-editor/",
+    category: "pdf",
+    description:
+      "PDF 위에 텍스트, 체크 표시, 엑스, 원형, 손글씨 서명, 도장·이미지를 추가하고 새 PDF로 저장합니다.",
+    pageTitle: "PDF 간편 편집(서명) - 무료 PDF 텍스트 도장 추가",
+    metaDescription:
+      "PDF에 텍스트, 체크, 서명, 도장, 이미지를 무료로 추가하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "PDF 간편 편집",
+    secondaryQueries: ["PDF 서명", "PDF에 도장 넣기", "PDF 텍스트 추가", "PDF 체크 표시", "PDF 이미지 넣기"],
+    userMoment: "제출 직전 PDF에 확인 문구, 체크 표시, 서명, 도장 이미지를 빠르게 넣어야 하는 순간",
+    featureList: [
+      "PDF 위 텍스트 추가",
+      "체크·엑스·원형 표시",
+      "손글씨 서명 그리기",
+      "도장·이미지 삽입",
+      "페이지 90도 회전",
+      "브라우저 안에서 PDF 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF, 서명, 도장 이미지는 브라우저 안에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["기존 PDF 글자를 직접 수정할 수 있나요?", "기존 글자를 편집하는 기능은 아닙니다. PDF 위에 새 텍스트, 체크, 서명, 도장, 이미지를 추가하는 방식입니다."],
+      ["한글 텍스트도 추가할 수 있나요?", "네. 입력한 텍스트를 브라우저 캔버스에서 이미지로 만들어 PDF에 올리기 때문에 한글도 깨지지 않습니다."],
+      ["서명이나 도장 이미지를 넣을 수 있나요?", "서명을 직접 그리거나 PNG/JPG/WebP 도장 이미지를 선택해 원하는 위치에 배치할 수 있습니다."],
+      ["페이지 회전도 가능한가요?", "네. 선택한 페이지를 90도 단위로 좌회전 또는 우회전해 저장할 수 있습니다."],
+      [
+        "법적 전자서명인가요?",
+        "아니요. 이 도구는 문서 위에 서명·도장 이미지를 올리는 보조 도구이며, 인증 전자서명이나 인감 증명을 대신하지 않습니다."
+      ]
+    ],
+    trustNote: "PDF와 서명·도장 이미지는 브라우저에서만 처리하며, 원본 파일명이나 입력 텍스트 원문을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-text-extract", "pdf-crop", "pdf-merge"]
+  },
+  {
+    id: "pdf-to-image",
+    title: "PDF JPG 변환",
+    shortTitle: "PDF JPG",
+    path: "/tools/pdf-to-image-converter/",
+    category: "pdf",
+    description:
+      "PDF 각 페이지를 JPG 또는 PNG 이미지로 변환해 개별 이미지 파일로 저장합니다.",
+    pageTitle: "PDF JPG 변환 - PDF PNG 이미지 변환 무료",
+    metaDescription:
+      "PDF 각 페이지를 JPG 또는 PNG 이미지로 무료 변환하세요. 설치 없이 브라우저에서 처리하고 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "PDF JPG 변환",
+    secondaryQueries: ["PDF PNG 변환", "PDF 이미지 변환", "PDF to JPG", "PDF to PNG", "PDF 페이지 이미지 저장"],
+    userMoment: "PDF 안의 페이지를 이미지 첨부, 미리보기, 문서 삽입용 JPG 또는 PNG로 따로 저장해야 하는 순간",
+    featureList: [
+      "PDF 페이지 JPG 변환",
+      "PDF 페이지 PNG 변환",
+      "페이지별 이미지 다운로드",
+      "이미지 품질 선택",
+      "샘플 PDF로 즉시 테스트",
+      "브라우저 안에서 파일 처리"
+    ],
+    faqs: [
+      [
+        "PDF 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 PDF는 브라우저에서 렌더링하고 JPG 또는 PNG 이미지도 브라우저 안에서 만듭니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
+      ],
+      ["PDF를 JPG로 바꿀 수 있나요?", "네. PDF 각 페이지를 JPG 이미지로 저장할 수 있습니다."],
+      ["PDF를 PNG로도 바꿀 수 있나요?", "네. 저장 형식을 PNG로 바꾸면 각 페이지를 PNG 이미지로 저장합니다."],
+      ["여러 페이지 PDF는 어떻게 저장되나요?", "각 페이지마다 별도 이미지 다운로드 링크가 만들어집니다."],
+      ["암호가 걸린 PDF도 변환할 수 있나요?", "암호가 있거나 손상된 PDF는 브라우저에서 열리지 않을 수 있습니다. 잠금을 해제한 파일로 다시 시도하세요."],
+      [
+        "원본 PDF가 바뀌나요?",
+        "아니요. 원본 PDF는 그대로 두고 변환된 새 이미지 파일만 저장합니다."
+      ]
+    ],
+    trustNote: "PDF 렌더링과 이미지 저장은 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["pdf-text-extract", "pdf-crop", "pdf-edit"]
+  },
+  {
     id: "jpg-to-pdf",
     title: "JPG PDF 변환",
     shortTitle: "JPG PDF",
@@ -465,7 +826,46 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-compressor", "image-resizer"]
+    relatedToolIds: ["pdf-to-image", "pdf-merge", "photo-date-stamp"]
+  },
+  {
+    id: "photo-date-stamp",
+    title: "사진 날짜 표시",
+    shortTitle: "날짜표시",
+    path: "/tools/photo-date-stamper/",
+    category: "image",
+    description:
+      "사진 EXIF 촬영일을 읽어 필름카메라 스타일 날짜와 시간을 이미지에 표시합니다.",
+    pageTitle: "사진 날짜 표시 - 필름카메라 날짜 스탬프 무료",
+    metaDescription:
+      "사진 EXIF 촬영일을 자동 인식해 7세그먼트 오렌지 날짜 스탬프를 무료로 넣으세요. 위치·크기 조절, 설치 없이 브라우저에서 처리합니다.",
+    primaryQuery: "사진 날짜 표시",
+    secondaryQueries: ["필름카메라 날짜", "사진 날짜 스탬프", "EXIF 촬영일 표시", "사진에 날짜 넣기"],
+    userMoment: "옛날 필름카메라처럼 촬영 날짜를 사진 위에 남기거나 제출 사진에 촬영일을 표시해야 하는 순간",
+    featureList: [
+      "EXIF 촬영일 자동 인식",
+      "날짜와 시간 직접 입력",
+      "7세그먼트 오렌지 날짜 스탬프",
+      "위치·크기·배경 조절",
+      "JPG/PNG 저장",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "사진이 서버에 업로드되나요?",
+        "아니요. 사진과 EXIF 정보는 브라우저 안에서만 읽고 날짜가 표시된 새 이미지도 브라우저에서 만듭니다."
+      ],
+      ["EXIF 촬영일을 자동으로 읽나요?", "네. JPG 등 EXIF 촬영일이 있는 사진은 DateTimeOriginal 값을 우선 읽어 날짜 입력칸에 자동으로 채웁니다."],
+      ["EXIF 날짜가 없으면 사용할 수 없나요?", "사용할 수 있습니다. 촬영일을 찾지 못하면 날짜와 시간을 직접 입력해서 표시할 수 있습니다."],
+      ["날짜 위치와 크기를 바꿀 수 있나요?", "오른쪽 아래, 왼쪽 아래, 오른쪽 위, 왼쪽 위 위치와 글자 크기, 배경 표시 방식을 선택할 수 있습니다."],
+      ["저장 형식은 무엇을 지원하나요?", "JPG 또는 PNG로 저장할 수 있습니다. 호환성이 중요하면 JPG를 추천합니다."],
+      [
+        "원본 사진이 바뀌나요?",
+        "아니요. 원본 파일은 그대로 두고 날짜가 표시된 새 이미지 파일만 저장합니다."
+      ]
+    ],
+    trustNote: "사진과 EXIF 날짜는 브라우저에서만 처리하며, 실제 날짜와 원본 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["photo-merge", "image-compressor", "image-converter"]
   },
   {
     id: "image-compressor",
@@ -505,7 +905,46 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-resizer", "image-cropper"]
+    relatedToolIds: ["photo-date-stamp", "photo-merge", "image-resizer"]
+  },
+  {
+    id: "photo-merge",
+    title: "사진 합치기",
+    shortTitle: "사진합치기",
+    path: "/tools/photo-merge/",
+    category: "image",
+    description:
+      "여러 JPG, PNG, WebP 사진을 세로, 가로, 2열 격자로 한 장 이미지에 합칩니다.",
+    pageTitle: "사진 합치기 - 여러 장 이미지 한 장으로 합치기 무료",
+    metaDescription:
+      "여러 장의 사진을 한 장 이미지로 무료 합치세요. 세로·가로·2열 격자, 번호와 설명, 간격·여백·테두리를 설치 없이 브라우저에서 처리합니다. 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "사진 합치기",
+    secondaryQueries: ["이미지 합치기", "사진 이어붙이기", "여러 사진 한 장으로", "이미지 한 장으로 합치기"],
+    userMoment: "중고거래 사진 목록, 전후 비교, 서류 사진 묶음처럼 여러 이미지를 한 장으로 정리해야 하는 순간",
+    featureList: [
+      "여러 사진 한 장으로 합치기",
+      "세로·가로·2열 격자 배치",
+      "번호와 설명 표시",
+      "간격·여백·테두리 조절",
+      "JPG/PNG 저장",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "사진이 서버에 업로드되나요?",
+        "아니요. 선택한 사진과 입력한 설명은 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
+      ],
+      ["사진을 어떤 방식으로 합칠 수 있나요?", "세로로 이어붙이기, 가로로 이어붙이기, 2열 격자 배치를 지원합니다."],
+      ["사진마다 번호와 설명을 넣을 수 있나요?", "네. 번호만 표시하거나 번호와 설명을 함께 표시하거나 아무 표시도 하지 않을 수 있습니다."],
+      ["간격과 여백을 조절할 수 있나요?", "네. 사진 사이 간격, 바깥 여백, 테두리 표시 여부를 조절할 수 있습니다."],
+      ["출력 형식은 무엇을 지원하나요?", "JPG 또는 PNG로 저장할 수 있습니다. 제출 호환성이 중요하면 JPG를 추천합니다."],
+      [
+        "원본 파일이 바뀌나요?",
+        "아니요. 원본 사진은 그대로 두고 합쳐진 새 이미지 파일만 저장합니다."
+      ]
+    ],
+    trustNote: "사진과 설명은 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["photo-date-stamp", "image-compressor", "jpg-to-pdf"]
   },
   {
     id: "image-resizer",
@@ -622,7 +1061,7 @@ export const tools: ToolInfo[] = [
     path: "/tools/image-converter/",
     category: "image",
     description:
-      "WebP, PNG, JPG 이미지를 브라우저에서 JPG, PNG, WebP 형식으로 바꿔 저장합니다.",
+      "JPG, PNG, WebP, GIF, AVIF, BMP, SVG 이미지를 브라우저에서 JPG, PNG, WebP 형식으로 바꿔 저장합니다.",
     pageTitle: "WebP JPG 변환 - WebP 이미지 JPG 무료 변환",
     metaDescription:
       "WebP 이미지를 JPG로 무료 변환하세요. JPG만 받는 제출처에 맞춰 PNG, JPG, WebP 형식을 설치 없이 브라우저에서 처리합니다.",
@@ -630,7 +1069,7 @@ export const tools: ToolInfo[] = [
     secondaryQueries: ["JPG WebP 변환", "PNG JPG 변환", "이미지 형식 변환", "WebP PNG 변환"],
     userMoment: "첨부 시스템이나 문서 편집기가 특정 이미지 형식만 받을 때",
     featureList: [
-      "WebP, PNG, JPG 입력 지원",
+      "JPG, PNG, WebP, GIF, AVIF, BMP, SVG 입력 지원",
       "JPG/PNG/WebP 출력 선택",
       "여러 이미지 일괄 변환",
       "JPG/WebP 품질 조절",
@@ -642,6 +1081,7 @@ export const tools: ToolInfo[] = [
         "아니요. 선택한 이미지는 브라우저 캔버스에서만 처리하고 서버로 보내지 않습니다."
       ],
       ["WebP를 JPG로 바꿀 수 있나요?", "네. WebP 이미지를 선택한 뒤 출력 형식을 JPG로 두고 변환하면 JPG 파일로 저장할 수 있습니다."],
+      ["GIF, AVIF, SVG도 변환할 수 있나요?", "네. 브라우저가 표시할 수 있는 GIF, AVIF, BMP, SVG 이미지를 JPG, PNG, WebP로 저장할 수 있습니다. GIF는 첫 프레임 기준으로 변환합니다."],
       ["PNG 투명 배경은 유지되나요?", "PNG 또는 WebP로 저장하면 투명 영역을 유지할 수 있습니다. JPG는 투명을 지원하지 않아 흰 배경으로 저장합니다."],
       ["여러 장을 한 번에 바꿀 수 있나요?", "네. 최대 20장, 총 50MB까지 선택해 한 번에 변환할 수 있습니다."],
       ["품질 값은 언제 적용되나요?", "JPG와 WebP 저장 때 적용됩니다. PNG는 브라우저 특성상 품질 슬라이더의 영향이 작거나 없을 수 있습니다."],
@@ -651,7 +1091,116 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "이미지는 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["heic-to-jpg", "image-resizer"]
+    relatedToolIds: ["svg-crop", "image-base64", "video-to-gif"]
+  },
+  {
+    id: "svg-crop",
+    title: "SVG 여백 제거",
+    shortTitle: "SVG 여백",
+    path: "/tools/svg-crop/",
+    category: "image",
+    description:
+      "SVG 파일이나 마크업의 실제 그래픽 영역을 분석해 불필요한 viewBox 여백을 제거합니다.",
+    pageTitle: "SVG 여백 제거 - 무료 SVG viewBox 자동 자르기",
+    metaDescription:
+      "SVG 파일의 불필요한 여백을 무료로 제거하세요. 아이콘·로고 SVG의 viewBox를 자동 조정하고 다운로드 또는 마크업 복사를 지원합니다. 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "SVG 여백 제거",
+    secondaryQueries: ["SVG 자르기", "SVG 크롭", "SVG viewBox 조정", "SVG 공백 제거", "로고 SVG 여백 제거"],
+    userMoment: "로고나 아이콘 SVG가 캔버스 여백 때문에 UI 정렬이 어긋나거나 크기가 작게 보일 때",
+    featureList: [
+      "SVG viewBox 자동 조정",
+      "SVG 파일 업로드",
+      "SVG 마크업 붙여넣기",
+      "여유 여백 padding 설정",
+      "SVG 다운로드",
+      "마크업 복사",
+      "브라우저 안에서 SVG 처리"
+    ],
+    faqs: [
+      [
+        "SVG 파일이 서버에 업로드되나요?",
+        "아니요. 선택한 SVG 파일이나 붙여넣은 마크업은 브라우저에서만 분석하고 서버로 보내지 않습니다."
+      ],
+      ["SVG 여백은 왜 생기나요?", "디자인 도구에서 내보낼 때 실제 아이콘보다 큰 캔버스가 viewBox, width, height에 남으면 주변이 비어 보입니다."],
+      ["여백 제거는 어떻게 처리하나요?", "브라우저에서 실제 그래픽의 bounding box를 계산하고, SVG root의 viewBox와 width·height 값을 그 영역에 맞게 줄입니다."],
+      ["SVG 품질이 떨어지나요?", "아니요. SVG는 벡터라 해상도 손실이 없습니다. 그래픽 자체는 유지하고 좌표계와 바깥 크기만 조정합니다."],
+      ["스크립트가 들어간 SVG도 그대로 보존되나요?", "안전을 위해 script, foreignObject, 이벤트 속성, javascript: 링크는 제거합니다. 아이콘·로고용 SVG 정리에 맞춘 도구입니다."],
+      ["그림자나 필터가 잘릴 수 있나요?", "필터 그림자처럼 실제 도형 바깥으로 번지는 효과는 잘릴 수 있습니다. 이런 경우 여유 여백 padding 값을 조금 키워 저장하세요."]
+    ],
+    trustNote: "SVG와 마크업은 브라우저에서만 처리하며, 원본 파일명이나 SVG 원문을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-base64", "video-to-gif", "image-converter"]
+  },
+  {
+    id: "image-base64",
+    title: "이미지 Base64 변환기",
+    shortTitle: "Base64",
+    path: "/tools/image-base64-converter/",
+    category: "image",
+    description:
+      "이미지를 Base64 data URI로 바꾸거나 Base64 문자열을 다시 이미지 파일로 복원합니다.",
+    pageTitle: "이미지 Base64 변환기 - 무료 data URI 인코딩 디코딩",
+    metaDescription:
+      "JPG, PNG, WebP, GIF, BMP, SVG 이미지를 Base64 data URI로 무료 변환하세요. Base64 문자열을 이미지로 복원하고 HTML, CSS 코드 복사를 지원합니다. 파일은 서버로 전송되지 않습니다.",
+    primaryQuery: "이미지 Base64 변환기",
+    secondaryQueries: ["이미지 Base64 변환", "Base64 이미지 변환", "data URI 생성", "Base64 이미지 복원", "이미지 인코딩"],
+    userMoment: "HTML, CSS, 이메일 템플릿, 개발 문서에 작은 이미지를 파일 없이 직접 넣어야 할 때",
+    featureList: [
+      "이미지 → Base64 data URI 변환",
+      "Base64 → 이미지 복원",
+      "data URI, Base64, HTML, CSS 복사",
+      "JPG/PNG/WebP/GIF/BMP/SVG 입력 지원",
+      "이미지 미리보기와 메타 정보 확인",
+      "브라우저 안에서 이미지 처리"
+    ],
+    faqs: [
+      [
+        "이미지가 서버에 업로드되나요?",
+        "아니요. 선택한 이미지는 브라우저에서 Base64 문자열로 변환하고 서버로 보내지 않습니다."
+      ],
+      ["Base64가 뭔가요?", "이미지 같은 바이너리 데이터를 텍스트 문자열로 바꾸는 방식입니다. data:image/png;base64,... 형태로 HTML과 CSS에 직접 넣을 수 있습니다."],
+      ["data URI 전체와 Base64만 따로 복사할 수 있나요?", "네. data URI 전체, Base64 본문, HTML img 태그, CSS background-image 코드를 각각 복사할 수 있습니다."],
+      ["Base64 문자열을 다시 이미지 파일로 만들 수 있나요?", "네. data URI 또는 Base64 문자열을 붙여넣으면 이미지 미리보기와 다운로드 파일을 만듭니다."],
+      ["Base64로 바꾸면 용량이 줄어드나요?", "아니요. 보통 원본보다 약 33% 길어집니다. 아주 작은 아이콘처럼 별도 요청을 줄이고 싶을 때 주로 씁니다."],
+      ["어떤 형식을 지원하나요?", "JPG, PNG, WebP, GIF, BMP, SVG 이미지를 지원합니다. 브라우저가 표시할 수 없는 비표준 이미지는 복원이 제한될 수 있습니다."]
+    ],
+    trustNote: "이미지와 Base64 문자열은 브라우저에서만 처리하며, 원본 파일명이나 Base64 원문을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["svg-crop", "video-to-gif", "image-converter"]
+  },
+  {
+    id: "video-to-gif",
+    title: "동영상 GIF 변환",
+    shortTitle: "동영상 GIF",
+    path: "/tools/video-to-gif-converter/",
+    category: "image",
+    description:
+      "MP4, MOV, WebM 영상을 짧은 GIF 움짤로 바꾸고 구간, 크기, FPS, 화질, 속도를 조절합니다.",
+    pageTitle: "동영상 GIF 변환 - MP4 MOV WebM 움짤 만들기",
+    metaDescription:
+      "동영상(MP4, MOV, WebM)을 GIF 움짤로 무료 변환하세요. 구간 자르기, 크기, FPS, 화질, 재생 속도, 반복 설정을 브라우저에서 처리하고 영상은 서버로 전송되지 않습니다.",
+    primaryQuery: "동영상 GIF 변환",
+    secondaryQueries: ["MP4 GIF 변환", "MOV GIF 변환", "WebM GIF 변환", "움짤 만들기", "영상 GIF 만들기"],
+    userMoment: "블로그, 메신저, 상세페이지에 짧은 동작을 자동 재생 움짤로 보여줘야 할 때",
+    featureList: [
+      "MP4/MOV/WebM 입력 지원",
+      "구간 시작/끝 설정",
+      "GIF 너비와 자동 높이 조절",
+      "FPS, 화질, 재생 속도 조절",
+      "무한 반복과 반복 사이 멈춤 설정",
+      "브라우저 안에서 영상 처리"
+    ],
+    faqs: [
+      [
+        "영상이 서버에 업로드되나요?",
+        "아니요. 선택한 동영상은 브라우저 비디오와 캔버스에서만 읽고 GIF로 인코딩하며 서버로 보내지 않습니다."
+      ],
+      ["어떤 영상 형식을 지원하나요?", "MP4, MOV, WebM처럼 브라우저가 재생할 수 있는 대부분의 동영상을 지원합니다. 휴대폰 촬영 영상과 화면 녹화 영상도 사용할 수 있습니다."],
+      ["GIF 용량을 줄이려면 어떻게 해야 하나요?", "구간을 짧게 자르고, 너비를 줄이고, FPS와 화질을 낮추면 파일 크기가 크게 줄어듭니다."],
+      ["GIF에 소리도 들어가나요?", "아니요. GIF는 소리를 담지 못하는 이미지 형식이라 화면만 저장됩니다."],
+      ["모바일에서도 되나요?", "최신 모바일 브라우저에서 동작합니다. 다만 긴 영상은 기기 성능 때문에 구간을 짧게 잡는 것이 좋습니다."],
+      ["긴 영상을 전부 GIF로 만들 수 있나요?", "가능은 하지만 GIF 특성상 용량이 매우 커집니다. 이 도구는 짧은 구간을 잘라 움짤로 만드는 용도에 맞춰져 있습니다."]
+    ],
+    trustNote: "영상은 브라우저에서만 처리하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
+    relatedToolIds: ["image-converter", "image-compressor", "image-base64"]
   },
   {
     id: "heic-to-jpg",
@@ -668,6 +1217,7 @@ export const tools: ToolInfo[] = [
     secondaryQueries: ["HEIC JPG", "아이폰 사진 JPG 변환", "HEIF JPG 변환", "HEIC PNG 변환"],
     userMoment: "iPhone 사진이 HEIC라서 회사, 관공서, 학교 업로드 시스템에서 열리지 않을 때",
     featureList: [
+      "HEIC/HEIF 사진 미리보기",
       "HEIC/HEIF 입력 지원",
       "JPG/PNG 출력 선택",
       "여러 이미지 일괄 변환",
@@ -679,6 +1229,7 @@ export const tools: ToolInfo[] = [
         "HEIC 사진이 서버에 업로드되나요?",
         "아니요. 선택한 HEIC 파일은 브라우저에서만 읽고 변환합니다. 원본 파일과 파일명은 서버로 보내지 않습니다."
       ],
+      ["HEIC 뷰어처럼 사진을 확인할 수 있나요?", "네. HEIC를 JPG 또는 PNG로 변환하면 결과 미리보기에서 사진을 바로 확인하고 저장할 수 있습니다."],
       ["iPhone 사진을 JPG로 바꿀 수 있나요?", "네. iPhone에서 촬영된 HEIC 또는 HEIF 사진을 JPG 파일로 저장할 수 있습니다."],
       ["PNG로도 저장할 수 있나요?", "네. 출력 형식을 PNG로 바꾸면 PNG 이미지로 저장합니다."],
       ["여러 장을 한 번에 바꿀 수 있나요?", "네. 최대 10장, 총 80MB까지 선택해 한 번에 변환할 수 있습니다."],
@@ -689,7 +1240,7 @@ export const tools: ToolInfo[] = [
       ]
     ],
     trustNote: "HEIC 처리는 브라우저에서만 실행하며, 원본 파일과 파일명을 분석 이벤트로 보내지 않습니다.",
-    relatedToolIds: ["image-converter", "image-resizer"]
+    relatedToolIds: ["image-converter", "image-base64", "image-resizer"]
   }
 ];
 

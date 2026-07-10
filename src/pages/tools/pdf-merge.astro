@@ -1,0 +1,1029 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("pdf-merge");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "PDF 합치기 무료", "PDF 병합 서버 전송 없음"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell file-tool-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>여러 PDF 파일을 원하는 순서대로 한 파일로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-merge-workspace" data-pdf-merge-tool>
+      <form class="panel pdf-merge-panel pdf-upload-panel" aria-label="PDF 합치기 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" multiple />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>PDF를 여기로 끌어다 놓으세요</strong>
+          <span data-file-label>여러 개 선택 가능 · 목록 순서가 병합 순서</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 20개 · 총 120MB · 암호 없는 PDF 지원</small>
+        </label>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>병합 전 마지막 확인</strong>
+          <ul>
+            <li data-preflight-item="files">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="order">목록 순서대로 하나의 PDF가 만들어집니다.</li>
+            <li data-preflight-item="privacy">파일은 브라우저 안에서만 처리합니다.</li>
+            <li data-preflight-item="output">PDF 합치기 후 저장 버튼이 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-generate-label>PDF 합치기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 병합 상태">
+        <div class="panel-title">
+          <h2>병합 결과</h2>
+          <span class="format-badge">PDF</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 병합할 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="download-action-strip" data-pdf-download-hint hidden>
+            <strong>저장 준비 완료</strong>
+            <span>PDF 저장을 눌러 병합 파일을 내려받으세요.</span>
+          </div>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-merged.pdf"
+            aria-disabled="true"
+            data-download
+          >
+            <Download aria-hidden="true" />
+            PDF 저장
+          </a>
+        </div>
+
+        <div class="file-list" data-file-list aria-live="polite">
+          <p class="empty-state">선택된 PDF가 없습니다.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>합칠 PDF 파일을 여러 개 선택합니다.</li>
+        <li>필요하면 목록을 끌거나 위/아래 버튼으로 병합 순서를 맞춥니다.</li>
+        <li>병합 전 마지막 확인을 보고 PDF를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-pdf-merge-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFiles = 20;
+      const maxFileSize = 40 * 1024 * 1024;
+      const maxTotalSize = 120 * 1024 * 1024;
+
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const downloadLink = root.querySelector("[data-download]");
+      const pdfDownloadHint = root.querySelector("[data-pdf-download-hint]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const fileList = root.querySelector("[data-file-list]");
+      const preflightItems = {
+        files: root.querySelector('[data-preflight-item="files"]'),
+        order: root.querySelector('[data-preflight-item="order"]'),
+        privacy: root.querySelector('[data-preflight-item="privacy"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let outputUrl = "";
+      let outputBytes = 0;
+      let outputPageCount = 0;
+      let nextItemId = 1;
+      let dragSourceIndex = -1;
+      let pdfLibPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-merge",
+          tool_title: "PDF 합치기",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function toFiles(items = fileItems) {
+        return items.map((item) => item.file);
+      }
+
+      function totalSize(nextFiles = toFiles()) {
+        return fileTools.totalSize(nextFiles);
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(nextFiles) {
+        if (nextFiles.length === 0) return { ok: false, reason: "empty" };
+        if (nextFiles.length > maxFiles) return { ok: false, reason: "too_many_files" };
+        if (totalSize(nextFiles) > maxTotalSize) return { ok: false, reason: "total_size_too_large" };
+        for (const file of nextFiles) {
+          if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+          if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        }
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 최대 20개까지 선택할 수 있습니다.";
+        if (reason === "total_size_too_large") return "전체 PDF 용량은 120MB 이하로 선택해 주세요.";
+        if (reason === "file_too_large") return "PDF 한 개는 40MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        return "PDF를 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function updatePreflight() {
+        const files = toFiles();
+        if (files.length === 0) {
+          setPreflightItem("files", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("order", "pending", "목록 순서대로 하나의 PDF가 만들어집니다.");
+          setPreflightItem("privacy", "ready", "원본 PDF와 파일명은 서버로 보내지 않습니다.");
+          setPreflightItem("output", "pending", "PDF 합치기 후 저장 버튼이 열립니다.");
+          return;
+        }
+
+        setPreflightItem(
+          "files",
+          "ready",
+          `${formatter.format(files.length)}개 선택됨, 총 ${formatBytes(totalSize(files))}`
+        );
+        setPreflightItem(
+          "order",
+          "ready",
+          files.length > 1 ? "목록 순서대로 PDF가 병합됩니다." : "PDF 1개도 다시 저장할 수 있습니다."
+        );
+        setPreflightItem("privacy", "ready", "브라우저 안에서 PDF 페이지를 복사해 새 파일을 만듭니다.");
+        setPreflightItem(
+          "output",
+          outputUrl ? "ready" : "pending",
+          outputUrl
+            ? `저장 준비 완료, ${formatter.format(outputPageCount)}쪽 · ${formatBytes(outputBytes)}`
+            : "PDF 합치기를 누르면 저장 버튼이 열립니다."
+        );
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || fileItems.length === 0;
+        generateLabel.textContent = isBusy ? "합치는 중" : "PDF 합치기";
+      }
+
+      function clearOutputUrl() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        outputPageCount = 0;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        pdfDownloadHint.hidden = true;
+        updatePreflight();
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function createFileItems(nextFiles) {
+        return fileTools.createFileItems(nextFiles, () => nextItemId++);
+      }
+
+      function setFileItems(nextFiles) {
+        releaseItems();
+        fileItems = createFileItems(nextFiles);
+        renderFiles();
+      }
+
+      function renderFiles() {
+        generateButton.disabled = fileItems.length === 0;
+        clearOutputUrl();
+        if (fileItems.length === 0) {
+          fileLabel.textContent = "여러 개 선택 가능 · 목록 순서가 병합 순서";
+          fileList.innerHTML = '<p class="empty-state">선택된 PDF가 없습니다.</p>';
+          setMessage("PDF를 선택하면 병합할 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+          updatePreflight();
+          return;
+        }
+
+        fileLabel.textContent = `${formatter.format(fileItems.length)}개 선택`;
+        fileList.innerHTML = fileItems
+          .map(
+            (item, index) => `
+              <div class="file-row pdf-file-row" data-file-row data-file-index="${index}" draggable="true" aria-label="${index + 1}번째 병합 PDF">
+                <span class="file-row-index">${index + 1}</span>
+                <strong>PDF</strong>
+                <p>${formatBytes(item.file.size)}</p>
+                <div class="file-actions">
+                  <button type="button" data-move-file="${index}" data-direction="up" aria-label="${index + 1}번째 PDF를 앞으로 이동" ${index === 0 ? "disabled" : ""}>↑</button>
+                  <button type="button" data-move-file="${index}" data-direction="down" aria-label="${index + 1}번째 PDF를 뒤로 이동" ${index === fileItems.length - 1 ? "disabled" : ""}>↓</button>
+                  <button type="button" data-remove-file="${index}" aria-label="${index + 1}번째 PDF 삭제">×</button>
+                </div>
+              </div>
+            `
+          )
+          .join("");
+        setMessage(
+          `${formatter.format(fileItems.length)}개 선택됨`,
+          `총 ${formatBytes(totalSize())}, PDF 합치기를 누르면 병합합니다.`
+        );
+        updatePreflight();
+      }
+
+      function reorderFile(fromIndex, toIndex, method = "button") {
+        if (fromIndex === toIndex) return;
+        if (fromIndex < 0 || fromIndex >= fileItems.length) return;
+        if (toIndex < 0 || toIndex >= fileItems.length) return;
+        const nextItems = [...fileItems];
+        const [movedItem] = nextItems.splice(fromIndex, 1);
+        nextItems.splice(toIndex, 0, movedItem);
+        fileItems = nextItems;
+        renderFiles();
+        track("pdf_merge_reorder", {
+          from_position: fromIndex + 1,
+          to_position: toIndex + 1,
+          file_count: fileItems.length,
+          method
+        });
+      }
+
+      function moveFile(index, direction) {
+        const offset = direction === "up" ? -1 : 1;
+        reorderFile(index, index + offset, "button");
+      }
+
+      function removeFile(index) {
+        if (index < 0 || index >= fileItems.length) return;
+        const nextItems = [...fileItems];
+        const [removedItem] = nextItems.splice(index, 1);
+        releaseItems([removedItem]);
+        fileItems = nextItems;
+        if (fileItems.length === 0) input.value = "";
+        renderFiles();
+        track("pdf_merge_remove", {
+          from_position: index + 1,
+          file_count: fileItems.length
+        });
+      }
+
+      function fileRowFromEvent(event) {
+        const target = event.target instanceof Element ? event.target : null;
+        return target?.closest("[data-file-row]");
+      }
+
+      function clearDragState() {
+        fileList.querySelectorAll("[data-file-row]").forEach((row) => {
+          row.classList.remove("is-dragging", "is-drag-over");
+        });
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      async function createSamplePdf(label, color, pageCount = 1) {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const accentColor = rgb(color[0], color[1], color[2]);
+        for (let index = 0; index < pageCount; index += 1) {
+          const page = pdfDoc.addPage([595.28, 841.89]);
+          page.drawRectangle({ x: 42, y: 42, width: 511, height: 758, borderColor: rgb(0.85, 0.89, 0.94), borderWidth: 2 });
+          page.drawRectangle({ x: 72, y: 708, width: 210, height: 18, color: accentColor });
+          page.drawText(label, { x: 72, y: 646, size: 32, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText(`K Document Tool sample ${index + 1}`, {
+            x: 72,
+            y: 604,
+            size: 16,
+            font: bodyFont,
+            color: rgb(0.32, 0.38, 0.46)
+          });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], `${label}.pdf`, { type: "application/pdf" });
+      }
+
+      async function generateMergedPdf() {
+        const files = toFiles();
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setMessage(message, "파일을 다시 선택한 뒤 시도해 주세요.");
+          track("pdf_merge_validation_error", { reason: validation.reason });
+          return;
+        }
+
+        clearOutputUrl();
+        setBusy(true);
+        setMessage("PDF 합치는 중", `${formatter.format(files.length)}개 PDF를 읽고 있습니다.`);
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const mergedPdf = await PDFDocument.create();
+          let pageCount = 0;
+
+          for (const file of files) {
+            const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+            const sourcePages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
+            for (const page of sourcePages) {
+              mergedPdf.addPage(page);
+            }
+            pageCount += sourcePages.length;
+          }
+
+          const pdfBytes = await mergedPdf.save();
+          outputBytes = pdfBytes.byteLength;
+          outputPageCount = pageCount;
+          const blob = new Blob([pdfBytes], { type: "application/pdf" });
+          outputUrl = URL.createObjectURL(blob);
+          downloadLink.href = outputUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          pdfDownloadHint.hidden = false;
+          setMessage(
+            `PDF 준비 완료: ${formatter.format(files.length)}개 병합`,
+            `${formatter.format(pageCount)}쪽 · 예상 파일 크기 ${formatBytes(outputBytes)}`
+          );
+          updatePreflight();
+          track("pdf_merge_generate", {
+            ...fileTools.safeFileAnalyticsPayload(files),
+            output_size: outputBytes,
+            page_count: pageCount
+          });
+        } catch (error) {
+          setMessage("PDF를 합치지 못했습니다.", "암호가 있거나 손상된 PDF가 있는지 확인해 주세요.");
+          track("pdf_merge_validation_error", {
+            reason: error?.message || "pdf_merge_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function handleSelectedFiles(nextFiles, method = "picker") {
+        const validation = validatePdfFiles(nextFiles);
+        if (!validation.ok) {
+          const message = validationMessage(validation.reason);
+          setFileItems([]);
+          input.value = "";
+          setMessage(message, "파일을 다시 선택해 주세요.");
+          track("pdf_merge_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(nextFiles)
+          });
+          return;
+        }
+        setFileItems(nextFiles);
+        track("pdf_merge_file_select", {
+          method,
+          ...fileTools.safeFileAnalyticsPayload(toFiles())
+        });
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.remove("is-drag-over");
+          });
+        });
+
+        dropzone.addEventListener("drop", (event) => {
+          const nextFiles = Array.from(event.dataTransfer?.files || []);
+          if (!nextFiles.length) return;
+          input.value = "";
+          handleSelectedFiles(nextFiles, "drop");
+        });
+      }
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        setMessage("샘플 PDF 준비 중", "브라우저 안에서 테스트 PDF를 만들고 있습니다.");
+        setFileItems([
+          await createSamplePdf("application-form", [0.08, 0.37, 0.94], 1),
+          await createSamplePdf("receipt-proof", [0.07, 0.48, 0.48], 2)
+        ]);
+        input.value = "";
+        setBusy(false);
+        track("pdf_merge_sample_apply", { file_count: fileItems.length });
+      });
+
+      resetButton.addEventListener("click", () => {
+        setFileItems([]);
+        input.value = "";
+        track("pdf_merge_reset");
+      });
+
+      fileList.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const moveButton = target?.closest("[data-move-file]");
+        if (moveButton) {
+          moveFile(Number(moveButton.dataset.moveFile), moveButton.dataset.direction);
+          return;
+        }
+
+        const removeButton = target?.closest("[data-remove-file]");
+        if (removeButton) removeFile(Number(removeButton.dataset.removeFile));
+      });
+
+      fileList.addEventListener("dragstart", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || !event.dataTransfer) return;
+        dragSourceIndex = Number(row.dataset.fileIndex);
+        row.classList.add("is-dragging");
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(dragSourceIndex));
+      });
+
+      fileList.addEventListener("dragover", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || dragSourceIndex < 0 || !event.dataTransfer) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        fileList.querySelectorAll(".is-drag-over").forEach((item) => {
+          if (item !== row) item.classList.remove("is-drag-over");
+        });
+        row.classList.add("is-drag-over");
+      });
+
+      fileList.addEventListener("dragleave", (event) => {
+        const row = fileRowFromEvent(event);
+        const relatedTarget = event.relatedTarget instanceof Node ? event.relatedTarget : null;
+        if (row && !row.contains(relatedTarget)) row.classList.remove("is-drag-over");
+      });
+
+      fileList.addEventListener("drop", (event) => {
+        const row = fileRowFromEvent(event);
+        if (!row || dragSourceIndex < 0) return;
+        event.preventDefault();
+        const targetIndex = Number(row.dataset.fileIndex);
+        reorderFile(dragSourceIndex, targetIndex, "drag");
+        dragSourceIndex = -1;
+        clearDragState();
+      });
+
+      fileList.addEventListener("dragend", () => {
+        dragSourceIndex = -1;
+        clearDragState();
+      });
+
+      generateButton.addEventListener("click", generateMergedPdf);
+
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("pdf_merge_download", {
+          file_count: fileItems.length,
+          output_size: outputBytes,
+          page_count: outputPageCount
+        });
+      });
+
+      window.addEventListener("pagehide", () => {
+        releaseItems();
+        clearOutputUrl();
+      });
+
+      renderFiles();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .file-tool-shell {
+    width: min(900px, 100%);
+  }
+
+  .pdf-merge-workspace {
+    display: grid;
+    gap: 18px;
+    width: min(820px, 100%);
+    align-items: start;
+    margin: 0 auto;
+  }
+
+  .pdf-merge-panel,
+  .pdf-preview-panel {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 18px;
+  }
+
+  .pdf-upload-panel {
+    display: grid;
+    gap: 16px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .pdf-dropzone.file-control {
+    position: relative;
+    display: grid !important;
+    min-height: 320px !important;
+    place-items: center !important;
+    align-content: center;
+    gap: 14px;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #101828 !important;
+    cursor: pointer;
+    padding: 40px 24px !important;
+    text-align: center;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .pdf-dropzone.file-control:hover,
+  .pdf-dropzone.file-control:focus-within,
+  .pdf-dropzone.file-control.is-drag-over {
+    border-color: var(--accent) !important;
+    background: #f3f7ff !important;
+    box-shadow: 0 0 0 5px rgba(21, 94, 239, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .pdf-upload-icon {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 1px solid #dfe5ef;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--accent);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .pdf-upload-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  .pdf-dropzone strong {
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone span[data-file-label] {
+    color: #667085 !important;
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    color: inherit !important;
+  }
+
+  .pdf-dropzone-badges span {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .pdf-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 700;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .pdf-dropzone small {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f8fbfc;
+    padding: 18px;
+  }
+
+  .pdf-result-card > span,
+  :global(.file-row strong) {
+    color: #344457;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .pdf-result-card strong {
+    color: var(--ink);
+    font-size: 18.5px;
+    line-height: 1.45;
+  }
+
+  .pdf-result-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .pdf-result-card .btn {
+    width: max-content;
+  }
+
+  .pdf-action-row {
+    justify-content: center;
+    margin-top: 0;
+  }
+
+  .pdf-action-row .btn {
+    min-height: 50px;
+    border-radius: 10px;
+    padding: 12px 18px;
+  }
+
+  .pdf-action-row .btn.primary {
+    min-width: 190px;
+  }
+
+  .preflight-card {
+    display: grid;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    padding: 14px;
+  }
+
+  .preflight-card strong {
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .preflight-card ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .preflight-card li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .preflight-card li::before {
+    content: "";
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .preflight-card li[data-status="ready"] {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  .preflight-card li[data-status="ready"]::before {
+    content: "✓";
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .btn.disabled,
+  .button-row .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .file-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  :global(.empty-state) {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+  }
+
+  :global(.pdf-file-row) {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto auto;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    cursor: grab;
+    padding: 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  :global(.file-row.is-dragging) {
+    opacity: 0.58;
+  }
+
+  :global(.file-row.is-drag-over) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(17, 122, 122, 0.14);
+  }
+
+  :global(.file-row-index) {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  :global(.file-row p) {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  :global(.file-actions) {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+
+  :global(.file-actions button) {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  :global(.file-actions button:disabled) {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+
+  :global(.file-actions button:not(:disabled):hover) {
+    border-color: var(--accent);
+    color: var(--accent-dark);
+  }
+
+  @media (max-width: 760px) {
+    .pdf-dropzone.file-control {
+      min-height: 300px !important;
+      padding: 32px 16px !important;
+    }
+
+    .pdf-upload-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+    }
+
+    .pdf-upload-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .pdf-action-row .btn,
+    .pdf-result-card .btn {
+      width: 100%;
+    }
+
+    :global(.pdf-file-row) {
+      grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    :global(.file-row p),
+    :global(.file-actions) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

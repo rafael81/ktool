@@ -1,0 +1,826 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("pdf-split-half");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "책 스캔 나누기", "A3 PDF A4 분할"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>가로로 스캔된 PDF 한 페이지를 좌우 두 페이지로 나눠 새 PDF로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-half-workspace" data-pdf-half-tool>
+      <form class="panel pdf-half-panel pdf-upload-panel" aria-label="PDF 페이지 반으로 나누기 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>책 스캔 PDF를 선택하세요</strong>
+          <span data-file-label>PDF 1개 선택 · 좌우 절반을 개별 페이지로 저장</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 80MB · 가로로 긴 스캔 PDF 권장</small>
+        </label>
+
+        <div class="split-order-card">
+          <div class="panel-title">
+            <h2>순서 선택</h2>
+            <span class="format-badge" data-page-count-badge>0쪽</span>
+          </div>
+          <div class="order-options" role="radiogroup" aria-label="분할 페이지 순서">
+            <label>
+              <input type="radio" name="split-order" value="left-right" data-order-input checked />
+              <span>좌 → 우</span>
+            </label>
+            <label>
+              <input type="radio" name="split-order" value="right-left" data-order-input />
+              <span>우 → 좌</span>
+            </label>
+          </div>
+          <p data-order-helper>책을 펼친 상태로 스캔했다면 보통 좌 → 우 순서가 자연스럽습니다.</p>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>분할 전 확인</strong>
+          <ul>
+            <li data-preflight-item="file">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="pages">페이지 수는 선택 후 확인합니다.</li>
+            <li data-preflight-item="order">좌→우 순서로 분할합니다.</li>
+            <li data-preflight-item="output">PDF 반으로 나누기 후 저장 버튼이 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-generate-label>PDF 반으로 나누기</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 반 나누기 결과">
+        <div class="panel-title">
+          <h2>분할 결과</h2>
+          <span class="format-badge">PDF</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 반으로 나눌 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="download-action-strip" data-pdf-download-hint hidden>
+            <strong>저장 준비 완료</strong>
+            <span>PDF 저장을 눌러 분할된 파일을 내려받으세요.</span>
+          </div>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-split-in-half.pdf"
+            aria-disabled="true"
+            data-download
+          >
+            <Download aria-hidden="true" />
+            PDF 저장
+          </a>
+        </div>
+
+        <div class="split-preview-list" data-split-preview>
+          <p class="empty-state">분할된 페이지가 아직 없습니다.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>한 페이지에 두 쪽이 담긴 가로 스캔 PDF를 선택합니다.</li>
+        <li>페이지 순서를 좌→우 또는 우→좌로 고릅니다.</li>
+        <li>정중앙 기준으로 나뉜 새 PDF를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-pdf-half-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 80 * 1024 * 1024;
+      const maxPages = 100;
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const pageCountBadge = root.querySelector("[data-page-count-badge]");
+      const orderInputs = Array.from(root.querySelectorAll("[data-order-input]"));
+      const orderHelper = root.querySelector("[data-order-helper]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadLink = root.querySelector("[data-download]");
+      const downloadHint = root.querySelector("[data-pdf-download-hint]");
+      const splitPreview = root.querySelector("[data-split-preview]");
+      const preflightItems = {
+        file: root.querySelector('[data-preflight-item="file"]'),
+        pages: root.querySelector('[data-preflight-item="pages"]'),
+        order: root.querySelector('[data-preflight-item="order"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let pageCount = 0;
+      let sourcePageSizes = [];
+      let outputUrl = "";
+      let outputBytes = 0;
+      let outputPageCount = 0;
+      let nextItemId = 1;
+      let pdfLibPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-split-half",
+          tool_title: "PDF 페이지 반으로 나누기",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function selectedFile() {
+        return fileItems[0]?.file || null;
+      }
+
+      function selectedOrder() {
+        return orderInputs.find((item) => item.checked)?.value || "left-right";
+      }
+
+      function orderLabel() {
+        return selectedOrder() === "right-left" ? "우 → 좌" : "좌 → 우";
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > 1) return { ok: false, reason: "too_many_files" };
+        const file = files[0];
+        if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+        if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 1개만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "PDF는 80MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        if (reason === "too_many_pages") return "PDF는 최대 100쪽까지 처리할 수 있습니다.";
+        return "PDF를 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function clearOutput() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        outputPageCount = 0;
+        downloadHint.hidden = true;
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.outputSize = "";
+        downloadLink.dataset.outputPageCount = "";
+        downloadLink.dataset.sourcePageCount = "";
+        splitPreview.innerHTML = '<p class="empty-state">분할된 페이지가 아직 없습니다.</p>';
+        updatePreflight();
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      function canGenerate() {
+        return Boolean(selectedFile()) && pageCount > 0;
+      }
+
+      function syncGenerateButton() {
+        generateButton.disabled = !canGenerate();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || !canGenerate();
+        generateLabel.textContent = isBusy ? "나누는 중" : "PDF 반으로 나누기";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+        for (const input of orderInputs) input.disabled = isBusy;
+      }
+
+      function updateOrderHelper() {
+        orderHelper.textContent =
+          selectedOrder() === "right-left"
+            ? "오른쪽 페이지가 먼저 와야 하는 책 스캔에 사용하세요."
+            : "책을 펼친 상태로 스캔했다면 보통 좌 → 우 순서가 자연스럽습니다.";
+      }
+
+      function updatePreflight() {
+        const file = selectedFile();
+        if (!file) {
+          setPreflightItem("file", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("pages", "pending", "페이지 수는 선택 후 확인합니다.");
+          setPreflightItem("order", "pending", `${orderLabel()} 순서로 분할합니다.`);
+          setPreflightItem("output", "pending", "PDF 반으로 나누기 후 저장 버튼이 열립니다.");
+          syncGenerateButton();
+          return;
+        }
+        setPreflightItem("file", "ready", `PDF 1개 선택됨, ${formatBytes(file.size)}`);
+        setPreflightItem("pages", "ready", `${formatter.format(pageCount)}쪽 PDF → ${formatter.format(pageCount * 2)}쪽으로 분할`);
+        setPreflightItem("order", "ready", `${orderLabel()} 순서로 각 페이지를 나눕니다.`);
+        setPreflightItem(
+          "output",
+          outputUrl ? "ready" : "pending",
+          outputUrl
+            ? `저장 준비 완료, ${formatter.format(outputPageCount)}쪽 · ${formatBytes(outputBytes)}`
+            : "PDF 반으로 나누기를 누르면 저장 버튼이 열립니다."
+        );
+        syncGenerateButton();
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function resetState() {
+        releaseItems();
+        clearOutput();
+        fileItems = [];
+        pageCount = 0;
+        sourcePageSizes = [];
+        pageCountBadge.textContent = "0쪽";
+        fileLabel.textContent = "PDF 1개 선택 · 좌우 절반을 개별 페이지로 저장";
+        input.value = "";
+        setMessage("PDF를 선택하면 반으로 나눌 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+        updatePreflight();
+      }
+
+      async function inspectPdf(file, method = "picker") {
+        setBusy(true);
+        setMessage("PDF 읽는 중", "페이지 크기와 수를 확인하고 있습니다.");
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          pageCount = sourcePdf.getPageCount();
+          if (pageCount > maxPages) throw new Error("too_many_pages");
+          sourcePageSizes = sourcePdf.getPages().map((page) => ({ width: page.getWidth(), height: page.getHeight() }));
+          pageCountBadge.textContent = `${formatter.format(pageCount)}쪽`;
+          fileLabel.textContent = `${formatter.format(pageCount)}쪽 PDF 선택`;
+          setMessage(`${formatter.format(pageCount)}쪽 PDF`, `${formatter.format(pageCount * 2)}쪽으로 분할할 수 있습니다.`);
+          updatePreflight();
+          track("pdf_half_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            output_page_count: pageCount * 2,
+            order: selectedOrder()
+          });
+        } catch (error) {
+          resetState();
+          const reason = error?.message === "too_many_pages" ? "too_many_pages" : error?.message || "pdf_read_failed";
+          setMessage(validationMessage(reason), "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_half_validation_error", { reason });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItems();
+        clearOutput();
+        pageCount = 0;
+        sourcePageSizes = [];
+        fileItems = fileTools.createFileItems([file], () => nextItemId++);
+        pageCountBadge.textContent = "읽는 중";
+        inspectPdf(file, method);
+      }
+
+      async function createSamplePdf() {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const spreads = [
+          ["LEFT 1", "RIGHT 1", rgb(0.08, 0.37, 0.94), rgb(0.07, 0.48, 0.48)],
+          ["LEFT 2", "RIGHT 2", rgb(0.71, 0.27, 0.03), rgb(0.34, 0.24, 0.74)]
+        ];
+        for (const [leftLabel, rightLabel, leftColor, rightColor] of spreads) {
+          const page = pdfDoc.addPage([842, 595]);
+          page.drawRectangle({ x: 36, y: 36, width: 770, height: 523, borderColor: rgb(0.82, 0.86, 0.92), borderWidth: 2 });
+          page.drawLine({ start: { x: 421, y: 50 }, end: { x: 421, y: 545 }, thickness: 2, color: rgb(0.74, 0.79, 0.87) });
+          page.drawRectangle({ x: 70, y: 440, width: 270, height: 34, color: leftColor });
+          page.drawRectangle({ x: 502, y: 440, width: 270, height: 34, color: rightColor });
+          page.drawText(leftLabel, { x: 98, y: 312, size: 48, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText(rightLabel, { x: 530, y: 312, size: 48, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText("Book scan spread sample", { x: 98, y: 268, size: 14, font: bodyFont, color: rgb(0.42, 0.48, 0.56) });
+          page.drawText("Split this spread into pages", { x: 530, y: 268, size: 14, font: bodyFont, color: rgb(0.42, 0.48, 0.56) });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], "pdf-half-sample.pdf", { type: "application/pdf" });
+      }
+
+      async function splitPdfInHalf() {
+        const file = selectedFile();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("pdf_half_validation_error", { reason: "empty" });
+          return;
+        }
+
+        clearOutput();
+        setBusy(true);
+        setMessage("PDF 반으로 나누는 중", `${formatter.format(pageCount)}쪽을 ${formatter.format(pageCount * 2)}쪽으로 만들고 있습니다.`);
+
+        try {
+          const { PDFDocument } = await loadPdfLib();
+          const sourcePdf = await PDFDocument.load(await file.arrayBuffer());
+          const splitPdf = await PDFDocument.create();
+          const order = selectedOrder();
+
+          for (let pageIndex = 0; pageIndex < sourcePdf.getPageCount(); pageIndex += 1) {
+            const page = sourcePdf.getPage(pageIndex);
+            const width = page.getWidth();
+            const height = page.getHeight();
+            const midpoint = width / 2;
+            const boxes =
+              order === "right-left"
+                ? [
+                    { left: midpoint, bottom: 0, right: width, top: height },
+                    { left: 0, bottom: 0, right: midpoint, top: height }
+                  ]
+                : [
+                    { left: 0, bottom: 0, right: midpoint, top: height },
+                    { left: midpoint, bottom: 0, right: width, top: height }
+                  ];
+
+            for (const box of boxes) {
+              const embedded = await splitPdf.embedPage(page, box);
+              const nextPage = splitPdf.addPage([midpoint, height]);
+              nextPage.drawPage(embedded, { x: 0, y: 0, width: midpoint, height });
+            }
+          }
+
+          const bytes = await splitPdf.save();
+          const blob = new Blob([bytes], { type: "application/pdf" });
+          outputUrl = URL.createObjectURL(blob);
+          outputBytes = blob.size;
+          outputPageCount = splitPdf.getPageCount();
+          downloadLink.href = outputUrl;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          downloadLink.dataset.outputSize = String(outputBytes);
+          downloadLink.dataset.outputPageCount = String(outputPageCount);
+          downloadLink.dataset.sourcePageCount = String(pageCount);
+          downloadHint.hidden = false;
+          splitPreview.innerHTML = `
+            <div class="split-summary-row">
+              <strong>${formatter.format(pageCount)}쪽 → ${formatter.format(outputPageCount)}쪽</strong>
+              <span>${orderLabel()} · ${sourcePageSizes[0] ? `${Math.round(sourcePageSizes[0].width / 2)}×${Math.round(sourcePageSizes[0].height)}pt` : "정중앙 분할"}</span>
+            </div>
+          `;
+          setMessage("PDF 준비 완료", `${formatter.format(outputPageCount)}쪽 · ${formatBytes(outputBytes)}`);
+          updatePreflight();
+          track("pdf_half_generate", {
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            output_page_count: outputPageCount,
+            output_size: outputBytes,
+            order
+          });
+        } catch (error) {
+          clearOutput();
+          setMessage("PDF를 반으로 나누지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_half_validation_error", { reason: error?.message || "pdf_half_failed" });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("pdf_half_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        setFile(files[0], method);
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      orderInputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          clearOutput();
+          updateOrderHelper();
+          updatePreflight();
+          track("pdf_half_order_change", {
+            order: selectedOrder(),
+            page_count: pageCount,
+            output_page_count: pageCount * 2
+          });
+        });
+      });
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        try {
+          const file = await createSamplePdf();
+          track("pdf_half_sample_apply", { file_count: 1 });
+          setFile(file, "sample");
+        } catch (error) {
+          setMessage("샘플 PDF를 만들지 못했습니다.", "잠시 후 다시 시도해 주세요.");
+          track("pdf_half_validation_error", { reason: error?.message || "sample_create_failed" });
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      generateButton.addEventListener("click", splitPdfInHalf);
+      resetButton.addEventListener("click", () => {
+        resetState();
+        track("pdf_half_reset");
+      });
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("pdf_half_download", {
+          page_count: pageCount,
+          output_page_count: outputPageCount,
+          output_size: outputBytes,
+          order: selectedOrder()
+        });
+      });
+
+      updateOrderHelper();
+      updatePreflight();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .pdf-half-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .pdf-half-panel,
+  .pdf-preview-panel,
+  .split-order-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 18px;
+  }
+
+  .pdf-upload-panel {
+    display: grid;
+    gap: 16px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .pdf-dropzone.file-control {
+    position: relative;
+    display: grid !important;
+    min-height: 320px !important;
+    place-items: center !important;
+    align-content: center;
+    gap: 14px;
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #101828 !important;
+    cursor: pointer;
+    padding: 40px 24px !important;
+    text-align: center;
+    transition:
+      border-color 0.16s ease,
+      background 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .pdf-dropzone.file-control:hover,
+  .pdf-dropzone.file-control:focus-within,
+  .pdf-dropzone.file-control.is-drag-over {
+    border-color: var(--accent) !important;
+    background: #f3f7ff !important;
+    box-shadow: 0 0 0 5px rgba(21, 94, 239, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .file-control input {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .pdf-upload-icon {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 1px solid #dfe5ef;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--accent);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  }
+
+  .pdf-upload-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  .pdf-dropzone strong {
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone span[data-file-label] {
+    color: #667085 !important;
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .pdf-dropzone-badges,
+  .order-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pdf-dropzone-badges {
+    justify-content: center;
+    color: inherit !important;
+  }
+
+  .pdf-dropzone-badges span {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    border: 1px solid #d0d5dd;
+    border-radius: 999px;
+    background: #fff;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .pdf-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 700;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .pdf-dropzone small,
+  .split-order-card p {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .order-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 900;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .order-options input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 18px;
+  }
+
+  .pdf-result-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .download-action-strip {
+    display: grid;
+    gap: 2px;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background: #eff6ff;
+    padding: 10px 12px;
+    color: #1d4ed8;
+  }
+
+  .split-preview-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .split-summary-row {
+    display: grid;
+    gap: 4px;
+    border: 1px solid #d9e6f5;
+    border-radius: 10px;
+    background: #f8fbff;
+    padding: 14px;
+  }
+
+  .split-summary-row span {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 920px) {
+    .pdf-half-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,956 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { ClipboardCopy, Crop, Download, FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("svg-crop");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "SVG viewBox", "SVG icon crop"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main class="page-shell file-tool-shell" data-tool-id={tool.id} data-tool-title={tool.title}>
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>아이콘·로고 SVG의 불필요한 바깥 여백을 자동으로 잘라 viewBox를 정리하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="svg-crop-workspace" data-svg-crop-tool>
+      <form class="panel svg-crop-panel" aria-label="SVG 여백 제거 입력">
+        <label class="svg-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-svg-input type="file" accept="image/svg+xml,.svg" />
+          <span class="svg-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>SVG 파일을 선택하거나 마크업을 붙여넣으세요</strong>
+          <span data-file-label>SVG 1개 선택 · viewBox 여백 자동 제거</span>
+          <span class="svg-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>SVG 선택</em>
+          <small>최대 2MB · 아이콘·로고 SVG 정렬용</small>
+        </label>
+
+        <div class="markup-card">
+          <div class="panel-title">
+            <h2>마크업 입력</h2>
+            <span class="format-badge">SVG</span>
+          </div>
+          <textarea
+            data-markup-input
+            spellcheck="false"
+            placeholder="<svg viewBox=&quot;0 0 200 200&quot;>...</svg>"
+          ></textarea>
+          <div class="markup-actions">
+            <label>
+              <span>여유 여백</span>
+              <input data-padding-input inputmode="numeric" value="2" />
+            </label>
+            <button class="btn" type="button" data-trim-markup>
+              <Crop aria-hidden="true" />
+              마크업 적용
+            </button>
+          </div>
+          <p data-helper>padding은 도형이 잘리지 않도록 남기는 여유 여백입니다. 필터 그림자가 있으면 값을 키우세요.</p>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>처리 전 확인</strong>
+          <ul>
+            <li data-preflight-item="source">SVG 파일을 선택하거나 마크업을 입력해 주세요.</li>
+            <li data-preflight-item="viewbox">원본 viewBox는 처리 후 확인합니다.</li>
+            <li data-preflight-item="output">여백 제거 후 다운로드와 마크업 복사가 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row svg-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-trim disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-trim-label>여백 제거</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel svg-preview-panel" aria-label="SVG 여백 제거 결과">
+        <div class="panel-title">
+          <h2>여백 제거됨</h2>
+          <span class="format-badge">SVG</span>
+        </div>
+
+        <div class="svg-preview-grid">
+          <div class="svg-preview-card">
+            <span>원본</span>
+            <div class="svg-preview-frame" data-original-preview>
+              <p class="empty-state">SVG를 선택해 주세요.</p>
+            </div>
+          </div>
+          <div class="svg-preview-card">
+            <span>결과</span>
+            <div class="svg-preview-frame" data-result-preview>
+              <p class="empty-state">결과가 아직 없습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="svg-result-card">
+          <span>상태</span>
+          <strong data-output-status>SVG를 선택하면 여백을 제거할 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="svg-download-actions">
+            <a
+              class="btn primary disabled"
+              href="#"
+              download="k-document-trimmed.svg"
+              aria-disabled="true"
+              data-download
+            >
+              <Download aria-hidden="true" />
+              SVG 다운로드
+            </a>
+            <button class="btn" type="button" data-copy disabled>
+              <ClipboardCopy aria-hidden="true" />
+              마크업 복사
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          class="svg-output"
+          data-output-markup
+          readonly
+          spellcheck="false"
+          placeholder="여백이 제거된 SVG 마크업이 여기에 나타납니다."
+        ></textarea>
+      </section>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>SVG 파일을 선택하거나 SVG 마크업을 붙여넣습니다.</li>
+        <li>여백 제거를 누르면 실제 그래픽 영역에 맞춰 viewBox가 줄어듭니다.</li>
+        <li>정리된 SVG 파일을 다운로드하거나 마크업을 복사합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-svg-crop-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const svgNamespace = "http://www.w3.org/2000/svg";
+      const maxFileSize = 2 * 1024 * 1024;
+      const input = root.querySelector("[data-svg-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const markupInput = root.querySelector("[data-markup-input]");
+      const paddingInput = root.querySelector("[data-padding-input]");
+      const trimButton = root.querySelector("[data-trim]");
+      const trimLabel = root.querySelector("[data-trim-label]");
+      const trimMarkupButton = root.querySelector("[data-trim-markup]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const copyButton = root.querySelector("[data-copy]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadLink = root.querySelector("[data-download]");
+      const originalPreview = root.querySelector("[data-original-preview]");
+      const resultPreview = root.querySelector("[data-result-preview]");
+      const outputMarkup = root.querySelector("[data-output-markup]");
+      const preflightItems = {
+        source: root.querySelector('[data-preflight-item="source"]'),
+        viewbox: root.querySelector('[data-preflight-item="viewbox"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      let selectedFile = null;
+      let sourceMarkup = "";
+      let sourceMethod = "";
+      let resultMarkup = "";
+      let outputUrl = "";
+      let outputBytes = 0;
+      let cropStats = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "svg-crop",
+          tool_title: "SVG 여백 제거",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function isSvgFile(file) {
+        return file.type === "image/svg+xml" || /\.svg$/i.test(file.name || "");
+      }
+
+      function validationMessage(reason) {
+        if (reason === "file_too_large") return "SVG 파일은 2MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "SVG 파일만 선택할 수 있습니다.";
+        if (reason === "invalid_svg") return "올바른 SVG 마크업을 입력해 주세요.";
+        if (reason === "empty_markup") return "SVG 파일을 선택하거나 마크업을 입력해 주세요.";
+        if (reason === "empty_graphics") return "자를 수 있는 SVG 그래픽 영역을 찾지 못했습니다.";
+        return "SVG를 다시 확인해 주세요.";
+      }
+
+      function paddingValue() {
+        const parsed = Number(String(paddingInput.value || "").replace(/[^\d.]/g, ""));
+        if (!Number.isFinite(parsed)) return 0;
+        return Math.max(0, Math.min(80, Math.round(parsed)));
+      }
+
+      function formatNumber(value) {
+        const rounded = Math.round(Number(value) * 1000) / 1000;
+        if (Object.is(rounded, -0)) return "0";
+        return String(rounded).replace(/\.0+$/, "");
+      }
+
+      function parseViewBox(value) {
+        const numbers = String(value || "")
+          .trim()
+          .split(/[\s,]+/)
+          .map(Number)
+          .filter((item) => Number.isFinite(item));
+        if (numbers.length === 4) return { x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3] };
+        return null;
+      }
+
+      function parseLength(value) {
+        const parsed = Number.parseFloat(String(value || ""));
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function sourceBox(svg) {
+        const viewBox = parseViewBox(svg.getAttribute("viewBox"));
+        if (viewBox && viewBox.width > 0 && viewBox.height > 0) return viewBox;
+        const width = parseLength(svg.getAttribute("width"));
+        const height = parseLength(svg.getAttribute("height"));
+        return {
+          x: 0,
+          y: 0,
+          width: width > 0 ? width : 300,
+          height: height > 0 ? height : 150
+        };
+      }
+
+      function sanitizeSvgElement(svg) {
+        const unsafeSelectors = "script,foreignObject,iframe,object,embed";
+        svg.querySelectorAll(unsafeSelectors).forEach((node) => node.remove());
+        svg.querySelectorAll("*").forEach((node) => {
+          for (const attribute of Array.from(node.attributes)) {
+            const name = attribute.name.toLowerCase();
+            const value = String(attribute.value || "").trim().toLowerCase();
+            if (name.startsWith("on")) node.removeAttribute(attribute.name);
+            if ((name === "href" || name === "xlink:href") && value.startsWith("javascript:")) {
+              node.removeAttribute(attribute.name);
+            }
+          }
+        });
+        if (!svg.getAttribute("xmlns")) svg.setAttribute("xmlns", svgNamespace);
+      }
+
+      function parseSvg(markup) {
+        const parser = new DOMParser();
+        const document = parser.parseFromString(markup, "image/svg+xml");
+        const parserError = document.querySelector("parsererror");
+        const svg = document.documentElement;
+        if (parserError || !svg || svg.tagName.toLowerCase() !== "svg") {
+          throw new Error("invalid_svg");
+        }
+        sanitizeSvgElement(svg);
+        return { document, svg };
+      }
+
+      function measureSvg(svg) {
+        const measurementSvg = document.importNode(svg, true);
+        sanitizeSvgElement(measurementSvg);
+        measurementSvg.style.position = "absolute";
+        measurementSvg.style.left = "-10000px";
+        measurementSvg.style.top = "-10000px";
+        measurementSvg.style.visibility = "hidden";
+        measurementSvg.style.pointerEvents = "none";
+        measurementSvg.setAttribute("aria-hidden", "true");
+        const group = document.createElementNS(svgNamespace, "g");
+        const skipped = new Set(["defs", "title", "desc", "metadata", "style"]);
+        for (const child of Array.from(measurementSvg.childNodes)) {
+          if (child.nodeType === Node.ELEMENT_NODE && skipped.has(child.tagName.toLowerCase())) continue;
+          group.appendChild(child);
+        }
+        measurementSvg.appendChild(group);
+        document.body.appendChild(measurementSvg);
+        try {
+          let box;
+          try {
+            box = group.getBBox({ stroke: true });
+          } catch {
+            box = group.getBBox();
+          }
+          if (!Number.isFinite(box.width) || !Number.isFinite(box.height) || box.width <= 0 || box.height <= 0) {
+            throw new Error("empty_graphics");
+          }
+          return {
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height
+          };
+        } finally {
+          measurementSvg.remove();
+        }
+      }
+
+      function serializeSvg(document) {
+        return new XMLSerializer().serializeToString(document.documentElement);
+      }
+
+      function trimSvg(markup) {
+        const parsed = parseSvg(markup);
+        const original = sourceBox(parsed.svg);
+        const measured = measureSvg(parsed.svg);
+        const padding = paddingValue();
+        const nextBox = {
+          x: measured.x - padding,
+          y: measured.y - padding,
+          width: measured.width + padding * 2,
+          height: measured.height + padding * 2
+        };
+        parsed.svg.setAttribute(
+          "viewBox",
+          `${formatNumber(nextBox.x)} ${formatNumber(nextBox.y)} ${formatNumber(nextBox.width)} ${formatNumber(nextBox.height)}`
+        );
+        parsed.svg.setAttribute("width", formatNumber(nextBox.width));
+        parsed.svg.setAttribute("height", formatNumber(nextBox.height));
+        parsed.svg.removeAttribute("x");
+        parsed.svg.removeAttribute("y");
+        return {
+          markup: serializeSvg(parsed.document),
+          original,
+          cropped: nextBox,
+          padding
+        };
+      }
+
+      function clearOutput() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        resultMarkup = "";
+        cropStats = null;
+        outputMarkup.value = "";
+        downloadLink.href = "#";
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.outputSize = "";
+        downloadLink.dataset.originalViewBox = "";
+        downloadLink.dataset.newViewBox = "";
+        copyButton.disabled = true;
+        resultPreview.innerHTML = '<p class="empty-state">결과가 아직 없습니다.</p>';
+        updatePreflight();
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function updatePreflight() {
+        const hasSource = Boolean(sourceMarkup.trim());
+        setPreflightItem(
+          "source",
+          hasSource ? "ready" : "pending",
+          hasSource
+            ? `${sourceMethod === "markup" ? "마크업 입력" : "SVG 파일 선택"}, ${formatBytes(new Blob([sourceMarkup]).size)}`
+            : "SVG 파일을 선택하거나 마크업을 입력해 주세요."
+        );
+        setPreflightItem(
+          "viewbox",
+          cropStats ? "ready" : "pending",
+          cropStats
+            ? `viewBox ${formatBox(cropStats.original)} → ${formatBox(cropStats.cropped)}`
+            : "원본 viewBox는 처리 후 확인합니다."
+        );
+        setPreflightItem(
+          "output",
+          resultMarkup ? "ready" : "pending",
+          resultMarkup ? `SVG 저장 준비 완료, ${formatBytes(outputBytes)}` : "여백 제거 후 다운로드와 마크업 복사가 열립니다."
+        );
+        trimButton.disabled = !hasSource;
+      }
+
+      function formatBox(box) {
+        return `${formatNumber(box.x)} ${formatNumber(box.y)} ${formatNumber(box.width)} ${formatNumber(box.height)}`;
+      }
+
+      function previewMarkup(target, markup) {
+        target.innerHTML = "";
+        const wrapper = document.createElement("div");
+        wrapper.className = "svg-preview-inner";
+        wrapper.innerHTML = markup;
+        const svg = wrapper.querySelector("svg");
+        if (svg) {
+          sanitizeSvgElement(svg);
+          svg.removeAttribute("width");
+          svg.removeAttribute("height");
+          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        }
+        target.appendChild(wrapper);
+      }
+
+      function syncResult(result) {
+        resultMarkup = result.markup;
+        cropStats = result;
+        outputMarkup.value = resultMarkup;
+        const blob = new Blob([resultMarkup], { type: "image/svg+xml;charset=utf-8" });
+        outputBytes = blob.size;
+        outputUrl = URL.createObjectURL(blob);
+        downloadLink.href = outputUrl;
+        downloadLink.classList.remove("disabled");
+        downloadLink.removeAttribute("aria-disabled");
+        downloadLink.dataset.outputSize = String(outputBytes);
+        downloadLink.dataset.originalViewBox = formatBox(result.original);
+        downloadLink.dataset.newViewBox = formatBox(result.cropped);
+        copyButton.disabled = false;
+        previewMarkup(resultPreview, resultMarkup);
+        setMessage("여백 제거 완료", `${formatBox(result.original)} → ${formatBox(result.cropped)} · ${formatBytes(outputBytes)}`);
+        updatePreflight();
+      }
+
+      function selectedSourcePayload() {
+        const original = cropStats?.original || { x: 0, y: 0, width: 0, height: 0 };
+        const cropped = cropStats?.cropped || { x: 0, y: 0, width: 0, height: 0 };
+        return {
+          method: sourceMethod || "unknown",
+          input_size: new Blob([sourceMarkup]).size,
+          output_size: outputBytes,
+          original_width: Math.round(original.width),
+          original_height: Math.round(original.height),
+          crop_x: Math.round(cropped.x),
+          crop_y: Math.round(cropped.y),
+          crop_width: Math.round(cropped.width),
+          crop_height: Math.round(cropped.height),
+          padding: paddingValue()
+        };
+      }
+
+      function canTrim() {
+        return Boolean(sourceMarkup.trim());
+      }
+
+      function setBusy(isBusy) {
+        trimButton.disabled = isBusy || !canTrim();
+        trimLabel.textContent = isBusy ? "처리 중" : "여백 제거";
+        trimMarkupButton.disabled = isBusy;
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+        paddingInput.disabled = isBusy;
+      }
+
+      function applySource(markup, method = "markup", file = null) {
+        sourceMarkup = markup;
+        sourceMethod = method;
+        selectedFile = file;
+        markupInput.value = method === "markup" ? markup : markupInput.value;
+        fileLabel.textContent = method === "file" && file ? `${file.name ? "SVG 파일 선택" : "SVG 선택"} · ${formatBytes(file.size)}` : "SVG 마크업 입력됨";
+        clearOutput();
+        previewMarkup(originalPreview, markup);
+        updatePreflight();
+      }
+
+      async function trimCurrentSource(trigger = "button") {
+        if (!canTrim()) {
+          setMessage(validationMessage("empty_markup"), "SVG 파일 또는 마크업을 먼저 입력해 주세요.");
+          track("svg_crop_validation_error", { reason: "empty_markup" });
+          return;
+        }
+
+        clearOutput();
+        setBusy(true);
+        setMessage("SVG 여백 제거 중", "실제 그래픽 영역을 계산하고 있습니다.");
+
+        try {
+          const result = trimSvg(sourceMarkup);
+          syncResult(result);
+          track("svg_crop_trim", {
+            trigger,
+            ...selectedSourcePayload(),
+            ...(selectedFile ? fileTools.safeFileAnalyticsPayload([selectedFile]) : { file_count: 0, total_size: new Blob([sourceMarkup]).size, file_types: "markup" })
+          });
+        } catch (error) {
+          const reason = error?.message || "svg_trim_failed";
+          setMessage(validationMessage(reason), "SVG 구조나 그래픽 영역을 확인해 주세요.");
+          track("svg_crop_validation_error", {
+            reason,
+            method: sourceMethod || "unknown",
+            input_size: new Blob([sourceMarkup]).size
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function handleSelectedFiles(files, method = "picker") {
+        if (!files.length) return;
+        const file = files[0];
+        if (!isSvgFile(file)) {
+          setMessage(validationMessage("unsupported_file_type"), "SVG 파일을 다시 선택해 주세요.");
+          track("svg_crop_validation_error", { reason: "unsupported_file_type", ...fileTools.safeFileAnalyticsPayload([file]) });
+          return;
+        }
+        if (file.size > maxFileSize) {
+          setMessage(validationMessage("file_too_large"), "2MB 이하 SVG로 다시 시도해 주세요.");
+          track("svg_crop_validation_error", { reason: "file_too_large", ...fileTools.safeFileAnalyticsPayload([file]) });
+          return;
+        }
+        const text = await file.text();
+        applySource(text, "file", file);
+        track("svg_crop_file_select", {
+          method,
+          ...fileTools.safeFileAnalyticsPayload([file])
+        });
+        await trimCurrentSource("file_select");
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => dropzone.classList.remove("is-drag-over"));
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      markupInput.addEventListener("input", () => {
+        sourceMarkup = markupInput.value;
+        sourceMethod = sourceMarkup.trim() ? "markup" : "";
+        selectedFile = null;
+        clearOutput();
+        if (sourceMarkup.trim()) {
+          try {
+            parseSvg(sourceMarkup);
+            previewMarkup(originalPreview, sourceMarkup);
+            setMessage("마크업 입력됨", "여백 제거를 눌러 viewBox를 정리하세요.");
+          } catch {
+            originalPreview.innerHTML = '<p class="empty-state">올바른 SVG 마크업을 입력해 주세요.</p>';
+          }
+        } else {
+          originalPreview.innerHTML = '<p class="empty-state">SVG를 선택해 주세요.</p>';
+        }
+        updatePreflight();
+      });
+
+      paddingInput.addEventListener("input", () => {
+        if (resultMarkup) trimCurrentSource("padding_change");
+      });
+
+      trimButton.addEventListener("click", () => trimCurrentSource("button"));
+      trimMarkupButton.addEventListener("click", () => {
+        applySource(markupInput.value, "markup", null);
+        trimCurrentSource("markup_button");
+      });
+      sampleButton.addEventListener("click", async () => {
+        const sample = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect x="62" y="54" width="76" height="92" rx="16" fill="#2563eb"/>
+  <circle cx="100" cy="100" r="28" fill="#ffffff"/>
+  <path d="M84 102l12 12 25-30" fill="none" stroke="#2563eb" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+        applySource(sample, "sample", new File([sample], "svg-crop-sample.svg", { type: "image/svg+xml" }));
+        markupInput.value = sample;
+        track("svg_crop_sample_apply", { file_count: 1 });
+        await trimCurrentSource("sample");
+      });
+      resetButton.addEventListener("click", () => {
+        sourceMarkup = "";
+        sourceMethod = "";
+        selectedFile = null;
+        input.value = "";
+        markupInput.value = "";
+        fileLabel.textContent = "SVG 1개 선택 · viewBox 여백 자동 제거";
+        originalPreview.innerHTML = '<p class="empty-state">SVG를 선택해 주세요.</p>';
+        setMessage("SVG를 선택하면 여백을 제거할 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+        clearOutput();
+        track("svg_crop_reset");
+      });
+      copyButton.addEventListener("click", async () => {
+        if (!resultMarkup) return;
+        try {
+          await navigator.clipboard.writeText(resultMarkup);
+          setMessage("마크업 복사 완료", `${formatBytes(outputBytes)} SVG 마크업을 복사했습니다.`);
+          track("svg_crop_copy", selectedSourcePayload());
+        } catch (error) {
+          outputMarkup.focus();
+          outputMarkup.select();
+          setMessage("복사를 직접 완료해 주세요.", "마크업 영역이 선택되었습니다. Ctrl/Cmd+C를 눌러 복사하세요.");
+          track("svg_crop_copy_error", { reason: error?.message || "clipboard_failed" });
+        }
+      });
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("svg_crop_download", selectedSourcePayload());
+      });
+
+      updatePreflight();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .svg-crop-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .svg-crop-panel,
+  .svg-preview-panel {
+    min-width: 0;
+  }
+
+  .svg-crop-panel {
+    display: grid;
+    gap: 14px;
+  }
+
+  .svg-dropzone {
+    min-height: 315px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    border: 2px dashed #c9d3e3;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+  }
+
+  .svg-dropzone:hover,
+  .svg-dropzone.is-drag-over {
+    border-color: var(--accent);
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  .svg-dropzone input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .svg-upload-icon {
+    display: inline-grid;
+    width: 62px;
+    height: 62px;
+    place-items: center;
+    border: 1px solid #d9e2ef;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--accent);
+  }
+
+  .svg-upload-icon :global(svg) {
+    width: 31px;
+    height: 31px;
+  }
+
+  .svg-dropzone strong {
+    color: var(--ink);
+    font-size: clamp(1.25rem, 2.8vw, 1.78rem);
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .svg-dropzone > span:not(.svg-upload-icon):not(.svg-dropzone-badges) {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .svg-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .svg-dropzone-badges span {
+    border-radius: 999px;
+    background: #edf2f7;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  .svg-dropzone em {
+    display: inline-flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 15.5px;
+    font-style: normal;
+    font-weight: 750;
+    padding: 13px 26px;
+    pointer-events: none;
+  }
+
+  .svg-dropzone small,
+  .markup-card p {
+    max-width: 620px;
+    color: #8a94a6;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  .format-badge {
+    border-radius: 7px;
+    background: #e8f4f2;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 900;
+    padding: 5px 8px;
+  }
+
+  .markup-card,
+  .svg-result-card,
+  .svg-preview-card {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .markup-card textarea,
+  .svg-output {
+    width: 100%;
+    min-height: 150px;
+    resize: vertical;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #101828;
+    font: 500 0.9rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    padding: 14px;
+  }
+
+  .markup-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .markup-actions label {
+    display: grid;
+    gap: 6px;
+  }
+
+  .markup-actions label span,
+  .svg-result-card > span,
+  .svg-preview-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .markup-actions input {
+    width: 112px;
+    min-height: 42px;
+    border: 1px solid #d5dde8;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    padding: 10px 12px;
+  }
+
+  .svg-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .svg-preview-frame {
+    min-height: 220px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d5dde8;
+    border-radius: 10px;
+    background:
+      linear-gradient(45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(-45deg, #f3f6fa 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f3f6fa 75%),
+      linear-gradient(-45deg, transparent 75%, #f3f6fa 75%),
+      #ffffff;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-size: 20px 20px;
+    overflow: hidden;
+    padding: 16px;
+  }
+
+  :global(.svg-preview-inner) {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+  }
+
+  :global(.svg-preview-inner svg) {
+    max-width: 100%;
+    max-height: 190px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .svg-result-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .svg-download-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .svg-output {
+    min-height: 220px;
+  }
+
+  @media (max-width: 920px) {
+    .svg-crop-workspace,
+    .svg-preview-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .svg-dropzone {
+      min-height: 290px;
+      padding: 24px 18px;
+    }
+
+    .svg-preview-frame {
+      min-height: 190px;
+    }
+  }
+</style>

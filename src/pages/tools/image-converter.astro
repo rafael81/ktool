@@ -38,7 +38,7 @@ const structuredData = [
     <section class="tool-intro">
       <div>
         <h1>{tool.title}</h1>
-        <p>WebP가 열리지 않거나 JPG만 받는 곳에 맞춰 이미지를 변환하세요. WebP, PNG, JPG를 브라우저에서 바로 저장합니다.</p>
+        <p>WebP, PNG, JPG, GIF, AVIF, BMP, SVG 이미지를 JPG, PNG, WebP로 바로 저장하세요.</p>
       </div>
       <div class="quick-links">
         {
@@ -66,12 +66,12 @@ const structuredData = [
         <label class="field">
           <span>이미지 파일</span>
           <span class="file-control upload-dropzone">
-            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp,image/svg+xml,.jpg,.jpeg,.png,.webp,.gif,.avif,.bmp,.svg" multiple />
             <span class="upload-icon" aria-hidden="true">
               <IconGlyph name="repeat" />
             </span>
-            <strong>JPG로 바꿀 이미지를 선택하세요</strong>
-            <span data-file-label>WebP/PNG/JPG 여러 장 선택</span>
+            <strong>JPG·PNG·WebP로 바꿀 이미지를 선택하세요</strong>
+            <span data-file-label>JPG/PNG/WebP/GIF/AVIF/BMP/SVG 여러 장 선택</span>
             <span class="upload-trust-badges" data-upload-badges aria-label="주요 장점">
               <span>무료</span>
               <span>설치 없음</span>
@@ -98,7 +98,7 @@ const structuredData = [
         </label>
 
         <p class="note-box">
-          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. JPG는 투명 배경을 지원하지 않아 흰 배경으로 저장합니다.
+          최대 20장, 총 50MB, 파일당 12MB까지 처리합니다. GIF는 첫 프레임 기준으로 변환하고, JPG는 투명 배경을 흰색으로 저장합니다.
         </p>
 
         <div class="button-row">
@@ -172,7 +172,7 @@ const structuredData = [
     <section class="content-section">
       <h2>사용 방법</h2>
       <ol>
-        <li>변환할 WebP, PNG, JPG 이미지를 선택합니다.</li>
+        <li>변환할 JPG, PNG, WebP, GIF, AVIF, BMP, SVG 이미지를 선택합니다.</li>
         <li>저장할 출력 형식을 JPG, PNG, WebP 중에서 고릅니다.</li>
         <li>변환하기를 누른 뒤 준비된 이미지를 저장합니다.</li>
       </ol>
@@ -258,6 +258,8 @@ const structuredData = [
         }
       };
       const searchParams = new URLSearchParams(window.location.search);
+      const acceptedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif", "image/bmp", "image/svg+xml"];
+      const acceptedExtensions = /\.(jpe?g|png|webp|gif|avif|bmp|svg)$/i;
       const requestedPreset = searchParams.get("preset");
       const requestedSource = searchParams.get("source");
       const requestedShortcutId = searchParams.get("shortcut_id");
@@ -300,7 +302,24 @@ const structuredData = [
         if (type === "image/webp") return "WebP";
         if (type === "image/png") return "PNG";
         if (type === "image/jpeg") return "JPG";
+        if (type === "image/gif") return "GIF";
+        if (type === "image/avif") return "AVIF";
+        if (type === "image/bmp") return "BMP";
+        if (type === "image/svg+xml") return "SVG";
         return "IMG";
+      }
+
+      function mimeForFile(file) {
+        if (acceptedTypes.includes(file.type)) return file.type;
+        const name = String(file.name || "").toLowerCase();
+        if (/\.(jpg|jpeg)$/.test(name)) return "image/jpeg";
+        if (/\.png$/.test(name)) return "image/png";
+        if (/\.webp$/.test(name)) return "image/webp";
+        if (/\.gif$/.test(name)) return "image/gif";
+        if (/\.avif$/.test(name)) return "image/avif";
+        if (/\.bmp$/.test(name)) return "image/bmp";
+        if (/\.svg$/.test(name)) return "image/svg+xml";
+        return file.type || "unknown";
       }
 
       function setMessage(status, meta = "") {
@@ -335,11 +354,21 @@ const structuredData = [
       }
 
       function validationMessage(reason) {
+        if (reason === "unsupported_file_type") return "JPG, PNG, WebP, GIF, AVIF, BMP, SVG 이미지만 사용할 수 있습니다.";
         return fileTools.validationMessage(reason, "변환할 이미지를 선택해 주세요.");
       }
 
       function validateFiles(nextFiles) {
-        return fileTools.validateImageFiles(nextFiles, { maxFiles, maxFileSize, maxTotalSize });
+        if (nextFiles.length === 0) return { ok: false, reason: "empty" };
+        if (nextFiles.length > maxFiles) return { ok: false, reason: "too_many_files" };
+        if (fileTools.totalSize(nextFiles) > maxTotalSize) return { ok: false, reason: "total_size_too_large" };
+        for (const file of nextFiles) {
+          if (!acceptedTypes.includes(file.type) && !acceptedExtensions.test(file.name || "")) {
+            return { ok: false, reason: "unsupported_file_type" };
+          }
+          if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        }
+        return { ok: true };
       }
 
       function releaseResult(item) {
@@ -368,7 +397,7 @@ const structuredData = [
         convertButton.disabled = fileItems.length === 0;
 
         if (fileItems.length === 0) {
-          fileLabel.textContent = "WebP/PNG/JPG 여러 장 선택";
+          fileLabel.textContent = "JPG/PNG/WebP/GIF/AVIF/BMP/SVG 여러 장 선택";
           convertList.innerHTML = '<p class="empty-state">선택된 이미지가 없습니다.</p>';
           nextPdfCard.hidden = true;
           setMessage("이미지를 선택하면 형식을 바꿀 수 있습니다.", "변환된 파일은 아직 준비되지 않았습니다.");
@@ -379,7 +408,7 @@ const structuredData = [
         convertList.innerHTML = fileItems
           .map((item, index) => {
             const result = item.result;
-            const sourceLabel = formatLabel(item.file.type);
+            const sourceLabel = formatLabel(mimeForFile(item.file));
             return `
               <div class="convert-row" data-convert-row>
                 <img src="${item.previewUrl}" alt="" loading="lazy" />
@@ -389,7 +418,7 @@ const structuredData = [
                 </div>
                 ${
                   result
-                    ? `<a class="btn primary" href="${result.url}" download="converted-image-${index + 1}.${outputExtension()}" data-download-image data-before-size="${item.file.size}" data-after-size="${result.size}" data-source-type="${item.file.type}" data-output-format="${result.outputFormat}">저장</a>`
+                    ? `<a class="btn primary" href="${result.url}" download="converted-image-${index + 1}.${outputExtension()}" data-download-image data-before-size="${item.file.size}" data-after-size="${result.size}" data-source-type="${mimeForFile(item.file)}" data-output-format="${result.outputFormat}">저장</a>`
                     : '<span class="pending-badge">대기</span>'
                 }
               </div>

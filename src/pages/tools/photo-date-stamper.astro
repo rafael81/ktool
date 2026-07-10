@@ -1,0 +1,975 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import IconGlyph from "@/components/IconGlyph.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+
+const tool = getTool("photo-date-stamp");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "필름카메라 날짜", "EXIF 촬영일 표시"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>EXIF 촬영일을 읽어 옛날 필름카메라처럼 사진에 날짜와 시간을 새겨 넣으세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="date-workspace" data-photo-date-stamper>
+      <form class="panel date-panel" aria-label="사진 날짜 표시 입력">
+        <div class="panel-title">
+          <h2>사진 입력</h2>
+        </div>
+
+        <label class="field">
+          <span>이미지 파일</span>
+          <span class="file-control upload-dropzone" data-upload-zone>
+            <input data-image-input type="file" accept="image/png,image/jpeg,image/webp" />
+            <span class="upload-icon" aria-hidden="true">
+              <IconGlyph name="plus" />
+            </span>
+            <strong>날짜를 표시할 사진을 선택하세요</strong>
+            <span data-file-label>JPG/PNG/WebP 1장 선택</span>
+            <span class="upload-trust-badges" data-upload-badges aria-label="주요 장점">
+              <span>무료</span>
+              <span>설치 없음</span>
+              <span>서버 전송 없음</span>
+            </span>
+            <em>파일 선택</em>
+            <small>최대 12MB · EXIF 촬영일 자동 인식</small>
+          </span>
+        </label>
+
+        <div class="date-detect-card" data-date-detect>
+          <strong data-date-detect-title>사진을 선택하면 촬영일을 확인합니다.</strong>
+          <span data-date-detect-copy>EXIF 날짜가 없으면 직접 입력해서 표시할 수 있습니다.</span>
+        </div>
+
+        <label class="field">
+          <span>표시할 날짜와 시간</span>
+          <input data-date-input type="datetime-local" step="1" />
+        </label>
+
+        <div class="field-grid two-columns">
+          <label class="field">
+            <span>표시 형식</span>
+            <select data-date-format>
+              <option value="date-time">2026.07.04 10:30</option>
+              <option value="date-time-seconds">2026.07.04 10:30:00</option>
+              <option value="date-only">2026.07.04</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>위치</span>
+            <select data-stamp-position>
+              <option value="bottom-right">오른쪽 아래</option>
+              <option value="bottom-left">왼쪽 아래</option>
+              <option value="top-right">오른쪽 위</option>
+              <option value="top-left">왼쪽 위</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-grid three-columns">
+          <label class="field">
+            <span>글자 크기</span>
+            <select data-stamp-size>
+              <option value="small">작게</option>
+              <option value="medium" selected>보통</option>
+              <option value="large">크게</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>배경</span>
+            <select data-background-mode>
+              <option value="shadow">그림자</option>
+              <option value="panel">검은 배경</option>
+              <option value="none">없음</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>저장 형식</span>
+            <select data-output-format>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="note-box">
+          EXIF 촬영일, 선택한 날짜, 사진 파일은 브라우저 안에서만 처리합니다. 분석 이벤트에는 실제 날짜나 파일명을 보내지 않습니다.
+        </p>
+
+        <div class="button-row">
+          <button class="btn" type="button" data-sample>
+            <IconGlyph name="plus" aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <IconGlyph name="refresh" aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-stamp disabled>
+            <IconGlyph name="file-output" aria-hidden="true" />
+            <span data-stamp-label>날짜 표시</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel date-preview-panel" aria-label="사진 날짜 표시 결과">
+        <div class="panel-title">
+          <h2>표시 결과</h2>
+          <span class="format-badge" data-format-badge>JPG</span>
+        </div>
+
+        <div class="date-summary">
+          <span>상태</span>
+          <strong data-output-status>사진을 선택하면 날짜를 표시할 수 있습니다.</strong>
+          <p data-output-meta>저장할 이미지는 아직 준비되지 않았습니다.</p>
+          <a
+            class="btn primary disabled"
+            href="#"
+            download="k-document-date-stamped-photo.jpg"
+            aria-disabled="true"
+            data-download-image
+          >
+            날짜 표시 사진 저장
+          </a>
+        </div>
+
+        <div class="date-preview-box" data-preview-box aria-live="polite">
+          <p class="empty-state">선택된 사진이 없습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>서버 전송 없음</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>사진과 EXIF 정보는 브라우저 안에서만 읽습니다.</span></li>
+          <li><span class="status-dot"></span><span>EXIF 날짜가 없으면 직접 입력한 날짜를 표시합니다.</span></li>
+          <li><span class="status-dot"></span><span>원본 사진은 바뀌지 않고 날짜가 표시된 새 이미지만 저장합니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>날짜를 표시할 사진을 선택합니다.</li>
+        <li>자동 인식된 촬영일을 확인하거나 날짜와 시간을 직접 입력합니다.</li>
+        <li>위치, 크기, 배경을 고른 뒤 날짜가 표시된 사진을 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    const root = document.querySelector("[data-photo-date-stamper]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 12 * 1024 * 1024;
+      const maxSide = 2400;
+      const input = root.querySelector("[data-image-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const dateDetect = root.querySelector("[data-date-detect]");
+      const dateDetectTitle = root.querySelector("[data-date-detect-title]");
+      const dateDetectCopy = root.querySelector("[data-date-detect-copy]");
+      const dateInput = root.querySelector("[data-date-input]");
+      const dateFormat = root.querySelector("[data-date-format]");
+      const stampPosition = root.querySelector("[data-stamp-position]");
+      const stampSize = root.querySelector("[data-stamp-size]");
+      const backgroundMode = root.querySelector("[data-background-mode]");
+      const outputFormat = root.querySelector("[data-output-format]");
+      const formatBadge = root.querySelector("[data-format-badge]");
+      const stampButton = root.querySelector("[data-stamp]");
+      const stampLabel = root.querySelector("[data-stamp-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadLink = root.querySelector("[data-download-image]");
+      const previewBox = root.querySelector("[data-preview-box]");
+
+      let imageItem = null;
+      let detectedDateSource = "none";
+      let outputUrl = "";
+      let outputBytes = 0;
+      let outputWidth = 0;
+      let outputHeight = 0;
+      let nextItemId = 1;
+      let exifrPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "photo-date-stamp",
+          tool_title: "사진 날짜 표시",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function outputExtension() {
+        return outputFormat.value === "image/png" ? "png" : "jpg";
+      }
+
+      function formatLabel() {
+        return outputFormat.value === "image/png" ? "PNG" : "JPG";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function selectedFile() {
+        return imageItem?.file || null;
+      }
+
+      function clearOutput() {
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        outputUrl = "";
+        outputBytes = 0;
+        outputWidth = 0;
+        outputHeight = 0;
+        downloadLink.href = "#";
+        downloadLink.download = `k-document-date-stamped-photo.${outputExtension()}`;
+        downloadLink.classList.add("disabled");
+        downloadLink.setAttribute("aria-disabled", "true");
+        downloadLink.dataset.stampedOutputFormat = "";
+        downloadLink.dataset.outputWidth = "";
+        downloadLink.dataset.outputHeight = "";
+        downloadLink.dataset.outputSize = "";
+      }
+
+      function syncFormatUi() {
+        formatBadge.textContent = formatLabel();
+      }
+
+      function canStamp() {
+        return Boolean(selectedFile()) && Boolean(dateInput.value);
+      }
+
+      function syncButton() {
+        stampButton.disabled = !canStamp();
+      }
+
+      function setBusy(isBusy) {
+        stampButton.disabled = isBusy || !canStamp();
+        stampLabel.textContent = isBusy ? "표시 중" : "날짜 표시";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "사진은 1장만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "사진은 12MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "JPG, PNG, WebP 이미지만 사용할 수 있습니다.";
+        if (reason === "missing_date") return "표시할 날짜와 시간을 입력해 주세요.";
+        return "날짜를 표시할 사진을 선택해 주세요.";
+      }
+
+      function validateFiles(files) {
+        return fileTools.validateImageFiles(files, {
+          maxFiles: 1,
+          maxFileSize,
+          maxTotalSize: maxFileSize
+        });
+      }
+
+      async function loadExifr() {
+        if (!exifrPromise) exifrPromise = import("exifr");
+        return exifrPromise;
+      }
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function dateToLocalInput(date) {
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+      }
+
+      function parseExifDate(value) {
+        if (!value) return "";
+        if (value instanceof Date && !Number.isNaN(value.getTime())) return dateToLocalInput(value);
+        const text = String(value).trim();
+        const match = text.match(/^(\d{4})[:/-](\d{2})[:/-](\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+        if (!match) return "";
+        return `${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6] || "00"}`;
+      }
+
+      function stampText() {
+        if (!dateInput.value) return "";
+        const date = new Date(dateInput.value);
+        if (Number.isNaN(date.getTime())) return "";
+        const y = date.getFullYear();
+        const m = pad(date.getMonth() + 1);
+        const d = pad(date.getDate());
+        const h = pad(date.getHours());
+        const min = pad(date.getMinutes());
+        const s = pad(date.getSeconds());
+        if (dateFormat.value === "date-only") return `${y}.${m}.${d}`;
+        if (dateFormat.value === "date-time-seconds") return `${y}.${m}.${d} ${h}:${min}:${s}`;
+        return `${y}.${m}.${d} ${h}:${min}`;
+      }
+
+      function sourceLabel() {
+        if (detectedDateSource === "exif") return "exif";
+        if (dateInput.value) return "manual";
+        return "none";
+      }
+
+      function setDetectState(kind, title, copy) {
+        dateDetect.dataset.state = kind;
+        dateDetectTitle.textContent = title;
+        dateDetectCopy.textContent = copy;
+      }
+
+      function releaseItem() {
+        if (imageItem?.previewUrl) URL.revokeObjectURL(imageItem.previewUrl);
+        clearOutput();
+        imageItem = null;
+      }
+
+      function drawPreviewPlaceholder() {
+        if (!imageItem) {
+          previewBox.innerHTML = '<p class="empty-state">선택된 사진이 없습니다.</p>';
+          return;
+        }
+        previewBox.innerHTML = `<img src="${imageItem.previewUrl}" alt="선택한 사진 미리보기" loading="lazy" />`;
+      }
+
+      async function inspectExif(file, method) {
+        setDetectState("pending", "촬영일 확인 중", "EXIF 촬영일을 읽고 있습니다.");
+        detectedDateSource = "none";
+        try {
+          const exifr = await loadExifr();
+          const data = await exifr.parse(file, {
+            pick: ["DateTimeOriginal", "CreateDate", "ModifyDate", "DateTime"],
+            reviveValues: true,
+            translateValues: true
+          });
+          const detected = parseExifDate(
+            data?.DateTimeOriginal || data?.CreateDate || data?.ModifyDate || data?.DateTime
+          );
+          if (detected) {
+            dateInput.value = detected;
+            detectedDateSource = "exif";
+            setDetectState("ready", "EXIF 촬영일 인식됨", "자동으로 읽은 날짜를 그대로 쓰거나 직접 수정할 수 있습니다.");
+          } else {
+            dateInput.value = "";
+            setDetectState("manual", "촬영일을 찾지 못했습니다", "표시할 날짜와 시간을 직접 입력해 주세요.");
+          }
+        } catch {
+          dateInput.value = "";
+          setDetectState("manual", "촬영일을 읽지 못했습니다", "EXIF가 없거나 지원하지 않는 형식입니다. 날짜를 직접 입력해 주세요.");
+        } finally {
+          syncButton();
+          track("photo_date_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            has_exif_date: detectedDateSource === "exif"
+          });
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItem();
+        imageItem = fileTools.createFileItems([file], () => nextItemId++)[0];
+        fileLabel.textContent = `${formatBytes(file.size)} 사진 1장 선택`;
+        setMessage("사진 선택됨", "촬영일을 확인하고 있습니다.");
+        drawPreviewPlaceholder();
+        inspectExif(file, method);
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validateFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("photo_date_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        setFile(files[0], method);
+      }
+
+      function createExifSegment(dateText) {
+        const encoder = new TextEncoder();
+        const dateBytes = encoder.encode(`${dateText}\0`);
+        const tiffLength = 44 + dateBytes.length;
+        const tiff = new Uint8Array(tiffLength);
+        const view = new DataView(tiff.buffer);
+        tiff[0] = 0x49;
+        tiff[1] = 0x49;
+        view.setUint16(2, 0x2a, true);
+        view.setUint32(4, 8, true);
+        view.setUint16(8, 1, true);
+        view.setUint16(10, 0x8769, true);
+        view.setUint16(12, 4, true);
+        view.setUint32(14, 1, true);
+        view.setUint32(18, 26, true);
+        view.setUint32(22, 0, true);
+        view.setUint16(26, 1, true);
+        view.setUint16(28, 0x9003, true);
+        view.setUint16(30, 2, true);
+        view.setUint32(32, dateBytes.length, true);
+        view.setUint32(36, 44, true);
+        view.setUint32(40, 0, true);
+        tiff.set(dateBytes, 44);
+        const prefix = encoder.encode("Exif\0\0");
+        const payload = new Uint8Array(prefix.length + tiff.length);
+        payload.set(prefix, 0);
+        payload.set(tiff, prefix.length);
+        const length = payload.length + 2;
+        const segment = new Uint8Array(payload.length + 4);
+        segment[0] = 0xff;
+        segment[1] = 0xe1;
+        segment[2] = (length >> 8) & 0xff;
+        segment[3] = length & 0xff;
+        segment.set(payload, 4);
+        return segment;
+      }
+
+      async function addExifDateToJpeg(blob, dateText) {
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return blob;
+        const segment = createExifSegment(dateText);
+        return new Blob([bytes.slice(0, 2), segment, bytes.slice(2)], { type: "image/jpeg" });
+      }
+
+      async function createSampleFile() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1200;
+        canvas.height = 760;
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("canvas_context_unavailable");
+        const gradient = context.createLinearGradient(0, 0, 1200, 760);
+        gradient.addColorStop(0, "#0f172a");
+        gradient.addColorStop(1, "#2563eb");
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "rgba(255,255,255,0.16)";
+        context.fillRect(72, 72, 1056, 616);
+        context.fillStyle = "#ffffff";
+        context.font = "700 64px sans-serif";
+        context.fillText("EXIF Sample Photo", 96, 158);
+        context.font = "500 30px sans-serif";
+        context.fillText("DateTimeOriginal: 2025:04:12 10:30:00", 96, 214);
+        const blob = await fileTools.canvasToBlob(canvas, "image/jpeg", 0.92);
+        const withExif = await addExifDateToJpeg(blob, "2025:04:12 10:30:00");
+        return new File([withExif], "photo-date-sample.jpg", { type: "image/jpeg" });
+      }
+
+      function stampGeometry(text, size) {
+        const metrics = {
+          small: { height: 24, thickness: 5, gap: 3 },
+          medium: { height: 34, thickness: 7, gap: 4 },
+          large: { height: 48, thickness: 9, gap: 5 }
+        }[size] || { height: 34, thickness: 7, gap: 4 };
+        const digitWidth = Math.round(metrics.height * 0.58);
+        let width = 0;
+        for (const char of text) {
+          if (/\d/.test(char)) width += digitWidth + metrics.gap;
+          else if (char === " ") width += Math.round(digitWidth * 0.55);
+          else width += Math.round(digitWidth * 0.38) + metrics.gap;
+        }
+        return { ...metrics, digitWidth, width: Math.max(1, width - metrics.gap) };
+      }
+
+      function drawSegment(context, x, y, width, height, radius) {
+        context.beginPath();
+        context.roundRect(x, y, width, height, radius);
+        context.fill();
+      }
+
+      function drawSevenDigit(context, digit, x, y, geometry) {
+        const { digitWidth: w, height: h, thickness: t } = geometry;
+        const midY = y + h / 2 - t / 2;
+        const bottomY = y + h - t;
+        const rightX = x + w - t;
+        const segmentsByDigit = {
+          "0": ["a", "b", "c", "d", "e", "f"],
+          "1": ["b", "c"],
+          "2": ["a", "b", "g", "e", "d"],
+          "3": ["a", "b", "g", "c", "d"],
+          "4": ["f", "g", "b", "c"],
+          "5": ["a", "f", "g", "c", "d"],
+          "6": ["a", "f", "g", "e", "c", "d"],
+          "7": ["a", "b", "c"],
+          "8": ["a", "b", "c", "d", "e", "f", "g"],
+          "9": ["a", "b", "c", "d", "f", "g"]
+        };
+        const active = new Set(segmentsByDigit[digit] || []);
+        if (active.has("a")) drawSegment(context, x + t, y, w - t * 2, t, t / 2);
+        if (active.has("b")) drawSegment(context, rightX, y + t, t, h / 2 - t, t / 2);
+        if (active.has("c")) drawSegment(context, rightX, midY + t, t, h / 2 - t, t / 2);
+        if (active.has("d")) drawSegment(context, x + t, bottomY, w - t * 2, t, t / 2);
+        if (active.has("e")) drawSegment(context, x, midY + t, t, h / 2 - t, t / 2);
+        if (active.has("f")) drawSegment(context, x, y + t, t, h / 2 - t, t / 2);
+        if (active.has("g")) drawSegment(context, x + t, midY, w - t * 2, t, t / 2);
+      }
+
+      function drawSeparator(context, char, x, y, geometry) {
+        const { height: h, thickness: t } = geometry;
+        const dot = Math.max(4, t * 0.9);
+        const cx = x + dot;
+        if (char === ":") {
+          context.beginPath();
+          context.arc(cx, y + h * 0.35, dot / 2, 0, Math.PI * 2);
+          context.arc(cx, y + h * 0.72, dot / 2, 0, Math.PI * 2);
+          context.fill();
+        } else {
+          context.beginPath();
+          context.arc(cx, y + h - dot / 2, dot / 2, 0, Math.PI * 2);
+          context.fill();
+        }
+      }
+
+      function drawSevenSegmentText(context, text, x, y, geometry) {
+        let cursor = x;
+        for (const char of text) {
+          if (/\d/.test(char)) {
+            drawSevenDigit(context, char, cursor, y, geometry);
+            cursor += geometry.digitWidth + geometry.gap;
+          } else if (char === " ") {
+            cursor += Math.round(geometry.digitWidth * 0.55);
+          } else {
+            drawSeparator(context, char, cursor, y, geometry);
+            cursor += Math.round(geometry.digitWidth * 0.38) + geometry.gap;
+          }
+        }
+      }
+
+      function stampPositionFor(canvas, geometry) {
+        const margin = Math.max(18, Math.round(canvas.width * 0.035));
+        const width = geometry.width;
+        const height = geometry.height;
+        if (stampPosition.value === "top-left") return { x: margin, y: margin };
+        if (stampPosition.value === "top-right") return { x: canvas.width - margin - width, y: margin };
+        if (stampPosition.value === "bottom-left") return { x: margin, y: canvas.height - margin - height };
+        return { x: canvas.width - margin - width, y: canvas.height - margin - height };
+      }
+
+      async function stampPhoto() {
+        const file = selectedFile();
+        const text = stampText();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("photo_date_validation_error", { reason: "empty" });
+          return;
+        }
+        if (!text) {
+          setMessage(validationMessage("missing_date"), "날짜를 직접 입력하거나 EXIF가 있는 사진을 선택해 주세요.");
+          track("photo_date_validation_error", { reason: "missing_date" });
+          return;
+        }
+
+        clearOutput();
+        setBusy(true);
+        setMessage("날짜 표시 중", "사진 위에 날짜 스탬프를 그리고 있습니다.");
+
+        try {
+          const image = await fileTools.imageFromFile(file);
+          const sourceWidth = image.naturalWidth || image.width;
+          const sourceHeight = image.naturalHeight || image.height;
+          const sizeScale = Math.min(1, maxSide / Math.max(sourceWidth, sourceHeight));
+          const canvas = fileTools.drawImageOnWhiteCanvas(
+            image,
+            Math.max(1, Math.round(sourceWidth * sizeScale)),
+            Math.max(1, Math.round(sourceHeight * sizeScale))
+          );
+          const context = canvas.getContext("2d");
+          if (!context) throw new Error("canvas_context_unavailable");
+          const geometry = stampGeometry(text, stampSize.value);
+          const position = stampPositionFor(canvas, geometry);
+          if (backgroundMode.value === "panel") {
+            context.fillStyle = "rgba(0,0,0,0.58)";
+            context.beginPath();
+            context.roundRect(position.x - 12, position.y - 10, geometry.width + 24, geometry.height + 20, 10);
+            context.fill();
+          }
+          if (backgroundMode.value === "shadow") {
+            context.shadowColor = "rgba(0,0,0,0.7)";
+            context.shadowBlur = 8;
+            context.shadowOffsetX = 2;
+            context.shadowOffsetY = 2;
+          }
+          context.fillStyle = "#ff7a1a";
+          drawSevenSegmentText(context, text, position.x, position.y, geometry);
+          context.shadowColor = "transparent";
+          const quality = outputFormat.value === "image/jpeg" ? 0.92 : undefined;
+          const blob = await fileTools.canvasToBlob(canvas, outputFormat.value, quality);
+          outputBytes = blob.size;
+          outputWidth = canvas.width;
+          outputHeight = canvas.height;
+          outputUrl = URL.createObjectURL(blob);
+          downloadLink.href = outputUrl;
+          downloadLink.download = `k-document-date-stamped-photo.${outputExtension()}`;
+          downloadLink.classList.remove("disabled");
+          downloadLink.removeAttribute("aria-disabled");
+          downloadLink.dataset.stampedOutputFormat = outputFormat.value;
+          downloadLink.dataset.outputWidth = String(outputWidth);
+          downloadLink.dataset.outputHeight = String(outputHeight);
+          downloadLink.dataset.outputSize = String(outputBytes);
+          previewBox.innerHTML = "";
+          const preview = document.createElement("img");
+          preview.src = outputUrl;
+          preview.alt = "날짜가 표시된 사진 미리보기";
+          previewBox.append(preview);
+          setMessage("날짜 표시 완료", `${outputWidth}×${outputHeight}px · ${formatBytes(outputBytes)}`);
+          track("photo_date_generate", {
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            output_size: outputBytes,
+            output_width: outputWidth,
+            output_height: outputHeight,
+            output_format: formatLabel().toLowerCase(),
+            stamp_position: stampPosition.value,
+            stamp_size: stampSize.value,
+            date_source: sourceLabel(),
+            has_exif_date: detectedDateSource === "exif",
+            background_mode: backgroundMode.value
+          });
+        } catch (error) {
+          clearOutput();
+          setMessage("날짜를 표시하지 못했습니다.", "이미지를 다시 선택하거나 JPG/PNG 형식으로 시도해 주세요.");
+          track("photo_date_validation_error", {
+            reason: error?.message || "photo_date_stamp_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function resetState() {
+        releaseItem();
+        detectedDateSource = "none";
+        input.value = "";
+        dateInput.value = "";
+        fileLabel.textContent = "JPG/PNG/WebP 1장 선택";
+        setDetectState("idle", "사진을 선택하면 촬영일을 확인합니다.", "EXIF 날짜가 없으면 직접 입력해서 표시할 수 있습니다.");
+        previewBox.innerHTML = '<p class="empty-state">선택된 사진이 없습니다.</p>';
+        setMessage("사진을 선택하면 날짜를 표시할 수 있습니다.", "저장할 이미지는 아직 준비되지 않았습니다.");
+        syncFormatUi();
+        syncButton();
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => {
+            dropzone.classList.remove("is-drag-over");
+          });
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      [dateInput, dateFormat, stampPosition, stampSize, backgroundMode].forEach((control) => {
+        control.addEventListener("change", () => {
+          if (control === dateInput && detectedDateSource === "exif") detectedDateSource = "manual";
+          clearOutput();
+          drawPreviewPlaceholder();
+          syncButton();
+          track("photo_date_stamp_option_change", {
+            stamp_position: stampPosition.value,
+            stamp_size: stampSize.value,
+            date_format: dateFormat.value,
+            background_mode: backgroundMode.value,
+            date_source: sourceLabel()
+          });
+        });
+      });
+
+      outputFormat.addEventListener("change", () => {
+        clearOutput();
+        syncFormatUi();
+        drawPreviewPlaceholder();
+        track("photo_date_format_change", {
+          output_format: formatLabel().toLowerCase()
+        });
+      });
+
+      stampButton.addEventListener("click", stampPhoto);
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        try {
+          const file = await createSampleFile();
+          track("photo_date_sample_apply", { file_count: 1 });
+          setFile(file, "sample");
+        } catch (error) {
+          setMessage("샘플 사진을 만들지 못했습니다.", "잠시 후 다시 시도해 주세요.");
+          track("photo_date_validation_error", {
+            reason: error?.message || "sample_create_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      resetButton.addEventListener("click", () => {
+        resetState();
+        track("photo_date_reset");
+      });
+
+      downloadLink.addEventListener("click", (event) => {
+        if (!outputUrl) {
+          event.preventDefault();
+          return;
+        }
+        track("photo_date_download", {
+          output_size: outputBytes,
+          output_width: outputWidth,
+          output_height: outputHeight,
+          output_format: formatLabel().toLowerCase(),
+          stamp_position: stampPosition.value,
+          date_source: sourceLabel()
+        });
+      });
+
+      syncFormatUi();
+      syncButton();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .date-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .date-workspace .side-panel {
+    grid-column: 1 / -1;
+  }
+
+  .date-panel,
+  .date-preview-panel,
+  .side-panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    padding: 18px;
+  }
+
+  .upload-dropzone {
+    min-height: 240px;
+  }
+
+  .date-detect-card {
+    display: grid;
+    gap: 5px;
+    margin: 14px 0;
+    border: 1px solid #d9e6f5;
+    border-radius: 8px;
+    background: #f8fbff;
+    padding: 13px 14px;
+  }
+
+  .date-detect-card[data-state="ready"] {
+    border-color: #a7f3d0;
+    background: #ecfdf3;
+  }
+
+  .date-detect-card[data-state="manual"] {
+    border-color: #fed7aa;
+    background: #fff7ed;
+  }
+
+  .date-detect-card strong {
+    color: var(--ink);
+  }
+
+  .date-detect-card span {
+    color: var(--muted);
+  }
+
+  .field-grid.three-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .format-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    border-radius: 999px;
+    background: #eef6ff;
+    color: #155eef;
+    padding: 5px 10px;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .date-summary {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .date-summary > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .date-summary p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .date-summary .btn {
+    justify-self: start;
+  }
+
+  .date-preview-box {
+    min-height: 260px;
+    display: grid;
+    place-items: center;
+    margin-top: 14px;
+    border: 1px dashed #d0d5dd;
+    border-radius: 8px;
+    background: #f8fafc;
+    overflow: hidden;
+  }
+
+  .date-preview-box img {
+    display: block;
+    max-width: 100%;
+    max-height: 560px;
+    object-fit: contain;
+  }
+
+  .status-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .status-list li {
+    display: flex;
+    gap: 8px;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    margin-top: 0.48em;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .date-workspace,
+    .field-grid.three-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .date-workspace .side-panel {
+      display: none;
+    }
+  }
+</style>

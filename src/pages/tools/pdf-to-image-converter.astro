@@ -1,0 +1,1033 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getRelatedTools, getTool } from "@/data/tools";
+import { faqPageSchema, softwareApplicationSchema, webPageSchema } from "@/data/seo";
+import { FileOutput, FolderOpen, Plus, RefreshCw } from "@lucide/astro";
+
+const tool = getTool("pdf-to-image");
+const relatedTools = getRelatedTools(tool);
+const structuredData = [
+  webPageSchema({
+    name: tool.title,
+    description: tool.metaDescription,
+    path: tool.path,
+    keywords: [tool.primaryQuery, ...tool.secondaryQueries, "PDF 이미지 변환", "PDF 페이지 이미지 저장"]
+  }),
+  softwareApplicationSchema(tool, tool.featureList),
+  faqPageSchema(tool.faqs)
+];
+---
+
+<BaseLayout
+  title={tool.pageTitle}
+  description={tool.metaDescription}
+  canonicalPath={tool.path}
+  structuredData={structuredData}
+>
+  <main
+    class="page-shell file-tool-shell"
+    data-tool-id={tool.id}
+    data-tool-title={tool.title}
+  >
+    <section class="tool-intro">
+      <div>
+        <h1>{tool.title}</h1>
+        <p>PDF 각 페이지를 JPG 또는 PNG 이미지로 저장하세요.</p>
+      </div>
+      <div class="quick-links">
+        {
+          relatedTools.map((item) => (
+            <a
+              href={item.path}
+              data-analytics-event="tool_quick_link_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.shortTitle}
+            >
+              {item.shortTitle}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pdf-image-workspace" data-pdf-image-tool>
+      <form class="panel pdf-image-panel pdf-upload-panel" aria-label="PDF 이미지 변환 입력">
+        <label class="pdf-dropzone upload-dropzone file-control" data-upload-zone>
+          <input data-pdf-input type="file" accept="application/pdf,.pdf" />
+          <span class="pdf-upload-icon" aria-hidden="true">
+            <FolderOpen aria-hidden="true" />
+          </span>
+          <strong>PDF를 여기로 끌어다 놓으세요</strong>
+          <span data-file-label>PDF 1개 선택 · 페이지별 이미지로 저장</span>
+          <span class="pdf-dropzone-badges" data-upload-badges aria-label="주요 장점">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </span>
+          <em>PDF 선택</em>
+          <small>최대 80MB · 50쪽 이하 권장 · 암호 없는 PDF 지원</small>
+        </label>
+
+        <div class="pdf-option-bar">
+          <label class="field">
+            <span>저장 형식</span>
+            <select data-output-format>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>이미지 품질</span>
+            <select data-render-scale>
+              <option value="1.25">빠르게</option>
+              <option value="1.6" selected>보통</option>
+              <option value="2">선명하게</option>
+            </select>
+          </label>
+
+          <label class="field" data-quality-field>
+            <span>JPG 품질</span>
+            <input data-jpeg-quality type="range" min="70" max="95" value="88" />
+          </label>
+        </div>
+
+        <div class="preflight-card" data-preflight aria-live="polite">
+          <strong>변환 전 마지막 확인</strong>
+          <ul>
+            <li data-preflight-item="file">PDF를 선택해 주세요.</li>
+            <li data-preflight-item="pages">페이지 수는 선택 후 확인합니다.</li>
+            <li data-preflight-item="settings">JPG 형식으로 저장합니다.</li>
+            <li data-preflight-item="output">이미지 변환 후 다운로드 링크가 열립니다.</li>
+          </ul>
+        </div>
+
+        <div class="button-row pdf-action-row">
+          <button class="btn" type="button" data-sample>
+            <Plus aria-hidden="true" />
+            샘플
+          </button>
+          <button class="btn" type="button" data-reset>
+            <RefreshCw aria-hidden="true" />
+            초기화
+          </button>
+          <button class="btn primary" type="button" data-generate disabled>
+            <FileOutput aria-hidden="true" />
+            <span data-generate-label>이미지로 변환</span>
+          </button>
+        </div>
+      </form>
+
+      <section class="preview-panel pdf-preview-panel" aria-label="PDF 이미지 변환 상태">
+        <div class="panel-title">
+          <h2>변환 결과</h2>
+          <span class="format-badge" data-page-count-badge>0쪽</span>
+        </div>
+
+        <div class="pdf-result-card">
+          <span>상태</span>
+          <strong data-output-status>PDF를 선택하면 이미지로 변환할 수 있습니다.</strong>
+          <p data-output-meta>파일은 아직 준비되지 않았습니다.</p>
+          <div class="download-list" data-download-list hidden></div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="panel-title">
+          <h3>서버 전송 없음</h3>
+        </div>
+        <ul class="status-list">
+          <li><span class="status-dot"></span><span>PDF와 파일명은 서버로 보내지 않습니다.</span></li>
+          <li><span class="status-dot"></span><span>각 페이지를 개별 JPG 또는 PNG로 저장합니다.</span></li>
+          <li><span class="status-dot"></span><span>암호가 있거나 손상된 PDF는 브라우저에서 열리지 않을 수 있습니다.</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="content-section">
+      <h2>사용 방법</h2>
+      <ol>
+        <li>이미지로 바꿀 PDF 파일을 선택합니다.</li>
+        <li>JPG 또는 PNG 형식과 이미지 품질을 고릅니다.</li>
+        <li>이미지로 변환 후 필요한 페이지 이미지를 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        {tool.faqs.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2>관련 도구</h2>
+        <p>{tool.userMoment}에 함께 쓰기 좋은 도구입니다.</p>
+      </div>
+      <div class="tool-grid">
+        {
+          relatedTools.map((item) => (
+            <a
+              class="tool-card"
+              href={item.path}
+              data-analytics-event="related_tool_click"
+              data-analytics-tool-id={item.id}
+              data-analytics-tool-title={item.title}
+              data-analytics-label={item.title}
+            >
+              <span class="meta"><span class="meta-tag">{item.primaryQuery}</span></span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script is:inline src="/scripts/file-tool-utils.js"></script>
+  <script>
+    // @ts-nocheck
+    import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+
+    const root = document.querySelector("[data-pdf-image-tool]");
+    if (root) {
+      const fileTools = window.KdocFileTools;
+      if (!fileTools) throw new Error("file_tool_utils_unavailable");
+
+      const maxFileSize = 80 * 1024 * 1024;
+      const maxPages = 50;
+      const maxCanvasSide = 3200;
+
+      const input = root.querySelector("[data-pdf-input]");
+      const dropzone = root.querySelector("[data-upload-zone]");
+      const fileLabel = root.querySelector("[data-file-label]");
+      const formatSelect = root.querySelector("[data-output-format]");
+      const scaleSelect = root.querySelector("[data-render-scale]");
+      const qualityInput = root.querySelector("[data-jpeg-quality]");
+      const qualityField = root.querySelector("[data-quality-field]");
+      const generateButton = root.querySelector("[data-generate]");
+      const generateLabel = root.querySelector("[data-generate-label]");
+      const resetButton = root.querySelector("[data-reset]");
+      const sampleButton = root.querySelector("[data-sample]");
+      const pageCountBadge = root.querySelector("[data-page-count-badge]");
+      const outputStatus = root.querySelector("[data-output-status]");
+      const outputMeta = root.querySelector("[data-output-meta]");
+      const downloadList = root.querySelector("[data-download-list]");
+      const preflightItems = {
+        file: root.querySelector('[data-preflight-item="file"]'),
+        pages: root.querySelector('[data-preflight-item="pages"]'),
+        settings: root.querySelector('[data-preflight-item="settings"]'),
+        output: root.querySelector('[data-preflight-item="output"]')
+      };
+      const formatter = new Intl.NumberFormat("ko-KR");
+      let fileItems = [];
+      let pageCount = 0;
+      let outputItems = [];
+      let outputBytes = 0;
+      let nextItemId = 1;
+      let pdfLibPromise = null;
+      let pdfJsPromise = null;
+
+      function track(eventName, params = {}) {
+        window.kdocTrack?.(eventName, {
+          tool_id: "pdf-to-image",
+          tool_title: "PDF JPG 변환",
+          ...params
+        });
+      }
+
+      function formatBytes(bytes) {
+        return fileTools.formatBytes(bytes);
+      }
+
+      function selectedFile() {
+        return fileItems[0]?.file || null;
+      }
+
+      function outputExtension() {
+        return formatSelect.value === "image/png" ? "png" : "jpg";
+      }
+
+      function formatLabel() {
+        return formatSelect.value === "image/png" ? "PNG" : "JPG";
+      }
+
+      function isPdfFile(file) {
+        return file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+      }
+
+      function validatePdfFiles(files) {
+        if (files.length === 0) return { ok: false, reason: "empty" };
+        if (files.length > 1) return { ok: false, reason: "too_many_files" };
+        const file = files[0];
+        if (!isPdfFile(file)) return { ok: false, reason: "unsupported_file_type" };
+        if (file.size > maxFileSize) return { ok: false, reason: "file_too_large" };
+        return { ok: true };
+      }
+
+      function validationMessage(reason) {
+        if (reason === "too_many_files") return "PDF는 1개만 선택할 수 있습니다.";
+        if (reason === "file_too_large") return "PDF는 80MB 이하만 사용할 수 있습니다.";
+        if (reason === "unsupported_file_type") return "PDF 파일만 선택할 수 있습니다.";
+        if (reason === "too_many_pages") return "브라우저 성능을 위해 50쪽 이하 PDF만 변환합니다.";
+        if (reason === "empty") return "PDF를 선택해 주세요.";
+        return "PDF를 다시 선택해 주세요.";
+      }
+
+      function setMessage(status, meta = "") {
+        outputStatus.textContent = status;
+        outputMeta.textContent = meta;
+      }
+
+      function setPreflightItem(key, status, text) {
+        const item = preflightItems[key];
+        if (!item) return;
+        item.dataset.status = status;
+        item.textContent = text;
+      }
+
+      function revokeOutputs() {
+        for (const item of outputItems) {
+          if (item.url) URL.revokeObjectURL(item.url);
+        }
+        outputItems = [];
+      }
+
+      function clearOutputs() {
+        revokeOutputs();
+        outputBytes = 0;
+        downloadList.hidden = true;
+        downloadList.innerHTML = "";
+        updatePreflight();
+      }
+
+      function releaseItems(items = fileItems) {
+        fileTools.revokePreviewItems(items);
+      }
+
+      function canGenerate() {
+        return Boolean(selectedFile()) && pageCount > 0 && pageCount <= maxPages;
+      }
+
+      function syncGenerateButton() {
+        generateButton.disabled = !canGenerate();
+      }
+
+      function updateQualityVisibility() {
+        qualityField.hidden = formatSelect.value !== "image/jpeg";
+      }
+
+      function updatePreflight() {
+        const file = selectedFile();
+        if (!file) {
+          setPreflightItem("file", "pending", "PDF를 선택해 주세요.");
+          setPreflightItem("pages", "pending", "페이지 수는 선택 후 확인합니다.");
+          setPreflightItem("settings", "ready", `${formatLabel()} 형식으로 저장합니다.`);
+          setPreflightItem("output", "pending", "이미지 변환 후 다운로드 링크가 열립니다.");
+          syncGenerateButton();
+          return;
+        }
+
+        setPreflightItem("file", "ready", `PDF 1개 선택됨, ${formatBytes(file.size)}`);
+        setPreflightItem(
+          "pages",
+          pageCount > 0 && pageCount <= maxPages ? "ready" : "pending",
+          pageCount > 0
+            ? `${formatter.format(pageCount)}쪽 PDF`
+            : "페이지 수를 읽고 있습니다."
+        );
+        setPreflightItem(
+          "settings",
+          "ready",
+          `${formatLabel()} · ${scaleSelect.options[scaleSelect.selectedIndex]?.text || "보통"} 품질`
+        );
+        setPreflightItem(
+          "output",
+          outputItems.length > 0 ? "ready" : "pending",
+          outputItems.length > 0
+            ? `저장 준비 완료, ${formatter.format(outputItems.length)}개 · ${formatBytes(outputBytes)}`
+            : "이미지로 변환을 누르면 다운로드 링크가 열립니다."
+        );
+        syncGenerateButton();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy || !canGenerate();
+        generateLabel.textContent = isBusy ? "변환 중" : "이미지로 변환";
+        sampleButton.disabled = isBusy;
+        resetButton.disabled = isBusy;
+        formatSelect.disabled = isBusy;
+        scaleSelect.disabled = isBusy;
+        qualityInput.disabled = isBusy;
+      }
+
+      function resetState() {
+        releaseItems();
+        revokeOutputs();
+        fileItems = [];
+        pageCount = 0;
+        outputBytes = 0;
+        pageCountBadge.textContent = "0쪽";
+        fileLabel.textContent = "PDF 1개 선택 · 페이지별 이미지로 저장";
+        downloadList.hidden = true;
+        downloadList.innerHTML = "";
+        input.value = "";
+        setMessage("PDF를 선택하면 이미지로 변환할 수 있습니다.", "파일은 아직 준비되지 않았습니다.");
+        updatePreflight();
+      }
+
+      async function loadPdfLib() {
+        if (!pdfLibPromise) pdfLibPromise = import("pdf-lib");
+        return pdfLibPromise;
+      }
+
+      async function loadPdfJs() {
+        if (!pdfJsPromise) {
+          pdfJsPromise = import("pdfjs-dist").then((pdfjs) => {
+            pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+            return pdfjs;
+          });
+        }
+        return pdfJsPromise;
+      }
+
+      async function loadPdfDocument(file) {
+        const pdfjs = await loadPdfJs();
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        return pdfjs.getDocument({
+          data: bytes,
+          stopAtErrors: true
+        }).promise;
+      }
+
+      async function inspectPdf(file, method = "picker") {
+        setBusy(true);
+        setMessage("PDF 읽는 중", "페이지 수를 확인하고 있습니다.");
+
+        let pdfDocument = null;
+        try {
+          pdfDocument = await loadPdfDocument(file);
+          pageCount = pdfDocument.numPages;
+          if (pageCount > maxPages) throw new Error("too_many_pages");
+          pageCountBadge.textContent = `${formatter.format(pageCount)}쪽`;
+          fileLabel.textContent = `${formatter.format(pageCount)}쪽 PDF 선택`;
+          setMessage(`${formatter.format(pageCount)}쪽 PDF`, `${formatLabel()}로 변환할 수 있습니다.`);
+          updatePreflight();
+          track("pdf_image_file_select", {
+            method,
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount
+          });
+        } catch (error) {
+          const reason = error?.message === "too_many_pages" ? "too_many_pages" : error?.message || "pdf_read_failed";
+          resetState();
+          setMessage(
+            validationMessage(reason),
+            reason === "too_many_pages" ? "페이지 수를 줄인 PDF로 다시 시도해 주세요." : "암호가 있거나 손상된 PDF인지 확인해 주세요."
+          );
+          track("pdf_image_validation_error", { reason });
+        } finally {
+          try {
+            await pdfDocument?.destroy?.();
+          } catch {}
+          setBusy(false);
+        }
+      }
+
+      function setFile(file, method = "picker") {
+        releaseItems();
+        clearOutputs();
+        pageCount = 0;
+        pageCountBadge.textContent = "읽는 중";
+        fileItems = fileTools.createFileItems([file], () => nextItemId++);
+        inspectPdf(file, method);
+      }
+
+      async function createSamplePdf() {
+        const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
+        const pdfDoc = await PDFDocument.create();
+        const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const colors = [rgb(0.08, 0.37, 0.94), rgb(0.07, 0.48, 0.48), rgb(0.71, 0.27, 0.03)];
+        for (let index = 0; index < 3; index += 1) {
+          const page = pdfDoc.addPage([595.28, 841.89]);
+          page.drawRectangle({ x: 40, y: 40, width: 515, height: 760, borderColor: rgb(0.84, 0.89, 0.95), borderWidth: 2 });
+          page.drawRectangle({ x: 74, y: 694, width: 190, height: 22, color: colors[index] });
+          page.drawText(`PDF Image Page ${index + 1}`, { x: 74, y: 632, size: 32, font: titleFont, color: rgb(0.08, 0.13, 0.19) });
+          page.drawText("K Document Tool sample PDF", {
+            x: 74,
+            y: 590,
+            size: 16,
+            font: bodyFont,
+            color: rgb(0.32, 0.38, 0.46)
+          });
+          page.drawText("Convert this page to JPG or PNG in your browser.", {
+            x: 74,
+            y: 552,
+            size: 13,
+            font: bodyFont,
+            color: rgb(0.47, 0.53, 0.61)
+          });
+        }
+        const bytes = await pdfDoc.save();
+        return new File([bytes], "pdf-image-sample.pdf", { type: "application/pdf" });
+      }
+
+      async function renderPageToBlob(page, pageNumber) {
+        const selectedScale = Number(scaleSelect.value) || 1.6;
+        const initialViewport = page.getViewport({ scale: selectedScale });
+        const fitScale = Math.min(1, maxCanvasSide / Math.max(initialViewport.width, initialViewport.height));
+        const viewport = fitScale < 1 ? page.getViewport({ scale: selectedScale * fitScale }) : initialViewport;
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.ceil(viewport.width));
+        canvas.height = Math.max(1, Math.ceil(viewport.height));
+        const context = canvas.getContext("2d", { alpha: false });
+        if (!context) throw new Error("canvas_context_unavailable");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: context, viewport }).promise;
+        const quality = Math.max(0.7, Math.min(0.95, Number(qualityInput.value) / 100 || 0.88));
+        const blob = await fileTools.canvasToBlob(canvas, formatSelect.value, quality);
+        page.cleanup?.();
+        return {
+          blob,
+          width: canvas.width,
+          height: canvas.height,
+          pageNumber,
+          bytes: blob.size,
+          fileName: `k-document-page-${pageNumber}.${outputExtension()}`
+        };
+      }
+
+      async function generateImages() {
+        const file = selectedFile();
+        if (!file) {
+          setMessage(validationMessage("empty"), "파일을 다시 선택해 주세요.");
+          track("pdf_image_validation_error", { reason: "empty" });
+          return;
+        }
+        if (!canGenerate()) {
+          setMessage(validationMessage(pageCount > maxPages ? "too_many_pages" : "empty"), "PDF를 다시 확인해 주세요.");
+          track("pdf_image_validation_error", { reason: pageCount > maxPages ? "too_many_pages" : "empty" });
+          return;
+        }
+
+        clearOutputs();
+        setBusy(true);
+        setMessage("이미지 변환 중", `${formatter.format(pageCount)}쪽을 ${formatLabel()}로 저장하고 있습니다.`);
+
+        let pdfDocument = null;
+        try {
+          pdfDocument = await loadPdfDocument(file);
+          const nextOutputItems = [];
+          let nextOutputBytes = 0;
+
+          for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+            setMessage("이미지 변환 중", `${formatter.format(pageNumber)} / ${formatter.format(pdfDocument.numPages)}쪽 처리 중`);
+            const page = await pdfDocument.getPage(pageNumber);
+            const rendered = await renderPageToBlob(page, pageNumber);
+            const url = URL.createObjectURL(rendered.blob);
+            nextOutputBytes += rendered.bytes;
+            nextOutputItems.push({ ...rendered, url });
+          }
+
+          outputItems = nextOutputItems;
+          outputBytes = nextOutputBytes;
+          downloadList.hidden = false;
+          downloadList.innerHTML = outputItems
+            .map(
+              (item) => `
+                <a
+                  class="image-download-link"
+                  href="${item.url}"
+                  download="${item.fileName}"
+                  data-image-download
+                  data-page-number="${item.pageNumber}"
+                >
+                  <span aria-hidden="true">↓</span>
+                  <strong>${item.pageNumber}쪽.${outputExtension()}</strong>
+                  <em>${item.width}×${item.height}px · ${formatBytes(item.bytes)}</em>
+                </a>
+              `
+            )
+            .join("");
+          setMessage(
+            `이미지 준비 완료: ${formatter.format(outputItems.length)}개`,
+            `${formatLabel()} · 총 ${formatBytes(outputBytes)}`
+          );
+          updatePreflight();
+          track("pdf_image_generate", {
+            ...fileTools.safeFileAnalyticsPayload([file]),
+            page_count: pageCount,
+            output_count: outputItems.length,
+            output_size: outputBytes,
+            output_format: formatLabel().toLowerCase(),
+            render_scale: scaleSelect.value
+          });
+        } catch (error) {
+          clearOutputs();
+          setMessage("이미지로 변환하지 못했습니다.", "암호가 있거나 손상된 PDF인지 확인해 주세요.");
+          track("pdf_image_validation_error", {
+            reason: error?.message || "pdf_image_conversion_failed"
+          });
+        } finally {
+          try {
+            await pdfDocument?.destroy?.();
+          } catch {}
+          setBusy(false);
+        }
+      }
+
+      function handleSelectedFiles(files, method = "picker") {
+        const validation = validatePdfFiles(files);
+        if (!validation.ok) {
+          resetState();
+          setMessage(validationMessage(validation.reason), "파일을 다시 선택해 주세요.");
+          track("pdf_image_validation_error", {
+            reason: validation.reason,
+            ...fileTools.safeFileAnalyticsPayload(files)
+          });
+          return;
+        }
+        setFile(files[0], method);
+      }
+
+      input.addEventListener("change", (event) => {
+        handleSelectedFiles(Array.from(event.target.files || []), "picker");
+      });
+
+      if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-drag-over");
+          });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, () => {
+            dropzone.classList.remove("is-drag-over");
+          });
+        });
+        dropzone.addEventListener("drop", (event) => {
+          event.preventDefault();
+          handleSelectedFiles(Array.from(event.dataTransfer?.files || []), "drop");
+        });
+      }
+
+      formatSelect.addEventListener("change", () => {
+        clearOutputs();
+        updateQualityVisibility();
+        updatePreflight();
+        track("pdf_image_format_change", {
+          output_format: formatLabel().toLowerCase()
+        });
+      });
+
+      scaleSelect.addEventListener("change", () => {
+        clearOutputs();
+        updatePreflight();
+        track("pdf_image_quality_change", {
+          render_scale: scaleSelect.value
+        });
+      });
+
+      qualityInput.addEventListener("input", () => {
+        clearOutputs();
+        updatePreflight();
+      });
+
+      generateButton.addEventListener("click", generateImages);
+
+      sampleButton.addEventListener("click", async () => {
+        setBusy(true);
+        try {
+          const file = await createSamplePdf();
+          track("pdf_image_sample_apply", { file_count: 1 });
+          setFile(file, "sample");
+        } catch (error) {
+          setMessage("샘플 PDF를 만들지 못했습니다.", "잠시 후 다시 시도해 주세요.");
+          track("pdf_image_validation_error", {
+            reason: error?.message || "sample_create_failed"
+          });
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      resetButton.addEventListener("click", () => {
+        resetState();
+        track("pdf_image_reset");
+      });
+
+      downloadList.addEventListener("click", (event) => {
+        const link = event.target instanceof Element ? event.target.closest("[data-image-download]") : null;
+        if (!link) return;
+        track("pdf_image_download", {
+          page_count: pageCount,
+          output_count: outputItems.length,
+          output_size: outputBytes,
+          output_format: formatLabel().toLowerCase(),
+          page_number: Number(link.dataset.pageNumber || 0)
+        });
+      });
+
+      updateQualityVisibility();
+      updatePreflight();
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .file-tool-shell {
+    max-width: 1180px;
+  }
+
+  .pdf-image-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .pdf-image-workspace .side-panel {
+    grid-column: 1 / -1;
+  }
+
+  .pdf-upload-panel,
+  .pdf-preview-panel,
+  .side-panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pdf-upload-panel,
+  .pdf-preview-panel {
+    padding: 18px;
+  }
+
+  .pdf-dropzone.file-control {
+    min-height: 320px;
+    display: grid;
+    place-items: center;
+    gap: 12px;
+    text-align: center;
+    border: 3px dashed #cbd5e1;
+    border-radius: 18px;
+    background: #f8fafc;
+    padding: 34px 22px;
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .pdf-dropzone.file-control:hover,
+  .pdf-dropzone.file-control:focus-within,
+  .pdf-dropzone.file-control.is-drag-over {
+    border-color: var(--accent);
+    background: #eef6ff;
+    transform: translateY(-1px);
+  }
+
+  .pdf-dropzone input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pdf-upload-icon {
+    width: 78px;
+    height: 78px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #ffffff;
+    color: var(--accent);
+  }
+
+  .pdf-upload-icon :global(svg) {
+    width: 38px;
+    height: 38px;
+  }
+
+  .pdf-dropzone strong {
+    color: var(--ink);
+    font-size: 1.55rem;
+    line-height: 1.25;
+  }
+
+  .pdf-dropzone span[data-file-label] {
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .pdf-dropzone-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .pdf-dropzone-badges span {
+    border: 1px solid #d7e3f3;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #23415f;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .pdf-dropzone em {
+    min-width: 150px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #ffffff;
+    padding: 13px 20px;
+    font-style: normal;
+    font-weight: 900;
+  }
+
+  .pdf-dropzone small {
+    color: var(--muted);
+  }
+
+  .pdf-option-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .field {
+    display: grid;
+    gap: 7px;
+  }
+
+  .field span {
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  .field select,
+  .field input[type="range"] {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ink);
+    padding: 0 12px;
+  }
+
+  .field input[type="range"] {
+    padding: 0;
+  }
+
+  .preflight-card {
+    margin-top: 14px;
+    border: 1px solid #d9e6f5;
+    border-radius: 8px;
+    background: #f8fbff;
+    padding: 15px;
+  }
+
+  .preflight-card strong {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .preflight-card ul,
+  .status-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .preflight-card li {
+    position: relative;
+    padding-left: 18px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .preflight-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #cbd5e1;
+  }
+
+  .preflight-card li[data-status="ready"] {
+    color: #155eef;
+    font-weight: 800;
+  }
+
+  .preflight-card li[data-status="ready"]::before {
+    background: #155eef;
+  }
+
+  .pdf-action-row {
+    margin-top: 14px;
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .panel-title h2,
+  .panel-title h3 {
+    margin: 0;
+  }
+
+  .format-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    border-radius: 999px;
+    background: #eef6ff;
+    color: #155eef;
+    padding: 5px 10px;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .pdf-result-card {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 16px;
+  }
+
+  .pdf-result-card > span {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .pdf-result-card strong {
+    color: var(--ink);
+    font-size: 1.2rem;
+  }
+
+  .pdf-result-card p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .download-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .image-download-link {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 10px 12px;
+    align-items: center;
+    border: 1px solid #dbe5f1;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 12px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .image-download-link:hover,
+  .image-download-link:focus-visible {
+    border-color: var(--accent);
+    background: #eef6ff;
+  }
+
+  .image-download-link span {
+    grid-row: span 2;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #155eef;
+    color: #ffffff;
+  }
+
+  .image-download-link span :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .image-download-link strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 1rem;
+  }
+
+  .image-download-link em {
+    color: var(--muted);
+    font-style: normal;
+    font-size: 0.88rem;
+  }
+
+  .side-panel {
+    padding: 16px;
+  }
+
+  .status-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .status-list li {
+    display: flex;
+    gap: 8px;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    margin-top: 0.48em;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .pdf-image-workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .pdf-image-workspace .side-panel {
+      display: none;
+    }
+
+    .pdf-option-bar {
+      grid-template-columns: 1fr;
+    }
+
+    .pdf-dropzone.file-control {
+      min-height: 260px;
+    }
+  }
+</style>
