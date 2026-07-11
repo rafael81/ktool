@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="K문서 PDF 앱 아이콘">
+  <rect width="512" height="512" fill="#117a7a"/>
+  <path d="M151 82h151l79 79v269H151c-22 0-40-18-40-40V122c0-22 18-40 40-40z" fill="#fff"/>
+  <path d="M302 82v79h79z" fill="#9ad9d4"/>
+  <rect x="155" y="202" width="182" height="112" rx="18" fill="#d7f0ed"/>
+  <circle cx="202" cy="238" r="17" fill="#f59e0b"/>
+  <path d="M166 294l50-51 32 31 27-25 51 45z" fill="#117a7a"/>
+  <rect x="155" y="339" width="182" height="18" rx="9" fill="#117a7a"/>
+  <rect x="155" y="376" width="126" height="18" rx="9" fill="#9ad9d4"/>
+</svg>

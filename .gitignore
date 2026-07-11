@@ -8,3 +8,15 @@ tmp/
 .env.*
 !.env.example
 .gstack/
+
+# Android / Gradle
+android/.gradle/
+android/.idea/
+android/local.properties
+android/**/build/
+android/captures/
+android/artwork/layout-*.json
+android/artwork/screenshots/*.png
+*.jks
+*.keystore
+android/keystore.properties
