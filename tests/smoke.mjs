@@ -380,6 +380,12 @@ async function run() {
           );
           const allToolCount = await page.locator("[data-home-all-tool]").count();
           assert(allToolCount === 30, `${route.path} should render all tools as direct links`);
+          const declaredToolCount = await page.locator("[data-page-type='home']").getAttribute("data-tool-count");
+          const heroToolCount = await page.locator(".home-hero-lead").textContent();
+          assert(
+            declaredToolCount === "30" && heroToolCount?.includes("30종"),
+            `${route.path} should keep declared, visible, and linked tool counts in sync`
+          );
           const removedLongSections = await page.locator(".workflow-list, .featured-tool-row, .category-ledger").count();
           assert(removedLongSections === 0, `${route.path} should not render long explanatory home sections`);
           const defaultHomeSearchRows = await page
