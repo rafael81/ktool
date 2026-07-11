@@ -113,3 +113,70 @@ const structuredData = [
     </section>
   </main>
 </BaseLayout>
+
+<style>
+  [data-problem-hub] .workflow-list {
+    gap: 12px;
+  }
+
+  [data-problem-hub] .workflow-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "kicker meta"
+      "copy copy";
+    gap: 12px 18px;
+    min-height: 132px;
+    align-content: center;
+    align-items: start;
+    padding: 20px 22px;
+  }
+
+  [data-problem-hub] .workflow-row-kicker {
+    grid-area: kicker;
+    width: max-content;
+    max-width: 100%;
+    border: 1px solid var(--tool-border);
+    border-radius: 999px;
+    background: var(--tool-tint);
+    line-height: 1;
+    padding: 6px 9px;
+  }
+
+  [data-problem-hub] .workflow-row-copy {
+    grid-area: copy;
+    max-width: 820px;
+    gap: 5px;
+  }
+
+  [data-problem-hub] .workflow-row-copy strong {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  [data-problem-hub] .workflow-row-copy span {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  [data-problem-hub] .workflow-row-meta {
+    grid-area: meta;
+    align-self: start;
+  }
+
+  @media (max-width: 760px) {
+    [data-problem-hub] .workflow-row {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "kicker"
+        "copy"
+        "meta";
+      gap: 10px;
+      min-height: 0;
+      padding: 18px;
+    }
+
+    [data-problem-hub] .workflow-row-meta {
+      justify-content: flex-start;
+    }
+  }
+</style>

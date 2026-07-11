@@ -904,6 +904,31 @@ async function run() {
         assert(problemHubRootCount === 1, `${route.path} should render one problem hub section`);
         const problemRows = await page.locator("[data-problem-hub] .workflow-row").count();
         assert(problemRows === 12, `${route.path} should link to twelve problem intent pages`);
+        const problemCardLayout = await page
+          .locator("[data-problem-hub] .workflow-row")
+          .first()
+          .evaluate((row) => {
+            const card = row.getBoundingClientRect();
+            const kicker = row.querySelector(".workflow-row-kicker")?.getBoundingClientRect();
+            const copy = row.querySelector(".workflow-row-copy")?.getBoundingClientRect();
+            const meta = row.querySelector(".workflow-row-meta")?.getBoundingClientRect();
+            return {
+              paddingLeft: Number.parseFloat(getComputedStyle(row).paddingLeft),
+              kickerLeft: kicker?.left ?? 0,
+              copyLeft: copy?.left ?? 0,
+              metaRight: meta?.right ?? card.right,
+              cardRight: card.right
+            };
+          });
+        assert(problemCardLayout.paddingLeft >= 18, `${route.path} problem cards should have usable inner padding`);
+        assert(
+          Math.abs(problemCardLayout.kickerLeft - problemCardLayout.copyLeft) < 1,
+          `${route.path} problem card labels and copy should share a left edge`
+        );
+        assert(
+          problemCardLayout.cardRight - problemCardLayout.metaRight >= 18,
+          `${route.path} problem card tool tags should stay inside the right edge`
+        );
         const problemHubText = await page.locator("[data-problem-hub]").textContent();
         assert(
           problemHubText?.includes("파일 형식 오류 해결") &&
