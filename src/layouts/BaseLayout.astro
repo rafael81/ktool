@@ -4979,6 +4979,64 @@ const funnelConfig = {
     box-shadow: none;
   }
 
+  .category-page .tool-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .category-page .quick-links {
+    justify-content: flex-start;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-list {
+    gap: 12px;
+    border-bottom: 0;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "label tool"
+      "copy copy";
+    gap: 12px 18px;
+    min-height: 132px;
+    align-content: center;
+    align-items: start;
+    padding: 20px 22px;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row-label {
+    grid-area: label;
+    width: max-content;
+    max-width: 100%;
+    border: 1px solid var(--tool-border);
+    border-radius: 999px;
+    background: var(--tool-tint);
+    line-height: 1;
+    padding: 6px 9px;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row-copy {
+    grid-area: copy;
+    max-width: 820px;
+    gap: 5px;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row-copy strong {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row-copy span {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .category-page [data-prep-shortcuts] .shortcut-row-tool {
+    grid-area: tool;
+    align-self: start;
+  }
+
   @media (max-width: 1100px) {
     .tool-intro {
       grid-template-columns: 1fr;
@@ -5036,6 +5094,21 @@ const funnelConfig = {
     .tool-card {
       min-height: 0;
       padding: 16px;
+    }
+
+    .category-page [data-prep-shortcuts] .shortcut-row {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "label"
+        "copy"
+        "tool";
+      gap: 10px;
+      min-height: 0;
+      padding: 18px;
+    }
+
+    .category-page [data-prep-shortcuts] .shortcut-row-tool {
+      justify-self: start;
     }
 
     .workspace,

@@ -68,9 +68,9 @@ const routes = [
   { path: "/problems/sideways-scan/", h1: "사진 방향 바로잡기", faq: true, problemPage: true },
   { path: "/problems/document-photo-crop/", h1: "문서 사진 여백 자르기", faq: true, problemPage: true },
   { path: "/problems/images-to-one-pdf/", h1: "사진 여러 장 PDF로 묶기", faq: true, problemPage: true },
-  { path: "/categories/business/", h1: "업무 문서 도구" },
-  { path: "/categories/pdf/", h1: "PDF 도구" },
-  { path: "/categories/image/", h1: "이미지 도구" },
+  { path: "/categories/business/", h1: "업무 문서 도구", categoryPage: true },
+  { path: "/categories/pdf/", h1: "PDF 도구", categoryPage: true },
+  { path: "/categories/image/", h1: "이미지 도구", categoryPage: true },
   { path: "/tools/business-nameplate-maker/", h1: "사업자 명판 만들기 무료", faq: true, nameplateTool: true },
   { path: "/tools/transaction-statement-generator/", h1: "거래명세서 자동작성", faq: true, documentPreview: true },
   { path: "/tools/estimate-generator/", h1: "견적서 자동작성", faq: true, documentPreview: true },
@@ -1321,6 +1321,28 @@ async function run() {
         assert(faqRows >= 5, `${route.path} should render problem FAQs`);
       }
 
+      if (route.categoryPage) {
+        const categoryLayout = await page.locator(".category-page").evaluate((root) => {
+          const intro = root.querySelector(".tool-intro")?.getBoundingClientRect();
+          const introCopy = root.querySelector(".tool-intro > div")?.getBoundingClientRect();
+          const quickLinks = root.querySelector(".quick-links")?.getBoundingClientRect();
+          return {
+            introWidth: intro?.width ?? 0,
+            introCopyWidth: introCopy?.width ?? 0,
+            quickLinksRight: quickLinks?.right ?? 0,
+            introRight: intro?.right ?? 0
+          };
+        });
+        assert(
+          categoryLayout.introCopyWidth / categoryLayout.introWidth >= 0.6,
+          `${route.path} category intro copy should keep a readable width`
+        );
+        assert(
+          categoryLayout.quickLinksRight <= categoryLayout.introRight + 1,
+          `${route.path} category quick links should stay inside the intro`
+        );
+      }
+
       if (route.path === "/categories/image/" || route.path === "/categories/pdf/") {
         const shortcutRootCount = await page.locator("[data-prep-shortcuts]").count();
         assert(shortcutRootCount === 1, `${route.path} should render one category prep shortcut section`);
@@ -1334,6 +1356,31 @@ async function run() {
         assert(shortcutToolCount === 7, `${route.path} should tag each category prep shortcut with its target tool id`);
         const shortcutPresetCount = await page.locator("[data-prep-shortcuts] a[data-analytics-target-preset]").count();
         assert(shortcutPresetCount === 6, `${route.path} should tag preset-backed category prep shortcuts with their target preset`);
+        const shortcutCardLayout = await page
+          .locator("[data-prep-shortcuts] .shortcut-row")
+          .first()
+          .evaluate((row) => {
+            const card = row.getBoundingClientRect();
+            const label = row.querySelector(".shortcut-row-label")?.getBoundingClientRect();
+            const copy = row.querySelector(".shortcut-row-copy")?.getBoundingClientRect();
+            const tool = row.querySelector(".shortcut-row-tool")?.getBoundingClientRect();
+            return {
+              paddingLeft: Number.parseFloat(getComputedStyle(row).paddingLeft),
+              labelLeft: label?.left ?? 0,
+              copyLeft: copy?.left ?? 0,
+              toolRight: tool?.right ?? card.right,
+              cardRight: card.right
+            };
+          });
+        assert(shortcutCardLayout.paddingLeft >= 18, `${route.path} shortcut cards should have usable inner padding`);
+        assert(
+          Math.abs(shortcutCardLayout.labelLeft - shortcutCardLayout.copyLeft) < 1,
+          `${route.path} shortcut card labels and copy should share a left edge`
+        );
+        assert(
+          shortcutCardLayout.cardRight - shortcutCardLayout.toolRight >= 18,
+          `${route.path} shortcut tool tags should stay inside the right edge`
+        );
         const shortcutText = await page.locator("[data-prep-shortcuts]").textContent();
         assert(
           shortcutText?.includes("파일 형식 오류") &&
