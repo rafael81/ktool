@@ -1,0 +1,4 @@
+Initial release
+- Select up to 10 JPG, PNG, or WebP images
+- Reorder pages and choose A4 orientation and margins
+- Create a PDF offline and save it to your chosen location

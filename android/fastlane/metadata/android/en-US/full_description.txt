@@ -1,0 +1,18 @@
+KDocument PDF is a simple Android tool for organizing multiple images into one PDF.
+
+Key features
+- Select up to 10 JPG, PNG, or WebP images
+- Reorder images into the page sequence you need
+- Remove images you do not want to include
+- Choose A4 portrait or landscape with normal, narrow, or no margins
+- Save the PDF with your chosen name and location
+
+Your files stay on your device
+Selected images and generated PDFs are not uploaded to a server. The app does not use an internet connection, accounts, ads, or analytics. It uses Android's system photo picker and save screen, so it does not need access to your full photo library or storage.
+
+How it works
+1. Select the images you want in the PDF.
+2. Arrange the page order and choose a margin.
+3. Create the PDF and save it to your preferred location.
+
+Use it when scanned documents, receipts, or supporting photos need to be combined into one A4 PDF. The PDF is written only to the location you select, and you remain in control of keeping or deleting it.

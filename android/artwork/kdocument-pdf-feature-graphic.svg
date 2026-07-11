@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" role="img" aria-label="여러 사진을 한 PDF 문서로 묶는 K문서 PDF 기능 그래픽">
+  <rect width="1024" height="500" fill="#0f6e6e"/>
+  <circle cx="80" cy="70" r="180" fill="#178585" opacity=".7"/>
+  <circle cx="965" cy="440" r="230" fill="#0a5d5d" opacity=".75"/>
+
+  <g transform="translate(125 102) rotate(-7 142 142)">
+    <rect width="260" height="250" rx="28" fill="#9ad9d4"/>
+    <rect x="22" y="22" width="216" height="160" rx="18" fill="#d7f0ed"/>
+    <circle cx="82" cy="73" r="24" fill="#f59e0b"/>
+    <path d="M42 161l68-70 46 46 31-30 43 54z" fill="#117a7a"/>
+  </g>
+  <g transform="translate(175 123) rotate(3 142 142)">
+    <rect width="260" height="250" rx="28" fill="#fff"/>
+    <rect x="22" y="22" width="216" height="160" rx="18" fill="#d7f0ed"/>
+    <circle cx="88" cy="73" r="24" fill="#f59e0b"/>
+    <path d="M42 161l56-58 42 42 40-39 50 55z" fill="#117a7a"/>
+    <rect x="22" y="204" width="150" height="16" rx="8" fill="#9ad9d4"/>
+  </g>
+
+  <path d="M480 250h92" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round"/>
+  <path d="M548 215l42 35-42 35" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g transform="translate(640 62)">
+    <path d="M42 0h165l83 83v311H42C19 394 0 375 0 352V42C0 19 19 0 42 0z" fill="#fff"/>
+    <path d="M207 0v83h83z" fill="#9ad9d4"/>
+    <rect x="45" y="143" width="200" height="125" rx="18" fill="#d7f0ed"/>
+    <circle cx="98" cy="182" r="20" fill="#f59e0b"/>
+    <path d="M57 248l55-58 38 37 32-30 51 51z" fill="#117a7a"/>
+    <rect x="45" y="296" width="200" height="18" rx="9" fill="#117a7a"/>
+    <rect x="45" y="336" width="136" height="18" rx="9" fill="#9ad9d4"/>
+  </g>
+</svg>

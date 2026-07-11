@@ -1,0 +1,126 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { webPageSchema } from "@/data/seo";
+
+const pagePath = "/privacy/";
+const title = "개인정보처리방침 - K문서 PDF";
+const description =
+  "K문서 PDF Android 앱의 개인정보 처리 원칙과 사진·PDF 파일의 기기 내 처리 방식을 안내합니다.";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={pagePath}
+  structuredData={webPageSchema({ name: title, description, path: pagePath })}
+>
+  <main class="page-shell policy-page">
+    <section class="tool-intro">
+      <div>
+        <p class="policy-kicker">K문서 PDF · Android</p>
+        <h1>개인정보처리방침</h1>
+        <p>시행일: 2026년 7월 11일</p>
+      </div>
+    </section>
+
+    <article class="policy-card">
+      <p>
+        K문서 PDF(<code>com.kdocumenttool.pdf</code>)는 선택한 이미지를 기기 안에서 PDF로 만드는
+        오프라인 도구입니다. 앱은 개인정보나 파일을 개발자 서버로 전송하지 않습니다.
+      </p>
+
+      <h2>수집하는 정보</h2>
+      <p>
+        앱은 개인정보, 기기 식별자, 위치, 사용 기록, 광고 식별자 또는 분석 데이터를 수집하거나
+        제3자에게 공유하지 않습니다. 앱에는 인터넷 권한, 광고 SDK, 분석 SDK가 포함되어 있지 않습니다.
+      </p>
+
+      <h2>사진과 PDF 처리</h2>
+      <ul>
+        <li>사용자가 Android 시스템 사진 선택기에서 직접 고른 이미지에만 일시적으로 접근합니다.</li>
+        <li>선택한 이미지는 PDF 생성을 위해 기기에서만 처리되며 외부 서버로 업로드되지 않습니다.</li>
+        <li>완성된 PDF는 사용자가 Android 시스템 저장 창에서 선택한 위치에 저장됩니다.</li>
+        <li>저장한 PDF는 앱을 삭제해도 남을 수 있으며, 삭제 여부는 사용자가 관리합니다.</li>
+      </ul>
+
+      <h2>권한과 보관</h2>
+      <p>
+        앱은 전체 사진 보관함이나 저장공간 권한을 요청하지 않습니다. Android의 사진 선택기와 Storage
+        Access Framework가 사용자가 선택한 항목과 저장 위치에 한정된 접근 권한을 제공합니다. 선택 목록과
+        읽기 권한은 진행 중인 작업을 복구할 수 있도록 Android의 저장 상태에 임시 보관되며, 이미지를
+        목록에서 제거하거나 앱 작업을 닫으면 해제됩니다.
+      </p>
+
+      <h2>제3자 제공과 아동의 개인정보</h2>
+      <p>
+        앱은 데이터를 수집하지 않으므로 판매하거나 제3자에게 제공하지 않습니다. 일반 문서 작업용
+        도구이며 아동을 대상으로 개인정보를 수집하지 않습니다.
+      </p>
+
+      <h2>웹사이트 안내</h2>
+      <p>
+        이 방침의 앱 관련 내용은 K문서 PDF Android 앱에 적용됩니다. K문서툴 웹사이트는 서비스 상태와
+        이용 흐름을 파악하기 위해 개인정보 보호 중심의 Cloudflare Web Analytics를 사용할 수 있으며,
+        사용자가 처리하는 원본 파일과 파일명은 전송하지 않습니다.
+      </p>
+
+      <h2>방침 변경 및 문의</h2>
+      <p>
+        처리 방식이 바뀌면 이 페이지의 시행일과 내용을 갱신합니다. 개발자는 KDocumentTool이며,
+        문의는 <a href="https://github.com/rafael81/ktool/issues">K문서툴 GitHub 이슈</a>로 남겨 주세요.
+      </p>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .policy-page {
+    max-width: 920px;
+  }
+
+  .policy-kicker {
+    margin: 0 0 0.45rem;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .policy-card {
+    margin-bottom: 4rem;
+    padding: clamp(1.4rem, 4vw, 2.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .policy-card h2 {
+    margin: 2.2rem 0 0.65rem;
+    font-size: 1.2rem;
+  }
+
+  .policy-card h2:first-of-type {
+    margin-top: 1.8rem;
+  }
+
+  .policy-card p,
+  .policy-card li {
+    color: var(--muted);
+  }
+
+  .policy-card li + li {
+    margin-top: 0.45rem;
+  }
+
+  .policy-card a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .policy-card code {
+    color: var(--ink);
+  }
+</style>
