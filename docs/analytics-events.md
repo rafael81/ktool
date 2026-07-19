@@ -15,6 +15,8 @@ Every event includes:
 
 The shared `window.kdocTrack` helper drops known sensitive keys such as filenames, raw image bytes, OCR text, document text, business numbers, addresses, customer names, email, and phone values. String values are length-limited, object payloads are ignored, and tracked same-origin `href` values keep only safe routing parameters: `from`, `preset`, `problem_id`, `shortcut_id`, and `source`.
 
+Tool feedback is not sent through `window.dataLayer`. The completion-triggered feedback component posts its minimal structured payload directly to `/api/tool-feedback`; optional comments are limited to 200 characters and are covered by the privacy page.
+
 Tool pages also include:
 
 - `tool_id`: stable tool id from `src/data/tools.ts`

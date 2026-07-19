@@ -1,4 +1,5 @@
 import {
+  BUILD_ID,
   FUNNEL_EVENT_NAMES,
   INGEST_MAX_EVENTS_PER_WINDOW,
   INGEST_WINDOW_MS,
@@ -8,55 +9,14 @@ import {
   SESSION_MAX_MS,
   SOURCE_TYPES,
   STORAGE_MODES,
-  TOOL_PATH_BY_ID
+  TOOL_PATH_BY_ID,
+  UUID_V4
 } from "../../shared/funnel-contract.mjs";
-
-const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const BUILD_ID = /^[0-9a-f]{7,40}$/i;
-const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
-
-function response(status, error) {
-  if (!error) return new Response(null, { status });
-  return new Response(JSON.stringify({ error }), { status, headers: JSON_HEADERS });
-}
-function parseOrigin(value) {
-  if (!value) return null;
-  try {
-    return new URL(value).origin;
-  } catch {
-    return "invalid";
-  }
-}
-
-export function validateRequestSource(request, env = {}) {
-  const requestOrigin = new URL(request.url).origin;
-  const originHeader = request.headers.get("origin");
-  const refererHeader = request.headers.get("referer");
-  const origin = parseOrigin(originHeader);
-  const refererOrigin = parseOrigin(refererHeader);
-  const fetchSite = request.headers.get("sec-fetch-site");
-  const canaryKey = request.headers.get("x-kdoc-canary-key");
-  const canary = Boolean(
-    env.ANALYTICS_CANARY_KEY &&
-      canaryKey &&
-      canaryKey.length === env.ANALYTICS_CANARY_KEY.length &&
-      canaryKey === env.ANALYTICS_CANARY_KEY
-  );
-
-  if (canary) return { ok: true, canary: true };
-  if (!origin && !refererOrigin) return { ok: false, status: 403, error: "source_required" };
-  if (origin === "invalid" || refererOrigin === "invalid") {
-    return { ok: false, status: 403, error: "source_invalid" };
-  }
-  if (origin && origin !== requestOrigin) return { ok: false, status: 403, error: "origin_denied" };
-  if (refererOrigin && refererOrigin !== requestOrigin) {
-    return { ok: false, status: 403, error: "referer_denied" };
-  }
-  if (fetchSite && fetchSite !== "same-origin") {
-    return { ok: false, status: 403, error: "fetch_site_denied" };
-  }
-  return { ok: true, canary: false };
-}
+import {
+  readJsonBody,
+  response,
+  validateRequestSource
+} from "../_shared/analytics-request.js";
 
 function isEnum(value, values) {
   return typeof value === "string" && values.includes(value);
@@ -123,52 +83,6 @@ export function validatePayload(input, { canary = false } = {}) {
   return { ok: true, payload };
 }
 
-async function readBodyText(request) {
-  if (!request.body) return "";
-  const reader = request.body.getReader();
-  const chunks = [];
-  let totalBytes = 0;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    totalBytes += value.byteLength;
-    if (totalBytes > MAX_BODY_BYTES) {
-      await reader.cancel();
-      return null;
-    }
-    chunks.push(value);
-  }
-
-  const body = new Uint8Array(totalBytes);
-  let offset = 0;
-  for (const chunk of chunks) {
-    body.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder().decode(body);
-}
-
-async function readJsonBody(request) {
-  const contentType = request.headers.get("content-type") || "";
-  if (!contentType.toLowerCase().startsWith("application/json")) {
-    return { ok: false, status: 415, error: "json_required" };
-  }
-  const declaredLength = Number(request.headers.get("content-length") || 0);
-  if (declaredLength > MAX_BODY_BYTES) {
-    return { ok: false, status: 413, error: "body_too_large" };
-  }
-  const text = await readBodyText(request);
-  if (text === null) {
-    return { ok: false, status: 413, error: "body_too_large" };
-  }
-  try {
-    return { ok: true, value: JSON.parse(text) };
-  } catch {
-    return { ok: false, status: 400, error: "invalid_json" };
-  }
-}
-
 export async function reserveIngestBudget(db, now = Date.now()) {
   const windowStart = Math.floor(now / INGEST_WINDOW_MS) * INGEST_WINDOW_MS;
   const row = await db
@@ -227,7 +141,7 @@ export async function onRequest(context) {
 
   let body;
   try {
-    body = await readJsonBody(request);
+    body = await readJsonBody(request, MAX_BODY_BYTES);
   } catch {
     return response(400, "body_read_failed");
   }

@@ -78,6 +78,9 @@ export const SOURCE_TYPES = Object.freeze([
 ]);
 export const STORAGE_MODES = Object.freeze(["session", "memory"]);
 
+export const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const BUILD_ID = /^[0-9a-f]{7,40}$/i;
+
 export const MAX_BODY_BYTES = 2_048;
 export const SESSION_IDLE_MS = 30 * 60 * 1_000;
 export const SESSION_MAX_MS = 4 * 60 * 60 * 1_000;

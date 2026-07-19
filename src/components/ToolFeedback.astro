@@ -1,0 +1,564 @@
+---
+import type { ToolInfo } from "@/data/tools";
+import { LoaderCircle, ThumbsDown, ThumbsUp, X } from "@lucide/astro";
+
+type Props = {
+  tool: ToolInfo;
+};
+
+const { tool } = Astro.props;
+const titleId = `tool-feedback-title-${tool.id}`;
+const errorId = `tool-feedback-error-${tool.id}`;
+const commentId = `tool-feedback-comment-${tool.id}`;
+---
+
+<aside
+  class="tool-feedback"
+  data-tool-feedback={tool.id}
+  data-feedback-tool-id={tool.id}
+  data-tool-category={tool.category}
+  data-page-path={tool.path}
+  aria-labelledby={titleId}
+  aria-live="polite"
+  hidden
+>
+  <button class="tool-feedback-close" type="button" data-feedback-close aria-label="피드백 닫기">
+    <X aria-hidden="true" />
+  </button>
+
+  <div data-feedback-prompt>
+    <p class="tool-feedback-question" id={titleId}>결과가 도움이 됐나요?</p>
+    <div class="tool-feedback-rating" role="group" aria-label="도움 여부">
+      <button class="feedback-choice is-helpful" type="button" data-feedback-rating="helpful">
+        <ThumbsUp aria-hidden="true" />
+        <span>도움됐어요</span>
+      </button>
+      <button class="feedback-choice" type="button" data-feedback-rating="not_helpful">
+        <ThumbsDown aria-hidden="true" />
+        <span>아쉬워요</span>
+      </button>
+    </div>
+    <p class="tool-feedback-error" data-feedback-prompt-error role="alert" hidden>
+      전송하지 못했습니다. 다시 눌러주세요.
+    </p>
+  </div>
+
+  <form data-feedback-form hidden novalidate>
+    <fieldset>
+      <legend>어떤 점이 아쉬웠나요?</legend>
+      <div class="feedback-reasons">
+        <label><input type="radio" name={`feedback-reason-${tool.id}`} value="result_issue" />결과가 이상해요</label>
+        <label><input type="radio" name={`feedback-reason-${tool.id}`} value="hard_to_use" />사용이 어려워요</label>
+        <label><input type="radio" name={`feedback-reason-${tool.id}`} value="missing_feature" />기능이 부족해요</label>
+        <label><input type="radio" name={`feedback-reason-${tool.id}`} value="error" />오류가 났어요</label>
+        <label><input type="radio" name={`feedback-reason-${tool.id}`} value="other" />기타</label>
+      </div>
+    </fieldset>
+
+    <label class="feedback-comment-label" for={commentId}>
+      한 줄 의견 <span>선택</span>
+    </label>
+    <textarea
+      id={commentId}
+      name="feedback-comment"
+      rows="2"
+      maxlength="200"
+      placeholder="개인정보는 입력하지 마세요"
+      aria-describedby={errorId}
+    ></textarea>
+    <div class="feedback-form-actions">
+      <button class="feedback-submit" type="submit">
+        <LoaderCircle class="feedback-spinner" aria-hidden="true" />
+        <span>의견 보내기</span>
+      </button>
+      <button class="feedback-cancel" type="button" data-feedback-cancel>취소</button>
+    </div>
+    <p class="tool-feedback-error" id={errorId} data-feedback-error role="alert" hidden></p>
+  </form>
+
+  <div class="tool-feedback-success" data-feedback-success role="status" hidden>
+    <ThumbsUp aria-hidden="true" />
+    <span>의견 고맙습니다.</span>
+  </div>
+</aside>
+
+<script is:inline>
+  (() => {
+    const root = document.currentScript?.previousElementSibling;
+    if (!(root instanceof HTMLElement) || !root.matches("[data-tool-feedback]")) return;
+    const submitFeedback = window.kdocSubmitFeedback;
+    if (typeof submitFeedback !== "function") return;
+
+    const toolId = root.dataset.feedbackToolId;
+    const pagePath = root.dataset.pagePath;
+    const prompt = root.querySelector("[data-feedback-prompt]");
+    const form = root.querySelector("[data-feedback-form]");
+    const success = root.querySelector("[data-feedback-success]");
+    const promptError = root.querySelector("[data-feedback-prompt-error]");
+    const formError = root.querySelector("[data-feedback-error]");
+    const submitButton = root.querySelector(".feedback-submit");
+    const comment = root.querySelector("textarea[name='feedback-comment']");
+    const footerTrigger = document.querySelector(`[data-feedback-open="${toolId}"]`);
+    const stateKey = `kdoc_tool_feedback_v1:${toolId}`;
+    let feedbackContext = "manual";
+    let busy = false;
+
+    function readState() {
+      try {
+        return window.sessionStorage.getItem(stateKey);
+      } catch {
+        return null;
+      }
+    }
+
+    function writeState(value) {
+      try {
+        window.sessionStorage.setItem(stateKey, value);
+      } catch {
+        // Feedback still works when storage is unavailable.
+      }
+    }
+
+    function setHidden(node, hidden) {
+      if (node instanceof HTMLElement) node.hidden = hidden;
+    }
+
+    function resetErrors() {
+      setHidden(promptError, true);
+      if (formError instanceof HTMLElement) {
+        formError.textContent = "";
+        formError.hidden = true;
+      }
+    }
+
+    function showPrompt(context = "manual", focus = false) {
+      if (busy) return;
+      feedbackContext = context;
+      resetErrors();
+      setHidden(prompt, false);
+      setHidden(form, true);
+      setHidden(success, true);
+      root.hidden = false;
+      if (focus) root.querySelector("[data-feedback-rating]")?.focus();
+    }
+
+    function closeFeedback() {
+      if (busy) return;
+      root.hidden = true;
+      if (readState() !== "submitted") writeState("dismissed");
+      if (footerTrigger instanceof HTMLElement) footerTrigger.focus();
+    }
+
+    function setBusy(value) {
+      busy = value;
+      root.setAttribute("aria-busy", String(value));
+      root.querySelectorAll("button, textarea, input").forEach((control) => {
+        if (control instanceof HTMLButtonElement || control instanceof HTMLTextAreaElement || control instanceof HTMLInputElement) {
+          control.disabled = value;
+        }
+      });
+      submitButton?.classList.toggle("is-loading", value);
+    }
+
+    async function send(payload, errorTarget) {
+      setBusy(true);
+      resetErrors();
+      try {
+        await submitFeedback({
+          tool_id: toolId,
+          page_path: pagePath,
+          feedback_context: feedbackContext,
+          ...payload
+        });
+        writeState("submitted");
+        setHidden(prompt, true);
+        setHidden(form, true);
+        setHidden(success, false);
+      } catch {
+        if (errorTarget instanceof HTMLElement) {
+          errorTarget.textContent = "전송하지 못했습니다. 연결을 확인하고 다시 시도해주세요.";
+          errorTarget.hidden = false;
+        }
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    root.querySelectorAll("[data-feedback-rating]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        if (button.dataset.feedbackRating === "helpful") {
+          send({ rating: "helpful", reason: null, comment: null }, promptError);
+          return;
+        }
+        resetErrors();
+        setHidden(prompt, true);
+        setHidden(form, false);
+        form?.querySelector("input[type='radio']")?.focus();
+      });
+    });
+
+    form?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const reason = form.querySelector("input[type='radio']:checked");
+      if (!(reason instanceof HTMLInputElement)) {
+        if (formError instanceof HTMLElement) {
+          formError.textContent = "아쉬웠던 점을 하나 선택해주세요.";
+          formError.hidden = false;
+        }
+        form.querySelector("input[type='radio']")?.focus();
+        return;
+      }
+      send(
+        {
+          rating: "not_helpful",
+          reason: reason.value,
+          comment: comment instanceof HTMLTextAreaElement ? comment.value : ""
+        },
+        formError
+      );
+    });
+
+    root.querySelector("[data-feedback-cancel]")?.addEventListener("click", () => showPrompt(feedbackContext, true));
+    root.querySelector("[data-feedback-close]")?.addEventListener("click", closeFeedback);
+    root.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeFeedback();
+    });
+
+    if (footerTrigger instanceof HTMLButtonElement) {
+      footerTrigger.hidden = false;
+      footerTrigger.addEventListener("click", () => showPrompt("manual", true));
+    }
+
+    window.addEventListener("kdoc:analytics", (event) => {
+      const detail = event.detail;
+      const config = window.__KDOC_FUNNEL_CONFIG__;
+      if (
+        detail?.tool_id !== toolId ||
+        detail?.page_path !== pagePath ||
+        !config?.resultEvents?.[detail.event] ||
+        readState()
+      ) return;
+      showPrompt("completion", false);
+    });
+  })();
+</script>
+
+<style>
+  .tool-feedback {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 40;
+    width: min(420px, calc(100vw - 32px));
+    max-height: calc(100svh - 48px);
+    padding: 22px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--tool-border, var(--line));
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 14px 34px rgba(16, 24, 40, 0.14), 0 2px 6px rgba(16, 24, 40, 0.08);
+    color: var(--ink);
+    animation: feedback-enter 180ms ease-out;
+  }
+
+  .tool-feedback[hidden],
+  [hidden] {
+    display: none !important;
+  }
+
+  .tool-feedback-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .tool-feedback-close:hover {
+    background: var(--surface-muted);
+    color: var(--ink);
+  }
+
+  .tool-feedback-close :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tool-feedback-question {
+    margin: 0;
+    padding-right: 42px;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  .tool-feedback-rating {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .feedback-choice,
+  .feedback-submit,
+  .feedback-cancel {
+    min-height: 44px;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .feedback-choice {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .feedback-choice:hover {
+    border-color: var(--tool-accent, var(--accent));
+    background: var(--tool-hover, #f8fbff);
+  }
+
+  .feedback-choice.is-helpful {
+    border-color: var(--tool-border, var(--line));
+    color: var(--tool-accent, var(--accent));
+  }
+
+  .feedback-choice :global(svg) {
+    width: 17px;
+    height: 17px;
+  }
+
+  fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    margin: 0 0 14px;
+    padding-right: 42px;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  .feedback-reasons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .feedback-reasons label {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .feedback-reasons label:has(input:checked) {
+    border-color: var(--tool-accent, var(--accent));
+    background: var(--tool-tint, #eff4ff);
+  }
+
+  .feedback-reasons label:has(input:focus-visible) {
+    border-color: var(--tool-accent, var(--accent));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tool-accent, var(--accent)) 20%, transparent);
+  }
+
+  .feedback-reasons input {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    min-height: 16px;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    accent-color: var(--tool-accent, var(--accent));
+  }
+
+  .feedback-comment-label {
+    display: flex;
+    margin-top: 16px;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .feedback-comment-label span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 72px;
+    margin-top: 7px;
+    padding: 10px 12px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  textarea::placeholder {
+    color: #98a2b3;
+  }
+
+  .feedback-form-actions {
+    display: flex;
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .feedback-submit,
+  .feedback-cancel {
+    padding: 10px 17px;
+  }
+
+  .feedback-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid var(--tool-accent, var(--accent));
+    background: var(--tool-accent, var(--accent));
+    color: #fff;
+  }
+
+  .feedback-cancel {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .feedback-spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    animation: feedback-spin 800ms linear infinite;
+  }
+
+  .feedback-submit.is-loading .feedback-spinner {
+    display: block;
+  }
+
+  .tool-feedback-error {
+    margin: 10px 0 0;
+    color: var(--danger);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .tool-feedback-success {
+    display: flex;
+    min-height: 48px;
+    padding-right: 42px;
+    align-items: center;
+    gap: 10px;
+    color: var(--success);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .tool-feedback-success :global(svg) {
+    width: 19px;
+    height: 19px;
+  }
+
+  input:focus-visible {
+    outline: none;
+  }
+
+  button:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--tool-accent, var(--accent)) 28%, transparent);
+    outline-offset: 2px;
+  }
+
+  button:disabled,
+  textarea:disabled,
+  input:disabled {
+    cursor: wait;
+    opacity: 0.68;
+  }
+
+  @keyframes feedback-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes feedback-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .tool-feedback {
+      right: 14px;
+      bottom: 14px;
+      left: 14px;
+      width: auto;
+      max-height: calc(100svh - 28px);
+      padding: 20px;
+    }
+
+  }
+
+  @media (max-width: 360px) {
+    .feedback-reasons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tool-feedback,
+    .feedback-spinner {
+      animation: none;
+    }
+  }
+
+  @media print {
+    .tool-feedback {
+      display: none !important;
+    }
+  }
+</style>

@@ -53,6 +53,94 @@ test("normalizes only exact tool stages and explicit result events", () => {
   assert.equal(api.normalizeEvent({ ...base, tool_id: "unknown", event: "page_view" }, config), null);
 });
 
+test("normalizes feedback without accepting extra detail on positive ratings", () => {
+  const config = {
+    toolPaths: { "vat-calculator": "/tools/vat-calculator/" },
+    feedbackRatings: ["helpful", "not_helpful"],
+    feedbackReasons: ["hard_to_use", "error"],
+    feedbackContexts: ["completion", "manual"],
+    feedbackMaxCommentLength: 200
+  };
+  const base = {
+    tool_id: "vat-calculator",
+    page_path: "/tools/vat-calculator/",
+    feedback_context: "completion"
+  };
+  assert.deepEqual(
+    { ...api.normalizeFeedbackInput({ ...base, rating: "helpful", reason: null, comment: null }, config) },
+    { ...base, rating: "helpful", reason: null, comment: null }
+  );
+  assert.equal(
+    api.normalizeFeedbackInput({ ...base, rating: "helpful", reason: "error" }, config),
+    null
+  );
+  assert.deepEqual(
+    {
+      ...api.normalizeFeedbackInput(
+        { ...base, rating: "not_helpful", reason: "hard_to_use", comment: "  어려워요  " },
+        config
+      )
+    },
+    { ...base, rating: "not_helpful", reason: "hard_to_use", comment: "어려워요" }
+  );
+  assert.equal(
+    api.normalizeFeedbackInput({ ...base, rating: "not_helpful", reason: "unknown" }, config),
+    null
+  );
+});
+
+test("sends feedback with the current anonymous session only", async () => {
+  const requests = [];
+  const config = {
+    feedbackEndpoint: "/api/tool-feedback",
+    buildId: "abcdef012345",
+    sessionMaxMs: 10_000,
+    toolPaths: { "vat-calculator": "/tools/vat-calculator/" },
+    feedbackRatings: ["helpful", "not_helpful"],
+    feedbackReasons: ["error"],
+    feedbackContexts: ["completion", "manual"],
+    feedbackMaxCommentLength: 200
+  };
+  const sender = api.createFeedbackSender({
+    sessions: {
+      current: () => ({
+        sessionId: "223e4567-e89b-42d3-a456-426614174001",
+        source: "naver",
+        storageMode: "session",
+        startedAt: Date.now() - 100
+      })
+    },
+    config,
+    fetchApi: async (url, options) => {
+      requests.push({ url, options, body: JSON.parse(options.body) });
+      return { ok: true, status: 204 };
+    }
+  });
+  await sender.submit({
+    tool_id: "vat-calculator",
+    page_path: "/tools/vat-calculator/",
+    rating: "not_helpful",
+    reason: "error",
+    comment: "계산이 안 돼요",
+    feedback_context: "manual"
+  });
+  assert.equal(requests[0].url, "/api/tool-feedback");
+  assert.deepEqual(Object.keys(requests[0].body).sort(), [
+    "build_id",
+    "comment",
+    "feedback_context",
+    "page_path",
+    "rating",
+    "reason",
+    "session_age_ms",
+    "session_id",
+    "source",
+    "storage_mode",
+    "tool_id"
+  ]);
+  assert.equal(requests[0].body.source, "naver");
+});
+
 test("rotates a tab session after idle and absolute expiry", () => {
   const values = new Map();
   const storage = {

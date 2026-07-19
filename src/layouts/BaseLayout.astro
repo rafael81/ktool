@@ -3,6 +3,13 @@ import { toolCategories, tools, type ToolCategoryId } from "@/data/tools";
 import { workflowPackages, type WorkflowPackageId } from "@/data/workflowPackages";
 import { problemPages } from "@/data/problemPages";
 import { Search } from "@lucide/astro";
+import ToolFeedback from "@/components/ToolFeedback.astro";
+import {
+  FEEDBACK_CONTEXTS,
+  FEEDBACK_MAX_COMMENT_LENGTH,
+  FEEDBACK_RATINGS,
+  FEEDBACK_REASONS
+} from "../../shared/feedback-contract.mjs";
 import { execFileSync } from "node:child_process";
 import {
   RESULT_EVENT_TYPES,
@@ -57,6 +64,7 @@ const canonical = new URL(
   normalizedCanonicalPath,
   Astro.site ?? "https://k-document-tool.pages.dev"
 ).toString();
+const socialImage = new URL("/images/k-document-tool-hero.png", Astro.site ?? "https://k-document-tool.pages.dev").toString();
 const currentCategory = currentTool
   ? toolCategories.find((category) => category.id === currentTool.category)
   : toolCategories.find((category) => normalizePath(category.path) === normalizedCanonicalPath);
@@ -144,9 +152,14 @@ function resolveBuildId() {
 }
 const funnelConfig = {
   endpoint: "/api/funnel-event",
+  feedbackEndpoint: "/api/tool-feedback",
   buildId: resolveBuildId(),
   toolPaths: TOOL_PATH_BY_ID,
   resultEvents: RESULT_EVENT_TYPES,
+  feedbackRatings: FEEDBACK_RATINGS,
+  feedbackReasons: FEEDBACK_REASONS,
+  feedbackContexts: FEEDBACK_CONTEXTS,
+  feedbackMaxCommentLength: FEEDBACK_MAX_COMMENT_LENGTH,
   sessionIdleMs: SESSION_IDLE_MS,
   sessionMaxMs: SESSION_MAX_MS
 };
@@ -165,6 +178,16 @@ const funnelConfig = {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1672" />
+    <meta property="og:image:height" content="941" />
+    <meta property="og:image:alt" content="설치 없이 사용하는 K문서툴의 문서와 이미지 도구" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" />
     <script is:inline>
       (() => {
@@ -578,10 +601,20 @@ const funnelConfig = {
       )
     }
     <slot />
+    {currentTool && <ToolFeedback tool={currentTool} />}
     <footer class="site-footer">
       <div class="site-footer-inner">
         <span>파일과 입력 내용은 브라우저 안에서 처리합니다.</span>
-        <a href="/privacy/">개인정보 처리</a>
+        <div class="site-footer-links">
+          {
+            currentTool && (
+              <button type="button" class="site-footer-feedback" data-feedback-open={currentTool.id} hidden>
+                의견 보내기
+              </button>
+            )
+          }
+          <a href="/privacy/">개인정보 처리</a>
+        </div>
       </div>
     </footer>
   </body>
@@ -673,7 +706,7 @@ const funnelConfig = {
   [data-analytics-target-tool-id="pdf-merge"],
   [data-analytics-target-tool-id="pdf-to-image"],
   [data-analytics-target-tool-id="jpg-to-pdf"] {
-    --tool-accent: #e11d48;
+    --tool-accent: #be123c;
   }
 
   [data-tool-category="image"],
@@ -703,7 +736,7 @@ const funnelConfig = {
   [data-analytics-target-tool-id="image-base64"],
   [data-analytics-target-tool-id="video-to-gif"],
   [data-analytics-target-tool-id="heic-to-jpg"] {
-    --tool-accent: #d97706;
+    --tool-accent: #9a4708;
   }
 
   [data-tool-category],
@@ -5199,6 +5232,34 @@ const funnelConfig = {
     font-weight: 700;
   }
 
+  .site-footer-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .site-footer-feedback {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .site-footer-feedback:hover {
+    color: var(--tool-accent, var(--accent));
+  }
+
+  .site-footer-feedback:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--tool-accent, var(--accent)) 28%, transparent);
+    outline-offset: 3px;
+  }
+
   .privacy-page {
     width: min(760px, calc(100% - 40px));
     min-height: calc(100vh - 130px);
@@ -5245,6 +5306,10 @@ const funnelConfig = {
       align-items: flex-start;
       flex-direction: column;
       gap: 8px;
+    }
+
+    .site-footer-links {
+      gap: 14px;
     }
 
     .privacy-page {

@@ -11,8 +11,8 @@
 
 ## Category Accents
 - Business: `#155eef`
-- PDF: `#e11d48`
-- Image: `#d97706`
+- PDF: `#be123c`
+- Image: `#9a4708`
 
 ## Typography
 - Body: Pretendard with system Korean fallbacks.

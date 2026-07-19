@@ -166,6 +166,7 @@ async function run() {
     for (const route of routes) {
       const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
       const funnelRequests = [];
+      const feedbackRequests = [];
       await page.addInitScript(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,
@@ -178,6 +179,10 @@ async function run() {
         } catch {
           funnelRequests.push({ invalid_json: true });
         }
+        await intercepted.fulfill({ status: 204 });
+      });
+      await page.route("**/api/tool-feedback", async (intercepted) => {
+        feedbackRequests.push(intercepted.request().postDataJSON());
         await intercepted.fulfill({ status: 204 });
       });
       const response = await page.goto(`${baseUrl}${route.path}`, { waitUntil: "networkidle" });
@@ -3841,6 +3846,22 @@ async function run() {
           toolEvents.every((event) => Object.keys(event).every((key) => allowedKeys.has(key))),
           `${route.path} funnel payload should contain only the minimal contract fields`
         );
+
+        if (route.path === "/tools/stamp-background-remover/") {
+          const feedbackPanel = page.locator(`[data-tool-feedback="${funnelExpectation.toolId}"]`);
+          assert(await feedbackPanel.isVisible(), `${route.path} should show feedback after a useful result`);
+          await feedbackPanel.locator('[data-feedback-rating="helpful"]').click();
+          await page.waitForFunction(() => document.querySelector("[data-feedback-success]")?.hidden === false);
+          assert(
+            feedbackRequests.some(
+              (feedback) =>
+                feedback.tool_id === funnelExpectation.toolId &&
+                feedback.rating === "helpful" &&
+                feedback.feedback_context === "completion"
+            ),
+            `${route.path} should submit completion feedback with the anonymous tool context`
+          );
+        }
       }
 
       await page.close();

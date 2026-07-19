@@ -17,6 +17,9 @@ npm run analytics:funnel -- --days 7
 npm run analytics:funnel -- --local --all-sources
 npm run analytics:funnel -- --preview --all-sources
 npm run analytics:funnel -- --preview --all-sources --include-synthetic
+npm run analytics:feedback -- --days 7
+npm run analytics:feedback -- --organic --comments
+npm run analytics:feedback -- --local --comments
 npm run analytics:migrate:local
 npm run analytics:migrate:preview
 npm run analytics:migrate:production
@@ -32,15 +35,22 @@ are not user authentication and can be forged by non-browser clients. A D1-backe
 600 valid events per hour as an abuse backstop. Treat any unexplained spike as suspect and reconcile the funnel
 with Cloudflare Web Analytics before making a product decision.
 
+Tool feedback is stored separately from the unique three-stage funnel. One row per tab session and tool is
+upserted, so retries and changed answers do not inflate response counts. The feedback endpoint has its own
+120-valid-submission hourly backstop. The default report is aggregate-only; use `--comments` to print optional
+free-text responses.
+
 ## Privacy Boundary
 
 - Files and form values stay in the browser.
 - No filename, file metadata, document content, raw referrer, query, IP address, or user agent is written to D1.
+- Explicit feedback may include a user-entered comment of up to 200 characters. The UI warns against entering
+  personal information, and comments are shown by the report only when `--comments` is requested.
 - The source is reduced to `naver`, `google`, `search_other`, `referral`, `direct`, `internal`, or `unknown`.
 - GPC or DNT prevents first-party funnel delivery.
 - A session is a random tab-scoped UUID with 30-minute inactivity and four-hour absolute expiration.
 - Accepted writes and report runs remove sessions older than the operational 90-day target. This is an operating
   target rather than a guaranteed hard deletion deadline while the site is completely idle.
 
-The schema is versioned in `migrations/`, the shared allowlist is in `shared/funnel-contract.mjs`, and the endpoint
-is limited to `/api/funnel-event` by `public/_routes.json`.
+The schema is versioned in `migrations/`, shared allowlists are in `shared/funnel-contract.mjs` and
+`shared/feedback-contract.mjs`, and public API routes are limited to `/api/*` by `public/_routes.json`.

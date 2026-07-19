@@ -116,25 +116,15 @@ const structuredData = [
         <div class="preview-grid">
           <div class="canvas-card">
             <span>원본</span>
-            <canvas data-source-canvas width="480" height="360"></canvas>
+            <canvas data-source-canvas width="480" height="360">원본 도장 이미지 미리보기</canvas>
           </div>
           <div class="canvas-card result">
             <span>투명 PNG 결과</span>
-            <canvas data-result-canvas width="480" height="360"></canvas>
+            <canvas data-result-canvas width="480" height="360">배경을 제거한 도장 이미지 미리보기</canvas>
           </div>
         </div>
       </section>
 
-      <aside class="side-panel">
-        <div class="panel-title">
-          <h3>서버 전송 없음</h3>
-        </div>
-        <ul class="status-list">
-          <li><span class="status-dot"></span><span>이미지는 브라우저 캔버스에서만 처리합니다.</span></li>
-          <li><span class="status-dot"></span><span>저장 파일은 투명 배경 PNG입니다.</span></li>
-          <li><span class="status-dot"></span><span>인감 증명이나 전자서명 인증을 대신하지 않습니다.</span></li>
-        </ul>
-      </aside>
     </section>
 
     <section class="content-section">
@@ -417,7 +407,7 @@ const structuredData = [
 <style>
   .stamp-workspace {
     display: grid;
-    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr) minmax(240px, 300px);
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
     gap: 18px;
     align-items: start;
   }
@@ -450,6 +440,12 @@ const structuredData = [
     inset: 0;
     cursor: pointer;
     opacity: 0;
+  }
+
+  .file-control:has(input:focus-visible) {
+    border-color: var(--accent);
+    outline: 3px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    outline-offset: 2px;
   }
 
   .range-field input {
@@ -520,7 +516,7 @@ const structuredData = [
   .tool-trust-badges {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     margin-top: 12px;
   }
@@ -538,16 +534,6 @@ const structuredData = [
     line-height: 1;
     padding: 8px 12px;
     white-space: nowrap;
-  }
-
-  @media (max-width: 1100px) {
-    .stamp-workspace {
-      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
-    }
-
-    .stamp-workspace .side-panel {
-      grid-column: 1 / -1;
-    }
   }
 
   @media (max-width: 760px) {

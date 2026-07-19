@@ -83,6 +83,38 @@
     return null;
   }
 
+  function normalizeFeedbackInput(input, config) {
+    if (!input || typeof input !== "object") return null;
+    const toolId = input.tool_id;
+    const pagePath = input.page_path;
+    if (!toolId || config.toolPaths?.[toolId] !== pagePath) return null;
+    if (!config.feedbackRatings?.includes(input.rating)) return null;
+    if (!config.feedbackContexts?.includes(input.feedback_context)) return null;
+
+    const comment = typeof input.comment === "string" ? input.comment.trim() : "";
+    if (comment.length > config.feedbackMaxCommentLength) return null;
+    if (input.rating === "helpful") {
+      if (input.reason != null || comment) return null;
+      return {
+        tool_id: toolId,
+        page_path: pagePath,
+        rating: "helpful",
+        reason: null,
+        comment: null,
+        feedback_context: input.feedback_context
+      };
+    }
+    if (!config.feedbackReasons?.includes(input.reason)) return null;
+    return {
+      tool_id: toolId,
+      page_path: pagePath,
+      rating: "not_helpful",
+      reason: input.reason,
+      comment: comment || null,
+      feedback_context: input.feedback_context
+    };
+  }
+
   function isSessionRecord(record, now, idleMs, maxMs) {
     return Boolean(
       record &&
@@ -195,13 +227,41 @@
     return { attempt };
   }
 
+  function createFeedbackSender({ sessions, config, fetchApi }) {
+    async function submit(input) {
+      const feedback = normalizeFeedbackInput(input, config);
+      if (!feedback) throw new Error("invalid_feedback");
+      const session = sessions.current();
+      const response = await fetchApi(config.feedbackEndpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          ...feedback,
+          session_id: session.sessionId,
+          source: session.source,
+          storage_mode: session.storageMode,
+          session_age_ms: Math.max(0, Math.min(config.sessionMaxMs, Date.now() - session.startedAt)),
+          build_id: config.buildId
+        }),
+        credentials: "same-origin",
+        keepalive: true
+      });
+      if (!response?.ok) throw new Error(`feedback_request_${response?.status || "failed"}`);
+      return feedback;
+    }
+
+    return { submit };
+  }
+
   const testApi = Object.freeze({
     classifySource,
     copiedSameOriginOpener,
+    createFeedbackSender,
     createSessionStore,
     createStageTracker,
     isSessionRecord,
     normalizeEvent,
+    normalizeFeedbackInput,
     privacySignalEnabled,
     uuidV4
   });
@@ -258,6 +318,12 @@
   }
 
   const stages = createStageTracker({ sessions, send: deliver });
+  const feedback = createFeedbackSender({
+    sessions,
+    config,
+    fetchApi: window.fetch.bind(window)
+  });
+  window.kdocSubmitFeedback = feedback.submit;
 
   window.addEventListener("kdoc:analytics", (customEvent) => {
     const event = normalizeEvent(customEvent.detail, config);

@@ -6,8 +6,14 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { Miniflare } from "miniflare";
 import { reserveIngestBudget } from "../functions/api/funnel-event.js";
+import { reserveFeedbackBudget } from "../functions/api/tool-feedback.js";
+import { buildFeedbackSql, summarizeFeedbackRows } from "../scripts/feedback-report.mjs";
 import { buildFunnelSql, extractRows, summarizeRows } from "../scripts/funnel-report.mjs";
 import { INGEST_MAX_EVENTS_PER_WINDOW, INGEST_WINDOW_MS } from "../shared/funnel-contract.mjs";
+import {
+  FEEDBACK_INGEST_MAX_PER_WINDOW,
+  FEEDBACK_INGEST_WINDOW_MS
+} from "../shared/feedback-contract.mjs";
 
 const database = "k-document-tool-analytics";
 const dayMs = 24 * 60 * 60 * 1_000;
@@ -88,6 +94,25 @@ test(
       assert.equal(summary.overall.useful, 30);
       assert.equal(summary.meta.ready, true);
 
+      executeLocal(
+        persistTo,
+        `INSERT INTO tool_feedback (session_id, tool_id, page_path, source, rating, reason, comment, feedback_context, build_id, created_at, updated_at)
+         VALUES
+         ('session-00', 'vat-calculator', '/tools/vat-calculator/', 'naver', 'helpful', NULL, NULL, 'completion', 'abcdef012345', ${now}, ${now}),
+         ('session-01', 'vat-calculator', '/tools/vat-calculator/', 'naver', 'not_helpful', 'hard_to_use', '입력이 어려워요', 'manual', 'abcdef012345', ${now}, ${now});`
+      );
+      const feedbackRows = executeLocal(
+        persistTo,
+        buildFeedbackSql({ days: 1, organic: true, comments: true })
+      );
+      const feedback = summarizeFeedbackRows(feedbackRows);
+      assert.equal(feedback.summaries[0].total, 2);
+      assert.equal(feedback.summaries[0].helpful, 1);
+      assert.equal(feedback.summaries[0].notHelpful, 1);
+      assert.equal(feedback.summaries[0].completed, 2);
+      assert.deepEqual(feedback.reasons, [{ reason: "hard_to_use", count: 1 }]);
+      assert.equal(feedback.comments[0].comment, "입력이 어려워요");
+
     } finally {
       rmSync(persistTo, { recursive: true, force: true });
     }
@@ -122,6 +147,39 @@ test("reserves the production ingest budget atomically at the D1 boundary", asyn
       .bind(windowStart)
       .first();
     assert.equal(Number(row.accepted_events), INGEST_MAX_EVENTS_PER_WINDOW);
+  } finally {
+    await miniflare.dispose();
+  }
+});
+
+test("reserves the feedback budget atomically at the D1 boundary", async () => {
+  const miniflare = new Miniflare({
+    modules: true,
+    script: "export default { fetch() { return new Response(null, { status: 204 }); } }",
+    d1Databases: { ANALYTICS_DB: "feedback-budget-test" }
+  });
+  try {
+    const db = await miniflare.getD1Database("ANALYTICS_DB");
+    const now = Date.now();
+    const windowStart = Math.floor(now / FEEDBACK_INGEST_WINDOW_MS) * FEEDBACK_INGEST_WINDOW_MS;
+    await db.exec(
+      "CREATE TABLE feedback_ingest_windows (window_start INTEGER PRIMARY KEY, accepted_feedback INTEGER NOT NULL CHECK (accepted_feedback >= 0));"
+    );
+    await db
+      .prepare("INSERT INTO feedback_ingest_windows (window_start, accepted_feedback) VALUES (?, ?)")
+      .bind(windowStart, FEEDBACK_INGEST_MAX_PER_WINDOW - 1)
+      .run();
+
+    const reservations = await Promise.all([
+      reserveFeedbackBudget(db, now),
+      reserveFeedbackBudget(db, now)
+    ]);
+    assert.deepEqual(reservations.sort(), [false, true]);
+    const row = await db
+      .prepare("SELECT accepted_feedback FROM feedback_ingest_windows WHERE window_start = ?")
+      .bind(windowStart)
+      .first();
+    assert.equal(Number(row.accepted_feedback), FEEDBACK_INGEST_MAX_PER_WINDOW);
   } finally {
     await miniflare.dispose();
   }

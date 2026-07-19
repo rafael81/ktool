@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { onRequest, validatePayload } from "../functions/api/funnel-event.js";
+import {
+  onRequest as onFeedbackRequest,
+  validateFeedbackPayload
+} from "../functions/api/tool-feedback.js";
 
 const endpoint = "https://k-document-tool.pages.dev/api/funnel-event";
 const validPayload = {
@@ -16,6 +20,20 @@ const validPayload = {
   build_id: "abcdef012345",
   synthetic: false
 };
+const feedbackEndpoint = "https://k-document-tool.pages.dev/api/tool-feedback";
+const validFeedback = {
+  session_id: validPayload.session_id,
+  tool_id: validPayload.tool_id,
+  page_path: validPayload.page_path,
+  source: validPayload.source,
+  storage_mode: validPayload.storage_mode,
+  session_age_ms: validPayload.session_age_ms,
+  build_id: validPayload.build_id,
+  rating: "not_helpful",
+  reason: "hard_to_use",
+  comment: "입력 위치를 찾기 어려워요",
+  feedback_context: "manual"
+};
 
 function request(payload = validPayload, headers = {}) {
   return new Request(endpoint, {
@@ -30,7 +48,20 @@ function request(payload = validPayload, headers = {}) {
   });
 }
 
-function mockDatabase({ fail = false, rateLimited = false } = {}) {
+function feedbackRequest(payload = validFeedback, headers = {}) {
+  return new Request(feedbackEndpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "https://k-document-tool.pages.dev",
+      "sec-fetch-site": "same-origin",
+      ...headers
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+function mockDatabase({ fail = false, rateLimited = false, batchLength = 4 } = {}) {
   const statements = [];
   return {
     statements,
@@ -51,7 +82,7 @@ function mockDatabase({ fail = false, rateLimited = false } = {}) {
       return statement;
     },
     async batch(batch) {
-      assert.equal(batch.length, 4);
+      assert.equal(batch.length, batchLength);
       if (fail) throw new Error("D1 unavailable");
       return batch.map(() => ({ success: true }));
     }
@@ -206,4 +237,61 @@ test("returns a service error when D1 is unavailable", async () => {
     (await onRequest({ request: request(), env: { ANALYTICS_DB: mockDatabase({ fail: true }) } })).status,
     503
   );
+});
+
+test("accepts structured tool feedback and upserts by session and tool", async () => {
+  const db = mockDatabase({ batchLength: 3 });
+  const response = await onFeedbackRequest({
+    request: feedbackRequest(),
+    env: { ANALYTICS_DB: db }
+  });
+  assert.equal(response.status, 204);
+  assert.match(db.statements[0].sql, /INSERT INTO feedback_ingest_windows/);
+  assert.match(db.statements[1].sql, /INSERT INTO tool_feedback/);
+  assert.match(db.statements[1].sql, /ON CONFLICT\(session_id, tool_id\) DO UPDATE/);
+  assert.deepEqual(db.statements[1].values.slice(0, 7), [
+    validFeedback.session_id,
+    validFeedback.tool_id,
+    validFeedback.page_path,
+    validFeedback.source,
+    validFeedback.rating,
+    validFeedback.reason,
+    validFeedback.comment
+  ]);
+});
+
+test("validates feedback detail, privacy boundary, and exact tool path", () => {
+  assert.equal(validateFeedbackPayload(validFeedback).ok, true);
+  assert.equal(validateFeedbackPayload({ ...validFeedback, page_path: "/wrong/" }).ok, false);
+  assert.equal(validateFeedbackPayload({ ...validFeedback, reason: null }).error, "reason_required");
+  assert.equal(
+    validateFeedbackPayload({ ...validFeedback, rating: "helpful", reason: "error", comment: null }).error,
+    "unexpected_detail"
+  );
+  assert.equal(validateFeedbackPayload({ ...validFeedback, comment: "x".repeat(201) }).error, "comment_too_long");
+  const sanitized = validateFeedbackPayload({
+    ...validFeedback,
+    file_name: "secret.pdf",
+    document_text: "secret"
+  });
+  assert.equal(Object.hasOwn(sanitized.payload, "file_name"), false);
+  assert.equal(Object.hasOwn(sanitized.payload, "document_text"), false);
+});
+
+test("rejects abusive or unavailable feedback requests without affecting tools", async () => {
+  assert.equal(
+    (await onFeedbackRequest({
+      request: feedbackRequest(validFeedback, { origin: "https://example.com" }),
+      env: { ANALYTICS_DB: mockDatabase({ batchLength: 3 }) }
+    })).status,
+    403
+  );
+  assert.equal(
+    (await onFeedbackRequest({
+      request: feedbackRequest(),
+      env: { ANALYTICS_DB: mockDatabase({ rateLimited: true, batchLength: 3 }) }
+    })).status,
+    429
+  );
+  assert.equal((await onFeedbackRequest({ request: feedbackRequest(), env: {} })).status, 503);
 });
