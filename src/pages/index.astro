@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { toolCategories, tools, type ToolCategoryId, type ToolId } from "@/data/tools";
-import { getProblemPage, problemPages, type ProblemPageId } from "@/data/problemPages";
+import { toolCategories, tools, type ToolId } from "@/data/tools";
+import { problemPages } from "@/data/problemPages";
 import { toolItemListSchema, webPageSchema, websiteSchema } from "@/data/seo";
 import {
   Archive,
+  ArrowRight,
   Calculator,
   Crop,
   FileText,
@@ -39,16 +40,6 @@ const structuredData = [
 ];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
 const toolCountLabel = `${tools.length}종`;
-const featuredToolIds: ToolId[] = [
-  "transaction-statement",
-  "jpg-to-pdf",
-  "image-compressor",
-  "heic-to-jpg"
-];
-const featuredToolSet = new Set<ToolId>(featuredToolIds);
-const featuredTools = featuredToolIds
-  .map((id) => tools.find((tool) => tool.id === id))
-  .filter((tool): tool is (typeof tools)[number] => Boolean(tool));
 const homeQuickStarts: {
   label: string;
   detail: string;
@@ -89,39 +80,13 @@ const homeQuickStarts: {
     toolId: "business-nameplate"
   }
 ];
-const homeProblemStartIds = [
-  "images-to-one-pdf",
-  "photo-under-1mb",
-  "heic-jpg-submit",
-  "business-nameplate-stamp"
-] satisfies ProblemPageId[];
-const homeProblemStarts = homeProblemStartIds.map((id) => {
-  const problemPage = getProblemPage(id);
-  const targetTool = tools.find((tool) => tool.id === problemPage.targetToolId);
-  if (!targetTool) throw new Error(`Unknown problem target tool: ${problemPage.targetToolId}`);
-  return {
-    ...problemPage,
-    targetTool
-  };
-});
 const emptySearchLinks = [
   { label: "사진 용량 줄이기", path: "/tools/photo-size-reducer/" },
   { label: "JPG PDF 변환", path: "/tools/jpg-to-pdf-converter/" },
   { label: "HEIC JPG 변환", path: "/tools/heic-jpg-converter/" },
   { label: "문제 해결", path: "/problems/" }
 ];
-const toolsByCategory = new Map(
-  toolCategories.map((category) => [
-    category.id,
-    tools.filter((tool) => tool.category === category.id)
-  ])
-);
 type LucideIcon = (_props: IconProps) => unknown;
-const categoryIconById: Record<ToolCategoryId, LucideIcon> = {
-  business: FileText,
-  pdf: Files,
-  image: Image
-};
 const toolIconById: Partial<Record<ToolId, LucideIcon>> = {
   "transaction-statement": FileText,
   "pdf-edit": FileText,
@@ -164,106 +129,55 @@ function iconForTool(toolId: ToolId) {
   description={homeDescription}
   structuredData={structuredData}
 >
-  <main class="page-shell home-page" data-page-type="home" data-tool-count={tools.length}>
-    <section class="home-start" aria-labelledby="home-title">
-      <div class="home-start-copy">
-        <div class="home-hero-visual" aria-hidden="true">
-          <svg class="home-hero-illust" viewBox="0 0 240 170" focusable="false">
-            <defs>
-              <filter id="hero-soft-shadow" x="-30%" y="-30%" width="160%" height="170%">
-                <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#344054" flood-opacity="0.18" />
-              </filter>
-            </defs>
-            <ellipse class="hero-stage-shadow" cx="124" cy="142" rx="62" ry="13" />
-            <g class="hero-tool-panel hero-tool-panel-left" filter="url(#hero-soft-shadow)">
-              <rect class="hero-panel-surface" x="20" y="38" width="65" height="72" rx="15" />
-              <rect class="hero-panel-chip" x="33" y="51" width="23" height="23" rx="5" />
-              <path class="hero-panel-line" d="M63 56h13M33 83h36M33 94h27" />
-              <path class="hero-mini-chart" d="M33 72l12-10 10 7 14-16" />
-            </g>
-            <g class="hero-tool-panel hero-tool-panel-right" filter="url(#hero-soft-shadow)">
-              <rect class="hero-panel-surface" x="163" y="44" width="57" height="52" rx="14" />
-              <rect class="hero-image-tile" x="174" y="56" width="22" height="21" rx="5" />
-              <path class="hero-image-mountain" d="M176 75l8-9 6 6 6-8" />
-              <path class="hero-convert-arrow" d="M201 67h12M209 61l6 6-6 6" />
-            </g>
-            <g class="hero-tool-strip" filter="url(#hero-soft-shadow)">
-              <rect class="hero-panel-surface" x="61" y="120" width="126" height="32" rx="16" />
-              <path class="hero-tool-icon" d="M78 129h16v16H78zM82 125v8M74 133h8" />
-              <path class="hero-tool-icon" d="M112 130l7-7M118 123h-6M119 124v6M103 143l7-7M104 137v6M110 144h-6" />
-              <path class="hero-tool-icon" d="M139 128c6-4 14-1 15 6M155 128v7h-7M153 143c-6 4-14 1-15-6M137 143v-7h7" />
-              <path class="hero-tool-icon-muted" d="M169 128h8v8h-8zM181 128h8v8h-8zM169 140h8v8h-8zM181 140h8v8h-8z" />
-            </g>
-            <g class="hero-document-mascot" filter="url(#hero-soft-shadow)">
-              <path class="hero-arm hero-arm-left" d="M91 86c-15 2-19 18-31 11-7-4-7-13-2-19" />
-              <path class="hero-arm hero-arm-right" d="M165 88c15 2 19 18 31 11 7-4 7-13 2-19" />
-              <path class="hero-document-page" d="M101 27h42l29 29v66a16 16 0 0 1-16 16h-55a16 16 0 0 1-16-16V43a16 16 0 0 1 16-16Z" />
-              <path class="hero-document-fold-fill" d="M143 27v21a8 8 0 0 0 8 8h21" />
-              <path class="hero-document-fold" d="M143 27v21a8 8 0 0 0 8 8h21" />
-              <circle class="hero-eye" cx="111" cy="75" r="3.7" />
-              <circle class="hero-eye" cx="146" cy="75" r="3.7" />
-              <path class="hero-smile" d="M118 88c6 8 18 8 24 0" />
-              <path class="hero-shield-base" d="M128 95l15 5v15c0 10-6.2 17-15 20-8.8-3-15-10-15-20v-15l15-5Z" />
-              <path class="hero-shield-check" d="M121 115l5 5 11-13" />
-              <path class="hero-leg hero-leg-left" d="M111 138v14" />
-              <path class="hero-leg hero-leg-right" d="M145 138v14" />
-            </g>
-            <circle class="hero-orbit-dot hero-orbit-dot-one" cx="92" cy="31" r="3" />
-            <circle class="hero-orbit-dot hero-orbit-dot-two" cx="189" cy="111" r="3.2" />
-          </svg>
-        </div>
-        <h1 id="home-title">K문서툴</h1>
-        <p class="home-hero-lead">설치 없이 쓰는 무료 도구 {toolCountLabel}</p>
-        <p class="home-hero-subcopy">PDF, 이미지, 업무 문서를 브라우저에서 바로 처리합니다.</p>
-        <div class="home-trust-badges" aria-label="주요 장점">
-          <span>설치 없음</span>
-          <span>무료</span>
-          <span>서버 전송 없음</span>
+  <main class="hallmark-home" data-page-type="home" data-tool-count={tools.length}>
+    <section class="hallmark-command-head" aria-labelledby="home-title">
+      <div class="hallmark-identity">
+        <svg class="hallmark-mascot" viewBox="0 0 76 84" aria-hidden="true">
+          <g class="hallmark-mascot-ear"><path d="M18 22 7 31l12 8Z" /></g>
+          <path class="hallmark-mascot-page" d="M24 6h25l17 17v43a12 12 0 0 1-12 12H24a12 12 0 0 1-12-12V18A12 12 0 0 1 24 6Z" />
+          <path class="hallmark-mascot-fold" d="M49 6v11a6 6 0 0 0 6 6h11Z" />
+          <circle class="hallmark-mascot-eye" cx="29" cy="34" r="2.3" />
+          <circle class="hallmark-mascot-eye" cx="49" cy="34" r="2.3" />
+          <path class="hallmark-mascot-smile" d="M32 43c4 5 10 5 14 0" />
+          <path class="hallmark-mascot-shield" d="M39 49l11 4v10c0 7-4 11-11 13-7-2-11-6-11-13V53l11-4Z" />
+          <path class="hallmark-mascot-check" d="m34 62 4 4 7-9" />
+        </svg>
+        <div class="hallmark-identity-copy">
+          <h1 id="home-title">K문서툴</h1>
+          <p>설치 없이 쓰는 무료 도구 {toolCountLabel}</p>
+          <div class="hallmark-trust-line" aria-label="서비스 특징">
+            <span>무료</span>
+            <span>설치 없음</span>
+            <span>서버 전송 없음</span>
+          </div>
         </div>
       </div>
 
-      <section id="tool-search" class="home-tool-finder" aria-label="도구 검색">
-        <form class="hero-search home-search-panel" data-home-tool-search role="search">
-          <label class="hero-search-field">
-            <span class="visually-hidden">도구 검색</span>
-            <Search class="home-search-icon" aria-hidden="true" />
-            <input
-              type="search"
-              autocomplete="off"
-              inputmode="search"
-              placeholder="PDF, HEIC, 1MB, 명판"
-              aria-label="도구와 문제 검색"
-              data-home-search-input
-            />
-            <kbd>Enter</kbd>
-          </label>
+      <form id="tool-search" class="hallmark-command-panel" data-home-tool-search role="search">
+        <label class="hallmark-search-box">
+          <span class="visually-hidden">도구 검색</span>
+          <Search aria-hidden="true" />
+          <input
+            type="search"
+            autocomplete="off"
+            inputmode="search"
+            placeholder="필요한 작업을 입력하세요"
+            aria-label="도구와 문제 검색"
+            data-home-search-input
+          />
+          <kbd>Enter</kbd>
+        </label>
 
-        <div class="home-filter-bar">
-          <div class="home-filter-list" aria-label="카테고리 필터">
-            <button class="is-active" type="button" data-home-category-filter="all">전체</button>
-            {
-              toolCategories.map((category) => (
-                <button type="button" data-home-category-filter={category.id}>
-                  {category.shortTitle}
-                </button>
-              ))
-            }
-          </div>
-          <div class="hero-search-meta">
-            <span data-home-search-count>인기 도구 {featuredTools.length}개</span>
-          </div>
-        </div>
-
-        <div class="home-quick-starts" aria-label="빠른 시작">
+        <nav class="hallmark-quick-rail" aria-label="빠른 시작">
           {
-            homeQuickStarts.map((item) => {
+            homeQuickStarts.slice(0, 4).map((item) => {
               const tool = tools.find((toolItem) => toolItem.id === item.toolId);
               if (!tool) return null;
               const QuickIcon = iconForTool(item.toolId);
 
               return (
                 <a
-                  class="home-quick-start"
+                  class="hallmark-quick-link"
                   href={item.path}
                   data-home-quick-start
                   data-analytics-event="home_quick_start_click"
@@ -272,70 +186,30 @@ function iconForTool(toolId: ToolId) {
                   data-analytics-target-preset={item.preset}
                   data-analytics-label={item.label}
                 >
-                  <span class="home-quick-icon" aria-hidden="true">
-                    <QuickIcon class="home-icon" />
-                  </span>
+                  <QuickIcon aria-hidden="true" />
                   <span>
                     <strong>{item.label}</strong>
-                    <em>{item.detail}</em>
+                    <small>{item.detail}</small>
                   </span>
                 </a>
               );
             })
           }
-        </div>
+        </nav>
 
-        <section class="home-problem-starts" data-home-problem-starts aria-label="자주 막히는 문제">
-          <div class="home-problem-starts-heading">
-            <span>막혔나요?</span>
-            <a
-              href="/problems/"
-              data-analytics-event="home_problem_all_click"
-              data-analytics-label="문제 전체"
-            >
-              전체
-            </a>
-          </div>
-          <div class="home-problem-start-grid">
-            {
-              homeProblemStarts.map((problemPage) => (
-                <a
-                  class="home-problem-start"
-                  href={problemPage.path}
-                  data-home-problem-start
-                  data-analytics-event="home_problem_start_click"
-                  data-analytics-problem-id={problemPage.id}
-                  data-analytics-target-problem-id={problemPage.id}
-                  data-analytics-target-problem-title={problemPage.title}
-                  data-analytics-target-tool-id={problemPage.targetTool.id}
-                  data-analytics-target-tool-title={problemPage.targetTool.title}
-                  data-analytics-target-preset={problemPage.targetPreset}
-                  data-analytics-label={problemPage.title}
-                >
-                  <strong>{problemPage.shortTitle}</strong>
-                  <span>{problemPage.targetLabel}</span>
-                </a>
-              ))
-            }
-          </div>
-        </section>
-
-        <div class="hero-search-results home-result-list" data-home-search-results hidden>
+        <div class="hallmark-search-results" data-home-search-results hidden>
           {
             tools.map((tool) => {
               const ToolIcon = iconForTool(tool.id);
 
               return (
                 <a
-                  class:list={{
-                    "hero-search-row": true,
-                    "is-default": featuredToolSet.has(tool.id)
-                  }}
+                  class="hallmark-search-row"
                   href={tool.path}
-                  hidden={!featuredToolSet.has(tool.id)}
+                  hidden
                   data-home-search-item
+                  data-category={tool.category}
                   data-home-search-category={tool.category}
-                  data-default-visible={featuredToolSet.has(tool.id) ? "true" : "false"}
                   data-analytics-event="home_search_tool_click"
                   data-analytics-tool-id={tool.id}
                   data-analytics-tool-title={tool.title}
@@ -350,17 +224,14 @@ function iconForTool(toolId: ToolId) {
                     categoryById.get(tool.category)?.title ?? ""
                   ].join(" ")}
                 >
-                  <span class="home-row-meta">
-                    <span class="home-icon-tile">
-                      <ToolIcon class="home-icon" aria-hidden="true" />
-                    </span>
-                    <span>{categoryById.get(tool.category)?.shortTitle}</span>
+                  <span class="hallmark-row-icon" data-category={tool.category}>
+                    <ToolIcon aria-hidden="true" />
                   </span>
-                  <span class="home-row-copy">
+                  <span class="hallmark-row-copy">
                     <strong>{tool.title}</strong>
                     <span>{tool.shortTitle}</span>
                   </span>
-                  <em aria-hidden="true">실행</em>
+                  <ArrowRight class="hallmark-row-arrow" aria-hidden="true" />
                 </a>
               );
             })
@@ -373,10 +244,11 @@ function iconForTool(toolId: ToolId) {
 
               return (
                 <a
-                  class="hero-search-row"
+                  class="hallmark-search-row"
                   href={problemPage.path}
                   hidden
                   data-home-search-item
+                  data-category={targetTool.category}
                   data-home-search-category={targetTool.category}
                   data-default-visible="false"
                   data-analytics-event="home_search_problem_click"
@@ -397,101 +269,81 @@ function iconForTool(toolId: ToolId) {
                     categoryById.get(targetTool.category)?.title ?? ""
                   ].join(" ")}
                 >
-                  <span class="home-row-meta">
-                    <span class="home-icon-tile">
-                      <ProblemIcon class="home-icon" aria-hidden="true" />
-                    </span>
-                    <span>문제 해결</span>
+                  <span class="hallmark-row-icon" data-category={targetTool.category}>
+                    <ProblemIcon aria-hidden="true" />
                   </span>
-                  <span class="home-row-copy">
+                  <span class="hallmark-row-copy">
                     <strong>{problemPage.title}</strong>
                     <span>{problemPage.shortTitle}</span>
                   </span>
-                  <em aria-hidden="true">보기</em>
+                  <ArrowRight class="hallmark-row-arrow" aria-hidden="true" />
                 </a>
               );
             })
           }
         </div>
-          <p class="hero-search-empty" data-home-search-empty hidden>
-            결과 없음
-          </p>
-          <div class="search-empty-actions" data-home-search-suggestions hidden>
-            {
-              emptySearchLinks.map((link) => (
-                <a
-                  href={link.path}
-                  data-analytics-event="home_search_empty_click"
-                  data-analytics-label={link.label}
-                >
-                  {link.label}
-                </a>
-              ))
-            }
+        <div class="hallmark-search-empty" data-home-search-empty hidden>
+          <p>검색 결과가 없습니다.</p>
+          <div data-home-search-suggestions hidden>
+            {emptySearchLinks.map((link) => <a href={link.path}>{link.label}</a>)}
           </div>
-        </form>
-      </section>
+        </div>
+      </form>
     </section>
 
-    <section class="home-category-catalog" aria-labelledby="home-catalog-title">
-      <div class="home-section-title">
+    <section class="hallmark-catalogue" aria-labelledby="home-catalog-title">
+      <aside class="hallmark-catalogue-nav">
         <h2 id="home-catalog-title">전체 도구</h2>
-        <a
-          class="section-mini-link"
-          href="/tools/"
-          data-analytics-event="home_catalog_all_click"
-          data-analytics-label="전체 도구"
-        >
-          목록 보기
-        </a>
-      </div>
-      <div class="home-category-stack">
-        {
-          toolCategories.map((category) => {
-            const CategoryIcon = categoryIconById[category.id];
-            const categoryTools = toolsByCategory.get(category.id) ?? [];
+        <div class="hallmark-category-tabs" aria-label="카테고리 필터">
+          <button class="is-active" type="button" data-home-category-filter="all">전체 {tools.length}</button>
+          {toolCategories.map((category) => (
+            <button type="button" data-home-category-filter={category.id}>
+              {category.shortTitle} {tools.filter((tool) => tool.category === category.id).length}
+            </button>
+          ))}
+        </div>
+        <div class="hallmark-catalogue-meta">
+          <span data-home-search-count>{tools.length}개 표시</span>
+          <a href="/problems/">문제 해결</a>
+        </div>
+      </aside>
 
-            return (
-              <section class="home-category-section" data-home-category-section={category.id}>
-                <div class="home-category-heading">
-                  <span class="home-category-icon" aria-hidden="true">
-                    <CategoryIcon class="home-icon" />
-                  </span>
-                  <div>
-                    <h3>{category.shortTitle}</h3>
-                    <p>{categoryTools.length}개 도구</p>
-                  </div>
-                </div>
-                <div class="home-category-tools">
-                  {categoryTools.map((tool) => {
-                    const ToolIcon = iconForTool(tool.id);
-
-                    return (
-                      <a
-                        class="home-tool-card"
-                        href={tool.path}
-                        data-home-all-tool
-                        data-analytics-event="home_all_tool_click"
-                        data-analytics-tool-id={tool.id}
-                        data-analytics-tool-title={tool.title}
-                        data-analytics-label={tool.title}
-                      >
-                        <span class="home-tool-card-icon" aria-hidden="true">
-                          <ToolIcon class="home-icon" />
-                        </span>
-                        <span class="home-tool-card-copy">
-                          <strong>{tool.title}</strong>
-                          <span>{tool.description}</span>
-                        </span>
-                        <em aria-hidden="true">실행</em>
-                      </a>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })
-        }
+      <div class="hallmark-tool-index">
+        {tools.map((tool) => {
+          const ToolIcon = iconForTool(tool.id);
+          return (
+            <a
+              class="hallmark-tool-row"
+              href={tool.path}
+              data-home-index-tool
+              data-category={tool.category}
+              data-home-index-category={tool.category}
+              data-home-index-search={[
+                tool.title,
+                tool.shortTitle,
+                tool.primaryQuery,
+                ...tool.secondaryQueries,
+                tool.description,
+                tool.userMoment,
+                categoryById.get(tool.category)?.title ?? ""
+              ].join(" ")}
+              data-analytics-event="home_all_tool_click"
+              data-analytics-tool-id={tool.id}
+              data-analytics-tool-title={tool.title}
+              data-analytics-label={tool.title}
+            >
+              <span class="hallmark-row-icon" data-category={tool.category} aria-hidden="true">
+                <ToolIcon />
+              </span>
+              <span class="hallmark-row-copy">
+                <strong>{tool.title}</strong>
+                <span>{tool.shortTitle}</span>
+              </span>
+              <ArrowRight class="hallmark-row-arrow" aria-hidden="true" />
+            </a>
+          );
+        })}
+        <p class="hallmark-index-empty" data-home-index-empty hidden>검색 결과가 없습니다.</p>
       </div>
     </section>
   </main>
@@ -505,19 +357,17 @@ function iconForTool(toolId: ToolId) {
     const searchInput = root.querySelector("[data-home-search-input]");
     const items = Array.from(root.querySelectorAll("[data-home-search-item]"));
     const resultsNode = root.querySelector("[data-home-search-results]");
-    const filterButtons = Array.from(root.querySelectorAll("[data-home-category-filter]"));
-    const countNode = root.querySelector("[data-home-search-count]");
+    const indexItems = Array.from(document.querySelectorAll("[data-home-index-tool]"));
+    const filterButtons = Array.from(document.querySelectorAll("[data-home-category-filter]"));
+    const countNode = document.querySelector("[data-home-search-count]");
     const emptyNode = root.querySelector("[data-home-search-empty]");
     const suggestionNode = root.querySelector("[data-home-search-suggestions]");
+    const indexEmptyNode = document.querySelector("[data-home-index-empty]");
     let activeCategory = "all";
     let searchTimer = 0;
 
     function normalize(value) {
       return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
-    }
-
-    function visibleItems() {
-      return items.filter((item) => !item.hidden);
     }
 
     function track(visibleCount) {
@@ -530,30 +380,38 @@ function iconForTool(toolId: ToolId) {
 
     function applySearch({ shouldTrack } = {}) {
       const query = normalize(searchInput?.value);
-      const defaultMode = !query && activeCategory === "all";
-      let visibleCount = 0;
+      let searchVisibleCount = 0;
+      let indexVisibleCount = 0;
 
       items.forEach((item) => {
         const matchesQuery = query ? normalize(item.dataset.homeSearchText).includes(query) : true;
         const matchesCategory =
           activeCategory === "all" || item.dataset.homeSearchCategory === activeCategory;
-        const visible = !defaultMode && matchesQuery && matchesCategory;
+        const visible = Boolean(query) && matchesQuery && matchesCategory;
         item.hidden = !visible;
-        if (visible) visibleCount += 1;
+        if (visible) searchVisibleCount += 1;
       });
 
-      if (resultsNode) resultsNode.hidden = defaultMode;
-      if (countNode) {
-        countNode.textContent = defaultMode ? "검색어 입력" : `${visibleCount}개 결과`;
-      }
-      if (emptyNode) emptyNode.hidden = defaultMode || visibleCount !== 0;
-      if (suggestionNode) suggestionNode.hidden = defaultMode || visibleCount !== 0;
-      if (shouldTrack) track(visibleCount);
+      indexItems.forEach((item) => {
+        const matchesQuery = query ? normalize(item.dataset.homeIndexSearch).includes(query) : true;
+        const matchesCategory =
+          activeCategory === "all" || item.dataset.homeIndexCategory === activeCategory;
+        const visible = matchesQuery && matchesCategory;
+        item.hidden = !visible;
+        if (visible) indexVisibleCount += 1;
+      });
+
+      if (resultsNode) resultsNode.hidden = !query;
+      if (countNode) countNode.textContent = `${indexVisibleCount}개 표시`;
+      if (emptyNode) emptyNode.hidden = !query || searchVisibleCount !== 0;
+      if (suggestionNode) suggestionNode.hidden = !query || searchVisibleCount !== 0;
+      if (indexEmptyNode) indexEmptyNode.hidden = indexVisibleCount !== 0;
+      if (shouldTrack) track(indexVisibleCount);
     }
 
     root.addEventListener("submit", (event) => {
       event.preventDefault();
-      const firstResult = visibleItems()[0];
+      const firstResult = items.find((item) => !item.hidden) ?? indexItems.find((item) => !item.hidden);
       if (firstResult instanceof HTMLAnchorElement) {
         window.location.href = firstResult.href;
       }
@@ -584,3 +442,370 @@ function iconForTool(toolId: ToolId) {
     applySearch();
   })();
 </script>
+
+<style>
+  .hallmark-home {
+    --hallmark-ink: #111827;
+    --hallmark-muted: #667085;
+    --hallmark-rule: #d0d5dd;
+    --hallmark-rule-soft: #eaecf0;
+    --hallmark-canvas: #f6f7f9;
+    --hallmark-business: #155eef;
+    --hallmark-business-soft: #eff4ff;
+    --hallmark-pdf: #be123c;
+    --hallmark-pdf-soft: #fff1f3;
+    --hallmark-image: #9a4708;
+    --hallmark-image-soft: #fff8eb;
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 32px 24px 72px;
+    color: var(--hallmark-ink);
+  }
+
+  .hallmark-command-head {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.6fr);
+    gap: 48px;
+    align-items: center;
+    padding: 12px 0 34px;
+  }
+
+  .hallmark-identity {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+  }
+
+  .hallmark-mascot {
+    width: 66px;
+    height: 72px;
+  }
+
+  .hallmark-mascot-page,
+  .hallmark-mascot-fold,
+  .hallmark-mascot-ear path {
+    stroke: var(--hallmark-ink);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+  }
+
+  .hallmark-mascot-page { fill: #fff; }
+  .hallmark-mascot-fold,
+  .hallmark-mascot-ear path { fill: var(--hallmark-business-soft); }
+  .hallmark-mascot-eye { fill: var(--hallmark-ink); }
+  .hallmark-mascot-smile {
+    fill: none;
+    stroke: var(--hallmark-ink);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+  }
+  .hallmark-mascot-shield {
+    fill: var(--hallmark-business);
+    stroke: var(--hallmark-ink);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+  .hallmark-mascot-check {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .hallmark-mascot-ear {
+    transform-origin: 19px 24px;
+    animation: hallmark-ear-wave 4.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  .hallmark-identity-copy { min-width: 0; }
+  .hallmark-identity-copy h1 {
+    margin: 0;
+    color: var(--hallmark-ink);
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.1;
+  }
+  .hallmark-identity-copy > p {
+    margin: 7px 0 0;
+    color: var(--hallmark-muted);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .hallmark-trust-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 10px;
+    color: var(--hallmark-ink);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .hallmark-trust-line span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .hallmark-trust-line span::before {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--hallmark-business);
+    content: "";
+  }
+
+  .hallmark-command-panel { min-width: 0; }
+  .hallmark-search-box {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 58px;
+    align-items: center;
+    gap: 12px;
+    border: 2px solid var(--hallmark-ink);
+    border-radius: 6px;
+    background: #fff;
+    padding: 0 16px;
+  }
+  .hallmark-search-box:focus-within {
+    border-color: var(--hallmark-business);
+    outline: 3px solid var(--hallmark-business-soft);
+  }
+  .hallmark-search-box > svg {
+    width: 20px;
+    height: 20px;
+    color: var(--hallmark-muted);
+  }
+  .hallmark-search-box input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--hallmark-ink);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 650;
+  }
+  .hallmark-search-box input::placeholder { color: #858c9b; opacity: 1; }
+  .hallmark-search-box kbd {
+    border: 1px solid var(--hallmark-rule);
+    border-radius: 4px;
+    background: var(--hallmark-canvas);
+    color: var(--hallmark-muted);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .hallmark-quick-rail {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 12px;
+    border: 1px solid var(--hallmark-rule);
+    background: var(--hallmark-rule);
+  }
+  .hallmark-quick-link {
+    display: flex;
+    min-width: 0;
+    min-height: 58px;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    color: var(--hallmark-ink);
+    padding: 10px 12px;
+  }
+  .hallmark-quick-link:hover,
+  .hallmark-quick-link:focus-visible { background: #f9fafb; outline: none; }
+  .hallmark-quick-link > svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+  }
+  .hallmark-quick-link > span {
+    display: grid;
+    min-width: 0;
+  }
+  .hallmark-quick-link strong,
+  .hallmark-quick-link small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hallmark-quick-link strong { font-size: 12px; line-height: 1.35; }
+  .hallmark-quick-link small { color: var(--hallmark-muted); font-size: 10.5px; }
+
+  .hallmark-search-results {
+    max-height: 384px;
+    margin-top: 10px;
+    overflow-y: auto;
+    border: 1px solid var(--hallmark-rule);
+    background: #fff;
+  }
+  .hallmark-search-results[hidden] { display: none; }
+  .hallmark-search-row,
+  .hallmark-tool-row {
+    --hallmark-row-accent: var(--hallmark-business);
+    --hallmark-row-soft: var(--hallmark-business-soft);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    border-bottom: 1px solid var(--hallmark-rule-soft);
+    background: #fff;
+    color: var(--hallmark-ink);
+  }
+  .hallmark-search-row { min-height: 64px; padding: 10px 12px; }
+  .hallmark-tool-row { min-height: 74px; padding: 12px; }
+  .hallmark-search-row[hidden],
+  .hallmark-tool-row[hidden] { display: none; }
+  .hallmark-search-row:hover,
+  .hallmark-search-row:focus-visible,
+  .hallmark-tool-row:hover,
+  .hallmark-tool-row:focus-visible { background: var(--hallmark-row-soft); outline: none; }
+  .hallmark-search-row[data-category="pdf"],
+  .hallmark-tool-row[data-category="pdf"] {
+    --hallmark-row-accent: var(--hallmark-pdf);
+    --hallmark-row-soft: var(--hallmark-pdf-soft);
+  }
+  .hallmark-search-row[data-category="image"],
+  .hallmark-tool-row[data-category="image"] {
+    --hallmark-row-accent: var(--hallmark-image);
+    --hallmark-row-soft: var(--hallmark-image-soft);
+  }
+
+  .hallmark-row-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-left: 3px solid var(--hallmark-row-accent);
+    background: var(--hallmark-row-soft);
+    color: var(--hallmark-row-accent);
+  }
+  .hallmark-row-icon[data-category="pdf"] {
+    --hallmark-row-accent: var(--hallmark-pdf);
+    --hallmark-row-soft: var(--hallmark-pdf-soft);
+  }
+  .hallmark-row-icon[data-category="image"] {
+    --hallmark-row-accent: var(--hallmark-image);
+    --hallmark-row-soft: var(--hallmark-image-soft);
+  }
+  .hallmark-row-icon svg { width: 18px; height: 18px; }
+  .hallmark-row-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+  .hallmark-row-copy strong,
+  .hallmark-row-copy span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hallmark-row-copy strong { font-size: 14px; line-height: 1.4; }
+  .hallmark-row-copy span { color: var(--hallmark-muted); font-size: 12px; line-height: 1.4; }
+  .hallmark-row-arrow {
+    width: 17px;
+    height: 17px;
+    color: var(--hallmark-muted);
+  }
+
+  .hallmark-search-empty,
+  .hallmark-index-empty {
+    margin: 10px 0 0;
+    border: 1px solid var(--hallmark-rule);
+    background: #fff;
+    color: var(--hallmark-muted);
+    font-size: 13px;
+    padding: 16px;
+  }
+  .hallmark-search-empty[hidden],
+  .hallmark-index-empty[hidden] { display: none; }
+  .hallmark-search-empty p { margin: 0; }
+  .hallmark-search-empty > div { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+  .hallmark-search-empty a { color: var(--hallmark-business); font-weight: 700; }
+
+  .hallmark-catalogue {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 28px;
+    border-top: 1px solid var(--hallmark-rule);
+    padding-top: 28px;
+  }
+  .hallmark-catalogue-nav h2 {
+    margin: 0 0 16px;
+    color: var(--hallmark-ink);
+    font-size: 20px;
+    line-height: 1.25;
+  }
+  .hallmark-category-tabs { display: grid; gap: 7px; }
+  .hallmark-category-tabs button {
+    min-height: 42px;
+    border: 1px solid var(--hallmark-rule);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--hallmark-muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    padding: 0 12px;
+  }
+  .hallmark-category-tabs button:hover,
+  .hallmark-category-tabs button:focus-visible {
+    border-color: var(--hallmark-ink);
+    color: var(--hallmark-ink);
+    outline: none;
+  }
+  .hallmark-category-tabs button.is-active {
+    border-color: var(--hallmark-ink);
+    background: var(--hallmark-ink);
+    color: #fff;
+  }
+  .hallmark-catalogue-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+    color: var(--hallmark-muted);
+    font-size: 11px;
+  }
+  .hallmark-catalogue-meta a { color: inherit; }
+  .hallmark-catalogue-meta a:hover { color: var(--hallmark-ink); }
+  .hallmark-tool-index { border-top: 1px solid var(--hallmark-rule); }
+
+  @keyframes hallmark-ear-wave {
+    0%, 78%, 100% { transform: rotate(0deg); }
+    84% { transform: rotate(-7deg); }
+    90% { transform: rotate(3deg); }
+  }
+
+  @media (max-width: 760px) {
+    .hallmark-home { padding: 22px 16px 56px; }
+    .hallmark-command-head { grid-template-columns: 1fr; gap: 22px; padding-top: 0; }
+    .hallmark-identity-copy h1 { font-size: 30px; }
+    .hallmark-quick-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hallmark-catalogue { grid-template-columns: 1fr; gap: 18px; padding-top: 22px; }
+    .hallmark-category-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hallmark-category-tabs button { text-align: center; }
+    .hallmark-catalogue-meta { margin-top: 10px; }
+  }
+
+  @media (max-width: 420px) {
+    .hallmark-home { padding-inline: 12px; }
+    .hallmark-mascot { width: 58px; height: 64px; }
+    .hallmark-identity { gap: 12px; }
+    .hallmark-identity-copy h1 { font-size: 27px; }
+    .hallmark-search-box { padding-inline: 13px; }
+    .hallmark-search-box kbd { display: none; }
+    .hallmark-tool-row { min-height: 70px; padding-inline: 9px; }
+    .hallmark-row-copy span { font-size: 11.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hallmark-mascot-ear { animation: none; }
+  }
+</style>

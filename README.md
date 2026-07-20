@@ -7,6 +7,8 @@
 - [거래명세서 자동작성](https://k-document-tool.pages.dev/tools/transaction-statement-generator/)
 - [JPG PDF 변환](https://k-document-tool.pages.dev/tools/jpg-to-pdf-converter/)
 - [사진 용량 줄이기](https://k-document-tool.pages.dev/tools/photo-size-reducer/)
+- [도장 배경 제거](https://k-document-tool.pages.dev/tools/stamp-background-remover/)
+- [사진을 1MB 이하로 제출하기](https://k-document-tool.pages.dev/problems/photo-under-1mb/)
 - [전체 도구](https://k-document-tool.pages.dev/tools/)
 
 ## 개발
