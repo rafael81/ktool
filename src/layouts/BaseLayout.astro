@@ -190,6 +190,16 @@ const funnelConfig = {
     <meta name="twitter:image" content={socialImage} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" />
+    {
+      import.meta.env.PROD && (
+        <script
+          is:inline
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3867347117365840"
+          crossorigin="anonymous"
+        ></script>
+      )
+    }
     <script is:inline>
       (() => {
         const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
