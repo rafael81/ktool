@@ -48,10 +48,10 @@ const homeQuickStarts: {
   preset?: string;
 }[] = [
   {
-    label: "JPG PDF",
-    detail: "여러 장 묶기",
-    path: "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
-    toolId: "jpg-to-pdf"
+    label: "도장 배경 제거",
+    detail: "투명 PNG",
+    path: "/tools/stamp-background-remover/?source=home-quick-start",
+    toolId: "stamp-background"
   },
   {
     label: "사진 1MB",
@@ -61,23 +61,16 @@ const homeQuickStarts: {
     preset: "1mb"
   },
   {
-    label: "HEIC JPG",
-    detail: "아이폰 사진",
-    path: "/tools/heic-jpg-converter/?preset=jpg&source=home-quick-start",
-    toolId: "heic-to-jpg",
-    preset: "jpg"
-  },
-  {
-    label: "거래명세서",
-    detail: "문서 작성",
-    path: "/tools/transaction-statement-generator/?source=home-quick-start",
-    toolId: "transaction-statement"
-  },
-  {
-    label: "명판 PNG",
-    detail: "도장 합성",
+    label: "사업자 명판",
+    detail: "PNG 저장",
     path: "/tools/business-nameplate-maker/?source=home-quick-start",
     toolId: "business-nameplate"
+  },
+  {
+    label: "JPG PDF",
+    detail: "여러 장 묶기",
+    path: "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
+    toolId: "jpg-to-pdf"
   }
 ];
 const emptySearchLinks = [
@@ -168,7 +161,7 @@ function iconForTool(toolId: ToolId) {
           <kbd>Enter</kbd>
         </label>
 
-        <nav class="hallmark-quick-rail" aria-label="빠른 시작">
+        <nav class="hallmark-quick-rail" aria-label="많이 쓰는 도구">
           {
             homeQuickStarts.slice(0, 4).map((item) => {
               const tool = tools.find((toolItem) => toolItem.id === item.toolId);

@@ -380,13 +380,13 @@ async function run() {
           assert(homeSearchRootCount === 1, `${route.path} should render one homepage tool search`);
           const homeSearchPlaceholder = await page.locator("[data-home-search-input]").getAttribute("placeholder");
           assert(
-            homeSearchPlaceholder?.includes("명판"),
-            `${route.path} should hint the indexed nameplate path in homepage search`
+            homeSearchPlaceholder === "필요한 작업을 입력하세요",
+            `${route.path} should keep the homepage search prompt concise`
           );
-          const allToolCount = await page.locator("[data-home-all-tool]").count();
+          const allToolCount = await page.locator("[data-home-index-tool]").count();
           assert(allToolCount === 30, `${route.path} should render all tools as direct links`);
           const declaredToolCount = await page.locator("[data-page-type='home']").getAttribute("data-tool-count");
-          const heroToolCount = await page.locator(".home-hero-lead").textContent();
+          const heroToolCount = await page.locator(".hallmark-identity-copy > p").textContent();
           assert(
             declaredToolCount === "30" && heroToolCount?.includes("30종"),
             `${route.path} should keep declared, visible, and linked tool counts in sync`
@@ -398,59 +398,29 @@ async function run() {
             .count();
           assert(defaultHomeSearchRows === 0, `${route.path} should keep homepage search results collapsed by default`);
           const homeQuickStartCount = await page.locator("[data-home-quick-start]").count();
-          assert(homeQuickStartCount === 5, `${route.path} should expose five first-screen quick-start links`);
+          assert(homeQuickStartCount === 4, `${route.path} should expose four first-screen quick-start links`);
           const homeQuickStartHrefs = await page
             .locator("[data-home-quick-start]")
             .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-          [
-            "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start",
+          const expectedQuickStartHrefs = [
+            "/tools/stamp-background-remover/?source=home-quick-start",
             "/tools/photo-size-reducer/?preset=1mb&source=home-quick-start",
-            "/tools/heic-jpg-converter/?preset=jpg&source=home-quick-start",
-            "/tools/transaction-statement-generator/?source=home-quick-start",
-            "/tools/business-nameplate-maker/?source=home-quick-start"
-          ].forEach((href) => {
-            assert(homeQuickStartHrefs.includes(href), `${route.path} should include quick-start link ${href}`);
-          });
+            "/tools/business-nameplate-maker/?source=home-quick-start",
+            "/tools/jpg-to-pdf-converter/?from=quick-start&source=home-quick-start"
+          ];
+          assert(
+            JSON.stringify(homeQuickStartHrefs) === JSON.stringify(expectedQuickStartHrefs),
+            `${route.path} should order quick starts by observed organic use`
+          );
           const homeQuickStartAnalyticsCount = await page
             .locator('[data-home-quick-start][data-analytics-event="home_quick_start_click"][data-analytics-tool-id]')
             .count();
           assert(
-            homeQuickStartAnalyticsCount === 5,
+            homeQuickStartAnalyticsCount === 4,
             `${route.path} should tag every quick-start link for analytics`
           );
-          const homeProblemStartCount = await page.locator("[data-home-problem-start]").count();
-          assert(homeProblemStartCount === 4, `${route.path} should expose four first-screen problem links`);
-          const homeProblemStartHrefs = await page
-            .locator("[data-home-problem-start]")
-            .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-          [
-            "/problems/images-to-one-pdf/",
-            "/problems/photo-under-1mb/",
-            "/problems/heic-jpg-submit/",
-            "/problems/business-nameplate-stamp/"
-          ].forEach((href) => {
-            assert(homeProblemStartHrefs.includes(href), `${route.path} should include problem-start link ${href}`);
-          });
-          const homeProblemStartAnalyticsCount = await page
-            .locator(
-              '[data-home-problem-start][data-analytics-event="home_problem_start_click"][data-analytics-problem-id][data-analytics-target-problem-id][data-analytics-target-tool-id]'
-            )
-            .count();
-          assert(
-            homeProblemStartAnalyticsCount === 4,
-            `${route.path} should tag every problem-start link with problem and target tool metadata`
-          );
-          const homeProblemAllLink = await page.locator('[data-home-problem-starts] a[href="/problems/"][data-analytics-event="home_problem_all_click"]').count();
-          assert(homeProblemAllLink === 1, `${route.path} should link from first-screen problem starts to the problem hub`);
-          const homeProblemStartText = await page.locator("[data-home-problem-starts]").textContent();
-          assert(
-            homeProblemStartText?.includes("막혔나요?") &&
-              homeProblemStartText.includes("사진 PDF") &&
-              homeProblemStartText.includes("1MB 압축") &&
-              homeProblemStartText.includes("HEIC JPG") &&
-              homeProblemStartText.includes("명판 도장"),
-            `${route.path} should keep first-screen problem starts short and concrete`
-          );
+          const homeProblemHubLink = await page.locator('.hallmark-catalogue-meta a[href="/problems/"]').count();
+          assert(homeProblemHubLink === 1, `${route.path} should link the search-first catalogue to the problem hub`);
           await page.locator("[data-home-search-input]").fill("HEIC");
           await page.waitForTimeout(450);
           const heicHomeRows = await page.locator("[data-home-search-item]:not([hidden])").count();
