@@ -3,7 +3,7 @@ import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
 import { sitemapLastmod } from "./scripts/sitemap-lastmod.mjs";
 
 export default defineConfig({
-  site: "https://k-document-tool.pages.dev",
+  site: "https://kdoctool.kr",
   integrations: [
     sitemap({
       serialize(item) {

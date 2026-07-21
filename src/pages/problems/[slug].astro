@@ -19,7 +19,7 @@ const { problemPage } = Astro.props;
 const targetTool = getTool(problemPage.targetToolId);
 const relatedProblems = problemPage.relatedProblemIds.map(getProblemPage);
 function withProblemSource(path: string) {
-  const url = new URL(path, "https://k-document-tool.pages.dev");
+  const url = new URL(path, "https://kdoctool.kr");
   url.searchParams.set("source", "problem");
   url.searchParams.set("problem_id", problemPage.id);
   return `${url.pathname}${url.search}${url.hash}`;

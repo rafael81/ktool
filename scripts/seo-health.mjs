@@ -1,4 +1,4 @@
-const defaultSite = "https://k-document-tool.pages.dev";
+const defaultSite = "https://kdoctool.kr";
 const args = new Set(process.argv.slice(2));
 const siteArg = process.argv.find((arg) => arg.startsWith("--site="));
 const site = new URL(siteArg?.slice("--site=".length) || process.env.SITE_URL || defaultSite);

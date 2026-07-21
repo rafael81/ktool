@@ -7,7 +7,7 @@ import { webcrypto } from "node:crypto";
 function loadClientApi() {
   const window = {
     crypto: webcrypto,
-    location: { origin: "https://k-document-tool.pages.dev" },
+    location: { origin: "https://kdoctool.kr" },
     navigator: {}
   };
   vm.runInNewContext(readFileSync("public/scripts/funnel-analytics.js", "utf8"), {
@@ -21,7 +21,7 @@ function loadClientApi() {
 const api = loadClientApi();
 
 test("classifies referrers without retaining their URL", () => {
-  const origin = "https://k-document-tool.pages.dev";
+  const origin = "https://kdoctool.kr";
   assert.equal(api.classifySource("https://search.naver.com/search.naver?query=secret", origin), "naver");
   assert.equal(api.classifySource("https://www.google.co.kr/search?q=secret", origin), "google");
   assert.equal(api.classifySource("https://www.bing.com/search?q=secret", origin), "search_other");
@@ -223,8 +223,8 @@ test("forces a fresh session when a tab inherits sessionStorage", () => {
 
 test("detects a same-origin opener without leaking state through window.name", () => {
   const sameOrigin = {
-    location: { origin: "https://k-document-tool.pages.dev" },
-    opener: { location: { origin: "https://k-document-tool.pages.dev" } }
+    location: { origin: "https://kdoctool.kr" },
+    opener: { location: { origin: "https://kdoctool.kr" } }
   };
   assert.equal(api.copiedSameOriginOpener(sameOrigin), true);
   assert.equal(sameOrigin.opener, null);
@@ -236,7 +236,7 @@ test("detects a same-origin opener without leaking state through window.name", (
     }
   });
   const crossOrigin = {
-    location: { origin: "https://k-document-tool.pages.dev" },
+    location: { origin: "https://kdoctool.kr" },
     opener: crossOriginOpener
   };
   assert.equal(api.copiedSameOriginOpener(crossOrigin), false);

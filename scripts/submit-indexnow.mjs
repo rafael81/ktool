@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const site = "https://k-document-tool.pages.dev";
+const site = "https://kdoctool.kr";
 const host = new URL(site).hostname;
 const key = process.env.INDEXNOW_KEY || "7f9e3a1c0d8b4f6a9c2e5d0a1b3c4e6f";
 const endpoint = process.env.INDEXNOW_ENDPOINT || "https://api.indexnow.org/indexnow";

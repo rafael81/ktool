@@ -6,7 +6,7 @@ import {
   validateFeedbackPayload
 } from "../functions/api/tool-feedback.js";
 
-const endpoint = "https://k-document-tool.pages.dev/api/funnel-event";
+const endpoint = "https://kdoctool.kr/api/funnel-event";
 const validPayload = {
   event_id: "123e4567-e89b-42d3-a456-426614174000",
   session_id: "223e4567-e89b-42d3-a456-426614174001",
@@ -20,7 +20,7 @@ const validPayload = {
   build_id: "abcdef012345",
   synthetic: false
 };
-const feedbackEndpoint = "https://k-document-tool.pages.dev/api/tool-feedback";
+const feedbackEndpoint = "https://kdoctool.kr/api/tool-feedback";
 const validFeedback = {
   session_id: validPayload.session_id,
   tool_id: validPayload.tool_id,
@@ -40,7 +40,7 @@ function request(payload = validPayload, headers = {}) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      origin: "https://k-document-tool.pages.dev",
+      origin: "https://kdoctool.kr",
       "sec-fetch-site": "same-origin",
       ...headers
     },
@@ -53,7 +53,7 @@ function feedbackRequest(payload = validFeedback, headers = {}) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      origin: "https://k-document-tool.pages.dev",
+      origin: "https://kdoctool.kr",
       "sec-fetch-site": "same-origin",
       ...headers
     },
@@ -133,7 +133,7 @@ test("accepts a same-origin Referer fallback and rejects conflicting browser met
     method: "POST",
     headers: {
       "content-type": "application/json",
-      referer: "https://k-document-tool.pages.dev/tools/vat-calculator/",
+      referer: "https://kdoctool.kr/tools/vat-calculator/",
       "sec-fetch-site": "same-origin"
     },
     body: JSON.stringify(validPayload)
@@ -203,7 +203,7 @@ test("caps declared and streamed request bodies", async () => {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      origin: "https://k-document-tool.pages.dev",
+      origin: "https://kdoctool.kr",
       "sec-fetch-site": "same-origin"
     },
     body: "x".repeat(4096)
@@ -220,7 +220,7 @@ test("rejects malformed bodies and applies the shared ingest budget", async () =
     method: "POST",
     headers: {
       "content-type": "application/json",
-      origin: "https://k-document-tool.pages.dev"
+      origin: "https://kdoctool.kr"
     },
     body: "{"
   });

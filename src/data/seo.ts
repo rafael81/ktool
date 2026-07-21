@@ -2,7 +2,7 @@ import type { ToolInfo } from "@/data/tools";
 
 export type FaqEntry = [question: string, answer: string];
 
-const siteUrl = "https://k-document-tool.pages.dev";
+const siteUrl = "https://kdoctool.kr";
 const brandName = "K문서툴";
 
 export function absoluteUrl(path: string): string {

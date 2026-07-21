@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 
 const port = Number(process.env.SMOKE_PORT || 4322);
 const baseUrl = `http://127.0.0.1:${port}`;
-const productionUrl = "https://k-document-tool.pages.dev";
+const productionUrl = "https://kdoctool.kr";
 
 const routes = [
   { path: "/", h1: "K문서툴" },

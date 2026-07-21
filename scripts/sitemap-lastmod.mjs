@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 const SHARED_CONTENT_FILES = ["src/data/tools.ts", "src/data/seo.ts"];
 
 function normalizePathname(pathname) {
-  const parsed = new URL(pathname, "https://k-document-tool.pages.dev");
+  const parsed = new URL(pathname, "https://kdoctool.kr");
   return parsed.pathname === "/" ? "/" : `/${parsed.pathname.replace(/^\/+|\/+$/g, "")}/`;
 }
 

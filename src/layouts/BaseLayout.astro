@@ -62,13 +62,13 @@ function isActiveCategory(categoryId: ToolCategoryId) {
 }
 const canonical = new URL(
   normalizedCanonicalPath,
-  Astro.site ?? "https://k-document-tool.pages.dev"
+  Astro.site ?? "https://kdoctool.kr"
 ).toString();
-const socialImage = new URL("/images/k-document-tool-hero.png", Astro.site ?? "https://k-document-tool.pages.dev").toString();
+const socialImage = new URL("/images/k-document-tool-hero.png", Astro.site ?? "https://kdoctool.kr").toString();
 const currentCategory = currentTool
   ? toolCategories.find((category) => category.id === currentTool.category)
   : toolCategories.find((category) => normalizePath(category.path) === normalizedCanonicalPath);
-const siteRoot = Astro.site ?? "https://k-document-tool.pages.dev";
+const siteRoot = Astro.site ?? "https://kdoctool.kr";
 function absoluteSiteUrl(path: string) {
   return new URL(normalizePath(path), siteRoot).toString();
 }

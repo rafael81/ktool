@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://k-document-tool.pages.dev/sitemap-index.xml
+Sitemap: https://kdoctool.kr/sitemap-index.xml
