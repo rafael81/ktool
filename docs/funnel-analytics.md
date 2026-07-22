@@ -52,5 +52,6 @@ free-text responses.
 - Accepted writes and report runs remove sessions older than the operational 90-day target. This is an operating
   target rather than a guaranteed hard deletion deadline while the site is completely idle.
 
-The schema is versioned in `migrations/`, shared allowlists are in `shared/funnel-contract.mjs` and
-`shared/feedback-contract.mjs`, and public API routes are limited to `/api/*` by `public/_routes.json`.
+The schema is versioned in `migrations/`, and shared allowlists are in `shared/funnel-contract.mjs` and
+`shared/feedback-contract.mjs`. `public/_routes.json` sends all requests through the Pages middleware so the
+legacy `pages.dev` hostname can redirect permanently while API routes continue to use Pages Functions.
