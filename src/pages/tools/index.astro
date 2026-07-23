@@ -5,7 +5,7 @@ import { collectionPageSchema, toolItemListSchema, webPageSchema, websiteSchema 
 import { prepShortcuts } from "@/data/prepShortcuts";
 import { workflowPackages } from "@/data/workflowPackages";
 import { problemPages } from "@/data/problemPages";
-import { Archive, FileText, Files, Smartphone, type IconProps } from "@lucide/astro";
+import { Archive, FileText, Files, Smartphone, Stamp, type IconProps } from "@lucide/astro";
 
 const catalogTitle = "전체 도구 - 무료 PDF 이미지 문서 도구";
 const catalogDescription =
@@ -45,6 +45,12 @@ const emptySearchLinks = [
   { label: "문제 해결", path: "/problems/" }
 ];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
+const featuredToolId: ToolId = "stamp-background";
+const catalogTools = [...tools].sort((left, right) => {
+  if (left.id === featuredToolId) return -1;
+  if (right.id === featuredToolId) return 1;
+  return 0;
+});
 const catalogQuickStarts: {
   label: string;
   detail: string;
@@ -52,6 +58,12 @@ const catalogQuickStarts: {
   toolId: ToolId;
   preset?: string;
 }[] = [
+  {
+    label: "도장 배경 제거",
+    detail: "투명 PNG 저장",
+    path: "/tools/stamp-background-remover/?source=catalog-quick-start",
+    toolId: "stamp-background"
+  },
   {
     label: "JPG PDF",
     detail: "여러 장 묶기",
@@ -87,6 +99,7 @@ const catalogQuickStarts: {
 ];
 type LucideIcon = (_props: IconProps) => unknown;
 const catalogQuickIconByToolId: Partial<Record<ToolId, LucideIcon>> = {
+  "stamp-background": Stamp,
   "jpg-to-pdf": Files,
   "image-compressor": Archive,
   "heic-to-jpg": Smartphone,
@@ -214,7 +227,7 @@ function iconForCatalogQuickStart(toolId: ToolId) {
       </div>
       <div class="catalog-tool-list">
         {
-          tools.map((tool) => (
+          catalogTools.map((tool) => (
             <a
               class="catalog-tool-row"
               href={tool.path}

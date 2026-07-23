@@ -40,18 +40,26 @@ const structuredData = [
 ];
 const categoryById = new Map(toolCategories.map((category) => [category.id, category]));
 const toolCountLabel = `${tools.length}종`;
+const featuredToolId: ToolId = "stamp-background";
+const homeTools = [...tools].sort((left, right) => {
+  if (left.id === featuredToolId) return -1;
+  if (right.id === featuredToolId) return 1;
+  return 0;
+});
 const homeQuickStarts: {
   label: string;
   detail: string;
   path: string;
   toolId: ToolId;
   preset?: string;
+  featured?: boolean;
 }[] = [
   {
     label: "도장 배경 제거",
-    detail: "투명 PNG",
+    detail: "흰 배경을 투명 PNG로",
     path: "/tools/stamp-background-remover/?source=home-quick-start",
-    toolId: "stamp-background"
+    toolId: "stamp-background",
+    featured: true
   },
   {
     label: "사진 1MB",
@@ -161,7 +169,7 @@ function iconForTool(toolId: ToolId) {
           <kbd>Enter</kbd>
         </label>
 
-        <nav class="hallmark-quick-rail" aria-label="많이 쓰는 도구">
+        <nav class="hallmark-quick-rail" aria-label="대표 도구와 많이 쓰는 도구">
           {
             homeQuickStarts.slice(0, 4).map((item) => {
               const tool = tools.find((toolItem) => toolItem.id === item.toolId);
@@ -178,9 +186,11 @@ function iconForTool(toolId: ToolId) {
                   data-analytics-tool-title={tool.title}
                   data-analytics-target-preset={item.preset}
                   data-analytics-label={item.label}
+                  data-featured={item.featured ? "true" : undefined}
                 >
                   <QuickIcon aria-hidden="true" />
                   <span>
+                    {item.featured && <em>대표 도구</em>}
                     <strong>{item.label}</strong>
                     <small>{item.detail}</small>
                   </span>
@@ -192,7 +202,7 @@ function iconForTool(toolId: ToolId) {
 
         <div class="hallmark-search-results" data-home-search-results hidden>
           {
-            tools.map((tool) => {
+            homeTools.map((tool) => {
               const ToolIcon = iconForTool(tool.id);
 
               return (
@@ -302,7 +312,7 @@ function iconForTool(toolId: ToolId) {
       </aside>
 
       <div class="hallmark-tool-index">
-        {tools.map((tool) => {
+        {homeTools.map((tool) => {
           const ToolIcon = iconForTool(tool.id);
           return (
             <a
@@ -593,7 +603,7 @@ function iconForTool(toolId: ToolId) {
 
   .hallmark-quick-rail {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 1px;
     margin-top: 12px;
     border: 1px solid var(--hallmark-rule);
@@ -609,8 +619,15 @@ function iconForTool(toolId: ToolId) {
     color: var(--hallmark-ink);
     padding: 10px 12px;
   }
+  .hallmark-quick-link[data-featured="true"] {
+    grid-column: span 2;
+    border-left: 3px solid var(--hallmark-business);
+    background: var(--hallmark-business-soft);
+  }
   .hallmark-quick-link:hover,
   .hallmark-quick-link:focus-visible { background: #f9fafb; outline: none; }
+  .hallmark-quick-link[data-featured="true"]:hover,
+  .hallmark-quick-link[data-featured="true"]:focus-visible { background: #e4edff; }
   .hallmark-quick-link > svg {
     width: 18px;
     height: 18px;
@@ -621,10 +638,17 @@ function iconForTool(toolId: ToolId) {
     min-width: 0;
   }
   .hallmark-quick-link strong,
-  .hallmark-quick-link small {
+  .hallmark-quick-link small,
+  .hallmark-quick-link em {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .hallmark-quick-link em {
+    color: var(--hallmark-business);
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 800;
   }
   .hallmark-quick-link strong { font-size: 12px; line-height: 1.35; }
   .hallmark-quick-link small { color: var(--hallmark-muted); font-size: 10.5px; }
@@ -781,6 +805,7 @@ function iconForTool(toolId: ToolId) {
     .hallmark-command-head { grid-template-columns: 1fr; gap: 22px; padding-top: 0; }
     .hallmark-identity-copy h1 { font-size: 30px; }
     .hallmark-quick-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hallmark-quick-link:last-child { grid-column: span 2; }
     .hallmark-catalogue { grid-template-columns: 1fr; gap: 18px; padding-top: 22px; }
     .hallmark-category-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hallmark-category-tabs button { text-align: center; }
